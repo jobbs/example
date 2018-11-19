@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configuration file for LogBack (slf4J implementation)
+See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-through-the-java-loggers/ -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!--
+     ######################################################################################################
+     ### ■ PROPERTY CONFIG
+     ######################################################################################################
+     -->	
+	<property name="LOG_HOME" value="d:\\log\\" />
+	<property name="LOG_PATTERN" value="▶  %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{%method:%line} - %msg%n"/>
+	
+    <!--
+     ######################################################################################################
+     ### ■ CONSOLE LOG OUTPUT
+     ######################################################################################################
+     -->		
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+		      <Pattern>${LOG_PATTERN}</Pattern>
+		</layout>
+    </appender>
+
+    <!--
+     ######################################################################################################
+     ### ■ FILE LOG OUTPUT
+     ######################################################################################################
+     -->	
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/log-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>		
+			<maxHistory>6</maxHistory>	  
+		</rollingPolicy>
+		<encoder>
+			<Pattern>${LOG_PATTERN}</Pattern>
+		</encoder>
+    </appender>
+    
+    <!--
+     ######################################################################################################
+     ### ■ JDBC TRANSACTION LOG
+     ######################################################################################################
+     -->     
+	<logger name="org.springframework.jdbc" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>
+    
+    <!--
+     ######################################################################################################
+     ### ■ SERVICE LOG
+     ######################################################################################################
+     -->       
+    <logger name="com.netive.service.sample" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>
+    
+    <!--
+     ######################################################################################################
+     ### ■ DEFAULT LOG
+     ######################################################################################################
+     -->           
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+    
+</configuration>

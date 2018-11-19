@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+   	<!--
+     ######################################################################################################
+     ### ■ SQL DEFAULT SETTING
+     ######################################################################################################
+     -->  	
+ 	<settings>
+		<setting name="cacheEnabled" value="true"/>
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="multipleResultSetsEnabled" value="true"/>
+		<setting name="useColumnLabel" value="true"/>
+		<setting name="useGeneratedKeys" value="false"/>
+		<setting name="autoMappingBehavior" value="PARTIAL"/>
+		<setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+		<setting name="defaultExecutorType" value="SIMPLE"/>
+		<setting name="defaultStatementTimeout" value="25"/>
+		<setting name="defaultFetchSize" value="100"/>
+		<setting name="safeRowBoundsEnabled" value="false"/>
+		<setting name="mapUnderscoreToCamelCase" value="false"/>
+		<setting name="localCacheScope" value="SESSION"/>
+		<setting name="jdbcTypeForNull" value="OTHER"/>
+		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+	</settings>
+
+   	<!--
+     ######################################################################################################
+     ### ■ VO TYPEALIAS CONFIG (MYBATIS 전역 설정 가능, 프로젝트 상황 별 선택)
+     ######################################################################################################
+     -->  		
+	<typeAliases>
+		<typeAlias alias="SampleVO" type="com.netive.service.sample.SampleVO"/>
+	</typeAliases>
+
+   	<!--
+     ######################################################################################################
+     ### ■ VO *-QUERY.XML MAPPER (MYBATIS 전역 설정 가능, 프로젝트 상황 별 선택)
+     ######################################################################################################
+     -->  		
+	<mappers>
+		<mapper resource="query/sample-query.xml" />
+	</mappers>
+	
+</configuration> 

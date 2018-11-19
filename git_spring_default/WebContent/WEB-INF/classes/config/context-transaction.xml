@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+
+    <!--
+     ######################################################################################################
+     ### ■ DEFAULT CONFIG (@Transactional 선언 필요, 프로젝트 상황 별 선택사항)
+     ######################################################################################################
+     -->	
+	<!-- (1) TRANSACTION MANAGER, 【DB1】 CRAWL_DATA -->
+	<bean id="TxDataManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="defaultTimeout" value="180"/>
+	</bean>
+    <bean id="TxDataAdvice"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+        abstract="true">
+        <property name="transactionManager" ref="TxDataManager" />
+        <property name="transactionAttributes">
+            <props>
+                <prop key="select*">PROPAGATION_REQUIRED, -Exception, readOnly</prop>
+                <prop key="insert*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="update*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="delete*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="procedure*">PROPAGATION_REQUIRED, -Exception</prop>                
+                <prop key="*">PROPAGATION_REQUIRED, -Exception, readOnly</prop>
+            </props>
+        </property>
+    </bean>
+	<tx:annotation-driven transaction-manager="TxDataManager" proxy-target-class="true"/>
+	
+	<!-- (2) TRANSACTION MANAGER, 【DB2】 CRAWL_INFO -->	
+	<bean id="TxInfoManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="infoSource"/>
+		<property name="defaultTimeout" value="180"/>
+	</bean>
+    <bean id="TxInfoAdvice"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+        abstract="true">
+        <property name="transactionManager" ref="TxInfoManager" />
+        <property name="transactionAttributes">
+            <props>
+                <prop key="select*">PROPAGATION_REQUIRED, -Exception, readOnly</prop>
+                <prop key="insert*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="update*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="delete*">PROPAGATION_REQUIRED, -Exception</prop>
+                <prop key="procedure*">PROPAGATION_REQUIRED, -Exception</prop>                
+                <prop key="*">PROPAGATION_REQUIRED, -Exception, readOnly</prop>
+            </props>
+        </property>
+    </bean>
+	<tx:annotation-driven transaction-manager="TxInfoManager" proxy-target-class="true"/>    
+    
+    <!--
+     ######################################################################################################
+     ### ■ AOP GLOBAL CONFIG (@Transactional 선언 필요 없음, 프로젝트 상황 별 선택사항)
+     ###    ▶ 설정 활용시 해당 파일은 SERVLET에 IMPORT 해야 합니다.
+     ######################################################################################################
+     -->
+	<!-- <tx:advice id="TxDataAdvice" transaction-manager="TxDataManager">
+		<tx:attributes>
+			<tx:method name="get*" rollback-for="Exception" read-only="true"/>
+			<tx:method name="set*" rollback-for="Exception" read-only="true"/>		
+			<tx:method name="select*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception" read-only="true"/>
+			<tx:method name="insert*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception" read-only="false"/>
+			<tx:method name="update*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception" read-only="false"/>
+			<tx:method name="delete*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception" read-only="false"/>
+			<tx:method name="procedure*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception" read-only="false"/>
+			<tx:method name="*" rollback-for="Exception" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="RequiredDataTx" expression="execution(* com.netive.service..*DAOImpl.*(..))" />
+		<aop:advisor advice-ref="TxDataAdvice" pointcut-ref="RequiredDataTx" />
+		<aop:aspect id="" ref="">
+			<aop:pointcut expression="" id=""/>
+			<aop:after pointcut-ref="" method=""/>
+			<aop:before pointcut-ref="" method=""/>
+			<aop:after-returning pointcut-ref="" method=""/>
+			<aop:after-throwing pointcut-ref="" method=""/>
+		</aop:aspect>
+	</aop:config> -->    
+	
+</beans>
