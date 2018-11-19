@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.asgn.instl">
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.InstlVo" id="resultInstlVo">
+		<result property="rn" column="rn"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="regionId" column="region_id"/>
+		<result property="zoneNm" column="zone_nm"/>
+		<result property="netNm" column="net_nm"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="cdNm" column="cd_nm"/>
+		<result property="instlYear" column="instl_year"/>
+		<result property="hwKnd" column="hw_knd"/>
+
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.InstlVo" id="resultInstlViewVo">
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="regionId" column="region_id"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="instlYear" column="instl_year"/>
+		<result property="hwKnd" column="hw_knd"/>
+	</resultMap>
+
+	<select id="selectInstlList" resultMap="resultInstlVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgn.instl.selectInstlList */
+		select   row_number() over(order by a.reg_dttm asc ) rn,
+		         a.rsrc_pool_id,
+		         a.region_id,
+		         b.zone_nm,
+		         c.net_nm,
+		         a.rsrc_pool_nm,
+		         d.cd_nm,
+		         e.instl_year,
+		         e.hw_knd
+
+	    from st_rsrc_pool_instl_stte e left join rc_rsrc_pool a on a.rsrc_pool_id = e.rsrc_pool_id
+	                        left join rc_zone b on a.zone_id = b.zone_id
+	                        left join rc_net c on a.net_id = c.net_id
+	                        left join CM_CODE d on d.cd = a.VRLZ_SW_TY_CD
+
+	   where 1=1
+	         and a.del_yn = 'N'
+	         and d.GRP_CD = '001' AND d.PARENT_CD ='100' AND d.USE_YN = 'Y'
+	          <if test="year != null and !year.isEmpty()">
+				   <if test="mm != null and !mm.isEmpty()">
+				       and to_char(a.reg_dttm,'yyyymmdd') like #{year}||#{mm}||'%'
+				   </if>
+			  </if>
+			  <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+			  </if>
+
+	   order by a.reg_dttm asc
+
+	</select>
+
+	<select id="selectInstlView" resultMap="resultInstlViewVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgn.instl.selectInstlView */
+		select
+		         a.rsrc_pool_id,
+		         a.region_id,
+		         a.rsrc_pool_nm,
+		         e.instl_year,
+		         e.hw_knd
+
+	    from st_rsrc_pool_instl_stte e left join rc_rsrc_pool a on a.rsrc_pool_id = e.rsrc_pool_id
+
+
+	   where 1=1
+
+	          <if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+				       and e.rsrc_pool_id = #{rsrcPoolId}
+			  </if>
+
+
+	   order by a.reg_dttm asc
+
+	</select>
+
+    <delete id="deleteInstl">
+		/* ncis.sql.dsb.stts.asgn.instl.deleteInstl */
+
+		DELETE FROM  st_rsrc_pool_instl_stte
+		WHERE 1=1
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+		  	  AND rsrc_pool_id = #{rsrcPoolId}
+		</if>
+	</delete>
+
+	<insert id="insertInstl">
+	/* sqlid : ncis.sql.dsb.stts.asgn.instl.insertInstl */
+		WITH UPSERT AS (
+			SELECT
+				#{rsrcPoolId}::text AS rsrc_pool_id,
+				#{instlYear}::text AS instl_year,
+				#{hwKnd}::text AS hw_knd,
+				#{regionId}::text AS region_id
+
+		),
+
+		UPDATE_OPTION AS (
+			UPDATE st_rsrc_pool_instl_stte AS instlStte
+				SET rsrc_pool_id = UPSERT.rsrc_pool_id,
+					instl_year = UPSERT.instl_year,
+					hw_knd = UPSERT.hw_knd,
+					region_id = UPSERT.region_id
+
+			FROM UPSERT
+			WHERE
+				instlStte.rsrc_pool_id=UPSERT.rsrc_pool_id
+
+		)
+		INSERT INTO st_rsrc_pool_instl_stte (
+			rsrc_pool_id, instl_year, hw_knd, region_id
+		)
+		SELECT
+			rsrc_pool_id, instl_year, hw_knd, region_id
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM st_rsrc_pool_instl_stte AS instlStte
+				WHERE instlStte.rsrc_pool_id = UPSERT.rsrc_pool_id
+
+			)
+	</insert>
+</mapper>

@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmcode">
+
+	<resultMap id="resultCmCode" type="ncis.cmn.entity.CmCode">
+        <result property="cd"     column="CD"/>  <!-- 코드 -->
+        <result property="grpCd"     column="GRP_CD"/>  <!-- 그룹코드 -->
+        <result property="parentCd"     column="PARENT_CD"/>  <!-- 부모코드 -->
+        <result property="parentGrpCd"     column="PARENT_GRP_CD"/>  <!-- 부모그룹코드 -->
+        <result property="cdNm"     column="CD_NM"/>  <!-- 코드명 -->
+        <result property="cdDesc"     column="CD_DESC"/>  <!-- 코드설명 -->
+        <result property="cdLevel"     column="CD_LEVEL"/>  <!-- 코드레벨 -->
+        <result property="useYn"     column="USE_YN"/>  <!-- 사용여부 -->
+        <result property="cdOrder"     column="CD_ORDER"/>  <!-- 코드순번 -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="varVl1"     column="VAR_VL1"/>  <!-- 변수값1 -->
+        <result property="varVl2"     column="VAR_VL2"/>  <!-- 변수값2 -->
+        <result property="varVl3"     column="VAR_VL3"/>  <!-- 변수값3 -->
+        <result property="varVl4"     column="VAR_VL4"/>  <!-- 변수값4 -->
+        <result property="varVl5"     column="VAR_VL5"/>  <!-- 변수값5 -->
+	</resultMap>
+
+	<!-- 공통코드 등록 -->
+	<insert id="insertCmCode">
+	/* ncis.sql.cmn.cmcode.insertCmCode */
+		INSERT INTO CM_CODE (
+			CD
+			,GRP_CD
+			,PARENT_CD
+			,PARENT_GRP_CD
+			,CD_NM
+			,CD_DESC
+			,CD_LEVEL
+			,USE_YN
+			,CD_ORDER
+			,REG_DTTM
+			,REG_USER_ID
+			,UPDT_DTTM
+			,UPDT_USER_ID
+			,VAR_VL1
+			,VAR_VL2
+			,VAR_VL3
+			,VAR_VL4
+			,VAR_VL5
+		) VALUES (
+			 #{cd}
+			<choose>
+				<when test="grpCd != '000'">
+				,#{grpCd}
+				</when>
+				<otherwise>
+				,TRIM((SELECT TO_CHAR(TO_NUMBER(MAX(GRP_CD), 'FM00000000')+1, '000') FROM CM_CODE WHERE PARENT_CD = '000' AND PARENT_GRP_CD = '000'))
+				</otherwise>
+			</choose>
+			,#{parentCd}
+			,#{parentGrpCd}
+			,#{cdNm}
+			,#{cdDesc, javaType=String, jdbcType=VARCHAR}
+			,#{cdLevel}
+			,#{useYn}
+			,(SELECT COALESCE(max(CD_ORDER), 0)+1 FROM CM_CODE WHERE PARENT_CD = #{parentCd} AND PARENT_GRP_CD = #{parentGrpCd})  /* 코드순번 */
+			,now()
+			,#{regUserId}
+			,now()
+			,#{updtUserId}
+			,#{varVl1, javaType=String, jdbcType=VARCHAR}
+			,#{varVl2, javaType=String, jdbcType=VARCHAR}
+			,#{varVl3, javaType=String, jdbcType=VARCHAR}
+			,#{varVl4, javaType=String, jdbcType=VARCHAR}
+			,#{varVl5, javaType=String, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 공통코드 수정 -->
+	<update id="updateCmCode">
+	/* ncis.sql.cmn.cmcode.updateCmCode */
+		UPDATE CM_CODE SET
+         	CD_NM = #{cdNm}  /* 코드명 */
+           , CD_DESC = #{cdDesc, javaType=String, jdbcType=VARCHAR}  /* 코드설명 */
+           , USE_YN = #{useYn}  /* 사용여부 */
+           , UPDT_DTTM = now()  /* 수정일시 */
+           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+           , VAR_VL1 = #{varVl1, javaType=String, jdbcType=VARCHAR}  /* 변수값1 */
+           , VAR_VL2 = #{varVl2, javaType=String, jdbcType=VARCHAR}  /* 변수값2 */
+           , VAR_VL3 = #{varVl3, javaType=String, jdbcType=VARCHAR}  /* 변수값3 */
+           , VAR_VL4 = #{varVl4, javaType=String, jdbcType=VARCHAR}  /* 변수값4 */
+           , VAR_VL5 = #{varVl5, javaType=String, jdbcType=VARCHAR}  /* 변수값5 */
+         WHERE CD = #{cd}  /* 코드 */
+           AND GRP_CD = #{grpCd}  /* 그룹코드 */
+
+	</update>
+
+	<update id="updateCodeDownOrderByUp">
+	/* ncis.sql.cmn.cmcode.updateCodeDownOrderByUp */
+		UPDATE CM_CODE SET
+			CD_ORDER = CD_ORDER + 1
+		WHERE (CD_ORDER, PARENT_CD, PARENT_GRP_CD) = (
+					  SELECT CD_ORDER-1, PARENT_CD, PARENT_GRP_CD
+					  FROM CM_CODE
+					  WHERE CD = #{cd} AND GRP_CD = #{grpCd }
+				)
+	</update>
+
+	<update id="updateCodeUpOrder">
+	/* ncis.sql.cmn.cmcode.updateCodeUpOrder */
+		UPDATE CM_CODE SET
+			CD_ORDER =
+						CASE
+							WHEN CD_ORDER = 1 THEN 1
+							ELSE CD_ORDER-1
+						END
+		WHERE CD = #{cd} AND GRP_CD = #{grpCd }
+	</update>
+
+	<update id="updateCodeUpOrderByDown">
+	/* ncis.sql.cmn.cmcode.updateCodeUpOrderByDown */
+		UPDATE CM_CODE SET
+			CD_ORDER = CD_ORDER - 1
+		WHERE (CD_ORDER, PARENT_CD, PARENT_GRP_CD) = (
+					  SELECT CD_ORDER+1, PARENT_CD, PARENT_GRP_CD
+					  FROM CM_CODE
+					  WHERE CD = #{cd} AND GRP_CD = #{grpCd }
+					)
+	</update>
+
+	<update id="updateCodeDownOrder">
+	/* ncis.sql.cmn.cmcode.updateCodeDownOrder */
+		UPDATE CM_CODE SET
+			CD_ORDER = CD_ORDER+1
+		WHERE CD = #{cd} AND GRP_CD = #{grpCd }
+	</update>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.worddicary">
+
+	<resultMap type="ncis.cmn.entity.WordDicary" id="resultWordDicary">
+		<result property="wordSeq" column="WORD_SEQ"/>
+		<result property="wordKr" column="WORD_KR"/>
+		<result property="wordEn" column="WORD_EN"/>
+		<result property="wordAbrv" column="WORD_ABRV"/>
+		<result property="wordDc" column="WORD_DC"/>
+		<result property="prohibitYn" column="PROHIBIT_YN"/>
+		<result property="dicaryDiv" column="DICARY_DIV"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="regId" column="REG_ID"/>
+		<result property="modDate" column="MOD_DATE"/>
+		<result property="modId" column="MOD_ID"/>
+	</resultMap>
+
+	<insert id="insertWordDicary">
+		<selectKey order="BEFORE" keyProperty="wordSeq" resultType="Long">
+			SELECT nextval('WORD_SEQ')
+		</selectKey>
+
+		INSERT INTO WORD_DICARY (
+			WORD_SEQ
+			,WORD_KR
+			,WORD_EN
+			,WORD_ABRV
+			,WORD_DC
+			,PROHIBIT_YN
+			,DICARY_DIV
+			,REG_DATE
+			,REG_ID
+			,MOD_DATE
+			,MOD_ID
+		) VALUES (
+			#{wordSeq}
+			,#{wordKr}
+			,#{wordEn}
+			,#{wordAbrv}
+			,#{wordDc, javaType=String, jdbcType=VARCHAR}
+			,#{prohibitYn, javaType=String, jdbcType=VARCHAR}
+			,#{dicaryDiv}
+			,now()
+			,#{regId}
+			,now()
+			,#{modId}
+		)
+	</insert>
+
+	<update id="updateWordDicary">
+		UPDATE WORD_DICARY SET
+			 WORD_KR = #{wordKr}
+			,WORD_EN = #{wordEn}
+			,WORD_ABRV = #{wordAbrv}
+			,WORD_DC = #{wordDc, javaType=String, jdbcType=VARCHAR}
+			,PROHIBIT_YN = #{prohibitYn, javaType=String, jdbcType=VARCHAR}
+			,MOD_DATE = now()
+			,MOD_ID = #{modId}
+		WHERE WORD_SEQ = #{wordSeq}
+	</update>
+
+	<update id="deleteWordDicary">
+		DELETE FROM WORD_DICARY WHERE WORD_SEQ = #{value}
+	</update>
+
+</mapper>

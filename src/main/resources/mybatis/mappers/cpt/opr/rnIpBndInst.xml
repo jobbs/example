@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rnIpBndInst">
+
+<resultMap type="ncis.cpt.opr.ip.vo.IpBndInstVo" id="resultIpBndInstVo" extends="ncis.sql.cmn.rnIpBndInst.resultRnIpBndInst">
+	<result property="institutionNm"     column="INSTITUTION_NM"/>  <!-- 부처명 -->
+</resultMap>
+
+<sql id="search">
+	<if test='searchUserId != null and searchUserId != ""'>
+	</if>
+	<if test='searchBndSeq != null and searchBndSeq != ""'>
+	AND RN_IP_BND_INSTITUTION.BND_SEQ = #{searchBndSeq}
+	</if>
+	<if test='searchInstitutionId != null and searchInstitutionId != ""'>
+	AND RN_IP_BND_INSTITUTION.INSTITUTION_ID = #{searchInstitutionId}
+	</if>
+</sql>
+
+<select id="selectIpBndInstList" resultMap="resultIpBndInstVo">
+/* ncis.sql.cpt.rnIpBndInst.selectIpBndInstList */
+	SELECT
+		RN_IP_BND_INSTITUTION.BND_SEQ
+		, RN_IP_BND_INSTITUTION.INSTITUTION_ID
+		, CM_INSTITUTION.INSTITUTION_NM AS INSTITUTION_NM
+	FROM
+		RN_IP_BND_INSTITUTION
+	LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RN_IP_BND_INSTITUTION.INSTITUTION_ID
+	<where>
+		<include refid="search"/>
+	</where>
+	ORDER BY INSTITUTION_NM
+</select>
+
+</mapper>

@@ -1,0 +1,12 @@
+[Context]
+EncryptionAlg=ENCALGID_SEED
+StorageType=HARD_DISK
+ICCardPort=1
+CertSearch=LOCAL_FIRST
+CertPathInc=IN_CERT_ONLY
+PathValidationOp=VALIDATION_OFF
+CRLCheckOption=NO_CRL_CHECK
+CertValidTimeChkFlag=NO_TIME_CHECK
+UseOldCRL=USE_NEW_CRL
+RecipientDN="cn=SVR1740283001,ou=Group of Server,o=Government of Korea,c=KR"
+RecipientCertFilePath="C:\Program Files\EPS\PSE\ServerCert\cn=SVR1740283001,ou=Group of Server,o=Government of Korea,c=KR\kmCert.der"

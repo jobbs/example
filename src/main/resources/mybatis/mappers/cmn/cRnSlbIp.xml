@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnSlbIp">
+
+	<resultMap id="resultRnSlbIp" type="ncis.cmn.entity.RnSlbIp">
+        <result property="ipAddr"     	column="IP_ADDR"/>  <!-- IP주소 -->
+        <result property="port"     	column="PORT"/>  <!-- 포트 -->
+        <result property="vipAddr"     	column="VIP_ADDR"/>  <!-- VIP주소 -->
+        <result property="wvl"     		column="WVL"/>  <!-- 가중치(로드밸런싱) -->
+        <result property="dc"     		column="DC"/>  <!-- 설명 -->
+        <result property="vmSeq"     	column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+	</resultMap>
+
+	<insert id="insertRnSlbIp">
+		/* ncis.sql.cmn.rnSlbIp.insertRnSlbIp */
+		INSERT INTO RN_SLB_IP (
+								IP_ADDR  /* IP주소 */
+								, PORT  /* 포트 */
+								, VIP_ADDR  /* VIP주소 */
+								, WVL  /* 가중치(로드밸런싱) */
+								, DC  /* 설명 */
+								, VM_SEQ
+		) VALUES (
+					#{ipAddr}  /* IP주소 */
+					, #{port}  /* 포트 */
+					, #{vipAddr}  /* VIP주소 */
+					, #{wvl}  /* 가중치(로드밸런싱) */
+					, #{dc}  /* 설명 */
+					, #{vmSeq}
+		)
+	</insert>
+
+	<update id="updateRnSlbIp">
+		/* ncis.sql.cmn.rnSlbIp.updateRnSlbIp */
+		UPDATE RN_SLB_IP
+		SET IP_ADDR = #{ipAddr}  /* IP주소 */
+			, PORT = #{port}  /* 포트 */
+			, VIP_ADDR = #{vipAddr}  /* VIP주소 */
+			, WVL = #{wvl}  /* 가중치(로드밸런싱) */
+			, DC = #{dc}  /* 설명 */
+		WHERE IP_ADDR = #{ipAddr}  /* IP주소 */
+			AND VM_SEQ = #{vmSeq}
+			AND VIP_ADDR = #{vipAddr}
+	</update>
+<!--
+	<update id="deleteRnSlbIp">
+		/* ncis.sql.cmn.rnSlbIp.deleteRnSlbIp */
+		UPDATE RN_SLB_IP
+		SET DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+			, DEL_DTTM = now()  /* 삭제일시 */
+			, DEL_YN = 'Y'  /* 삭제여부 */
+		WHERE IP_ADDR = #{ipAddr}  /* IP주소 */
+			AND VM_SEQ = #{vmSeq}
+			AND VIP_ADDR = #{vipAddr}
+	</update>
+-->
+<!--
+	<delete id="deleteRnSlbIp">
+	DELETE FROM RN_SLB_IP
+         WHERE IP_ADDR = #{ipAddr}  /* IP주소 */
+			AND VM_SEQ = #{vmSeq}
+         	AND VIP_ADDR = #{vipAddr}
+	</delete>
+-->
+
+	<!-- insert (merge) -->
+	<update id="mergeRnSlbIp">
+		/* ncis.sql.cmn.rnSlb.mergeRnSlbIp */
+			WITH UPSERT AS (
+			SELECT	 #{ipAddr}::text AS IP_ADDR  /* IP주소 */
+					, #{port} AS PORT  /* 포트 */
+					, #{vipAddr}::text AS  VIP_ADDR  /* VIP주소 */
+					, #{wvl} AS  WVL  /* 가중치(로드밸런싱) */
+					, #{dc}::text  AS DC  /* 설명 */
+					, #{vmSeq} AS VM_SEQ
+		),
+		UPDATE_OPTION AS (
+			UPDATE RN_SLB_IP SLB1
+				SET WVL = UPSERT.WVL
+					, DC = UPSERT.DC
+					, PORT = UPSERT.PORT
+			FROM UPSERT
+			 WHERE SLB1.VM_SEQ =  UPSERT.VM_SEQ
+			  AND SLB1.VIP_ADDR = UPSERT.VIP_ADDR
+			  AND SLB1.IP_ADDR = UPSERT.IP_ADDR
+		)
+		INSERT INTO RN_SLB_IP (IP_ADDR
+							, PORT
+							, VIP_ADDR
+							, WVL
+							, DC
+							, VM_SEQ
+							, DEL_YN )
+		SELECT 	UPSERT.IP_ADDR
+				, UPSERT.PORT
+				, UPSERT.VIP_ADDR
+				, UPSERT.WVL
+				, UPSERT.DC
+				, UPSERT.VM_SEQ
+				, 'N'
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM RN_SLB_IP AS SLB
+				WHERE SLB.VM_SEQ = UPSERT.VM_SEQ
+				AND SLB.VIP_ADDR = UPSERT.VIP_ADDR
+				AND SLB.IP_ADDR = UPSERT.IP_ADDR
+			)
+	</update>
+
+</mapper>

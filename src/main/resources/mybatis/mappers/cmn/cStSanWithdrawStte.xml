@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stSanWithdrawStte">
+
+	<insert id="insertStSanWithdrawStte">
+		/*ncis.sql.cmn.stSanWithdrawStte.insertStSanWithdrawStte*/
+		INSERT INTO ST_SAN_WITHDRAW_STTE
+		(
+			WITHDRAW_COMPT_YM,
+			RSRC_POOL_ID,
+			INSTITUTION_ID,
+			WITHDRAW_QTY
+		) VALUES(
+			#{yy}||#{mm},
+			#{rsrcPoolId},
+			#{institutionId},
+			#{withdrawQty}
+		)
+	</insert>
+	<delete id="deleteStSanWithdrawStte">
+		/*ncis.sql.cmn.stSanWithdrawStte.deleteStSanWithdrawStte*/
+		DELETE FROM  ST_SAN_WITHDRAW_STTE
+		WHERE WITHDRAW_COMPT_YM =#{yy}||#{mm}
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+			AND RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		<if test='institutionId!=null and !"".equals(institutionId)'>
+			AND INSTITUTION_ID = #{institutionId}
+		</if>
+	</delete>
+</mapper>

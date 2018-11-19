@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxRsrvSclng">
+	<!-- 스케일 예약설정 생성 -->
+	<insert id="insertRrRsrcReq" parameterType="ncis.cmn.entity.RxRsrvSclng">
+		/* ncis.sql.cmn.rxRsrvSclng.insertRrRsrcReq */
+		INSERT INTO RX_SERVC_SCLNG(
+            SERVC_SEQ	/*서비스SEQ*/
+            , SCALR_ID	/*스케일러ID*/
+            , SCLNG_CL_CD /*스케일링구분코드*/
+            , SCALR_NM /*스케일러명*/
+            , NOW_POD_QTY
+            , MIN_POD_QTY
+            , MAX_POD_QTY /*스케일러명*/
+            , USE_YN /*사용여부*/
+            , CRE_DTTM /*생성일시*/
+            , CRE_USER_ID /*생성자ID*/
+            , RSRV_STRT_DT /*예약시작일자*/
+            , RSRV_END_DT /*예약종료일자*/
+            )
+    VALUES (
+	    	 #{servcSeq}
+	    	,#{scalrId}
+	    	,#{sclngClCd}
+	    	,#{scalrNm}
+	    	,#{nowPodQty}
+	    	,#{minPodQty}
+	    	,#{maxPodQty}
+	    	,#{useYn}
+	    	,now()
+	    	,#{creUserId}
+	    	, REPLACE(#{rsrvStrtDt},'-','')
+	    	, REPLACE(#{rsrvEndDt},'-','')
+            );
+	</insert>
+	<!-- 스케일 예약설정 수정 -->
+	<update id="udtAtmSclRsrvSclng">
+		/* ncis.sql.cmn.rxRsrvSclng.udtAtmSclRsrvSclng */
+		UPDATE RX_SERVC_SCLNG
+			SET
+				SCALR_NM = #{scalrNm},
+				RSRV_STRT_DT = REPLACE(#{rsrvStrtDt},'-',''),
+				RSRV_END_DT = REPLACE(#{rsrvEndDt},'-',''),
+				USE_YN = #{useYn},
+				MAX_POD_QTY = #{maxPodQty},
+				SERVC_SEQ = #{servcSeq},
+				UPDT_USER_ID = #{updtUserId},
+				UPDT_DTTM = now()
+			WHERE SCALR_ID = #{scalrId}
+	</update>
+
+	<!--스케일 예약설정 삭제  -->
+	<delete id="deleteSclYn">
+	/*ncis.sql.cmn.rxRsrvSclng.deleteSclYn*/
+	DELETE FROM RX_SERVC_SCLNG
+ 	WHERE SCALR_ID = #{scalrId} AND SERVC_SEQ = #{servcSeq} AND SCLNG_CL_CD = #{sclngClCd}
+	</delete>
+
+	<!--오토스케일 설정 수정-->
+	<update id="updateDistrbAutoConf">
+	/*ncis.sql.cmn.rxRsrvSclng.updateDistrbAutoConf*/
+	UPDATE RX_SERVC_SCLNG
+	   SET
+	   	  NOW_POD_QTY = #{nowPodQty}
+	   	, MIN_POD_QTY = #{minPodQty}
+	    , MAX_POD_QTY = #{maxPodQty}
+	    , USE_YN = #{useYn}
+	    , ALARM_YN = #{alarmYn}
+	    , UPDT_DTTM = now()
+	    , UPDT_USER_ID = #{updtUserId}
+		 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId}
+	</update>
+	<!--오토스케일 임계치 설정 수정-->
+	<update id="updateDistrbAutoThresConf">
+	/*ncis.sql.cmn.rxRsrvSclng.updateDistrbAutoThresConf*/
+	UPDATE RX_SERVC_SCLNG_THRES_CONF
+	   SET
+	  	  THRES_CL_CD = #{thresClCd}
+	   	, STRT_THRES_VL = #{strtThresVl}
+	    , END_THRES_VL = #{endThresVl}
+		 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId}
+	</update>
+
+	<!--다차원스케일링 설정 수정  -->
+	<update id="updateDistrbMultiSclConf">
+	/* ncis.sql.cmn.rxRsrvSclng.updateDistrbMultiSclConf */
+	UPDATE RX_SERVC_SCLNG
+	   SET
+	   	  NOW_POD_QTY = #{nowPodQty}
+	   	, MIN_POD_QTY = #{minPodQty}
+	    , MAX_POD_QTY = #{maxPodQty}
+	    , USE_YN = #{useYn}
+	    , ALARM_YN = #{alarmYn}
+	    , UPDT_DTTM = now()
+	    , UPDT_USER_ID = #{updtUserId}
+		 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId};
+	</update>
+	<!--다차원스케일링 임계치 설정 수정  -->
+	<update id="updateDistrbMultiSclThresConf">
+	/* ncis.sql.cmn.rxRsrvSclng.updateDistrbMultiSclThresConf */
+	UPDATE RX_SERVC_SCLNG_THRES_CONF
+	   SET
+	   	  THRES_CL_CD = #{thresClCd}
+	   	, STRT_THRES_VL = #{strtThresVl}
+	    , END_THRES_VL = #{endThresVl}
+		 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId};
+	</update>
+	<!--다차원스케일링 그룹 설정 수정  -->
+	<update id="updateDistrbMultiSclGrpConf">
+	/* ncis.sql.cmn.rxRsrvSclng.updateDistrbMultiSclGrpConf */
+	UPDATE RX_SERVC_SCLNG_GRP_COMP
+	   SET
+	   	  SCL_GRP_CD = #{sclGrpCd}
+	   	, THRES_CL_CD = #{thresClCd}
+		 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId};
+	</update>
+	<delete id="deleteDistrbAutoSclConf">
+	 /*ncis.sql.cmn.rxRsrvSclng.deleteDistrbAutoSclConf*/
+	 DELETE FROM RX_SERVC_SCLNG
+ 	 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId}
+	</delete>
+	<delete id="deleteDistrbAutoSclThresConf">
+	 /*ncis.sql.cmn.rxRsrvSclng.deleteDistrbAutoSclThresConf*/
+	 DELETE FROM RX_SERVC_SCLNG_THRES_CONF
+ 	 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId} AND THRES_CL_CD = #{thresClCd}
+	</delete>
+	<delete id="deleteDistrbAutoSclGrpConf">
+	 /*ncis.sql.cmn.rxRsrvSclng.deleteDistrbAutoSclGrpConf*/
+	 DELETE FROM RX_SERVC_SCLNG_GRP_COMP
+ 	 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId} AND THRES_CL_CD = #{thresClCd} AND SCL_GRP_CD = #{sclGrpCd}
+	</delete>
+
+	<delete id="deleteDistrbMultiSclThresConf">
+	 /*ncis.sql.cmn.rxRsrvSclng.deleteDistrbMultiSclThresConf*/
+	 DELETE FROM RX_SERVC_SCLNG_THRES_CONF
+ 	 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId}
+	</delete>
+
+	<delete id="deleteDistrbMultiSclGrpConf">
+	 /*ncis.sql.cmn.rxRsrvSclng."deleteDistrbMultiSclGrpConf"*/
+	 DELETE FROM RX_SERVC_SCLNG_GRP_COMP
+ 	 WHERE SERVC_SEQ = #{servcSeq} AND SCALR_ID = #{scalrId}
+	</delete>
+</mapper>

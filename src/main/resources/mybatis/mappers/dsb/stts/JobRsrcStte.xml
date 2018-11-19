@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.jobRsrcStte">
+
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.JobRsrcStteVo" id="resultJobRsrcStteVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="institutionId" column="institution_id"/>
+		<result property="jobId" column="job_id"/>
+		<result property="jobNm" column="job_nm"/>
+		<result property="com" column="com"/>
+		<result property="netwk" column="netwk"/>
+		<result property="autoCom" column="autoCom"/>
+	</resultMap>
+
+
+
+	<select id="selectJobRsrcStteList" resultMap="resultJobRsrcStteVo">
+
+			/* ncis.sql.dsb.stts.jobRsrcStte.selectJobRsrcStteList */
+			SELECT
+				  s.institution_id
+				, s.job_id
+				, x.institution_nm
+				, y.job_nm
+				, sum(case when vm_cl_cd = '01' then cnt else 0 end) com
+				, sum(case when vm_cl_cd = '02' then cnt else 0 end) netwk
+				, sum(case when vm_cl_cd = '03' then cnt else 0 end) autoCom
+			  FROM (
+					SELECT bb.institution_id,
+						   ff.job_id,
+						   bb.vm_cl_cd,
+						   count(bb.vm_seq) cnt
+					  FROM rc_vm bb inner join rc_vm_job ff ON bb.vm_seq = ff.vm_seq
+					 WHERE UPPER(bb.DEL_YN) = 'N'
+					   AND bb.vm_cl_cd in ('01','02')
+					 GROUP by bb.institution_id,
+							  ff.job_id,
+							  bb.vm_cl_cd
+					 UNION ALL
+					SELECT a.institution_id, a.job_id, '03' vm_cl_cd, count(b.servc_seq) cnt
+					  FROM rx_servc_area a,
+					       rx_servc b
+					 WHERE a.servc_area_seq = b.servc_area_seq
+					   AND a.del_yn = 'N'
+					   AND b.del_yn = 'N'
+					GROUP BY a.institution_id, a.job_id
+					      ) s
+			LEFT JOIN cm_institution x on x.institution_id = s.institution_id
+			LEFT JOIN cm_job y on y.job_id = s.job_id
+		    WHERE 1=1
+		        <choose>
+		           <when test= 'institutionId !=null and !"".equals(institutionId)'>
+		              and s.institution_id = #{institutionId}
+		           </when>
+		           <otherwise>
+		              and x.institution_nm like '%'||#{institutionNm}||'%'
+		           </otherwise>
+		        </choose>
+			GROUP BY
+				  s.institution_id
+				, s.job_id
+				, x.institution_nm
+				, y.job_nm
+			ORDER BY institution_nm asc nulls last, job_nm asc nulls last
+	</select>
+
+<select id="selectServcTotCnt" resultType="Integer">
+	/*ncis.sql.dsb.stts.jobRsrcStte.selectServcTotCnt*/
+	SELECT
+			COUNT(*)
+			FROM RX_SERVC_AREA TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+		AND TBL2.SERVC_TY_CD IN('01','02')
+		AND TBL1.DEL_YN = 'N'
+		LEFT OUTER JOIN RC_RSRC_POOL TBL3
+		ON TBL1.RSRC_POOL_ID = TBL3.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION TBL4
+		ON TBL4.REGION_ID = TBL3.REGION_ID
+		LEFT OUTER JOIN RC_ZONE TBL5
+		ON TBL5.ZONE_ID = TBL3.ZONE_ID
+		LEFT OUTER JOIN RC_NET TBL6
+		ON TBL6.NET_ID = TBL3.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION TBL7
+		ON TBL1.INSTITUTION_ID = TBL7.INSTITUTION_ID
+		LEFT OUTER JOIN CM_JOB TBL8
+		ON TBL1.JOB_ID = TBL8.JOB_ID
+	WHERE TBL1.INSTITUTION_ID = #{institutionId}
+	</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmUsrRole">
+
+	<resultMap id="resultCmUsrRole" type="ncis.cmn.entity.CmUsrRole">
+	    <result property="roleCd"     column="ROLE_CD"/>  <!-- 롤코드 -->
+        <result property="userId"     column="USER_ID"/>  <!-- 사용자ID -->
+	</resultMap>
+
+	<!-- 사용자롤정보 등록 -->
+	<insert id="insertCmUsrRole">
+	/* ncis.sql.cmn.cmUsrRole.insertCmUsrRole */
+	INSERT INTO CM_USR_ROLE (
+	             ROLE_CD  /* 롤코드 */
+	           , USER_ID  /* 사용자ID */
+	) VALUES (
+	           #{roleCd}  /* 롤코드 */
+	         , #{userId}  /* 사용자ID */
+	)
+	</insert>
+
+	<!-- 사용자롤정보 수정 -->
+	<update id="updateCmUsrRole">
+	/* ncis.sql.cmn.cmUsrRole.updateCmUsrRole */
+	UPDATE CM_USR_ROLE
+	         SET ROLE_CD = #{roleCd}  /* 롤코드 */
+	           , USER_ID = #{userId}  /* 사용자ID */
+         WHERE ROLE_CD = #{roleCd}  /* 롤코드 */
+           AND USER_ID = #{userId}  /* 사용자ID */
+
+	</update>
+
+	<!-- 사용자롤정보 삭제 -->
+	<delete id="deleteCmUsrRole">
+	/* ncis.sql.cmn.cmUsrRole.deleteCmUsrRole */
+	DELETE FROM CM_USR_ROLE
+         WHERE ROLE_CD = #{roleCd}  /* 롤코드 */
+           AND USER_ID = #{userId}  /* 사용자ID */
+
+	</delete>
+
+</mapper>

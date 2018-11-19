@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.seqNumInfo">
+
+	<resultMap id="resultSeqNumInfo" type="ncis.cmn.entity.SeqNumInfo">
+        <result property="seqNumCl"     column="SEQ_NUM_CL"/>  <!-- 채번구분 -->
+        <result property="seqNumDc"     column="SEQ_NUM_DC"/>  <!-- 채번설명 -->
+	</resultMap>
+
+	<!-- 채번정보 등록 -->
+	<insert id="insertSeqNumInfo">
+	/* ncis.sql.cmn.seqNumInfo.insertSeqNumInfo */
+	INSERT INTO SEQ_NUM_INFO (
+	             SEQ_NUM_CL  /* 채번구분 */
+	           , SEQ_NUM_DC  /* 채번설명 */
+	) VALUES (
+	           #{seqNumCl}  /* 채번구분 */
+	         , #{seqNumDc}  /* 채번설명 */
+	)
+	</insert>
+
+	<!-- 채번정보 수정 -->
+	<update id="updateSeqNumInfo">
+	/* ncis.sql.cmn.seqNumInfo.updateSeqNumInfo */
+	UPDATE SEQ_NUM_INFO
+	         SET SEQ_NUM_CL = #{seqNumCl}  /* 채번구분 */
+	           , SEQ_NUM_DC = #{seqNumDc}  /* 채번설명 */
+         WHERE SEQ_NUM_CL = #{seqNumCl}  /* 채번구분 */
+
+	</update>
+
+	<!-- 채번정보 삭제 -->
+	<delete id="deleteSeqNumInfo">
+	/* ncis.sql.cmn.seqNumInfo.deleteSeqNumInfo */
+	DELETE FROM SEQ_NUM_INFO
+         WHERE SEQ_NUM_CL = #{seqNumCl}  /* 채번구분 */
+
+	</delete>
+
+</mapper>

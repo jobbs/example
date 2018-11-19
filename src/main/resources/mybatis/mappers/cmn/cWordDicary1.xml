@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.wordDicary1">
+
+	<resultMap id="resultWordDicary1" type="ncis.cmn.entity.WordDicary1">
+        <result property="wordKr"     column="WORD_KR"/>  <!-- 한글명 -->
+        <result property="wordEn"     column="WORD_EN"/>  <!-- 영문명 -->
+        <result property="wordAbrv"     column="WORD_ABRV"/>  <!-- 약어 -->
+        <result property="wordDc"     column="WORD_DC"/>  <!-- 설명 -->
+        <result property="regDate"     column="REG_DATE"/>  <!-- 등록일 -->
+        <result property="regId"     column="REG_ID"/>  <!-- 등록자아이디 -->
+        <result property="modId"     column="MOD_ID"/>  <!-- 수정자아이디 -->
+        <result property="wordSeq"     column="WORD_SEQ"/>  <!-- 시퀀스 -->
+	</resultMap>
+
+	<!-- 용어사전 등록 -->
+	<insert id="insertWordDicary1">
+	INSERT INTO WORD_DICARY_1 (
+	             WORD_KR  /* 한글명 */
+	           , WORD_EN  /* 영문명 */
+	           , WORD_ABRV  /* 약어 */
+	           , WORD_DC  /* 설명 */
+	           , REG_DATE  /* 등록일 */
+	           , REG_ID  /* 등록자아이디 */
+	           , MOD_ID  /* 수정자아이디 */
+	           , WORD_SEQ  /* 시퀀스 */
+	) VALUES (
+	           #{wordKr}  /* 한글명 */
+	         , #{wordEn}  /* 영문명 */
+	         , #{wordAbrv}  /* 약어 */
+	         , #{wordDc}  /* 설명 */
+	         , now()  /* 등록일 */
+	         , #{regId}  /* 등록자아이디 */
+	         , #{modId}  /* 수정자아이디 */
+	         , #{wordSeq}  /* 시퀀스 */
+	)
+	</insert>
+
+	<!-- 용어사전 수정 -->
+	<update id="updateWordDicary1">
+	UPDATE WORD_DICARY_1
+	         SET WORD_KR = #{wordKr}  /* 한글명 */
+	           , WORD_EN = #{wordEn}  /* 영문명 */
+	           , WORD_ABRV = #{wordAbrv}  /* 약어 */
+	           , WORD_DC = #{wordDc}  /* 설명 */
+	           , REG_DATE = now()  /* 등록일 */
+	           , REG_ID = #{regId}  /* 등록자아이디 */
+	           , MOD_ID = #{modId}  /* 수정자아이디 */
+	           , WORD_SEQ = #{wordSeq}  /* 시퀀스 */
+           AND WORD_SEQ = #{wordSeq}  /* 시퀀스 */
+
+	</update>
+
+	<!-- 용어사전 삭제 -->
+	<delete id="deleteWordDicary1">
+	DELETE FROM WORD_DICARY_1
+           AND WORD_SEQ = #{wordSeq}  /* 시퀀스 */
+
+	</delete>
+
+</mapper>

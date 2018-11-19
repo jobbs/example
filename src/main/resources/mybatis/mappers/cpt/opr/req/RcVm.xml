@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rcvm">
+
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmVo" id="resultMakedVmVo">
+		<result property="vmSeq" column="VM_SEQ"/>
+		<result property="clstrSeq" column="CLSTR_SEQ"/>
+		<result property="pmSeq" column="PM_SEQ"/>
+		<result property="vmId" column="VM_ID"/>
+		<result property="uuid" column="UUID"/>
+		<result property="vmSeq" column="VM_SEQ"/>
+		<result property="osTyCd" column="OS_TY_CD"/>
+		<result property="tmplatSeq" column="TMPLAT_SEQ"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="hstNm" column="HST_NM"/>
+		<result property="institutionId" column="INSTITUTION_ID"/>
+		<result property="rprsntIpAddr" column="RPRSNT_IP_ADDR"/>
+		<result property="cpuVcoreQty" column="CPU_VCORE_QTY"/>
+		<result property="memAsgnCapa" column="MEM_ASGN_CAPA"/>
+		<result property="strgAsgnCapa" column="STRG_ASGN_CAPA"/>
+		<result property="haYn" column="HA_YN"/>
+		<result property="haGrpId" column="HA_GRP_ID"/>
+	</resultMap>
+
+	<!-- 기 생성된 가상서버 정보 조회 -->
+	<select id="selectPreMakedVmInfo" resultMap="resultMakedVmVo">
+	/* ncis.sql.cpt.opr.req.rcvm.selectPreMakedVmInfo */
+	SELECT
+		VM_SEQ
+		, CLSTR_SEQ
+		, PM_SEQ
+		, VM_ID
+		, UUID
+		, OS_TY_CD
+		, TMPLAT_SEQ
+		, VM_NM
+		, HST_NM
+		, INSTITUTION_ID
+		, RPRSNT_IP_ADDR
+		, CPU_VCORE_QTY
+		, MEM_ASGN_CAPA
+		, STRG_ASGN_CAPA
+		, HA_YN
+		, HA_GRP_ID
+	FROM RC_VM
+	WHERE DEL_YN = 'N'
+	AND  ( VM_COMP_ID is null OR VM_COMP_ID = '' )
+	AND VM_ID = #{vmId}
+	AND OS_TY_CD = #{osTyCd}
+	AND CLSTR_SEQ = #{clstrSeq}
+	</select>
+
+
+
+	<resultMap id="resultNtopsResult" type="ncis.intfc.ntops.vo.NTopsSendVo" >
+		<result property="ticktNo" column="TICKT_NO"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="sendDate" column="SEND_DATE"/>
+		<result property="totalStrgAsgnCapa" column="TOTAL_STRG_ASGN_CAPA"/>
+		<result property="linkYn" column="LINK_YN"/>
+	</resultMap>
+
+	<!-- 가상서버 정보 조회 -->
+	<select id="selectNTopsSendInfo" resultMap="resultNtopsResult">
+	/* ncis.sql.cpt.opr.req.rcvm.selectNTopsSendInfo */
+	SELECT
+		TICKT_NO
+		, B.VM_COMP_ID
+		, TO_CHAR(A.COMPT_DTTM, 'YYYYMMDDHH24MISS') SEND_DATE
+		, (strg_asgn_capa + chng_req_strg_asgn_capa) TOTAL_STRG_ASGN_CAPA
+		, LINK_YN
+	FROM RR_RSRC_REQ A INNER JOIN RR_RSRC_REQ_DTL_VM B ON A.RSRC_REQ_NO = B.RSRC_REQ_NO
+	WHERE A.RSRC_REQ_NO = #{rsrcReqNo}
+	</select>
+
+
+
+	<!-- 가상서버 정보 조회 -->
+	<select id="selectVmInfoByVmSeq" resultMap="resultMakedVmVo">
+	/* ncis.sql.cpt.opr.req.rcvm.selectVmInfoByVmSeq */
+	SELECT
+		VM_SEQ
+		, CLSTR_SEQ
+		, PM_SEQ
+		, VM_ID
+		, CPU_VCORE_QTY
+		, MEM_ASGN_CAPA
+		, STRG_ASGN_CAPA
+	FROM RC_VM
+	WHERE VM_SEQ = #{vmSeq}
+	</select>
+
+
+	<!-- 기 생성된 가상서버 정보 갱신 -->
+	<update id="updateManualCreRcVm">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualCreRcVm */
+	UPDATE RC_VM
+	SET
+		INSTITUTION_ID = #{institutionId}
+		, HA_YN = #{haYn}
+		<if test="haGrpId != null">, HA_GRP_ID = #{haGrpId}</if>
+		<if test="tmplatSeq != null">, TMPLAT_SEQ = #{tmplatSeq}</if>
+		<if test="hstNm != null">, HST_NM = #{hstNm}</if>
+		<if test="rprsntIpAddr != null">, RPRSNT_IP_ADDR = #{rprsntIpAddr}</if>
+		, UPDT_USER_ID = #{rprsntIpAddr}
+		, UPDT_DTTM = now()
+	WHERE VM_SEQ = #{vmSeq}
+	</update>
+
+
+	<!-- 변경된 가상서버 정보 갱신 -->
+	<update id="updateManualChgRcVm">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualChgRcVm */
+	UPDATE RC_VM
+	SET
+		UPDT_USER_ID = #{updtUserId}
+		, UPDT_DTTM = now()
+		<if test="cpuVcoreQty != null">, CPU_VCORE_QTY = #{cpuVcoreQty}</if>
+		<if test="memAsgnCapa != null">, MEM_ASGN_CAPA = #{memAsgnCapa}</if>
+		<if test="strgAsgnCapa != null">, STRG_ASGN_CAPA = #{strgAsgnCapa}</if>
+	WHERE VM_SEQ = #{vmSeq}
+	</update>
+
+
+	<!-- 가상서버 삭제 정보 갱신 -->
+	<update id="updateManualRemoveRcVm">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualRemoveRcVm */
+	UPDATE RC_VM
+	SET
+		DEL_USER_ID = #{delUserId}
+		, DEL_DTTM = now()
+		, DEL_YN = 'Y'
+	WHERE VM_SEQ = #{vmSeq}
+	</update>
+
+	<!-- 가상서버 삭제 정보 갱신 -->
+	<update id="updateManualRemoveStrgDm">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualRemoveStrgDm */
+	UPDATE RS_VR_STRG
+			SET STRG_USE_CAPA = STRG_USE_CAPA - #{dskAsgnCapa}
+			, VM_ASGN_CAPA = VM_ASGN_CAPA - #{dskAsgnCapa}
+	WHERE STRG_DMN_SEQ = ( SELECT STRG_DMN_SEQ FROM RS_VR_DSK WHERE VR_DSK_SEQ = #{vrDskSeq})
+	</update>
+
+	<!-- 가상서버 삭제 정보 갱신 -->
+	<update id="updateManualRemoveVrDisk">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualRemoveVrDisk */
+	UPDATE RS_VR_DISK
+	SET
+		DEL_USER_ID = #{delUserId}
+		, DEL_DTTM = now()
+		, DEL_YN = 'Y'
+	WHERE VR_DSK_SEQ = #{vrDskSeq}
+	</update>
+
+	<select id="selectHaCnt" resultType="Integer">
+		SELECT count(UUID)
+		FROM RC_VM
+		WHERE DEL_YN = 'N'
+		AND HA_YN = 'Y'
+		AND HA_GRP_ID = (SELECT HA_GRP_ID FROM RC_VM WHERE VM_SEQ = #{vmSeq})
+	</select>
+
+
+	<!-- 가상서버 삭제 정보 갱신 -->
+	<update id="updateManualRemoveStrgAsgn">
+	/* ncis.sql.cpt.opr.req.rcvm.updateManualRemoveStrgAsgn */
+	DELETE FROM RS_VM_STRG_ASGN
+	WHERE VM_SEQ = #{vmSeq}
+	</update>
+
+	<insert id="insertRcVmJob">
+	/* ncis.sql.cmn.rcVm.insertRcVmJob */
+	INSERT INTO
+	RC_VM_JOB (
+		VM_SEQ
+		, JOB_ID          )
+	VALUES (#{vmSeq} , #{jobId})
+	</insert>
+
+
+	<resultMap id="resultRsVrDskList" type="ncis.cpt.rsrc.strg.vo.VrDskVo" >
+		<result property="strgDmnSeq" 	column="STRG_DMN_SEQ"/>
+		<result property="vrDskSeq" 	column="VR_DSK_SEQ"/>
+		<result property="dskClCd" 		column="DSK_CL_CD"/>
+		<result property="dskAsgnCapa" 	column="DSK_ASGN_CAPA"/>
+	</resultMap>
+
+	<!-- 가상디스크 할당정보를 조회한다. -->
+	<select id="selectAsgnDiskList" resultMap="resultRsVrDskList">
+		SELECT
+			TBL1.STRG_DMN_SEQ
+			,TBL1.VR_DSK_SEQ
+			,TBL1.DSK_CL_CD
+			,TBL1.DSK_ASGN_CAPA
+		FROM RS_VR_DSK TBL1
+		INNER JOIN RS_VM_STRG_ASGN TBL2 ON TBL1.VR_DSK_SEQ = TBL2.VR_DSK_SEQ
+		WHERE TBL1.DEL_YN = 'N'
+		AND TBL2.VM_SEQ = #{vmSeq}
+	</select>
+
+
+		<resultMap id="resultRcNetwkIntfc" type="ncis.cmn.entity.RcNetwkIntfc" >
+		<result property="netwkIntfcSeq" 		column="NETWK_INTFC_SEQ"/>
+		<result property="netwkIntfcNm" 		column="NETWK_INTFC_NM"/>
+		<result property="vmSeq" 				column="VM_SEQ"/>
+		<result property="ipAddr" 				column="IP_ADDR"/>
+		<result property="macAddr" 				column="MAC_ADDR"/>
+		<result property="subnetMask" 			column="SUBNET_MASK"/>
+		<result property="gtwyIpAddr" 			column="GTWY_IP_ADDR"/>
+		<result property="vrSwtchSeq" 			column="VR_SWTCH_SEQ"/>
+		<result property="uuid" 				column="UUID"/>
+	</resultMap>
+
+	<!-- 가상디스크 할당정보를 조회한다. -->
+	<select id="selectVmRcNetwkIntfc" resultMap="resultRcNetwkIntfc">
+		SELECT
+			NETWK_INTFC_SEQ
+  	        , NETWK_INTFC_NM       /* 네트워크인터페이스명 */
+			, VM_SEQ
+			, IP_ADDR
+			, MAC_ADDR
+			, SUBNET_MASK
+			, GTWY_IP_ADDR
+			, VR_SWTCH_SEQ
+			, UUID
+		FROM RC_NETWK_INTFC
+		WHERE DEL_YN = 'N'
+		AND VM_SEQ = #{vmSeq}
+	</select>
+
+
+	<update id="updateAllocateRnIp">
+		UPDATE RN_IP
+			SET IP_STAT_CD = '01'
+			, NETWK_INTFC_SEQ = #{netwkIntfcSeq}
+			, WITHDRAW_DT = now()
+			, UPDT_USER_ID = #{updtUserId}
+			, UPDT_DTTM = now()
+		WHERE  IP_ADDR = #{ipAddr}::inet
+		ANd BND_SEQ =  #{bndSeq}
+	</update>
+
+
+	<update id="updateDeleteNetwkIntfc">
+		UPDATE RC_NETWK_INTFC
+			SET DEL_USER_ID = #{delUserId}
+			, DEL_DTTM = now()
+			, DEL_YN = 'Y'
+		WHERE NETWK_INTFC_SEQ = #{netwkIntfcSeq}
+	</update>
+
+
+	<update id="updateReleaseRnIp">
+		UPDATE RN_IP
+			SET IP_STAT_CD = '02'
+			, WITHDRAW_DT = now()
+			, UPDT_USER_ID = #{updtUserId}
+			, UPDT_DTTM = now()
+			<if test='rmk != null and rmk != ""'>
+			, RMK = #{rmk}||'  '||RMK
+			</if>
+		WHERE NETWK_INTFC_SEQ = #{netwkIntfcSeq}
+		AND IP_ADDR = #{ipAddr}::inet
+	</update>
+
+</mapper>

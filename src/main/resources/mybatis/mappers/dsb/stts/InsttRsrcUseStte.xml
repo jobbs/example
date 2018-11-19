@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.insttRsrcUseStte">
+
+
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.InsttRsrcUseStteAsgnVo" id="resultInsttRsrcUseStteAsgnVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="lastVcoreQty1" column="last_vcore_qty1"/>
+		<result property="lastVcoreQty2" column="last_vcore_qty2"/>
+		<result property="lastVcoreQty3" column="last_vcore_qty3"/>
+		<result property="lastVcoreQty4" column="last_vcore_qty4"/>
+		<result property="lastMemSumCapa1" column="last_mem_sum_capa1"/>
+		<result property="lastMemSumCapa2" column="last_mem_sum_capa2"/>
+		<result property="lastMemSumCapa3" column="last_mem_sum_capa3"/>
+		<result property="lastMemSumCapa4" column="last_mem_sum_capa4"/>
+		<result property="lastStrgSumCapa1" column="last_strg_sum_capa1"/>
+		<result property="lastStrgSumCapa2" column="last_strg_sum_capa2"/>
+		<result property="lastStrgSumCapa3" column="last_strg_sum_capa3"/>
+		<result property="lastStrgSumCapa4" column="last_strg_sum_capa4"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.InsttRsrcUseStteMaxVo" id="resultInsttRsrcUseStteMaxVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="maxCpuUseRt1" column="max_cpu_use_rt1"/>
+		<result property="maxCpuUseRt2" column="max_cpu_use_rt2"/>
+		<result property="maxCpuUseRt3" column="max_cpu_use_rt3"/>
+		<result property="maxCpuUseRt4" column="max_cpu_use_rt4"/>
+		<result property="maxMemUseRt1" column="max_mem_use_rt1"/>
+		<result property="maxMemUseRt2" column="max_mem_use_rt2"/>
+		<result property="maxMemUseRt3" column="max_mem_use_rt3"/>
+		<result property="maxMemUseRt4" column="max_mem_use_rt4"/>
+		<result property="maxStrgUseRt1" column="max_strg_use_rt1"/>
+		<result property="maxStrgUseRt2" column="max_strg_use_rt2"/>
+		<result property="maxStrgUseRt3" column="max_strg_use_rt3"/>
+		<result property="maxStrgUseRt4" column="max_strg_use_rt4"/>
+	</resultMap>
+
+		<resultMap type="ncis.dsb.stts.rsrcuse.vo.InsttRsrcRxAsgnVo" id="resultInsttRsrcRxAsgnVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="cpuAsgnCapa1" column="CPU_ASGN_CAPA1"/>
+		<result property="cpuAsgnCapa2" column="CPU_ASGN_CAPA2"/>
+		<result property="cpuAsgnCapa3" column="CPU_ASGN_CAPA3"/>
+		<result property="cpuAsgnCapa4" column="CPU_ASGN_CAPA4"/>
+		<result property="memTotCapa1" column="MEM_TOT_CAPA1"/>
+		<result property="memTotCapa2" column="MEM_TOT_CAPA2"/>
+		<result property="memTotCapa3" column="MEM_TOT_CAPA3"/>
+		<result property="memTotCapa4" column="MEM_TOT_CAPA4"/>
+		<result property="strgTotCapa1" column="STRG_TOT_CAPA1"/>
+		<result property="strgTotCapa2" column="STRG_TOT_CAPA2"/>
+		<result property="strgTotCapa3" column="STRG_TOT_CAPA3"/>
+		<result property="strgTotCapa4" column="STRG_TOT_CAPA4"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.InsttRsrcRxMaxVo" id="resultInsttRsrcRxMaxVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="maxCpuUseRt1" column="max_cpu_use_rt1"/>
+		<result property="maxCpuUseRt2" column="max_cpu_use_rt2"/>
+		<result property="maxCpuUseRt3" column="max_cpu_use_rt3"/>
+		<result property="maxCpuUseRt4" column="max_cpu_use_rt4"/>
+		<result property="maxMemUseRt1" column="max_mem_use_rt1"/>
+		<result property="maxMemUseRt2" column="max_mem_use_rt2"/>
+		<result property="maxMemUseRt3" column="max_mem_use_rt3"/>
+		<result property="maxMemUseRt4" column="max_mem_use_rt4"/>
+	</resultMap>
+
+
+	<select id="selecInsttRsrcUseStteAsgnList" resultMap="resultInsttRsrcUseStteAsgnVo">
+
+		                  /* ncis.sql.dsb.stts.insttRsrcUseStte.selecInsttRsrcUseStteAsgnList */
+
+		                 select COALESCE(institution_nm,'미할당') institution_nm,
+					            COALESCE(sum(case when aa.mm between '01' and '03' then aa.last_vcore_qty end),0) last_vcore_qty1,
+					            COALESCE(sum(case when aa.mm between '04' and '06' then aa.last_vcore_qty end),0) last_vcore_qty2,
+					            COALESCE(sum(case when aa.mm between '07' and '09' then aa.last_vcore_qty end),0) last_vcore_qty3,
+					            COALESCE(sum(case when aa.mm between '10' and '12' then aa.last_vcore_qty end),0) last_vcore_qty4,
+
+						    	COALESCE(ROUND(sum(case when aa.mm between '01' and '03' then aa.last_mem_sum_capa end)/1024/1024/1024,0),0) last_mem_sum_capa1,
+					            COALESCE(ROUND(sum(case when aa.mm between '04' and '06' then aa.last_mem_sum_capa end)/1024/1024/1024,0),0) last_mem_sum_capa2,
+					            COALESCE(ROUND(sum(case when aa.mm between '07' and '09' then aa.last_mem_sum_capa end)/1024/1024/1024,0),0) last_mem_sum_capa3,
+					            COALESCE(ROUND(sum(case when aa.mm between '10' and '12' then aa.last_mem_sum_capa end)/1024/1024/1024,0),0) last_mem_sum_capa4,
+
+					            COALESCE(ROUND(sum(case when aa.mm between '01' and '03' then aa.last_strg_sum_capa end)/1024/1024/1024,0),0) last_strg_sum_capa1,
+					            COALESCE(ROUND(sum(case when aa.mm between '04' and '06' then aa.last_strg_sum_capa end)/1024/1024/1024,0),0) last_strg_sum_capa2,
+					            COALESCE(ROUND(sum(case when aa.mm between '07' and '09' then aa.last_strg_sum_capa end)/1024/1024/1024,0),0) last_strg_sum_capa3,
+					            COALESCE(ROUND(sum(case when aa.mm between '10' and '12' then aa.last_strg_sum_capa end)/1024/1024/1024,0),0) last_strg_sum_capa4
+
+					        from
+							   (select substr(a.colct_ym,1,4) yy,
+							           substr(a.colct_ym,5,2) mm,
+									   b.institution_nm,
+									   sum(last_vcore_qty) last_vcore_qty,
+									   sum(last_mem_sum_capa) last_mem_sum_capa,
+									   sum(last_strg_sum_capa) last_strg_sum_capa
+
+							      from st_vm_colct_sum_1mm a left join cm_institution b on a.institution_id = b.institution_id
+							    where 1=1
+								      and a.colct_ym between #{year}||'01' and #{year}||'12'
+								  <if test="region != null and !region.isEmpty()">
+								      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+										         	#{item}
+									  </foreach>
+								  </if>
+
+								group by substr(a.colct_ym,1,4),
+									 	 substr(a.colct_ym,5,2),
+							   		 	 b.institution_nm
+						             ) aa
+					      group by institution_nm
+                          order by  nullif(institution_nm,'미할당') nulls last
+
+
+
+	</select>
+
+	<select id="selecInsttRsrcUseStteMaxList" resultMap="resultInsttRsrcUseStteMaxVo">
+
+		  /* ncis.sql.dsb.stts.insttRsrcUseStte.selecInsttRsrcUseStteMaxList */
+			     select COALESCE(institution_nm,'미할당') institution_nm,
+			            COALESCE(ROUND(avg(case when aa.mm between '01' and '03' then aa.max_cpu_use_rt end),2),1) max_cpu_use_rt1,
+			            COALESCE(ROUND(avg(case when aa.mm between '04' and '06' then aa.max_cpu_use_rt end),2),1) max_cpu_use_rt2,
+			            COALESCE(ROUND(avg(case when aa.mm between '07' and '09' then aa.max_cpu_use_rt end),2),1) max_cpu_use_rt3,
+			            COALESCE(ROUND(avg(case when aa.mm between '10' and '12' then aa.max_cpu_use_rt end),2),1) max_cpu_use_rt4,
+
+				    	COALESCE(ROUND(avg(case when aa.mm between '01' and '03' then aa.max_mem_use_rt end),2),1) max_mem_use_rt1,
+			            COALESCE(ROUND(avg(case when aa.mm between '04' and '06' then aa.max_mem_use_rt end),2),1) max_mem_use_rt2,
+			            COALESCE(ROUND(avg(case when aa.mm between '07' and '09' then aa.max_mem_use_rt end),2),1) max_mem_use_rt3,
+			            COALESCE(ROUND(avg(case when aa.mm between '10' and '12' then aa.max_mem_use_rt end),2),1) max_mem_use_rt4,
+
+			            COALESCE(ROUND(avg(case when aa.mm between '01' and '03' then aa.max_strg_use_rt end),2),1) max_strg_use_rt1,
+			            COALESCE(ROUND(avg(case when aa.mm between '04' and '06' then aa.max_strg_use_rt end),2),1) max_strg_use_rt2,
+			            COALESCE(ROUND(avg(case when aa.mm between '07' and '09' then aa.max_strg_use_rt end),2),1) max_strg_use_rt3,
+			            COALESCE(ROUND(avg(case when aa.mm between '10' and '12' then aa.max_strg_use_rt end),2),1) max_strg_use_rt4
+
+			        from
+					   (select substr(a.colct_ym,1,4) yy,
+					           substr(a.colct_ym,5,2) mm,
+							   b.institution_nm,
+							   avg(max_cpu_use_rt) max_cpu_use_rt,
+							   avg(max_mem_use_rt) max_mem_use_rt,
+							   avg(max_strg_use_rt) max_strg_use_rt
+
+						      from st_vm_colct_sum_1mm a left join cm_institution b on a.institution_id = b.institution_id
+						    where 1=1
+							      and a.colct_ym between #{year}||'01' and #{year}||'12'
+
+							  <if test="region != null and !region.isEmpty()">
+									      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+											         	#{item}
+										  </foreach>
+							  </if>
+							group by substr(a.colct_ym,1,4),
+									 substr(a.colct_ym,5,2),
+							   		 b.institution_nm
+				       ) aa
+			      group by institution_nm
+                   order by  nullif(institution_nm,'미할당') nulls last
+
+
+
+	</select>
+
+    <select id="selectRxAsgnList" resultMap="resultInsttRsrcRxAsgnVo">
+    /*ncis.sql.dsb.stts.insttRsrcUseStte.selectRxAsgnList*/
+    SELECT
+           COALESCE(INSTITUTION_NM,'미할당') INSTITUTION_NM,
+           COALESCE(ROUND(SUM(case when PA.MM between '01' and '03' then PA.CPU_ASGN_CAPA end)/1000,2),0) CPU_ASGN_CAPA1 ,
+           COALESCE(ROUND(SUM(case when PA.MM between '04' and '06' then PA.CPU_ASGN_CAPA end)/1000,2),0) CPU_ASGN_CAPA2,
+           COALESCE(ROUND(SUM(case when PA.MM between '07' and '09' then PA.CPU_ASGN_CAPA end)/1000,2),0) CPU_ASGN_CAPA3,
+           COALESCE(ROUND(SUM(case when PA.MM between '10' and '12' then PA.CPU_ASGN_CAPA end)/1000,2),0) CPU_ASGN_CAPA4,
+           COALESCE(ROUND(SUM(case when PA.MM between '01' and '03' then PA.MEM_TOT_CAPA end)/1024/1024/1024,2),0) MEM_TOT_CAPA1 ,
+           COALESCE(ROUND(SUM(case when PA.MM between '04' and '06' then PA.MEM_TOT_CAPA end)/1024/1024/1024,2),0) MEM_TOT_CAPA2,
+           COALESCE(ROUND(SUM(case when PA.MM between '07' and '09' then PA.MEM_TOT_CAPA end)/1024/1024/1024,2),0) MEM_TOT_CAPA3,
+           COALESCE(ROUND(SUM(case when PA.MM between '10' and '12' then PA.MEM_TOT_CAPA end)/1024/1024/1024,2),0) MEM_TOT_CAPA4,
+           COALESCE(ROUND(SUM(case when PA.MM between '01' and '03' then PA.STRG_TOT_CAPA end)/1024/1024/1024,2),0) STRG_TOT_CAPA1 ,
+           COALESCE(ROUND(SUM(case when PA.MM between '04' and '06' then PA.STRG_TOT_CAPA end)/1024/1024/1024,2),0) STRG_TOT_CAPA2,
+           COALESCE(ROUND(SUM(case when PA.MM between '07' and '09' then PA.STRG_TOT_CAPA end)/1024/1024/1024,2),0) STRG_TOT_CAPA3,
+           COALESCE(ROUND(SUM(case when PA.MM between '10' and '12' then PA.STRG_TOT_CAPA end)/1024/1024/1024,2),0) STRG_TOT_CAPA4
+      FROM (
+           SELECT
+                  SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,1,4) YY,
+                  SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,5,2) MM,
+                  CM_INSTITUTION.INSTITUTION_NM,
+                  SUM(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+                  SUM(MEM_TOT_CAPA) MEM_TOT_CAPA,
+                  SUM(STRG_TOT_CAPA) STRG_TOT_CAPA
+             FROM st_rx_servc_sum_1mm
+            INNER JOIN RX_SERVC_AREA ON st_rx_servc_sum_1mm.servc_area_seq = RX_SERVC_AREA.servc_area_seq
+            INNER JOIN RX_SERVC ON st_rx_servc_sum_1mm.SERVC_SEQ = RX_SERVC.SERVC_SEQ
+             LEFT OUTER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RX_SERVC_AREA.INSTITUTION_ID
+            INNER JOIN RC_RSRC_POOL ON st_rx_servc_sum_1mm.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+                                   AND RC_RSRC_POOL.DEL_YN = 'N'
+            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+            WHERE 1=1
+              AND st_rx_servc_sum_1mm.COLCT_YM BETWEEN #{year} || '01' AND #{year} || '12'
+            <if test="region != null and !region.isEmpty()">
+                <foreach collection="region" open="AND RC_REGION.region_id IN(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+            GROUP BY SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,1,4),SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,5,2), CM_INSTITUTION.INSTITUTION_NM
+                        ) PA
+     GROUP BY INSTITUTION_NM
+     ORDER BY nullif(INSTITUTION_NM,'미할당') asc nulls last
+    </select>
+
+    <select id="selectRxMaxList" resultMap="resultInsttRsrcRxMaxVo">
+    /*ncis.sql.dsb.stts.insttRsrcUseStte.selectRxMaxList*/
+    SELECT
+           COALESCE(INSTITUTION_NM,'미할당') INSTITUTION_NM,
+           COALESCE(ROUND(AVG(case when PA.MM between '01' and '03' then PA.MAX_CPU_USE_RT end),2),0) MAX_CPU_USE_RT1 ,
+           COALESCE(ROUND(AVG(case when PA.MM between '04' and '06' then PA.MAX_CPU_USE_RT end),2),0) MAX_CPU_USE_RT2,
+           COALESCE(ROUND(AVG(case when PA.MM between '07' and '09' then PA.MAX_CPU_USE_RT end),2),0) MAX_CPU_USE_RT3,
+           COALESCE(ROUND(AVG(case when PA.MM between '10' and '12' then PA.MAX_CPU_USE_RT end),2),0) MAX_CPU_USE_RT4,
+           COALESCE(ROUND(AVG(case when PA.MM between '01' and '03' then PA.MAX_MEM_USE_RT end),2),0) MAX_MEM_USE_RT1 ,
+           COALESCE(ROUND(AVG(case when PA.MM between '04' and '06' then PA.MAX_MEM_USE_RT end),2),0) MAX_MEM_USE_RT2,
+           COALESCE(ROUND(AVG(case when PA.MM between '07' and '09' then PA.MAX_MEM_USE_RT end),2),0) MAX_MEM_USE_RT3,
+           COALESCE(ROUND(AVG(case when PA.MM between '10' and '12' then PA.MAX_MEM_USE_RT end),2),0) MAX_MEM_USE_RT4
+      FROM (
+           SELECT
+                  SUBSTR(ST_RX_SERVC_SUM_1MM.COLCT_YM,1,4) YY,
+                  SUBSTR(ST_RX_SERVC_SUM_1MM.COLCT_YM,5,2) MM,
+                  CM_INSTITUTION.INSTITUTION_NM,
+                  AVG(MAX_CPU_USE_RT) MAX_CPU_USE_RT,
+                  AVG(MAX_MEM_USE_RT) MAX_MEM_USE_RT
+             FROM st_rx_servc_sum_1mm
+            INNER JOIN RX_SERVC_AREA ON st_rx_servc_sum_1mm.servc_area_seq = RX_SERVC_AREA.servc_area_seq
+            INNER JOIN RX_SERVC ON st_rx_servc_sum_1mm.SERVC_SEQ = RX_SERVC.SERVC_SEQ
+             LEFT OUTER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RX_SERVC_AREA.INSTITUTION_ID
+            INNER JOIN RC_RSRC_POOL ON st_rx_servc_sum_1mm.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+            WHERE 1=1
+              AND st_rx_servc_sum_1mm.COLCT_YM BETWEEN #{year} || '01' AND #{year} || '12'
+            <if test="region != null and !region.isEmpty()">
+                <foreach collection="region" open="AND RC_REGION.region_id IN(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+            GROUP BY SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,1,4),SUBSTR(st_rx_servc_sum_1mm.COLCT_YM,5,2), CM_INSTITUTION.INSTITUTION_NM
+           ) PA
+     GROUP BY INSTITUTION_NM
+     ORDER BY nullif(INSTITUTION_NM,'미할당') asc nulls last
+    </select>
+
+
+</mapper>

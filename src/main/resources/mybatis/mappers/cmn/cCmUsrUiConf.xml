@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmUsrUiConf">
+
+	<resultMap id="resultCmUsrUiConf" type="ncis.cmn.entity.CmUsrUiConf">
+		<result property="confCd"		column="CONF_CD"/>
+		<result property="usrId"      	column="USR_ID"/>
+		<result property="confVl"       column="CONF_VL"/>
+	</resultMap>
+
+	<update id="updateCmUsrUiConf">
+		/* ncis.sql.cmn.cmUsrUiConf.updateCmUsrUiConf */
+		WITH UPSERT AS (
+			SELECT
+				#{confVl}::text AS CONF_VL, #{usrId}::text AS USR_ID, #{confCd }::text AS CONF_CD
+		),
+		UPDATE_OPTION AS (
+			UPDATE CM_USR_UI_CONF CUUC
+			SET CONF_VL = UPSERT.CONF_VL
+			FROM UPSERT
+			WHERE CUUC.USR_ID=UPSERT.USR_ID AND CUUC.CONF_CD=UPSERT.CONF_CD
+		)
+		INSERT INTO CM_USR_UI_CONF (
+			CONF_CD,
+			USR_ID,
+			CONF_VL
+		)
+		SELECT
+			UPSERT.CONF_CD, UPSERT.USR_ID, UPSERT.CONF_VL
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1 FROM CM_USR_UI_CONF CUUC
+				WHERE CUUC.USR_ID=UPSERT.USR_ID AND CUUC.CONF_CD=UPSERT.CONF_CD
+			)
+	</update>
+
+</mapper>

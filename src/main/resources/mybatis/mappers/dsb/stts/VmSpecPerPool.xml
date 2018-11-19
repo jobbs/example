@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.specusert.vmSpecPerPool">
+
+	<resultMap type="ncis.dsb.stts.specusert.vo.VmSpecPerPoolVo" id="resultVmSpecPerPoolVo">
+	</resultMap>
+
+	<select id="selectVmSpecPerPoolTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmSpecPerPool.selectVmSpecPerPoolTotCnt */
+		SELECT COUNT(*)
+		FROM(
+			SELECT DISTINCT RSRC_POOL_ID
+			FROM ST_VM_COLCT_SUM_1MM
+			<where>
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND REGION_ID = #{regionId}
+				</if>
+				<if test='year !=null and !"".equals(year)'>
+					AND COLCT_YM LIKE #{year} || '%'
+				</if>
+				<if test='month !=null and !"".equals(month)'>
+					AND COLCT_YM LIKE '%' || #{month}
+				</if>
+			</where>
+		) a
+	</select>
+
+	<select id="selectVmSpecPerPoolList" resultMap="resultVmSpecPerPoolVo">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmSpecPerPool.selectVmSpecPerPoolList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			#{paginationInfo.firstRecordIndex} + (ROW_NUMBER() OVER(ORDER BY  ST1MM.RSRC_POOL_ID)) AS no,
+			st1mm.RSRC_POOL_ID rsrcPoolId,
+			pool.RSRC_POOL_NM rsrcPoolNm,
+			MIN(st1mm.LAST_VCORE_QTY) minAvgVcoreQty,
+			ROUND(AVG(st1mm.LAST_VCORE_QTY), 1) avgAvgVcoreQty,
+			MAX(st1mm.LAST_VCORE_QTY) maxAvgVcoreQty,
+			ROUND(MIN(st1mm.LAST_MEM_SUM_CAPA)/1024/1024/1024, 1) minMemSumCapa,
+			ROUND(AVG(st1mm.LAST_MEM_SUM_CAPA)/1024/1024/1024, 1) avgMemSumCapa,
+			ROUND(MAX(st1mm.LAST_MEM_SUM_CAPA)/1024/1024/1024, 1) maxMemSumCapa,
+			ROUND(MIN(st1mm.LAST_STRG_SUM_CAPA)/1024/1024/1024, 1) minStrgSumCapa,
+			ROUND(AVG(st1mm.LAST_STRG_SUM_CAPA)/1024/1024/1024, 1) avgStrgSumCapa,
+			ROUND(MAX(st1mm.LAST_STRG_SUM_CAPA)/1024/1024/1024, 1) maxStrgSumCapa
+		FROM ST_VM_COLCT_SUM_1MM st1mm,
+			RC_RSRC_POOL pool
+		WHERE
+			st1mm.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND st1mm.REGION_ID = #{regionId}
+			</if>
+			<if test='year !=null and !"".equals(year)'>
+				AND st1mm.COLCT_YM LIKE #{year} || '%'
+			</if>
+			<if test='month !=null and !"".equals(month)'>
+				AND st1mm.COLCT_YM LIKE '%' || #{month}
+			</if>
+		GROUP BY st1mm.RSRC_POOL_ID, pool.RSRC_POOL_NM
+		ORDER BY st1mm.RSRC_POOL_ID
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+</mapper>

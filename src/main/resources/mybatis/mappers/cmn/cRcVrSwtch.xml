@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcVrSwtch">
+
+	<resultMap id="resultRcVrSwtch" type="ncis.cmn.entity.RcVrSwtch">
+        <result property="vrSwtchSeq"     column="VR_SWTCH_SEQ"/>  <!-- 가상스위치SEQ -->
+        <result property="netwkNm"     column="NETWK_NM"/>  <!-- 네트워크명 -->
+        <result property="vrSwtchUuid"     column="VR_SWTCH_UUID"/>  <!-- 가상스위치UUID -->
+        <result property="vlan"     column="VLAN"/>  <!-- VLAN -->
+        <result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+	</resultMap>
+
+	<!-- 가상스위치(VLAN) 등록 -->
+	<insert id="insertRcVrSwtch">
+	INSERT INTO RC_VR_SWTCH (
+	             VR_SWTCH_SEQ  /* 가상스위치SEQ */
+	           , NETWK_NM  /* 네트워크명 */
+	           , VR_SWTCH_UUID  /* 가상스위치UUID */
+	           , VLAN  /* VLAN */
+	           , RSRC_POOL_ID  /* 자원풀ID */
+	) VALUES (
+	           #{vrSwtchSeq}  /* 가상스위치SEQ */
+	         , #{netwkNm}  /* 네트워크명 */
+	         , #{vrSwtchUuid}  /* 가상스위치UUID */
+	         , #{vlan}  /* VLAN */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	)
+	</insert>
+
+	<!-- 가상스위치(VLAN) 수정 -->
+	<update id="updateRcVrSwtch">
+	UPDATE RC_VR_SWTCH
+	         SET VR_SWTCH_SEQ = #{vrSwtchSeq}  /* 가상스위치SEQ */
+	           , NETWK_NM = #{netwkNm}  /* 네트워크명 */
+	           , VR_SWTCH_UUID = #{vrSwtchUuid}  /* 가상스위치UUID */
+	           , VLAN = #{vlan}  /* VLAN */
+	           , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+         WHERE VR_SWTCH_SEQ = #{vrSwtchSeq}  /* 가상스위치SEQ */
+
+	</update>
+
+	<!-- 가상스위치(VLAN) 삭제 -->
+	<delete id="deleteRcVrSwtch">
+	DELETE FROM RC_VR_SWTCH
+         WHERE VR_SWTCH_SEQ = #{vrSwtchSeq}  /* 가상스위치SEQ */
+
+	</delete>
+
+</mapper>

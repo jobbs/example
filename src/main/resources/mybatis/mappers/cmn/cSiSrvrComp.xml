@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siSrvrComp">
+
+	<resultMap id="resultSiSrvrComp" type="ncis.cmn.entity.SiSrvrComp">
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="netwkAreaClCd"     column="NETWK_AREA_CL_CD"/>  <!-- 네트워크영역구분코드 -->
+        <result property="rprsntId"     column="RPRSNT_ID"/>  <!-- 대표IP주소 -->
+        <result property="macAddr"     column="MAC_ADDR"/>  <!-- MAC주소 -->
+        <result property="srvrPrpos"     column="SRVR_PRPOS"/>  <!-- 서버용도 -->
+        <result property="cpuTy"     column="CPU_TY"/>  <!-- CPU타입 -->
+        <result property="cpuMnfctCo"     column="CPU_MNFCT_CO"/>  <!-- CPU제조사 -->
+        <result property="cpuCorCl"     column="CPU_COR_CL"/>  <!-- CPU코어구분 -->
+        <result property="phyCpuQty"     column="PHY_CPU_QTY"/>  <!-- 물리적CPU개수 -->
+        <result property="phyCpuTotQty"     column="PHY_CPU_TOT_QTY"/>  <!-- 물리적CPU총개수 -->
+        <result property="useLogicCoreQty"     column="USE_LOGIC_CORE_QTY"/>  <!-- 사용논리CPU코어개수 -->
+        <result property="useLogicCoreTotQty"     column="USE_LOGIC_CORE_TOT_QTY"/>  <!-- 사용논리코어총개수 -->
+        <result property="instlMemQty"     column="INSTL_MEM_QTY"/>  <!-- 설치메모리개수 -->
+        <result property="instlMemTotQty"     column="INSTL_MEM_TOT_QTY"/>  <!-- 설치메모리총개수 -->
+        <result property="useMemCapa"     column="USE_MEM_CAPA"/>  <!-- 사용메모리용량(MB) -->
+        <result property="useMemTotCapa"     column="USE_MEM_TOT_CAPA"/>  <!-- 사용메모리총용량(MB) -->
+        <result property="indcoDskQty"     column="INDCO_DSK_QTY"/>  <!-- 내장디스크개수 -->
+        <result property="indcoDskTotQty"     column="INDCO_DSK_TOT_QTY"/>  <!-- 내장디스크총개수 -->
+        <result property="useIndcoDskCapa"     column="USE_INDCO_DSK_CAPA"/>  <!-- 사용내장디스크용량(GB) -->
+        <result property="useIndcoDskTotCapa"     column="USE_INDCO_DSK_TOT_CAPA"/>  <!-- 사용내장디스크총용량(GB) -->
+        <result property="strgConnYn"     column="STRG_CONN_YN"/>  <!-- 스토리지연결여부 -->
+        <result property="asgnStrgTotCapa"     column="ASGN_STRG_TOT_CAPA"/>  <!-- 할당스토리지총용량(GB) -->
+        <result property="useNetwkPortQty"     column="USE_NETWK_PORT_QTY"/>  <!-- 사용네트워크포트개수 -->
+        <result property="kvmConnCn"     column="KVM_CONN_CN"/>  <!-- KVM연결내용 -->
+        <result property="osNm"     column="OS_NM"/>  <!-- 운영체제명 -->
+        <result property="osVer"     column="OS_VER"/>  <!-- 운영체제버전 -->
+        <result property="patchVer"     column="PATCH_VER"/>  <!-- 패치버전 -->
+        <result property="krnlVer"     column="KRNL_VER"/>  <!-- 커널버전 -->
+        <result property="vmTyCd"     column="VM_TY_CD"/>  <!-- 가상머신유형코드 -->
+        <result property="rprsntIp"     column="RPRSNT_IP"/>  <!-- nSIMS용대표IP -->
+	</resultMap>
+
+	<!-- 서버구성정보 등록 -->
+	<insert id="insertSiSrvrComp">
+	INSERT INTO SI_SRVR_COMP (
+	             COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , NETWK_AREA_CL_CD  /* 네트워크영역구분코드 */
+	           , RPRSNT_ID  /* 대표IP주소 */
+	           , MAC_ADDR  /* MAC주소 */
+	           , SRVR_PRPOS  /* 서버용도 */
+	           , CPU_TY  /* CPU타입 */
+	           , CPU_MNFCT_CO  /* CPU제조사 */
+	           , CPU_COR_CL  /* CPU코어구분 */
+	           , PHY_CPU_QTY  /* 물리적CPU개수 */
+	           , PHY_CPU_TOT_QTY  /* 물리적CPU총개수 */
+	           , USE_LOGIC_CORE_QTY  /* 사용논리CPU코어개수 */
+	           , USE_LOGIC_CORE_TOT_QTY  /* 사용논리코어총개수 */
+	           , INSTL_MEM_QTY  /* 설치메모리개수 */
+	           , INSTL_MEM_TOT_QTY  /* 설치메모리총개수 */
+	           , USE_MEM_CAPA  /* 사용메모리용량(MB) */
+	           , USE_MEM_TOT_CAPA  /* 사용메모리총용량(MB) */
+	           , INDCO_DSK_QTY  /* 내장디스크개수 */
+	           , INDCO_DSK_TOT_QTY  /* 내장디스크총개수 */
+	           , USE_INDCO_DSK_CAPA  /* 사용내장디스크용량(GB) */
+	           , USE_INDCO_DSK_TOT_CAPA  /* 사용내장디스크총용량(GB) */
+	           , STRG_CONN_YN  /* 스토리지연결여부 */
+	           , ASGN_STRG_TOT_CAPA  /* 할당스토리지총용량(GB) */
+	           , USE_NETWK_PORT_QTY  /* 사용네트워크포트개수 */
+	           , KVM_CONN_CN  /* KVM연결내용 */
+	           , OS_NM  /* 운영체제명 */
+	           , OS_VER  /* 운영체제버전 */
+	           , PATCH_VER  /* 패치버전 */
+	           , KRNL_VER  /* 커널버전 */
+	           , VM_TY_CD  /* 가상머신유형코드 */
+	           , RPRSNT_IP  /* nSIMS용대표IP */
+	) VALUES (
+	           #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{netwkAreaClCd}  /* 네트워크영역구분코드 */
+	         , #{rprsntId}  /* 대표IP주소 */
+	         , #{macAddr}  /* MAC주소 */
+	         , #{srvrPrpos}  /* 서버용도 */
+	         , #{cpuTy}  /* CPU타입 */
+	         , #{cpuMnfctCo}  /* CPU제조사 */
+	         , #{cpuCorCl}  /* CPU코어구분 */
+	         , #{phyCpuQty}  /* 물리적CPU개수 */
+	         , #{phyCpuTotQty}  /* 물리적CPU총개수 */
+	         , #{useLogicCoreQty}  /* 사용논리CPU코어개수 */
+	         , #{useLogicCoreTotQty}  /* 사용논리코어총개수 */
+	         , #{instlMemQty}  /* 설치메모리개수 */
+	         , #{instlMemTotQty}  /* 설치메모리총개수 */
+	         , #{useMemCapa}  /* 사용메모리용량(MB) */
+	         , #{useMemTotCapa}  /* 사용메모리총용량(MB) */
+	         , #{indcoDskQty}  /* 내장디스크개수 */
+	         , #{indcoDskTotQty}  /* 내장디스크총개수 */
+	         , #{useIndcoDskCapa}  /* 사용내장디스크용량(GB) */
+	         , #{useIndcoDskTotCapa}  /* 사용내장디스크총용량(GB) */
+	         , #{strgConnYn}  /* 스토리지연결여부 */
+	         , #{asgnStrgTotCapa}  /* 할당스토리지총용량(GB) */
+	         , #{useNetwkPortQty}  /* 사용네트워크포트개수 */
+	         , #{kvmConnCn}  /* KVM연결내용 */
+	         , #{osNm}  /* 운영체제명 */
+	         , #{osVer}  /* 운영체제버전 */
+	         , #{patchVer}  /* 패치버전 */
+	         , #{krnlVer}  /* 커널버전 */
+	         , #{vmTyCd}  /* 가상머신유형코드 */
+	         , #{rprsntIp}  /* nSIMS용대표IP */
+	)
+	</insert>
+
+	<!-- 서버구성정보 수정 -->
+	<update id="updateSiSrvrComp">
+	UPDATE SI_SRVR_COMP
+	         SET COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , NETWK_AREA_CL_CD = #{netwkAreaClCd}  /* 네트워크영역구분코드 */
+	           , RPRSNT_ID = #{rprsntId}  /* 대표IP주소 */
+	           , MAC_ADDR = #{macAddr}  /* MAC주소 */
+	           , SRVR_PRPOS = #{srvrPrpos}  /* 서버용도 */
+	           , CPU_TY = #{cpuTy}  /* CPU타입 */
+	           , CPU_MNFCT_CO = #{cpuMnfctCo}  /* CPU제조사 */
+	           , CPU_COR_CL = #{cpuCorCl}  /* CPU코어구분 */
+	           , PHY_CPU_QTY = #{phyCpuQty}  /* 물리적CPU개수 */
+	           , PHY_CPU_TOT_QTY = #{phyCpuTotQty}  /* 물리적CPU총개수 */
+	           , USE_LOGIC_CORE_QTY = #{useLogicCoreQty}  /* 사용논리CPU코어개수 */
+	           , USE_LOGIC_CORE_TOT_QTY = #{useLogicCoreTotQty}  /* 사용논리코어총개수 */
+	           , INSTL_MEM_QTY = #{instlMemQty}  /* 설치메모리개수 */
+	           , INSTL_MEM_TOT_QTY = #{instlMemTotQty}  /* 설치메모리총개수 */
+	           , USE_MEM_CAPA = #{useMemCapa}  /* 사용메모리용량(MB) */
+	           , USE_MEM_TOT_CAPA = #{useMemTotCapa}  /* 사용메모리총용량(MB) */
+	           , INDCO_DSK_QTY = #{indcoDskQty}  /* 내장디스크개수 */
+	           , INDCO_DSK_TOT_QTY = #{indcoDskTotQty}  /* 내장디스크총개수 */
+	           , USE_INDCO_DSK_CAPA = #{useIndcoDskCapa}  /* 사용내장디스크용량(GB) */
+	           , USE_INDCO_DSK_TOT_CAPA = #{useIndcoDskTotCapa}  /* 사용내장디스크총용량(GB) */
+	           , STRG_CONN_YN = #{strgConnYn}  /* 스토리지연결여부 */
+	           , ASGN_STRG_TOT_CAPA = #{asgnStrgTotCapa}  /* 할당스토리지총용량(GB) */
+	           , USE_NETWK_PORT_QTY = #{useNetwkPortQty}  /* 사용네트워크포트개수 */
+	           , KVM_CONN_CN = #{kvmConnCn}  /* KVM연결내용 */
+	           , OS_NM = #{osNm}  /* 운영체제명 */
+	           , OS_VER = #{osVer}  /* 운영체제버전 */
+	           , PATCH_VER = #{patchVer}  /* 패치버전 */
+	           , KRNL_VER = #{krnlVer}  /* 커널버전 */
+	           , VM_TY_CD = #{vmTyCd}  /* 가상머신유형코드 */
+	           , RPRSNT_IP = #{rprsntIp}  /* nSIMS용대표IP */
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 서버구성정보 삭제 -->
+	<delete id="deleteSiSrvrComp">
+	DELETE FROM SI_SRVR_COMP
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

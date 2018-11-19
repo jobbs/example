@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.patch.distrb">
+
+	<resultMap type="ncis.cpt.opr.patch.vo.DistrbVo" id="resultDistrbVo">
+		<result property="ticketId" column="TICKET_ID"/>
+		<result property="distrbReasnCd" column="DISTRB_REASN_CD"/>
+		<result property="distrbReasnNm" column="DISTRB_REASN_NM"/>
+		<result property="rmk" column="RMK"/>
+		<result property="distrbPath" column="DISTRB_PATH"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="distrbExeUserId" column="DISTRB_EXE_USER_ID"/>
+		<result property="distrbExeUserNm" column="DISTRB_EXE_USER_NM"/>
+		<result property="distrbDttm" column="DISTRB_DTTM"/>
+		<result property="atchFileSeq" column="ATCH_FILE_SEQ"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchTicketId != null and searchTicketId != ""'>
+		AND A.TICKET_ID LIKE '%' || #{searchTicketId} || '%'
+		</if>
+		<if test='searchDistrbReasn != null and searchDistrbReasn != ""'>
+		AND A.DISTRB_REASN_CD = #{searchDistrbReasn}
+		</if>
+		<if test='searchVmCompId != null and searchVmCompId != ""'>
+		AND B.VM_COMP_ID LIKE '%' || #{searchVmCompId} || '%'
+		</if>
+		<if test="searchUserId != null and !searchUserId.isEmpty()">
+		AND A.DISTRB_EXE_USER_ID = #{searchUserId}
+		</if>
+	</sql>
+
+	<select id="selectDistrbListTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.patch.distrb.selectDistrbListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			OA_DISTRB A
+			INNER JOIN OA_VM_DISTRB_DTL B ON A.DISTRB_SEQ = B.DISTRB_SEQ
+			INNER JOIN OA_ATCH_FILE C ON A.DISTRB_SEQ = C.DISTRB_SEQ
+			<where>
+				<include refid="search"/>
+			</where>
+	</select>
+
+	<select id="selectDistrbList" resultMap="resultDistrbVo">
+		/* ncis.sql.cpt.opr.patch.distrb.selectDistrbList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			A.TICKET_ID
+			, A.DISTRB_REASN_CD
+			, (SELECT D.CD_NM FROM CM_CODE D WHERE A.DISTRB_REASN_CD = D.CD AND D.PARENT_CD ='137') AS DISTRB_REASN_NM
+			, A.RMK
+			, A.DISTRB_PATH
+			, B.VM_COMP_ID
+			, A.DISTRB_EXE_USER_ID
+			, (SELECT E.USER_NM FROM CM_USR E WHERE E.USER_ID = A.DISTRB_EXE_USER_ID) AS DISTRB_EXE_USER_NM
+			, TO_CHAR(A.DISTRB_DTTM,'YYYY-MM-DD HH24:MI') AS DISTRB_DTTM
+			, C.ATCH_FILE_SEQ
+		FROM
+			OA_DISTRB A
+			INNER JOIN OA_VM_DISTRB_DTL B ON A.DISTRB_SEQ = B.DISTRB_SEQ
+			INNER JOIN OA_ATCH_FILE C ON A.DISTRB_SEQ = C.DISTRB_SEQ
+			<where>
+				<include refid="search"/>
+			</where>
+			ORDER BY A.DISTRB_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectDistrbExcelList" resultMap="resultDistrbVo">
+		/* ncis.sql.cpt.opr.patch.distrb.selectDistrbExcelList */
+		SELECT
+			A.TICKET_ID
+			, A.DISTRB_REASN_CD
+			, (SELECT D.CD_NM FROM CM_CODE D WHERE A.DISTRB_REASN_CD = D.CD AND D.PARENT_CD ='137') AS DISTRB_REASN_NM
+			, A.RMK
+			, A.DISTRB_PATH
+			, B.VM_COMP_ID
+			, A.DISTRB_EXE_USER_ID
+			, (SELECT E.USER_NM FROM CM_USR E WHERE E.USER_ID = A.DISTRB_EXE_USER_ID) AS DISTRB_EXE_USER_NM
+			, TO_CHAR(A.DISTRB_DTTM,'YYYY-MM-DD HH24:MI:SS') AS DISTRB_DTTM
+			, C.ATCH_FILE_SEQ
+		FROM
+			OA_DISTRB A
+			INNER JOIN OA_VM_DISTRB_DTL B ON A.DISTRB_SEQ = B.DISTRB_SEQ
+			INNER JOIN OA_ATCH_FILE C ON A.DISTRB_SEQ = C.DISTRB_SEQ
+			<where>
+				<include refid="search"/>
+			</where>
+			ORDER BY A.DISTRB_SEQ DESC
+	</select>
+
+	<select id="selectRsrcPoolId" resultType="String">
+		/* ncis.sql.cpt.opr.patch.distrb.selectRsrcPoolId */
+		SELECT
+			RSRC_POOL_ID
+		FROM
+			RC_RSRC_POOL
+		WHERE ZONE_ID= #{zoneId}
+		AND NET_ID=#{netId}
+		AND REGION_ID=#{regionId}
+		AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '04'
+	</select>
+
+
+
+
+
+
+
+</mapper>

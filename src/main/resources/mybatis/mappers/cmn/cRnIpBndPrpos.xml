@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnIpBndPrpos">
+
+	<resultMap id="resultRnIpBndPrpos" type="ncis.cmn.entity.RnIpBndPrpos">
+        <result property="bndSeq"     column="BND_SEQ"/>  <!-- 대역SEQ -->
+        <result property="prposClCd"     column="PRPOS_CL_CD"/>  <!-- 용도구분코드 -->
+	</resultMap>
+
+	<!-- IP대역용도 등록 -->
+	<insert id="insertRnIpBndPrpos">
+	/* ncis.sql.cmn.rnIpBndPrpos.insertRnIpBndPrpos */
+	INSERT INTO RN_IP_BND_PRPOS (
+	             BND_SEQ  /* 대역SEQ */
+	           , PRPOS_CL_CD  /* 용도구분코드 */
+	) VALUES (
+	           #{bndSeq}  /* 대역SEQ */
+	         , #{prposClCd}  /* 용도구분코드 */
+	)
+	</insert>
+
+	<!-- IP대역용도 수정 -->
+	<update id="updateRnIpBndPrpos">
+	/* ncis.sql.cmn.rnIpBndPrpos.updateRnIpBndPrpos */
+	UPDATE RN_IP_BND_PRPOS
+	         SET BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	           , PRPOS_CL_CD = #{prposClCd}  /* 용도구분코드 */
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+           AND PRPOS_CL_CD = #{prposClCd}  /* 용도일련번호 */
+	</update>
+
+	<!-- IP대역용도 삭제 -->
+	<delete id="deleteRnIpBndPrpos">
+	/* ncis.sql.cmn.rnIpBndPrpos.deleteRnIpBndPrpos */
+	DELETE FROM RN_IP_BND_PRPOS
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+           AND PRPOS_CL_CD = #{prposClCd}  /* 용도일련번호 */
+	</delete>
+
+	<!-- IP대역용도 삭제 By BndSeq -->
+	<delete id="deleteRnIpBndPrposByBndSeq">
+	/* ncis.sql.cmn.rnIpBndPrpos.deleteRnIpBndPrposByBndSeq */
+	DELETE FROM RN_IP_BND_PRPOS
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	</delete>
+
+</mapper>

@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcVm">
+
+	<resultMap id="resultRcVm" type="ncis.cmn.entity.RcVm">
+		<result property="vmSeq"         column="VM_SEQ"/>         <!-- 가상서버ID -->
+        <result property="vmId"          column="VM_ID"/>          <!-- 가상서버ID -->
+        <result property="vmNm"          column="VM_NM"/>          <!-- 가상서버명 -->
+        <result property="statCd"        column="STAT_CD"/>        <!-- 상태코드 -->
+        <result property="servcStrtDt"   column="SERVC_STRT_DT"/>  <!-- 서비스시작일자 -->
+        <result property="servcEndDt"    column="SERVC_END_DT"/>   <!-- 서비스종료일자 -->
+        <result property="hstNm"         column="HST_NM"/>         <!-- 호스트명 -->
+        <result property="cpuUseRt"      column="CPU_USE_RT"/>     <!-- CPU사용율 -->
+        <result property="cpuEnt"        column="CPU_ENT"/>        <!-- CPU엔타이틀먼트 -->
+        <result property="cpuVcoreQty"   column="CPU_VCORE_QTY"/>  <!-- CPU(vCore) -->
+        <result property="memAsgnCapa"   column="MEM_ASGN_CAPA"/>  <!-- 할당메모리용량(MB) -->
+        <result property="memUseRt"      column="MEM_USE_RT"/>     <!-- 메모리사용율 -->
+        <result property="strgAsgnCapa"  column="STRG_ASGN_CAPA"/> <!-- 할당스토리지용량(GB) -->
+        <result property="rprsntIpAddr"  column="RPRSNT_IP_ADDR"/> <!-- 대표IP주소 -->
+        <result property="osTyCd"        column="OS_TY_CD"/>       <!-- 운영체제유형코드 -->
+        <result property="pltfrm"        column="PLTFRM"/>         <!-- 플랫폼 -->
+        <result property="osBit"         column="OS_BIT"/>         <!-- 운영체제비트 -->
+        <result property="krnlVer"       column="KRNL_VER"/>       <!-- 커널버전 -->
+        <result property="patchVer"      column="PATCH_VER"/>      <!-- 패치버전 -->
+        <result property="lang"          column="LANG"/>           <!-- 언어 -->
+        <result property="osNm"          column="OS_NM"/>          <!-- 운영체계명 -->
+        <result property="osVer"         column="OS_VER"/>         <!-- 운영체계버전 -->
+        <result property="netwkIn"       column="NETWK_IN"/>       <!-- 네트워크_IN(KB/Sec) -->
+        <result property="netwkOut"      column="NETWK_OUT"/>      <!-- 네트워크_OUT(KB/Sec) -->
+        <result property="strtupDttm"    column="STRTUP_DTTM"/>    <!-- 기동일시 -->
+        <result property="vmCompId"      column="VM_COMP_ID"/>     <!-- 가상서버구성ID -->
+        <result property="vmClCd"        column="VM_CL_CD"/>       <!-- 가상서버구분코드 -->
+        <result property="tmplatSeq"     column="TMPLAT_SEQ"/>     <!-- 템플릿SEQ -->
+        <result property="haYn"          column="HA_YN"/>          <!-- 이중화(HA)여부 -->
+        <result property="institutionId" column="INSTITUTION_ID"/> <!-- 기관ID -->
+        <result property="pmSeq"         column="PM_SEQ"/>         <!-- 물리서버SEQ -->
+        <result property="uuid"          column="UUID"/>           <!-- UUID -->
+        <result property="regUserId"     column="REG_USER_ID"/>    <!-- 등록자ID -->
+        <result property="regDttm"       column="REG_DTTM"/>       <!-- 등록일시 -->
+        <result property="delUserId"     column="DEL_USER_ID"/>    <!-- 삭제자ID -->
+        <result property="delDttm"       column="DEL_DTTM"/>       <!-- 삭제일시 -->
+        <result property="delYn"         column="DEL_YN"/>         <!-- 삭제여부 -->
+        <result property="updtUserId"    column="UPDT_USER_ID"/>   <!-- 수정자ID -->
+        <result property="updtDttm"      column="UPDT_DTTM"/>      <!-- 수정일시 -->
+        <result property="syncDttm"      column="SYNC_DTTM"/>      <!-- 동기화일시 -->
+        <result property="rmk"           column="RMK"/>            <!-- 비고 -->
+        <result property="nsSid"         column="NS_SID"/>         <!-- 네트워크서비스SID -->
+        <result property="nfSid"         column="NF_SID"/>         <!-- 네트워크기능SID -->
+        <result property="netwkTyClCd"   column="NETWK_TY_CL_CD"/> <!-- 네트워크유형구분코드 -->
+        <result property="packgMngTrgtYn"   column="PACKG_MNG_TRGT_YN"/> <!-- 패키지 대상여부 -->
+	</resultMap>
+
+	<!-- 가상서버 등록 -->
+	<insert id="insertRcVm">
+		/* ncis.sql.cmn.rcVm.insertRcVm */
+		INSERT INTO
+		RC_VM (
+			VM_SEQ           /* 가상서버SEQ */
+			, VM_ID          /* 가상서버ID */
+			, VM_NM          /* 가상서버명 */
+			, STAT_CD        /* 상태코드 */
+			, SERVC_STRT_DT  /* 서비스시작일자 */
+			, SERVC_END_DT   /* 서비스종료일자 */
+			, HST_NM         /* 호스트명 */
+			, CPU_USE_RT     /* CPU사용율 */
+			, CPU_ENT        /* CPU엔타이틀먼트 */
+			, CPU_VCORE_QTY  /* CPU(vCore) */
+			, MEM_ASGN_CAPA  /* 할당메모리용량(MB) */
+			, MEM_USE_RT     /* 메모리사용율 */
+			, STRG_ASGN_CAPA /* 할당스토리지용량(GB) */
+			, RPRSNT_IP_ADDR /* 대표IP주소 */
+			, OS_TY_CD       /* 운영체제유형코드 */
+			, PLTFRM         /* 플랫폼 */
+			, OS_BIT         /* 운영체제비트 */
+			, KRNL_VER       /* 커널버전 */
+			, PATCH_VER      /* 패치버전 */
+			, LANG           /* 언어 */
+			, OS_NM          /* 운영체계명 */
+			, OS_VER         /* 운영체계버전 */
+			, NETWK_IN       /* 네트워크_IN(KB/Sec) */
+			, NETWK_OUT      /* 네트워크_OUT(KB/Sec) */
+			, STRTUP_DTTM    /* 기동일시 */
+			, VM_COMP_ID     /* 가상서버구성ID */
+			, VM_CL_CD       /* 가상서버구분코드 */
+			, TMPLAT_SEQ     /* 템플릿ID */
+			, HA_YN          /* 이중화(HA)여부 */
+			, INSTITUTION_ID /* 기관ID */
+			, PM_SEQ         /* 물리서버SEQ */
+			, UUID           /* UUID */
+			, REG_USER_ID    /* 등록자ID */
+			, REG_DTTM       /* 등록일시 */
+			, DEL_USER_ID    /* 삭제자ID */
+			, DEL_DTTM       /* 삭제일시 */
+			, DEL_YN         /* 삭제여부 */
+			, UPDT_USER_ID   /* 수정자ID */
+			, UPDT_DTTM      /* 수정일시 */
+			, SYNC_DTTM      /* 동기화일시 */
+			, RMK            /* 비고 */
+			, NS_SID         /* 네트워크서비스SID */
+			, NF_SID         /* 네트워크기능SID */
+			, NETWK_TY_CL_CD /* 네트워크유형구분코드 */
+			, PACKG_MNG_TRGT_YN /* 패키지 대상여부 */
+		)
+		VALUES (
+			#{vmSeq}           /* 가상서버SEQ */
+			, #{vmId}          /* 가상서버ID */
+			, #{vmNm}          /* 가상서버명 */
+			, #{statCd}        /* 상태코드 */
+			, #{servcStrtDt}   /* 서비스시작일자 */
+			, #{servcEndDt}    /* 서비스종료일자 */
+			, #{hstNm}         /* 호스트명 */
+			, #{cpuUseRt}      /* CPU사용율 */
+			, #{cpuEnt}        /* CPU엔타이틀먼트 */
+			, #{cpuVcoreQty}   /* CPU(vCore) */
+			, #{memAsgnCapa}   /* 할당메모리용량(MB) */
+			, #{memUseRt}      /* 메모리사용율 */
+			, #{strgAsgnCapa}  /* 할당스토리지용량(GB) */
+			, #{rprsntIpAddr}  /* 대표IP주소 */
+			, #{osTyCd}        /* 운영체제유형코드 */
+			, #{pltfrm}        /* 플랫폼 */
+			, #{osBit}         /* 운영체제비트 */
+			, #{krnlVer}       /* 커널버전 */
+			, #{patchVer}      /* 패치버전 */
+			, #{lang}          /* 언어 */
+			, #{osNm}          /* 운영체계명 */
+			, #{osVer}         /* 운영체계버전 */
+			, #{netwkIn}       /* 네트워크_IN(KB/Sec) */
+			, #{netwkOut}      /* 네트워크_OUT(KB/Sec) */
+			, NULL             /* 기동일시 */
+			, #{vmCompId}      /* 가상서버구성ID */
+			, #{vmClCd}        /* 가상서버구분코드 */
+			, #{tmplatSeq}     /* 템플릿ID */
+			, #{haYn}          /* 이중화(HA)여부 */
+			, #{institutionId} /* 기관ID */
+			, #{pmSeq}         /* 물리서버SEQ */
+			, #{uuid}          /* UUID */
+			, #{regUserId}     /* 등록자ID */
+			, NOW()            /* 등록일시 */
+			, NULL             /* 삭제자ID */
+			, NULL             /* 삭제일시 */
+			, 'N'              /* 삭제여부 */
+			, NULL             /* 수정자ID */
+			, NULL             /* 수정일시 */
+			, NULL             /* 동기화일시 */
+			, NULL             /* 비고 */
+			, #{nsSid}         /* 네트워크서비스SID */
+			, #{nfSid}         /* 네트워크기능SID */
+			, #{netwkTyClCd}   /* 네트워크유형구분코드 */
+			, #{packgMngTrgtYn} /* 패키지 대상여부 */
+		)
+	</insert>
+
+	<!-- 가상서버 수정 -->
+	<update id="updateRcVm">
+		/* ncis.sql.cmn.rcVm.updateRcVm */
+		UPDATE
+			RC_VM
+		SET
+			UPDT_DTTM      = NOW()         /* 수정일시 */
+			, UPDT_USER_ID = #{updtUserId} /* 수정자ID */
+			, VM_COMP_ID   = #{vmCompId}   /* 가상서버구성ID */
+			, RMK          = #{rmk}        /* 비고 */
+		WHERE
+			VM_SEQ = #{vmSeq} /* 가상서버SEQ */
+	</update>
+
+	<!-- 가상서버 상태 동기화 -->
+	<update id="updateRcVmStatSync">
+		/* ncis.sql.cmn.rcVm.updateRcVmStatSync */
+		UPDATE
+			RC_VM
+		SET
+			SYNC_DTTM = NOW()     /* 동기화일시 */
+			, STAT_CD = #{statCd} /* 상태코드 */
+			<if test='strtupDttm != null'>
+			, STRTUP_DTTM = #{strtupDttm} /* 기동일시 */
+			</if>
+		WHERE
+			VM_SEQ = #{vmSeq} /* 가상서버SEQ */
+	</update>
+
+	<!-- 가상서버 패키지 대상여부 수정 -->
+	<update id="updateRcVmPackgMngTrgtYn">
+		/* ncis.sql.cmn.rcVm.updateRcVmPackgMngTrgtYn */
+		UPDATE
+			RC_VM
+		SET
+			PACKG_MNG_TRGT_YN = #{packgMngTrgtYn} /* 패키지 대상여부 */
+			<if test='packgMngTrgtYn != null and packgMngTrgtYn.equals("Y")'>
+			, PACKG_CONF_DT      = NOW()         /* 패키지 설정일자 */
+			</if>
+		WHERE
+			VM_SEQ = #{vmSeq} /* 가상서버SEQ */
+	</update>
+
+	<!-- 가상서버 삭제 -->
+	<delete id="deleteRcVm">
+		/* ncis.sql.cmn.rcVm.deleteRcVm */
+		UPDATE
+			RC_VM
+		SET
+			DEL_DTTM      = NOW()        /* 삭제일시 */
+			, DEL_USER_ID = #{delUserId} /* 삭제자ID */
+			, DEL_YN      = 'Y'          /* 삭제여부 */
+		WHERE
+			VM_SEQ = #{vmSeq} /* 가상서버SEQ */
+
+	</delete>
+
+</mapper>

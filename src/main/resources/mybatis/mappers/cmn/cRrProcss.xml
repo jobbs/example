@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrProcss">
+
+	<resultMap id="resultRrProcss" type="ncis.cmn.entity.RrProcss">
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+        <result property="procssNm"     column="PROCSS_NM"/>  <!-- 프로세스명 -->
+        <result property="useYn"     column="USE_YN"/>  <!-- 사용여부 -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="prcssDc"     column="PRCSS_DC"/>  <!-- 프로세스설명 -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+	</resultMap>
+
+	<!-- 프로세스 등록 -->
+	<insert id="insertRrProcss">
+	INSERT INTO RR_PROCSS (
+	             PROCSS_SEQ  /* 프로세스ID */
+	           , PROCSS_NM  /* 프로세스명 */
+	           , USE_YN  /* 사용여부 */
+	           , REG_DTTM  /* 등록일시 */
+	           , PRCSS_DC  /* 프로세스설명 */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , UPDT_USER_ID  /* 수정자ID */
+	) VALUES (
+	           #{procssSeq}  /* 프로세스ID */
+	         , #{procssNm}  /* 프로세스명 */
+	         , #{useYn}  /* 사용여부 */
+	         , now()  /* 등록일시 */
+	         , #{prcssDc}  /* 프로세스설명 */
+	         , now()  /* 수정일시 */
+	         , #{regUserId}  /* 등록자ID */
+	         , #{updtUserId}  /* 수정자ID */
+	)
+	</insert>
+
+	<!-- 프로세스 수정 -->
+	<update id="updateRrProcss">
+	UPDATE RR_PROCSS
+	         SET PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+	           , PROCSS_NM = #{procssNm}  /* 프로세스명 */
+	           , USE_YN = #{useYn}  /* 사용여부 */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , PRCSS_DC = #{prcssDc}  /* 프로세스설명 */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+         WHERE PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+
+	</update>
+
+	<!-- 프로세스 삭제 -->
+	<delete id="deleteRrProcss">
+	DELETE FROM RR_PROCSS
+         WHERE PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+
+	</delete>
+
+</mapper>

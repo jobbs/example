@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcPod">
+
+	<!-- Pod 등록 -->
+	<insert id="insertRxServcPod" parameterType="ncis.cmn.entity.RxServcPod">
+		/* ncis.sql.cmn.rxServcPod.insertRxServcPod */
+		INSERT INTO RX_SERVC_POD(
+			 SERVC_SEQ  /* 서비스SEQ */
+	         , POD_ID  /* POD_ID */
+	         , POD_NM  /* POD명 */
+	         , POD_UID  /* POD_UID */
+	         , POD_IP_ADDR  /* PODIP주소 */
+	         , HST_IP_ADDR  /* 호스트IP주소 */
+	         , CPU_COR_QTY  /* CPU코어수 */
+	         , MEM_ASGN_CAPA  /* 메모리할당량 */
+	         , STRG_ASGN_CAPA  /* 스토리지할당량 */
+	         , IMG_ID  /* 이미지ID */
+	         , CPU_USE_RT  /* CPU사용률 */
+	         , MEM_USE_RT  /* 메모리사용률 */
+	         , NETWK_IN  /* 네트워크IN(KB/sec) */
+	         , NETWK_OUT  /* 네트워크OUT(KB/sec) */
+	         , STRT_DTTM  /* 시작일시 */
+	         , ATMSCL_NODE_ID  /* 자동확장노드ID */
+	         , CRE_DTTM  /* 생성일시 */
+	         , RSRC_POOL_ID  /* 자원풀ID */
+	         , STAT_CD  /* 상태코드 */
+	         , DEL_YN  /* 삭제여부 */
+	         , IMG_REPO_DTL_ADDR  /* 이미지저장소상세주소 */
+	         , POD_TY_CD  /* POD유형코드 */
+	    )
+        VALUES (
+			 #{servcSeq}  /* 서비스SEQ */
+	         , #{podId}  /* POD_ID */
+	         , #{podNm}  /* POD명 */
+	         , #{podUid}  /* POD_UID */
+	         , #{podIpAddr}  /* PODIP주소 */
+	         , #{hstIpAddr}  /* 호스트IP주소 */
+	         , #{cpuCorQty}  /* CPU코어수 */
+	         , #{memAsgnCapa}  /* 메모리할당량 */
+	         , #{strgAsgnCapa}  /* 스토리지할당량 */
+	         , #{imgId}  /* 이미지ID */
+	         , #{cpuUseRt}  /* CPU사용률 */
+	         , #{memUseRt}  /* 메모리사용률 */
+	         , #{netwkIn}  /* 네트워크IN(KB/sec) */
+	         , #{netwkOut}  /* 네트워크OUT(KB/sec) */
+	         , #{strtDttm}::timestamp  /* 시작일시 */
+	         , #{atmsclNodeId}  /* 자동확장노드ID */
+	         , #{creDttm}::timestamp  /* 생성일시 */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	         , #{statCd}  /* 상태코드 */
+	         , #{delYn}  /* 삭제여부 */
+	         , #{imgRepoDtlAddr}  /* 이미지저장소상세주소 */
+	         , #{podTyCd}  /* POD유형코드 */
+        )
+	</insert>
+
+	<!-- Pod 수정 -->
+	<update id="updateRxServcPod">
+		/* ncis.sql.cmn.rxServcPod.updateRxServcPod */
+		UPDATE RX_SERVC_POD
+		SET STRT_DTTM = #{strtDttm}::timestamp
+		,UPDT_DTTM = now()
+		,DEL_YN = 'N'
+		<if test="statCd != null and !statCd.isEmpty()">
+		,STAT_CD = #{statCd}
+		</if>
+        WHERE SERVC_SEQ = #{servcSeq}
+        <if test="podId != null and !podId.isEmpty()">
+			AND POD_ID = #{podId}
+		</if>
+	</update>
+
+	<!-- Pod 삭제 -->
+	<delete id="deleteRxServcPod">
+		/* ncis.sql.cmn.rxServcPod.deleteRxServcPod */
+		UPDATE RX_SERVC_POD
+		SET DEL_YN = 'Y'
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+        <if test="podId != null and !podId.isEmpty()">
+			AND POD_ID = #{podId}
+		</if>
+	</delete>
+
+</mapper>

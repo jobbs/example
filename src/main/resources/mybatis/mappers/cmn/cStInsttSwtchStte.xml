@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stInsttSwtchStte">
+
+
+	<insert id="insertStInsttSwtchStte">
+		/* ncis.sql.cmn.stInsttSwtchStte.insertStInsttSwtchStte */
+		INSERT INTO ST_INSTT_SWTCH_STTE
+		(
+			INSTITUTION_ID,
+			SWTCH_JOB_QTY,
+			PRIME_SWTCH_EXAM
+		) VALUES(
+			#{institutionId},
+			#{swtchJobQty},
+			#{primeSwtchExam}
+		)
+	</insert>
+
+
+
+	<delete id="deleteStInsttSwtchStte">
+		/* ncis.sql.cmn.stInsttSwtchStte.deleteStInsttSwtchStte */
+		DELETE FROM ST_INSTT_SWTCH_STTE
+	</delete>
+
+
+
+</mapper>

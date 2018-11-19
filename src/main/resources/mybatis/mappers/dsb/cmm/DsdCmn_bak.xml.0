@@ -1,0 +1,1219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.cmm">
+
+	<resultMap type="ncis.dsb.cmn.vo.PmResSttsVo" id="resultPmResSttsVo">
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.RtVo" id="resultRt10Vo">
+		<result property="mi" column="mi"/>
+		<result property="rt" column="rt"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.ManagerSttsVo" id="resultManagerKndSttsVo">
+		<result property="mngCd" column="mng_cd"/>
+		<result property="mngNm" column="mng_nm"/>
+		<result property="mngCnt" column="mng_cnt"/>
+	</resultMap>
+
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultPmTree">
+		<id property="key" column="REGION_ID" javaType="String"/>
+		<result property="title" column="REGION_NM"/>
+		<result property="parentKey" column="PARENT_ID" javaType="String"/>
+	</resultMap>
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultVmTree">
+		<id property="key" column="INSTITUTION_ID" javaType="String"/>
+		<result property="title" column="INSTITUTION_NM"/>
+		<result property="parentKey" column="PARENT_KEY" javaType="String"/>
+	</resultMap>
+
+
+    <resultMap type="ncis.dsb.cmn.vo.VmInfoVo" id="resultVmInfoVo">
+		<result property="stat" column="stat"/>
+		<result property="suzip" column="suzip"/>
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="jobsNm" column="jobs_nm"/>
+		<result property="zoneNm" column="zone_nm"/>
+		<result property="vmNm" column="vm_nm"/>
+		<result property="vmCompId" column="vm_comp_id"/>
+		<result property="strg" column="strg"/>
+		<result property="vcore" column="vcore"/>
+		<result property="mem" column="mem"/>
+		<result property="reg" column="reg"/>
+		<result property="hstNm" column="hst_nm"/>
+		<result property="ip" column="ip"/>
+		<result property="statCd" column="stat_cd"/>
+	</resultMap>
+
+
+	<sql id="search">
+		<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND a.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND a.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND a.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND a.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND a.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND a.PM_SEQ=#{pmSeq}
+			 </if>
+	</sql>
+
+	<sql id="searchSub">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND q.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND q.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND q.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND q.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND q.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND q.PM_SEQ=#{pmSeq}
+			 </if>
+	</sql>
+
+    <sql id="searchVm">
+    	  <if test='regionId !=null and !"".equals(regionId)'>
+			AND ii.REGION_ID =#{regionId}
+		  </if>
+		  <if test='zoneId !=null and !"".equals(zoneId)'>
+		    AND hh.ZONE_ID =#{zoneId}
+		  </if>
+		  <if test='netId !=null and !"".equals( netId )'>
+			 AND ff.NET_ID = #{netId}
+		  </if>
+		  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 AND ee.RSRC_POOL_ID=#{rsrcPoolId}
+		  </if>
+		  <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			AND dd.CLSTR_SEQ = #{clstrSeq}
+		  </if>
+		  <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			AND cc.PM_SEQ=#{pmSeq}
+		  </if>
+		  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+				 AND bb.vm_seq=#{vmSeq}
+		  </if>
+
+		  <if test='vrlzSwTyCd != null and !"".equals( vrlzSwTyCd )'>
+			<!-- 부분일치 -->
+		    AND ee.vrlz_sw_ty_cd IN (#{vrlzSwTyCd})
+		  </if>
+
+         <if test='vmCompId != null and !"".equals( vmCompId )'>
+		  <!-- 부분일치 -->
+		   AND bb.vm_comp_id like '%' ||#{vmCompId}|| '%'
+		 </if>
+		<if test='strtDt != null and !"".equals( strtDt )'>
+		   <if test='endDt != null and !"".equals( endDt )'>
+			 and bb.reg_dttm between (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		   </if>
+		</if>
+
+		<if test='pmCompId != null and !"".equals( pmCompId )'>
+		  <!-- 부분일치 -->
+		  AND cc.pm_comp_id like '%' ||#{pmCompId}|| '%'
+		 </if>
+
+		 <if test='vmNm != null and !"".equals( vmNm )'>
+		   <!-- 부분일치 -->
+		  AND bb.vm_nm like '%' ||#{vmNm}|| '%'
+		</if>
+
+        <if test='institutionId !=null and !"".equals( institutionId )'>
+			     AND bb.institution_id = #{institutionId}
+	    </if>
+
+		<if test='institutionNm != null and !"".equals( institutionNm )'>
+		<!-- 부분일치 -->
+		  AND jj.institution_nm like '%' ||#{institutionNm}|| '%'
+		</if>
+        <if test='jobId !=null and !"".equals(jobId)'>
+				AND  bb.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (#{jobId}))
+		</if>
+
+		<if test='jobNm != null and jobNm != ""'>
+		 <!-- 부분일치 -->
+		 AND bb.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (SELECT CM_JOB.JOB_ID FROM CM_JOB WHERE CM_JOB.JOB_NM LIKE '%' || #{jobNm} || '%'))
+	   </if>
+
+
+
+	   AND UPPER(ee.DEL_YN) = 'N'
+	   AND UPPER(dd.DEL_YN) = 'N'
+	   AND (cc.PM_SEQ ISNULL OR UPPER(cc.DEL_YN) = 'N')
+	   AND UPPER(bb.DEL_YN) = 'N'
+	   AND UPPER(dd.USE_YN) = 'Y'
+	   AND bb.VM_CL_CD = '01'
+	   AND ee.VRLZ_SW_TY_CD IN (SELECT CD
+									FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y'
+								      )
+	   AND ee.RSRC_POOL_CL_CD = '01'
+
+    </sql>
+
+
+	<select id="selectPmResInfo" resultMap="resultPmResSttsVo">
+		/*ncis.sql.dsb.cmm.selectPmResInfo*/
+		SELECT  COALESCE(sum(last_cpu_cor_qty),0) last_cpu_cor_qty,
+		        COALESCE(sum(round(last_mem_sum_capa/1024/1024/1024,0)),0) last_mem_sum_capa,
+		        COALESCE(sum(round(last_strg_sum_capa/1024/1024/1024)),0) last_strg_sum_capa
+
+		FROM st_pm_colct_sum_10mi a
+		      <if test="!allRsrcPoolAuth">
+			 	, CM_RSRC_POOL_USER B
+			  </if>
+       where 1=1
+       		  <if test="!allRsrcPoolAuth">
+			  	AND  B.USER_ID = #{searchUserId}
+				AND  A.RSRC_POOL_ID = B.RSRC_POOL_ID
+			  </if>
+
+             and a.colct_dt||a.colct_hour||a.colct_mi =
+				 (select max(q.colct_dt||q.colct_hour||q.colct_mi)
+				    from st_pm_colct_sum_10mi q
+				   where 1=1
+
+				  )
+
+		<include refid="search"/>
+  </select>
+
+  <select id="selectRcPmResInfo" resultMap="resultPmResSttsVo">
+		/*ncis.sql.dsb.cmm.selectRcPmResInfo*/
+		   select COALESCE(SUM(CPU_CORE_QTY),0) last_cpu_cor_qty,
+		          COALESCE(ROUND(SUM(MEM_CAPA)/1024,0),0) last_mem_sum_capa,
+		          COALESCE(SUM(STRG_ASGN_CAPA),0) last_strg_sum_capa
+		      from RC_PM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+			         LEFT JOIN (SELECT PM_SEQ,
+			                           SUM(STRG_ASGN_CAPA) STRG_ASGN_CAPA
+			                       FROM RC_VM
+			                     GROUP BY PM_SEQ
+			                   ) A ON RC_PM.PM_SEQ = A.PM_SEQ
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_PM.PM_SEQ=#{pmSeq}
+			 </if>
+
+  </select>
+
+
+	<select id="selectUseGovDeptCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseGovDeptCnt*/
+
+	 SELECT COALESCE(count(distinct RC_VM.institution_id),0) cnt
+	  	  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+	</select>
+
+
+	<select id="selectUseJobCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCnt*/
+		SELECT COALESCE(count(distinct RC_VM_JOB.JOB_ID),0) cnt
+
+		  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+
+	</select>
+
+
+	<select id="selectVcoreCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreCnt*/
+		SELECT  COALESCE(sum(a.last_vcore_qty),0) last_vcore_qty
+			 FROM st_vm_colct_sum_10mi a
+			      <if test="!allRsrcPoolAuth">
+			 		 , CM_RSRC_POOL_USER C
+			  	   </if>
+
+		       where 1=1
+		             and a.colct_dt||a.colct_hour||a.colct_mi =
+						 (select max(q.colct_dt||q.colct_hour||q.colct_mi)
+							    from st_vm_colct_sum_10mi q
+							   where 1=1
+
+						  )
+					 <if test="!allRsrcPoolAuth">
+					  	AND  C.USER_ID = #{searchUserId}
+						AND  a.RSRC_POOL_ID = C.RSRC_POOL_ID
+			        </if>
+
+			<include refid="search"/>
+	</select>
+
+
+	<select id="selectRcVcoreCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectRcVcoreCnt*/
+
+	       select COALESCE(SUM(CPU_VCORE_QTY),0) last_vcore_qty
+
+		      from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+
+	</select>
+
+	<select id="selectCpuUseRt10" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10*/
+
+	              select a.colct_hour||':'||a.colct_mi mi,
+			             round(avg(avg_cpu_use_rt),1) rt
+			         from st_pm_colct_sum_10mi a
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+			      where 1=1
+			            and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			            and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+					     <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  a.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+						<include refid="search"/>
+				group by  a.colct_hour,a.colct_mi
+
+	</select>
+
+	<select id="selectMemUseRt10" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10*/
+
+                  select a.colct_hour||':'||a.colct_mi mi,
+			             round(avg(avg_mem_use_rt),1) rt
+			         from st_pm_colct_sum_10mi a
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      where 1=1
+			            and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			            and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  a.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+					<include refid="search"/>
+				group by  a.colct_hour, a.colct_mi
+
+
+	</select>
+
+	<select id="selectStrgUseRt10" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectStrgUseRt10*/
+		          select a.colct_hour||':'||a.colct_mi mi,
+		                 round(avg(case when a.sum_strg_sum_capa=0 then 0 else a.sum_strg_use_capa/a.sum_strg_sum_capa*100 end),1) rt
+			         from st_vm_colct_sum_10mi a
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      where 1=1
+			            and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			            and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  a.RSRC_POOL_ID = C.RSRC_POOL_ID
+					    </if>
+
+					<include refid="search"/>
+				group by  a.colct_hour ,a.colct_mi
+
+	</select>
+
+
+	<select id="selectManagerKndStts" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndStts*/
+		 select c.cd mng_cd,
+	            c.cd_nm mng_nm,
+	            COALESCE(s.cnt, 0) mng_cnt
+	      from cm_code c
+		     left join
+					 (select b.vrlz_sw_ty_cd, count(1) cnt
+					      from
+						     st_pm_colct_sum_1dd	a,
+						     rc_rsrc_pool b
+						    <if test="!allRsrcPoolAuth">
+						 	  , CM_RSRC_POOL_USER C
+						    </if>
+
+						 where 1=1
+						       and a.rsrc_pool_id = b.rsrc_pool_id
+						       and upper(b.del_yn) = 'N'
+						       and a.colct_dt = (select max(q.colct_dt)
+												   from st_pm_colct_sum_1dd q
+												  where 1=1
+
+									            )
+							<if test="!allRsrcPoolAuth">
+								  	AND  C.USER_ID = #{searchUserId}
+									AND  a.RSRC_POOL_ID = C.RSRC_POOL_ID
+						    </if>
+							<include refid="search"/>
+                        group by b.vrlz_sw_ty_cd
+			         ) s on c.cd = s.vrlz_sw_ty_cd
+	     where c.grp_cd = '001' and c.parent_cd = '100' and c.use_yn = 'Y'
+	</select>
+
+
+
+	<select id="selectVmList" resultMap="resultVmInfoVo">
+	/*ncis.sql.dsb.cmm.selectVmList*/
+
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT   qq.cd_nm stat
+		         ,qq.cd stat_cd
+                 ,case when a.vm_seq is null then '미수집'
+                           else '완료'
+                  end suzip
+                  ,qq.institution_nm
+                  ,qq.jobs_nm
+			     ,qq.zone_nm
+			     ,qq.vm_nm vm_nm
+			     ,qq.vm_comp_id vm_comp_id
+			     ,COALESCE(qq.strg_asgn_capa,0) strg
+			     ,COALESCE(qq.cpu_vcore_qty,0) vcore
+			     ,COALESCE(qq.mem_asgn_capa,0) mem
+			     ,qq.reg_dttm::date::character varying reg
+			     ,qq.hst_nm hst_nm
+			     ,qq.rprsnt_ip_addr ip
+
+		  from
+		     (select max(vm_seq) vm_seq
+			        from st_vm_colct_sum_10mi
+			       where 1=1
+			              and colct_dt >= to_char(now()-interval '20 minute','yyyymmdd')
+			              and colct_hour >= to_char(now()-interval '20 minute','hh24')
+			              and colct_mi::integer >= (to_char(now()-interval '20 minute','mi')::integer/10+1)*10
+			      group by vm_seq
+		      ) a
+		       right join
+	           ( select bb.*,
+		                ee.zone_id,
+		                jj.institution_nm,
+		                hh.zone_nm,
+		                kk.jobs_nm,
+		                STAT_GRP_CD.CD_NM, /*STAT_CD.CD_NM*/
+		                STAT_GRP_CD.CD
+
+	                  from rc_vm bb LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+									 INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+									 INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+									 INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+									 INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+									 INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+									 LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = bb.INSTITUTION_ID and jj.USE_YN = 'Y'
+									 LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+									 LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+									 LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+									 LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+									 LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+									 LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+
+									 left join (SELECT
+										               RC_VM_JOB.VM_SEQ,
+										               ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+										           FROM
+										               RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+										                         INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+										         where 1=1
+										               AND CM_INSTITUTION.USE_YN = 'Y'
+                                                       AND CM_JOB.USE_YN = 'Y'
+
+										         GROUP BY RC_VM_JOB.VM_SEQ
+                                                ) kk on kk.vm_seq = bb.vm_seq
+
+
+
+
+				           <if test="!sysAdm">
+				             <choose>
+				              <when test = "oprAdm">
+			 	  				INNER JOIN (
+										SELECT
+											CM_RSRC_POOL_USER.USER_ID
+											, CM_RSRC_POOL_USER.RSRC_POOL_ID
+										FROM
+											CM_RSRC_POOL_USER
+										WHERE
+											CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+									) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+			    		    </when>
+			    		       <otherwise>
+		       	                     INNER JOIN (
+												SELECT
+													DISTINCT
+													RC_VM_JOB.VM_SEQ
+												FROM
+													CM_JOB_USER
+													INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+												WHERE
+													CM_JOB_USER.USER_ID = #{searchUserId}
+											) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+		       	             </otherwise>
+                             </choose>
+                             </if>
+
+
+                          where 1=1
+
+                             <include refid="searchVm"/>
+
+                 ) qq
+	         on a.vm_seq = qq.vm_seq
+
+
+        ORDER BY (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+		         qq.INSTITUTION_NM ASC NULLS LAST,
+		         qq.JOBS_NM ASC NULLS LAST,
+		         qq.VM_NM ASC NULLS LAST
+	<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmTotCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVmTotCnt*/
+		SELECT COUNT(*)
+		   from
+		        (select bb.*,
+		                ee.zone_id,
+		                jj.institution_nm,
+		                hh.zone_nm,
+		                kk.jobs_nm,
+		                STAT_CD.CD_NM
+
+	                  from rc_vm bb LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+									 INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+									 INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+									 INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+									 INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+									 INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+									 LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = bb.INSTITUTION_ID and jj.USE_YN = 'Y'
+									 LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+									 LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+									 LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+									 LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+									 LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+									 LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+
+									 left join (SELECT
+										               RC_VM_JOB.VM_SEQ,
+										               ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+										           FROM
+										               RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+										                         INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+										         where 1=1
+										               AND CM_INSTITUTION.USE_YN = 'Y'
+                                                       AND CM_JOB.USE_YN = 'Y'
+
+										         GROUP BY RC_VM_JOB.VM_SEQ
+                                                ) kk on kk.vm_seq = bb.vm_seq
+
+
+
+
+				           <if test="!sysAdm">
+				             <choose>
+				              <when test = "oprAdm">
+			 	  				INNER JOIN (
+										SELECT
+											CM_RSRC_POOL_USER.USER_ID
+											, CM_RSRC_POOL_USER.RSRC_POOL_ID
+										FROM
+											CM_RSRC_POOL_USER
+										WHERE
+											CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+									) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+			    		       </when>
+			    		       <otherwise>
+		       	                     INNER JOIN (
+												SELECT
+													DISTINCT
+													RC_VM_JOB.VM_SEQ
+												FROM
+													CM_JOB_USER
+													INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+												WHERE
+													CM_JOB_USER.USER_ID = #{searchUserId}
+											) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+		       	                 </otherwise>
+                             </choose>
+                             </if>
+                          where 1=1
+
+                             <include refid="searchVm"/>
+
+
+				     ) tt
+
+
+	</select>
+
+
+
+   <sql id="searchInc">
+		      <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND a.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND a.VM_SEQ =#{vmSeq}
+			  </if>
+	</sql>
+	<sql id="searchSubInc">
+		      <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND q.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND q.VM_SEQ =#{vmSeq}
+			  </if>
+	</sql>
+
+
+
+	<select id="selectUseGovDeptCntInc" resultType="Integer">
+
+	  /*ncis.sql.dsb.cmm.selectUseGovDeptCntInc*/
+
+		select COALESCE(count(distinct a.institution_id),0) cnt
+		       from st_vm_colct_sum_1dd a left join st_vm_job_1dd aa on a.vm_seq = aa.vm_seq and a.colct_dt = aa.colct_dt
+
+		       	  <if test='!allJobAuth' >
+		       	     inner join CM_JOB_USER B on aa.job_id = B.job_id
+		       	  </if>
+
+		     where a.colct_dt =
+		                     (select max(q.colct_dt)
+							   from st_vm_colct_sum_1dd q
+
+							  where 1=1
+
+						      )
+
+                  <if test='!allJobAuth' >
+                  	AND  B.USER_ID = #{searchUserId}
+                  </if>
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	and aa.JOB_ID =#{jobId}
+                  </if>
+
+			 <include refid="searchInc"/>
+
+	</select>
+
+
+	<select id="selectUseJobCntInc" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCntInc*/
+
+		select COALESCE(count(distinct aa.job_id),0) cnt
+	         from
+	              st_vm_colct_sum_1dd a left join st_vm_job_1dd aa on a.vm_seq = aa.vm_seq and a.colct_dt = aa.colct_dt
+	              <if test='!allJobAuth' >
+		       	     inner join CM_JOB_USER B on aa.job_id = B.job_id
+		       	  </if>
+
+	       where  a.colct_dt =
+	                     (select max(q.colct_dt)
+						   from st_vm_colct_sum_1dd q
+
+						  where 1=1
+
+					      )
+
+			     <if test='!allJobAuth' >
+                  	AND  B.USER_ID = #{searchUserId}
+                  </if>
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	and aa.JOB_ID =#{jobId}
+                  </if>
+
+		     <include refid="searchInc"/>
+	</select>
+
+
+	<select id="selectVcoreCntInc" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreCntInc*/
+
+		SELECT  COALESCE(sum(a.last_vcore_qty),0) last_vcore_qty
+			 FROM st_vm_colct_sum_10mi a left join
+		            (select vm_seq, job_id
+		               from st_vm_job_1dd
+                              where 1=1
+		       	               and colct_dt =
+		                        (select max(q.colct_dt)
+								    from st_vm_job_1dd q
+								   where 1=1
+					             )
+
+	                  )aa on a.vm_seq = aa.vm_seq
+
+		       	  <if test="!allJobAuth">
+		       	    inner join CM_JOB_USER B on aa.job_id = B.job_id
+		       	  </if>
+
+		       where 1=1
+		             and a.colct_dt||a.colct_hour||a.colct_mi =
+						 (select max(q.colct_dt||q.colct_hour||q.colct_mi)
+							    from st_vm_colct_sum_10mi q
+							   where 1=1
+
+						  )
+
+				 <if test="!allJobAuth">
+				     AND  B.USER_ID = #{searchUserId}
+				 </if>
+
+				 <if test='jobId !=null and !"".equals(jobId)'>
+
+							and aa.JOB_ID =#{jobId}
+				 </if>
+
+		      <include refid="searchInc"/>
+
+	</select>
+
+	<select id="selectVcoreVmCntInc" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreVmCntInc*/
+
+		select COALESCE(sum(cpu_vcore_qty),0) last_vcore_qty
+			 from RC_VM INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			 <if test="!allJobAuth">
+			      INNER JOIN CM_JOB_USER ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID AND CM_JOB_USER.USER_ID=#{searchUserId}
+			 </if>
+		where 1=1
+              and RC_VM.DEL_YN = 'N'
+
+            <if test='institutionId !=null and !"".equals(institutionId)'>
+				AND  RC_VM.INSTITUTION_ID =#{institutionId}
+		    </if>
+			<if test='jobId !=null and !"".equals(jobId)'>
+				and RC_VM_JOB.JOB_ID =#{jobId}
+			</if>
+			<if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND RC_VM.VM_SEQ =#{vmSeq}
+			</if>
+
+	</select>
+
+
+
+	<select id="selectVcoreCntIncCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreCntIncCnt*/
+
+		SELECT  COALESCE(count(*),0) cnt
+			 FROM st_vm_colct_sum_10mi a left join
+		            (select vm_seq, job_id
+		               from st_vm_job_1dd
+                              where 1=1
+		       	               and colct_dt =
+		                        (select max(q.colct_dt)
+								    from st_vm_job_1dd q
+								   where 1=1
+					             )
+
+	                  )aa on a.vm_seq = aa.vm_seq
+
+		       	  <if test="!allJobAuth">
+		       	    inner join CM_JOB_USER B on aa.job_id = B.job_id
+		       	  </if>
+
+		       where 1=1
+		             and a.colct_dt||a.colct_hour||a.colct_mi =
+						 (select max(q.colct_dt||q.colct_hour||q.colct_mi)
+							    from st_vm_colct_sum_10mi q
+							   where 1=1
+
+						  )
+
+				 <if test="!allJobAuth">
+				     AND  B.USER_ID = #{searchUserId}
+				 </if>
+
+				 <if test='jobId !=null and !"".equals(jobId)'>
+
+							and aa.JOB_ID =#{jobId}
+				 </if>
+
+		      <include refid="searchInc"/>
+
+
+	</select>
+
+
+	<select id="selectCpuUseRt10Inc" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10Inc*/
+                  select   a.colct_hour||':'||a.colct_mi mi,
+			               round(avg(avg_cpu_use_rt),1) rt
+			         FROM st_vm_colct_sum_10mi a left join
+				            (select vm_seq, job_id
+				                from st_vm_job_1dd
+		                      where 1=1
+				       	            and colct_dt =
+				                        (select max(q.colct_dt)
+										     from st_vm_job_1dd q
+										   where 1=1
+							             )
+
+			                  )aa on a.vm_seq = aa.vm_seq
+
+				       	  <if test="!allJobAuth">
+				       	    inner join CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+			      where 1=1
+			             and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			             and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+
+						 <if test='jobId !=null and !"".equals(jobId)'>
+									and aa.JOB_ID =#{jobId}
+						 </if>
+
+
+				   	<include refid="searchInc"/>
+
+				group by  a.colct_hour, a.colct_mi
+
+
+
+	</select>
+
+	<select id="selectMemUseRt10Inc" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10Inc*/
+                  select a.colct_hour||':'||a.colct_mi mi,
+			             round(avg(avg_mem_use_rt),1) rt
+			         FROM st_vm_colct_sum_10mi a left join
+				            (select vm_seq, job_id
+				               from st_vm_job_1dd
+		                              where 1=1
+				       	               and colct_dt =
+				                        (select max(q.colct_dt)
+										    from st_vm_job_1dd q
+										   where 1=1
+							             )
+
+			                  )aa on a.vm_seq = aa.vm_seq
+
+				       	  <if test="!allJobAuth">
+				       	    inner join CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+
+			      where 1=1
+			            and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			            and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+						 <if test='jobId !=null and !"".equals(jobId)'>
+									and aa.JOB_ID =#{jobId}
+						  </if>
+
+				       <include refid="searchInc"/>
+
+				group by  a.colct_hour, a.colct_mi
+
+
+	</select>
+
+	<select id="selectStrgUseRt10Inc" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectStrgUseRt10Inc*/
+                  select a.colct_hour||':'||a.colct_mi mi,
+                         round(avg(case when a.sum_strg_sum_capa=0 then 0 else a.sum_strg_use_capa/a.sum_strg_sum_capa*100 end),1) rt
+			         FROM st_vm_colct_sum_10mi a left join
+				            (select vm_seq, job_id
+				               from st_vm_job_1dd
+		                              where 1=1
+				       	               and colct_dt =
+				                        (select max(q.colct_dt)
+										    from st_vm_job_1dd q
+										   where 1=1
+							             )
+
+			                  )aa on a.vm_seq = aa.vm_seq
+
+				       	  <if test="!allJobAuth">
+				       	    inner join CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+			      where 1=1
+			            and colct_dt >= to_char(now()-interval '1 hour 30 minute','yyyymmdd')
+			            and (colct_dt||colct_hour||colct_mi) >= to_char(now()-interval '1 hour 30 minute', 'yyyymmddhh24mi')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+
+						  <if test='jobId !=null and !"".equals(jobId)'>
+								and aa.JOB_ID =#{jobId}
+						  </if>
+
+				 <include refid="searchInc"/>
+			    group by  a.colct_hour, a.colct_mi
+
+
+	</select>
+
+
+	<select id="selectManagerKndSttsInc" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndSttsInc*/
+
+		select c.cd mng_cd,
+	           c.cd_nm mng_nm,
+	           COALESCE(s.cnt, 0) mng_cnt
+	      from cm_code c
+		     left join (
+		               select b.vrlz_sw_ty_cd, count(1) cnt
+					     from
+						    st_vm_colct_sum_1dd	a inner join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+						                        left join st_vm_job_1dd aa on a.vm_seq = aa.vm_seq and a.colct_dt = aa.colct_dt
+						     <if test='!allJobAuth' >
+						                        inner join CM_JOB_USER C on aa.job_id = C.job_id
+						     </if>
+
+						 where 1=1
+						      and a.colct_dt = (select max(q.colct_dt)
+								  	              from st_vm_colct_sum_1dd q
+									             where 1=1
+									            )
+						      and upper(b.del_yn) = 'N'
+							 <if test="!allJobAuth">
+							     AND  C.USER_ID = #{searchUserId}
+							 </if>
+
+							  <if test='jobId !=null and !"".equals(jobId)'>
+								  and aa.JOB_ID =#{jobId}
+							  </if>
+					          <include refid="searchInc"/>
+					     group by b.vrlz_sw_ty_cd
+		               ) s on c.cd = s.vrlz_sw_ty_cd
+	     where c.grp_cd = '001' and c.parent_cd = '100' and c.use_yn = 'Y'
+
+	</select>
+
+
+
+
+
+
+
+	<select id="selectRegionToPmTree" parameterType="java.util.Map" resultMap="resultPmTree">
+		/* ncis.sql.dsb.cmm.selectRegionToPmTree */
+		SELECT 'NCIS' REGION_ID,'NCIS' REGION_NM, '' PATH,0 DEPTH, 'root' GUBUN, NULL PARENT_ID
+		UNION ALL
+		SELECT DISTINCT B.REGION_ID , B.REGION_NM , B.REGION_ID PATH, 1 DEPTH,'REGION' GUBUN, 'NCIS' PARENT_ID
+		 FROM
+		 	<if test='!role'>
+		 	CM_RSRC_POOL_USER A,
+		 	</if>
+		 	RC_REGION B, RC_RSRC_POOL C
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		UNION ALL
+		SELECT DISTINCT  B.REGION_ID||','||D.ZONE_ID, D.ZONE_NM,B.REGION_ID||','|| D.ZONE_ID PATH, 2 DEPTH, 'ZONE', B.REGION_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  B.REGION_ID=#{parentId}
+		</if>
+		UNION ALL
+		 SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID, F.NET_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID PATH, 3 DEPTH,'NET' ,  C.REGION_ID||','||C.ZONE_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+		RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_NET F
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = F.NET_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  D.ZONE_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, C.RSRC_POOL_NM,B.REGION_ID||','|| D.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, 4 DEPTH,'RSRC_POOL', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  E.NET_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ, F.CLSTR_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ, 5 DEPTH,'CLSTR', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+        AND F.DEL_YN='N'
+		<if test="parentId != null">
+		AND  C.RSRC_POOL_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ||','||G.PM_SEQ, G.PM_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ||','||G.PM_SEQ, 6 DEPTH,'PM',C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND G.CLSTR_SEQ = F.CLSTR_SEQ
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND G.DEL_YN='N'
+        AND C.DEL_YN='N'
+        AND F.DEL_YN='N'
+		<if test="parentId != null">
+		AND F.CLSTR_ID=#{parentId}
+		</if>
+		ORDER BY 3,4
+	</select>
+
+	<select id="selectInstitutionToVmTree" parameterType="java.util.Map" resultMap="resultVmTree">
+		/* ncis.sql.dsb.cmm.selectInstitutionToVmTree */
+	SELECT  INSTITUTION_ID,
+	        case when GUBUN = 'JOB' then
+				case when (title = lag(title)over (order by GUBUN , orderNm COLLATE "C")) or (title = lead(title)over (order by GUBUN , orderNm COLLATE "C")) then TITLE||'('||job_id||')'
+			    	 else TITLE
+		        end
+		     	else TITLE
+			end INSTITUTION_NM,
+	        PARENT_KEY,
+	        GUBUN,
+	        orderNm
+
+	  FROM
+		(SELECT   DISTINCT C.INSTITUTION_ID , C.INSTITUTION_NM TITLE, NULL PARENT_KEY,'INSTITUTION' GUBUN , C.INSTITUTION_NM orderNm, NULL JOB_ID
+		FROM
+		<if test='!role'>
+			CM_JOB_USER A,
+		</if>
+			CM_JOB B, CM_INSTITUTION C
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.JOB_ID = B.JOB_ID
+		</if>
+		AND B.INSTITUTION_ID = C.INSTITUTION_ID
+		AND C.INSTITUTION_NM IS NOT NULL
+		AND B.USE_YN='Y'
+		AND C.USE_YN='Y'
+		UNION ALL
+		SELECT B.INSTITUTION_ID||','||B.JOB_ID, B.JOB_NM , B.INSTITUTION_ID,'JOB' ,C.INSTITUTION_NM||','||b.job_nm, B.JOB_ID
+		FROM
+		<if test='!role'>
+			CM_JOB_USER A,
+		</if>
+			CM_JOB B, CM_INSTITUTION C
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.JOB_ID = B.JOB_ID
+		</if>
+		AND B.INSTITUTION_ID = C.INSTITUTION_ID
+		AND B.USE_YN='Y'
+		AND C.USE_YN='Y'
+		UNION ALL
+		SELECT C.INSTITUTION_ID||','||C.JOB_ID ||','||B.VM_SEQ, B.VM_NM, C.INSTITUTION_ID||','||C.JOB_ID,'VM',e.INSTITUTION_NM||C.INSTITUTION_ID||','||c.job_nm||','||b.vm_nm, C.JOB_ID
+		FROM
+		<if test='!role'>
+			CM_JOB_USER A,
+		</if>
+			RC_VM B, CM_JOB C  , RC_VM_JOB D,CM_INSTITUTION e
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.JOB_ID = C.JOB_ID
+		</if>
+ 		AND C.JOB_ID =D.JOB_ID
+ 		AND D.VM_SEQ = B.VM_SEQ
+ 		AND E.INSTITUTION_ID = C.INSTITUTION_ID
+ 		AND B.DEL_YN='N'
+ 		AND C.USE_YN='Y'
+ 		AND E.USE_YN='Y'
+ 	  ) A
+		ORDER BY GUBUN , orderNm COLLATE "C"
+	</select>
+
+</mapper>

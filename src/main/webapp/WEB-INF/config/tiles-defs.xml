@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+		"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+		"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="portalIndex" template="/WEB-INF/views/template/potalIndexLayout.jsp">
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/potalHeader.jsp" />
+		<put-attribute name="contents" value="/WEB-INF/views/cpt/index.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+
+	<definition name="portalLayout" template="/WEB-INF/views/template/potalLayout.jsp">
+		<put-attribute name="title" expression="${title}" />
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/potalHeader.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/template/side.jsp" />
+		<put-attribute name="location" value="/WEB-INF/views/template/potalLocation.jsp" />
+		<put-attribute name="contents" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+		<put-attribute name="extraSide" value="/WEB-INF/views/template/potalExtraSide.jsp" />
+	</definition>
+
+	<definition name="*/**.portal" extends="portalLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+
+	<definition name="*/**/**.portal" extends="portalLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}/{3].jsp" />
+	</definition>
+
+	<!-- dashboard -->
+	<definition name="dashIndex" template="/WEB-INF/views/template/dashIndexLayout.jsp">
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/dashHeader.jsp" />
+		<put-attribute name="contents" value="/WEB-INF/views/dsb/index.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+	
+	<definition name="dashIndex2" template="/WEB-INF/views/template/dashIndexLayout.jsp">
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/dashHeader.jsp" />
+		<put-attribute name="contents" value="/WEB-INF/views/dsb/onnara/index.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+
+	<definition name="dashLayout" template="/WEB-INF/views/template/dashLayout.jsp">
+		<put-attribute name="title" expression="${title}" />
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/dashHeader.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/template/side.jsp" />
+		<put-attribute name="location" value="/WEB-INF/views/template/dashLocation.jsp" />
+		<put-attribute name="contents" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+
+	<definition name="*/**.dashIndex" extends="dashIndex">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+
+	<definition name="*/**.dash" extends="dashLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+
+	<definition name="*/**/**.dash" extends="dashLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}/{3].jsp" />
+	</definition>
+
+	<!-- api -->
+	<definition name="apiIndex" template="/WEB-INF/views/template/apiIndexLayout.jsp">
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/apiHeader.jsp" />
+		<put-attribute name="contents" value="/WEB-INF/views/api/index.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+
+	<definition name="apiLayout" template="/WEB-INF/views/template/apiLayout.jsp">
+		<put-attribute name="title" expression="${title}" />
+		<put-attribute name="navbarInfo" value="/WEB-INF/views/template/navbarInfo.jsp" />
+		<put-attribute name="header" value="/WEB-INF/views/template/apiHeader.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/template/side.jsp" />
+		<put-attribute name="location" value="/WEB-INF/views/template/apiLocation.jsp" />
+		<put-attribute name="contents" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/template/footer.jsp" />
+	</definition>
+
+	<definition name="*/**.api" extends="apiLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+
+	<definition name="*/**/**.api" extends="apiLayout">
+		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}/{3].jsp" />
+	</definition>
+
+	<!-- popup -->
+	<definition name="popuplayout" template="/WEB-INF/views/template/popupLayout.jsp">
+		<put-attribute name="title" expression="${title}" />
+	</definition>
+
+ 	<definition name="*/**.popup" extends="popuplayout"> 
+ 		<put-attribute name="contents" value="/WEB-INF/views/{1}/{2}.jsp" /> 
+ 	</definition>
+
+</tiles-definitions>

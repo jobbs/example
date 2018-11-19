@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxPreDistrb">
+	<!-- 사전배포 등록 -->
+	<insert id="insertPreDistrb" parameterType="ncis.cmn.entity.RxPreDistrb">
+		<selectKey order="BEFORE" keyProperty="preDistrbReqSeq" resultType="integer">
+			SELECT nextval('rx_img_pre_distrb_lst_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rxPreDistrb.insertPreDistrb */
+		INSERT INTO RX_IMG_PRE_DISTRB_LST
+			(
+			PRE_DISTRB_REQ_SEQ				/*사전배포요청SEQ*/
+			,RSRC_POOL_ID                   /*자원풀ID*/
+			,SERVC_AREA_SEQ                 /*서비스영역SEQ*/
+			,IMG_ID                         /*이미지ID*/
+			,IMG_REPO_DTL_ADDR              /*이미지저장소상세주소*/
+			,DISTRB_REQ_DTTM                /*배포요청일시*/
+			,DISTRB_REQ_USER_ID             /*배포요청자ID*/
+			,RMK                            /*비고*/
+			,DEMON_SET_ID                   /*데몬셋ID*/
+			,DISTRB_STAT_CD					/*배포상태코드*/
+            )
+    VALUES (
+	    	 #{preDistrbReqSeq}
+	    	,#{rsrcPoolId}
+	    	,#{servcAreaSeq}
+	    	,#{imgId}
+	    	,#{imgRepoDtlAddr}
+	    	,now()
+	    	,#{distrbReqUserId}
+	    	,#{rmk}
+	    	,#{demonSetId}
+	    	,#{distrbStatCd}
+            );
+	</insert>
+	<!-- 사전배포 상태 수정 -->
+	<update id="updatePreDistrbStat">
+	/*ncis.sql.cmn.rxPreDistrb.updatePreDistrbStat*/
+	UPDATE RX_IMG_PRE_DISTRB_LST
+		SET
+			DISTRB_STAT_CD = #{distrbStatCd} /*배포상태코드*/
+			<if test="distrbStatCd =='02'">
+			,DISTRB_COMPT_DTTM = now() /*배포완료일시*/
+			</if>
+		WHERE PRE_DISTRB_REQ_SEQ = #{preDistrbReqSeq}
+	</update>
+
+	<update id="updateRePreDistrb">
+	/*ncis.sql.cmn.rxPreDistrb.updateRePreDistrb*/
+	UPDATE RX_IMG_PRE_DISTRB_LST
+		SET
+			 DEMON_SET_ID = #{demonSetId}
+			,DISTRB_STAT_CD = #{distrbStatCd}
+			,DISTRB_REQ_DTTM = now()
+			,RMK = #{rmk}
+		WHERE PRE_DISTRB_REQ_SEQ = #{preDistrbReqSeq}
+	</update>
+</mapper>

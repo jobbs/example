@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrSpec">
+
+	<resultMap id="resultRrSpec" type="ncis.cmn.entity.RrSpec">
+        <result property="specSeq"     column="SPEC_SEQ"/>  <!-- 스펙ID -->
+        <result property="specNm"     column="SPEC_NM"/>  <!-- 스펙명 -->
+        <result property="creDt"     column="CRE_DT"/>  <!-- 생성일자 -->
+        <result property="cpuVcore"     column="CPU_VCORE"/>  <!-- CPU(vCore) -->
+        <result property="ent"     column="ENT"/>  <!-- 엔타이틀먼트 -->
+        <result property="mem"     column="MEM"/>  <!-- 메모리(MB) -->
+        <result property="creUserId"     column="CRE_USER_ID"/>  <!-- 생성자ID -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDt"     column="UPDT_DT"/>  <!-- 수정일자 -->
+        <result property="dc"     column="DC"/>  <!-- 설명 -->
+        <result property="specClCd"     column="SPEC_CL_CD"/>  <!-- 스펙구분코드 -->
+        <result property="strgDfltVl"     column="STRG_DFLT_VL"/>  <!-- 스토리지(기본값) -->
+        <result property="uncappWeight"     column="UNCAPP_WEIGHT"/>  <!-- uncapped weight -->
+        <result property="entMaxVl"     column="ENT_MAX_VL"/>  <!-- 엔타이틀먼트_최대값 -->
+        <result property="entDfltVl"     column="ENT_DFLT_VL"/>  <!-- 엔타이틀먼트_기본값 -->
+        <result property="entMinVl"     column="ENT_MIN_VL"/>  <!-- 엔타이틀먼트_최소값 -->
+        <result property="memMaxVl"     column="MEM_MAX_VL"/>  <!-- 메모리_최대값 -->
+        <result property="memMinVl"     column="MEM_MIN_VL"/>  <!-- 메모리_최소값 -->
+        <result property="memDfltVl"     column="MEM_DFLT_VL"/>  <!-- 메모리_기본값 -->
+        <result property="vcoreMaxVl"     column="VCORE_MAX_VL"/>  <!-- vCore_최대값 -->
+        <result property="vcoreMinVl"     column="VCORE_MIN_VL"/>  <!-- vCore_최소값 -->
+        <result property="vcoreDfltVl"     column="VCORE_DFLT_VL"/>  <!-- vCore_기본값 -->
+	</resultMap>
+
+	<insert id="insertRrSpec">
+		<selectKey order="BEFORE" keyProperty="specSeq" resultType="integer">
+			SELECT nextval('rr_spec_sq01')
+			/* SELECT (MAX(spec_seq)::int)+1 FROM RR_SPEC */
+		</selectKey>
+		/* ncis.sql.cmn.rrSpec.insertRrSpec */
+		INSERT INTO RR_SPEC (	SPEC_SEQ  /* 스펙ID */
+								,SPEC_NM  /* 스펙명 */
+								,CRE_DT  /* 생성일자 */
+								,CPU_VCORE  /* CPU(vCore) */
+								,ENT  /* 엔타이틀먼트 */
+								,MEM  /* 메모리(MB) */
+								,CRE_USER_ID  /* 생성자ID */
+								,UPDT_USER_ID  /* 수정자ID */
+								,UPDT_DT  /* 수정일자 */
+								,DC  /* 설명 */
+								,SPEC_CL_CD  /* 스펙구분코드 */
+								,STRG_DFLT_VL  /* 스토리지(기본값) */
+								,UNCAPP_WEIGHT  /* uncapped weight */
+								,ENT_MAX_VL  /* 엔타이틀먼트_최대값 */
+								,ENT_DFLT_VL  /* 엔타이틀먼트_기본값 */
+								,ENT_MIN_VL  /* 엔타이틀먼트_최소값 */
+								,MEM_MAX_VL  /* 메모리_최대값 */
+								,MEM_MIN_VL  /* 메모리_최소값 */
+								,MEM_DFLT_VL   /* 메모리_기본값 */
+								,VCORE_MAX_VL  /* vCore_최대값 */
+								,VCORE_MIN_VL  /* vCore_최소값 */
+								,VCORE_DFLT_VL /* vCore_기본값 */
+								,MAX_POD_QTY   /* 최대 Pod수 */
+								,CL_CD         /* 구분코드*/
+		) VALUES (	#{specSeq}  /* 스펙ID */
+					, #{specNm}  /* 스펙명 */
+					, now()  /* 생성일자 */
+					, #{cpuVcore}  /* CPU(vCore) */
+					, #{ent}  /* 엔타이틀먼트 */
+					, #{mem}  /* 메모리(MB) */
+					, #{creUserId}  /* 생성자ID */
+					, #{updtUserId}  /* 수정자ID */
+					, #{updtDt}  /* 수정일자 */
+					, #{dc}  /* 설명 */
+					, #{specClCd}  /* 스펙구분코드 */
+					, #{strgDfltVl}  /* 스토리지(기본값) */
+					, #{uncappWeight}  /* uncapped weight */
+					, #{entMaxVl}  /* 엔타이틀먼트_최대값 */
+					, #{entDfltVl}  /* 엔타이틀먼트_기본값 */
+					, #{entMinVl}  /* 엔타이틀먼트_최소값 */
+					, #{memMaxVl}  /* 메모리_최대값 */
+					, #{memMinVl}  /* 메모리_최소값 */
+					, #{memDfltVl}  /* 메모리_기본값 */
+					, #{vcoreMaxVl}  /* vCore_최대값 */
+					, #{vcoreMinVl}  /* vCore_최소값 */
+					, #{vcoreDfltVl}  /* vCore_기본값 */
+					, #{maxPodQty}  /* 최대 Pod수 */
+					, #{clCd}   /* 구분코드*/
+					
+		)
+	</insert>
+
+	<update id="updateRrSpec">
+		/* ncis.sql.cmn.rrSpec.updateRrSpec */
+		UPDATE RR_SPEC
+		SET	SPEC_SEQ = #{specSeq}  /* 스펙ID */
+			, SPEC_NM = #{specNm}  /* 스펙명 */
+			, CPU_VCORE = #{cpuVcore}  /* CPU(vCore) */
+			, ENT = #{ent}  /* 엔타이틀먼트 */
+			, MEM = #{mem}  /* 메모리(MB) */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+			, UPDT_DT = now()  /* 수정일자 */
+			, DC = #{dc}  /* 설명 */
+			, SPEC_CL_CD = #{specClCd}  /* 스펙구분코드 */
+			, STRG_DFLT_VL = #{strgDfltVl}  /* 스토리지(기본값) */
+			, UNCAPP_WEIGHT = #{uncappWeight}  /* uncapped weight */
+			, ENT_MAX_VL = #{entMaxVl}  /* 엔타이틀먼트_최대값 */
+			, ENT_DFLT_VL = #{entDfltVl}  /* 엔타이틀먼트_기본값 */
+			, ENT_MIN_VL = #{entMinVl}  /* 엔타이틀먼트_최소값 */
+			, MEM_MAX_VL = #{memMaxVl}  /* 메모리_최대값 */
+			, MEM_MIN_VL = #{memMinVl}  /* 메모리_최소값 */
+			, MEM_DFLT_VL = #{memDfltVl}  /* 메모리_기본값 */
+			, VCORE_MAX_VL = #{vcoreMaxVl}  /* vCore_최대값 */
+			, VCORE_MIN_VL = #{vcoreMinVl}  /* vCore_최소값 */
+			, VCORE_DFLT_VL = #{vcoreDfltVl}  /* vCore_기본값 */
+			, MAX_POD_QTY = #{maxPodQty}   /* 최대 Pod수 */
+		WHERE SPEC_SEQ = #{specSeq}  /* 스펙ID */
+	</update>
+
+	<delete id="deleteRrSpec">
+		/* ncis.sql.cmn.rrSpec.deleteRrSpec */
+		DELETE FROM RR_SPEC
+		WHERE SPEC_SEQ IN /* 스펙ID */
+			<if test="delCheck != null and !delCheck.isEmpty()">
+				<foreach collection="delCheck" item="item" open="(" close=")" separator=",">
+					(#{item}::int)
+				</foreach>
+			</if>
+	</delete>
+</mapper>

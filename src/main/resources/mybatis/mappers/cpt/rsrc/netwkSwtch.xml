@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.netSwtch">
+
+	<resultMap type="ncis.cpt.rsrc.net.vo.NetSwtchVo" id="resultNetSwtchVo">
+		<result property="vmSeq"			column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="vmId"				column="VM_ID"/>  <!-- 가상서버ID -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버명 -->
+		<result property="netwkTyClCdNm"	column="NETWK_TY_CL_CD_NM"/>  <!-- 네트워크유형구분명 -->
+		<result property="netwkTyClCd"		column="NETWK_TY_CL_CD"/>  <!-- 네트워크유형구분코드 -->
+		<result property="institutionId"	column="INSTITUTION_ID"/>  <!-- 기관명 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 기관명 -->
+		<result property="upperVmSeq"		column="UPPER_VM_SEQ"/>  <!-- 상위가상서버SEQ -->
+	</resultMap>
+
+	<sql id="search">
+		<if test='vmId != null and !vmId.isEmpty()'>
+			AND UPPER(A2.VM_ID) LIKE '%' || UPPER(#{vmId}) || '%'
+		</if>
+		<if test='vmNm != null and !vmNm.isEmpty()'>
+			AND UPPER(A2.VM_NM) LIKE '%' || UPPER(#{vmNm}) || '%'
+		</if>
+		<if test='netwkTyClCd and !netwkTyClCd.isEmpty()'>
+			AND A1.NETWK_TY_CL_CD = #{netwkTyClCd}
+		</if>
+		<if test='institutionNm != null and !institutionNm.isEmpty()'>
+			AND UPPER(A5.INSTITUTION_NM) LIKE '%' || UPPER(#{institutionNm}) || '%'
+		</if>
+	</sql>
+
+	<sql id="userAuthority">
+		<if test="!sysadm">
+			INNER JOIN (
+						SELECT	CM_RSRC_POOL_USER.USER_ID
+								,CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM	CM_RSRC_POOL_USER
+						WHERE	CM_RSRC_POOL_USER.USER_ID = #{userId}
+						) RSRC_POOL_USER
+					ON RSRC_POOL_USER.RSRC_POOL_ID = A4.RSRC_POOL_ID
+		</if>
+	</sql>
+
+	<select id="selectNetSwtchTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.netSwtch.selectNetSwtchTotCnt */
+		SELECT	COUNT(*)
+		FROM	RN_NETWK_SWTCH A1
+		INNER JOIN RC_VM A2
+				ON A2.VM_SEQ = A1.VM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A2.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		LEFT OUTER JOIN CM_INSTITUTION A5
+				ON A5.INSTITUTION_ID = A1.INSTITUTION_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = A1.NETWK_TY_CL_CD
+				AND A6.PARENT_GRP_CD ='061'
+		<include refid="userAuthority"/>
+		WHERE	A2.VM_CL_CD = '02'
+				AND A1.DEL_YN = 'N'
+				AND A1.NETWK_TY_CL_CD IS NOT NULL
+				AND A2.NETWK_TY_CL_CD IS NOT NULL
+				<include refid="search"/>
+	</select>
+
+	<select id="selectNetSwtchList" resultMap="resultNetSwtchVo">
+		/* ncis.sql.cpt.netSwtch.selectNetSwtchList */
+		SELECT	A2.VM_SEQ
+		        ,A1.NETWK_TY_CL_CD
+				,A6.CD_NM AS NETWK_TY_CL_CD_NM
+				,A2.VM_ID
+				,A2.VM_NM
+				,A1.INSTITUTION_ID
+				,A5.INSTITUTION_NM
+		FROM	RN_NETWK_SWTCH A1
+		INNER JOIN RC_VM A2
+				ON A2.VM_SEQ = A1.VM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A2.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		LEFT OUTER JOIN CM_INSTITUTION A5
+				ON A5.INSTITUTION_ID = A1.INSTITUTION_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = A1.NETWK_TY_CL_CD
+				AND A6.PARENT_GRP_CD ='061'
+		<include refid="userAuthority"/>
+		WHERE	A2.VM_CL_CD = '02'
+				AND A1.DEL_YN = 'N'
+				AND A1.NETWK_TY_CL_CD IS NOT NULL
+				AND A2.NETWK_TY_CL_CD IS NOT NULL
+				<include refid="search"/>
+		ORDER BY NETWK_TY_CL_CD_NM, A5.INSTITUTION_NM, A2.VM_NM
+	</select>
+
+</mapper>

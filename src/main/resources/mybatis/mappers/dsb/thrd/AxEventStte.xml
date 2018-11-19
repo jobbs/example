@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.thrd.axEvntStte">
+
+
+
+	<select id="selectAxEvntStteListCnt" parameterType="ncis.dsb.thrd.evnt.vo.AxEvntStteSearchVo" resultType="integer">
+		/* ncis.sql.dsb.thrd.axEvntStte.selectAxEvntStteListCnt */
+
+		SELECT COUNT(1) CNT
+			FROM RX_SERVC_AREA_EVNT A LEFT JOIN RX_SERVC_AREA B ON A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+			                       	  LEFT JOIN RC_RSRC_POOL C ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+						 <if test="!sysAdm">
+				         	<choose>
+				            	<when test = "oprAdm">
+									INNER JOIN CM_RSRC_POOL_USER D ON C.RSRC_POOL_ID = D.RSRC_POOL_ID
+								</when>
+			    		       	<otherwise>
+									INNER JOIN CM_JOB_USER H ON B.JOB_ID = H.JOB_ID
+								</otherwise>
+							</choose>
+						</if>
+			WHERE 1=1
+			<if test='cn!=null and !"".equals(cn)'>
+				AND MSG_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='evntOccrReasn!=null and !"".equals(evntOccrReasn)'>
+				AND EVNT_OCCR_REASN LIKE '%'||#{evntOccrReasn}||'%'
+			</if>
+			<if test='occrObjectId!=null and !"".equals(occrObjectId)'>
+				AND OCCR_OBJECT_ID LIKE '%'||#{occrObjectId}||'%'
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+
+			<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						AND D.USER_ID = #{userId}
+					</when>
+			    	<otherwise>
+						AND H.USER_ID = #{userId}
+					</otherwise>
+				</choose>
+			</if>
+
+		<if test='regionId !=null and !"".equals(regionId)'>
+			AND C.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND C.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND C.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND C.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+
+	</select>
+	<select id="selectAxEvntStteList" parameterType="ncis.dsb.thrd.evnt.vo.AxEvntStteSearchVo" resultType="ncis.dsb.thrd.evnt.vo.AxEvntStteVo">
+		/* ncis.sql.dsb.thrd.axEvntStte.selectAxEvntStteList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+
+
+		SELECT
+				A.SERVC_AREA_SEQ,
+				A.EVNT_ID ,
+				TO_CHAR(OCCR_DTTM,'YYYY-MM-DD HH24:MI:SS') OCCR_DTTM,
+				A.EVNT_OCCR_REASN,
+				A.OCCR_OBJECT_ID,
+				D.REGION_NM,
+				E.ZONE_NM,
+				F.NET_NM,
+				C.RSRC_POOL_NM,
+				A.MSG_CN
+			FROM RX_SERVC_AREA_EVNT A LEFT JOIN RX_SERVC_AREA B ON A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+			                       	  LEFT JOIN RC_RSRC_POOL C ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			                       	  LEFT JOIN RC_REGION D ON D.REGION_ID = C.REGION_ID
+						  			  LEFT JOIN RC_ZONE E ON E.ZONE_ID = C.ZONE_ID
+						  			  LEFT JOIN RC_NET F ON F.NET_ID = C.NET_ID
+
+
+				 		<if test="!sysAdm">
+				         	<choose>
+				            	<when test = "oprAdm">
+									INNER JOIN CM_RSRC_POOL_USER pooAuth ON C.RSRC_POOL_ID = pooAuth.RSRC_POOL_ID
+								</when>
+			    		       	<otherwise>
+									INNER JOIN CM_JOB_USER H ON B.JOB_ID = H.JOB_ID
+								</otherwise>
+							</choose>
+						</if>
+			WHERE 1=1
+			<if test='cn!=null and !"".equals(cn)'>
+				AND MSG_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='evntOccrReasn!=null and !"".equals(evntOccrReasn)'>
+				AND EVNT_OCCR_REASN LIKE '%'||#{evntOccrReasn}||'%'
+			</if>
+			<if test='occrObjectId!=null and !"".equals(occrObjectId)'>
+				AND OCCR_OBJECT_ID LIKE '%'||#{occrObjectId}||'%'
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+
+			<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						AND pooAuth.USER_ID = #{userId}
+					</when>
+			    	<otherwise>
+						AND H.USER_ID = #{userId}
+					</otherwise>
+				</choose>
+			</if>
+
+		<if test='regionId !=null and !"".equals(regionId)'>
+			AND C.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND C.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND C.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND C.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+
+		ORDER BY OCCR_DTTM DESC, EVNT_ID DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+</mapper>

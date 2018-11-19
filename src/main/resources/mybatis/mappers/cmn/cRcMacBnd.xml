@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcMacBnd">
+
+	<resultMap id="resultRcMacBnd" type="ncis.cmn.entity.RcMacBnd">
+        <result property="macBndSeq"     column="MAC_BND_SEQ"/>  <!-- MAC대역SEQ -->
+        <result property="macBndNm"     column="MAC_BND_NM"/>  <!-- MAC대역명 -->
+        <result property="dc"     		column="DC"/>  <!-- 설명 -->
+        <result property="macStrtAddr"	column="MAC_STRT_ADDR"/>  <!-- MAC시작주소 -->
+        <result property="macEndAddr"	column="MAC_END_ADDR"/>  <!-- MAC종료주소 -->
+        <result property="rsrcPoolId"	column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+        <result property="uuid"			column="UUID"/>  <!-- uuid -->
+        <result property="delUserId"	column="DEL_USER_ID"/>  <!-- 삭제자ID -->
+        <result property="delDttm"		column="DEL_DTTM"/>  <!-- 삭제일시 -->
+        <result property="delYn"		column="DEL_YN"/>  <!-- 삭제여부 -->
+        <result property="updtDttm"		column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="regUserId"	column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDttm"		column="REG_DTTM"/>  <!-- 등록일시 -->
+	</resultMap>
+
+	<!-- MAC 대역 등록 -->
+	<insert id="insertRcMacBnd">
+		<selectKey order="BEFORE" keyProperty="macBndSeq" resultType="integer">
+			SELECT nextval('rc_mac_bnd_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rcMacBnd.insertRcMacBnd */
+		INSERT INTO RC_MAC_BND (
+		             MAC_BND_SEQ  /* MAC대역SEQ */
+		           , MAC_BND_NM  /* MAC대역명 */
+		           , DC  /* 설명 */
+		           , MAC_STRT_ADDR  /* MAC시작주소 */
+		           , MAC_END_ADDR  /* MAC종료주소 */
+		           , RSRC_POOL_ID  /* 자원풀ID */
+		           , UUID
+		           , DEL_USER_ID
+		           , DEL_DTTM
+		           , DEL_YN
+		           , UPDT_DTTM
+		           , REG_USER_ID
+		           , REG_DTTM
+		) VALUES (
+		           #{macBndSeq}  /* MAC대역SEQ */
+		         , #{macBndNm}  /* MAC대역명 */
+		         , #{dc}  /* 설명 */
+		         , #{macStrtAddr}  /* MAC시작주소 */
+		         , #{macEndAddr}  /* MAC종료주소 */
+		         , #{rsrcPoolId}  /* 자원풀ID */
+		         , #{uuid}
+		         , #{delUserId}
+		         , #{delDttm}
+		         , #{delYn}
+		         , now()
+		         , #{regUserId}
+		         , now()
+		)
+	</insert>
+
+	<!-- MAC 대역 수정 -->
+	<update id="updateRcMacBnd">
+		/* ncis.sql.cmn.rcMacBnd.updateRcMacBnd */
+		UPDATE RC_MAC_BND
+		SET MAC_BND_SEQ = #{macBndSeq}  /* MAC대역SEQ */
+	        , MAC_BND_NM = #{macBndNm}  /* MAC대역명 */
+	        , DC = #{dc}  /* 설명 */
+	        , MAC_STRT_ADDR = #{macStrtAddr}  /* MAC시작주소 */
+	        , MAC_END_ADDR = #{macEndAddr}  /* MAC종료주소 */
+	        , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+	    WHERE MAC_BND_SEQ = #{macBndSeq}  /* MAC대역SEQ */
+	</update>
+
+	<!-- MAC 대역 삭제 -->
+	<delete id="deleteRcMacBnd">
+		/* ncis.sql.cmn.rcMacBnd.deleteRcMacBnd */
+		DELETE FROM RC_MAC_BND
+		WHERE MAC_BND_SEQ = #{value}  /* MAC대역SEQ */
+	</delete>
+
+</mapper>

@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxDistrbHstry">
+	<!-- 배포이력 등록 -->
+	<insert id="insertRxDistrbHstry" parameterType="ncis.cmn.entity.RxDistrbHstry">
+		/* ncis.sql.cmn.rxDistrbHstry.insertRxDistrbHstry */
+		INSERT INTO RX_DISTRB_HSTRY(
+	     SERVC_SEQ  /* 서비스SEQ */
+         , DISTRB_ID  /* 배포ID */
+         , DISTRB_CONF_ID  /* 배포설정ID */
+         , DISTRB_VER  /* 배포버전 */
+         , DISTRB_DTTM  /* 배포일시 */
+         , DISTRB_STAT_CD  /* 배포상태코드 */
+         , CRE_DTTM  /* 생성일시 */
+         , TMPLAT_NM  /* 템플릿명 */
+         , RE_STRT_POLICY_CL_CD  /* 재기동정책구분코드 */
+         , DNS_POLICY_CL_CD  /* DNS정책구분코드 */
+         , REQ_CPU_COR_QTY  /* 요청CPU코어수 */
+         , REQ_MEM_CAPA  /* 요청메모리용량 */
+         , LMTT_CPU_COR_QTY  /* 제한CPU코어수 */
+         , LMTT_MEM_CAPA  /* 제한메모리용량 */
+         , RPLCA_QTY  /* 복제수 */
+        ) VALUES (
+		 #{servcSeq}  /* 서비스SEQ */
+         , #{distrbId}  /* 배포ID */
+         , #{distrbConfId}  /* 배포설정ID */
+         , #{distrbVer}  /* 배포버전 */
+         , now()  /* 배포일시 */
+         , #{distrbStatCd}  /* 배포상태코드 */
+         , now()  /* 생성일시 */
+         , #{tmplatNm}  /* 템플릿명 */
+         , #{reStrtPolicyClCd}  /* 재기동정책구분코드 */
+         , #{dnsPolicyClCd}  /* DNS정책구분코드 */
+         , #{reqCpuCorQty}  /* 요청CPU코어수 */
+         , #{reqMemCapa}  /* 요청메모리용량 */
+         , #{lmttCpuCorQty}  /* 제한CPU코어수 */
+         , #{lmttMemCapa}  /* 제한메모리용량 */
+         , #{rplcaQty}  /* 복제수 */
+        )
+	</insert>
+
+	<!-- 배포이력 상태 수정 -->
+	<update id="updateRxDistrbHstryStat">
+		/* ncis.sql.cmn.rxDistrbHstry.updateRxDistrbHstryStat */
+		UPDATE RX_DISTRB_HSTRY
+			SET DISTRB_STAT_CD = #{distrbStatCd}
+			, UPDT_DTTM = now()
+        WHERE SERVC_SEQ = #{servcSeq}
+        AND DISTRB_ID = #{distrbId}
+	</update>
+
+	<!-- 배포이력 삭제 -->
+	<delete id="deleteRxDistrbHstry">
+		/* ncis.sql.cmn.rxDistrbHstry.deleteRxDistrbHstry */
+		DELETE FROM RX_DISTRB_HSTRY
+        WHERE SERVC_SEQ = #{servcSeq}
+         <if test="distrbId != null and !distrbId.isEmpty()">
+         AND DISTRB_ID = #{distrbId}
+       	 </if>
+	</delete>
+
+		<insert id="insertRxDistrbHstrySync" parameterType="ncis.cmn.entity.RxDistrbHstry">
+	/* ncis.sql.cmn.rxDistrbHstry.insertRxDistrbHstrySync */
+		INSERT INTO RX_DISTRB_HSTRY
+		(
+				SERVC_SEQ
+			,	DISTRB_ID
+			,	DISTRB_CONF_ID
+			,	DISTRB_VER
+			,	DISTRB_DTTM
+			,	DISTRB_STAT_CD
+			,	CRE_DTTM
+			,	RPLCA_QTY
+		)
+		VALUES
+		(
+				#{servcSeq}
+			,	#{distrbId}
+			,	#{distrbConfId}
+			,	#{distrbVer}
+			,	#{distrbDttmSync}
+			,	#{distrbStatCd}
+			,	#{distrbDttmSync}
+			,	#{rplcaQty}
+		)
+
+	</insert>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcZone">
+
+	<resultMap type="ncis.cmn.entity.RcZone" id="resultRcZone">
+		<result property="zoneId" column="ZONE_ID"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="regDttm" column="REG_DTTM"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+	</resultMap>
+
+	<insert id="insertRcZone">
+		/* ncis.sql.cmn.rcZone.insertRcZone */
+		INSERT INTO RC_ZONE (
+			ZONE_ID,
+			ZONE_NM,
+			REGION_ID,
+			REG_DTTM,
+			REG_USER_ID,
+			UPDT_DTTM,
+			UPDT_USER_ID
+		) VALUES (
+			#{zoneId },
+			#{zoneNm },
+			#{regionId },
+			now(),
+			#{regUserId },
+			now(),
+			#{updtUserId }
+		)
+	</insert>
+
+	<update id="updateRcZone">
+		/* ncis.sql.cmn.rcZone.updateRcZone */
+		UPDATE RC_ZONE SET
+			ZONE_NM      = #{zoneNm },
+			UPDT_DTTM      = now(),
+			UPDT_USER_ID   = #{updtUserId }
+		WHERE
+			ZONE_ID = #{zoneId }
+	</update>
+
+	<delete id="deleteRcZone">
+		/* ncis.sql.cmn.rcZone.deleteRcZone */
+		DELETE FROM RC_ZONE WHERE ZONE_ID = #{value }
+	</delete>
+
+</mapper>

@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.GovDeptResStte">
+
+	<resultMap type="ncis.dsb.stts.res.vo.GovDeptResInfoVo" id="resultGovDeptResInfoVo">
+		<result property="institutionCnt" column="institution_cnt"/>
+		<result property="jobCnt" column="job_cnt"/>
+		<result property="vmCnt" column="vm_cnt"/>
+		<result property="linuxCnt" column="linux_cnt"/>
+		<result property="hpCnt" column="hp_cnt"/>
+		<result property="aixCnt" column="aix_cnt"/>
+		<result property="winCnt" column="win_cnt"/>
+		<result property="solarisCnt" column="solaris_cnt"/>
+		<result property="etcCnt" column="etc_cnt"/>
+		<result property="lastVcoreQty" column="last_vcore_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+	<select id="selectGovDeptResInfo" resultMap="resultGovDeptResInfoVo">
+	/* ncis.sql.dsb.stts.res.GovDeptResStte.selectGovDeptResInfo */
+		select
+			  count(distinct vm.institution_id) institution_cnt
+			, count(distinct vm.institution_id||vm.job_id) job_cnt
+			, count(distinct vm.rsrc_pool_id||vm.uuid) vm_cnt
+			, COALESCE(sum(case when b.os_ty_cd='01' then 1 else 0 end),0) linux_cnt
+			, COALESCE(sum(case when b.os_ty_cd='02' then 1 else 0 end),0) hp_cnt
+			, COALESCE(sum(case when b.os_ty_cd='03' then 1 else 0 end),0) aix_cnt
+			, COALESCE(sum(case when b.os_ty_cd='04' then 1 else 0 end),0) win_cnt
+			, COALESCE(sum(case when b.os_ty_cd='09' then 1 else 0 end),0) solaris_cnt
+			, COALESCE(sum(case when b.os_ty_cd not in ('01','02','03','04','09') or b.os_ty_cd is null then 1 else 0 end),0) etc_cnt
+			, COALESCE(sum(colct.last_vcore_qty),0) last_vcore_qty
+			, COALESCE(round(sum(colct.last_mem_sum_capa)/1024/1024/1024,0),0) last_mem_sum_capa
+			, COALESCE(round(sum(colct.last_strg_sum_capa)/1024/1024/1024/1024,0),0) last_strg_sum_capa
+		from (
+			select
+				  a.rsrc_pool_id
+				, a.uuid
+				, max(a.vm_seq) vm_seq
+				, max(job.institution_id) institution_id
+				, max(job.job_id) job_id
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, max(a.colct_dt) colct_dt
+					</when>
+					<otherwise>
+						, max(a.colct_ym) colct_ym
+					</otherwise>
+				</choose>
+			from
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						st_vm_colct_sum_1dd a left join st_vm_job_1dd job
+						on a.colct_dt = job.colct_dt and a.vm_seq = job.vm_seq
+					</when>
+					<otherwise>
+						st_vm_colct_sum_1mm a left join st_last_day last on a.colct_ym = last.ym
+						left join st_vm_job_1dd job on last.last_day = job.colct_dt and a.vm_seq = job.vm_seq
+					</otherwise>
+				</choose>
+			where 1=1
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd)'>
+					AND a.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'03')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'04' AND #{year}||'06')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'09')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'10' AND #{year}||'12')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'06')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'12')
+				</when>
+				<when test='"YY".equals(searchTrmCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym like #{year}||'%')
+				</when>
+			</choose>
+			<if test="institutionId != null and !institutionId.isEmpty()">
+				<foreach collection="institutionId" open="AND job.institution_id IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+			group by a.rsrc_pool_id, a.uuid
+		) vm, rc_vm b
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					, st_vm_colct_sum_1dd colct
+				</when>
+				<otherwise>
+					, st_vm_colct_sum_1mm colct
+				</otherwise>
+			</choose>
+		where 1 = 1
+			and vm.vm_seq = b.vm_seq
+			and vm.rsrc_pool_id = colct.rsrc_pool_id
+			and vm.uuid = colct.uuid
+			and vm.vm_seq = colct.vm_seq
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					and vm.colct_dt = colct.colct_dt
+				</when>
+				<otherwise>
+					and vm.colct_ym = colct.colct_ym
+				</otherwise>
+			</choose>
+	</select>
+
+	<resultMap type="ncis.dsb.stts.res.vo.GovAxCntVo" id="resultGovAxCntVo">
+		<result property="servcCnt" column="servc_cnt"/>
+		<result property="podQty" column="pod_qty"/>
+		<result property="cpuAsgnCapa" column="cpu_asgn_capa"/>
+		<result property="memTotCapa" column="mem_tot_capa"/>
+		<result property="strgTotCapa" column="strg_tot_capa"/>
+	</resultMap>
+
+	<select id="selectGovAxCnt" resultMap="resultGovAxCntVo">
+	/* ncis.sql.dsb.stts.res.GovDeptResStte.selectGovAxCnt */
+		select
+			  count(servc_seq) servc_cnt
+			, sum(last_pod_qty) pod_qty
+			, coalesce(round(sum(cpu_asgn_capa)/1000,2),0) cpu_asgn_capa
+			, coalesce(round(sum(mem_tot_capa)/1024/1024/1024,2),0) mem_tot_capa
+			, coalesce(round(sum(strg_tot_capa)/1024/1024/1024,2),0) strg_tot_capa
+		from
+		<choose>
+			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+				st_rx_servc_sum_1dd a
+			</when>
+			<otherwise>
+				st_rx_servc_sum_1mm a
+			</otherwise>
+		</choose>
+		where 1=1
+		<choose>
+			<when test='"DD".equals(searchTrmCd)'>
+				AND a.COLCT_DT = REPLACE(#{date},'-','')
+			</when>
+			<when test='"DI".equals(searchTrmCd)'>
+				AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+			</when>
+			<when test='"MM".equals(searchTrmCd)'>
+				AND a.COLCT_YM = #{year}||#{searchMmCd}
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'01' AND #{year}||'03')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'04' AND #{year}||'06')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'07' AND #{year}||'09')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'10' AND #{year}||'12')
+			</when>
+			<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'01' AND #{year}||'06')
+			</when>
+			<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'07' AND #{year}||'12')
+			</when>
+			<when test='"YY".equals(searchTrmCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym like #{year}||'%')
+			</when>
+		</choose>
+		<if test="institutionId != null and !institutionId.isEmpty()">
+			<foreach collection="institutionId" open="AND a.institution_id IN(" close=")" separator="," item="item">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<resultMap type="ncis.dsb.stts.res.vo.GovDeptResStteVo" id="resultGovDeptResListVo">
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="institutionId" column="INSTITUTION_ID"/>
+		<result property="jobCnt" column="JOB_CNT"/>
+		<result property="webCnt" column="WEB_CNT"/>
+		<result property="wasCnt" column="WAS_CNT"/>
+		<result property="dbCnt" column="DB_CNT"/>
+		<result property="winCnt" column="WIN_CNT"/>
+		<result property="testCnt" column="TEST_CNT"/>
+		<result property="etcCnt" column="ETC_CNT"/>
+		<result property="servcCnt" column="SERVC_CNT"/>
+		<result property="podQty" column="POD_QTY"/>
+		<result property="osLinuxCnt" column="OS_LINUX_CNT"/>
+		<result property="osHpCnt" column="OS_HP_CNT"/>
+		<result property="osAixCnt" column="OS_AIX_CNT"/>
+		<result property="osWinCnt" column="OS_WIN_CNT"/>
+		<result property="osSolarisCnt" column="OS_SOLARIS_CNT"/>
+		<result property="osEtcCnt" column="OS_ETC_CNT"/>
+		<result property="webVcore" column="WEB_VCORE"/>
+		<result property="webCpuRt" column="WEB_CPU_RT"/>
+		<result property="webMem" column="WEB_MEM"/>
+		<result property="webMemRt" column="WEB_MEM_RT"/>
+		<result property="webStrg" column="WEB_STRG"/>
+		<result property="webStrgRt" column="WEB_STRG_RT"/>
+		<result property="wasVcore" column="WAS_VCORE"/>
+		<result property="wasCpuRt" column="WAS_CPU_RT"/>
+		<result property="wasMem" column="WAS_MEM"/>
+		<result property="wasMemRt" column="WAS_MEM_RT"/>
+		<result property="wasStrg" column="WAS_STRG"/>
+		<result property="wasStrgRt" column="WAS_STRG_RT"/>
+		<result property="dbVcore" column="DB_VCORE"/>
+		<result property="dbCpuRt" column="DB_CPU_RT"/>
+		<result property="dbMem" column="DB_MEM"/>
+		<result property="dbMemRt" column="DB_MEM_RT"/>
+		<result property="dbStrg" column="DB_STRG"/>
+		<result property="dbStrgRt" column="DB_STRG_RT"/>
+		<result property="winVcore" column="WIN_VCORE"/>
+		<result property="winCpuRt" column="WIN_CPU_RT"/>
+		<result property="winMem" column="WIN_MEM"/>
+		<result property="winMemRt" column="WIN_MEM_RT"/>
+		<result property="winStrg" column="WIN_STRG"/>
+		<result property="winStrgRt" column="WIN_STRG_RT"/>
+		<result property="testVcore" column="TEST_VCORE"/>
+		<result property="testCpuRt" column="TEST_CPU_RT"/>
+		<result property="testMem" column="TEST_MEM"/>
+		<result property="testMemRt" column="TEST_MEM_RT"/>
+		<result property="testStrg" column="TEST_STRG"/>
+		<result property="testStrgRt" column="TEST_STRG_RT"/>
+		<result property="etcVcore" column="ETC_VCORE"/>
+		<result property="etcCpuRt" column="ETC_CPU_RT"/>
+		<result property="etcMem" column="ETC_MEM"/>
+		<result property="etcMemRt" column="ETC_MEM_RT"/>
+		<result property="etcStrg" column="ETC_STRG"/>
+		<result property="etcStrgRt" column="ETC_STRG_RT"/>
+		<result property="ocpCpuAsgnCapa" column="OCP_CPU_ASGN_CAPA"/>
+		<result property="ocpAvgCpuUseRt" column="OCP_AVG_CPU_USE_RT"/>
+		<result property="ocpMemTotCapa" column="OCP_MEM_TOT_CAPA"/>
+		<result property="ocpAvgMemUseRt" column="OCP_AVG_MEM_USE_RT"/>
+		<result property="ocpStrgTotCapa" column="OCP_STRG_TOT_CAPA"/>
+	</resultMap>
+
+	<select id="selectGovDeptResList" resultMap="resultGovDeptResListVo">
+	/* ncis.sql.dsb.stts.GovDeptResStte.selectGovDeptResList */
+	SELECT
+		  CASE WHEN GROUPING(INSTITUTION_NM,INSTITUTION_ID) <![CDATA[>]]> 0 THEN '합계' ELSE COALESCE(INSTITUTION_NM,'미할당') END INSTITUTION_NM
+		, INSTITUTION_ID
+		, CASE WHEN COUNT(DISTINCT JOB_ID) = 0 THEN NULL ELSE COUNT(DISTINCT JOB_ID) END JOB_CNT
+		, SUM(WEB_CNT) WEB_CNT
+		, SUM(WAS_CNT) WAS_CNT
+		, SUM(DB_CNT) DB_CNT
+		, SUM(WIN_CNT) WIN_CNT
+		, SUM(TEST_CNT) TEST_CNT
+		, SUM(ETC_CNT) ETC_CNT
+		, CASE WHEN COUNT(DISTINCT SERVC_SEQ) = 0 THEN NULL ELSE COUNT(DISTINCT SERVC_SEQ) END SERVC_CNT
+		, CASE WHEN COUNT(DISTINCT SERVC_SEQ) = 0 THEN NULL ELSE ROUND(SUM(LAST_POD_QTY),0) END POD_QTY
+		, SUM(OS_LINUX_CNT) OS_LINUX_CNT
+		, SUM(OS_HP_CNT) OS_HP_CNT
+		, SUM(OS_AIX_CNT) OS_AIX_CNT
+		, SUM(OS_WIN_CNT) OS_WIN_CNT
+		, SUM(OS_SOLARIS_CNT) OS_SOLARIS_CNT
+		, SUM(OS_ETC_CNT) OS_ETC_CNT
+		, SUM(CASE WHEN WEB_CNT = 1 THEN LAST_VCORE_QTY END) WEB_VCORE
+		, ROUND(AVG(CASE WHEN WEB_CNT = 1 THEN AVG_CPU_USE_RT END),2) WEB_CPU_RT
+		, ROUND(SUM(CASE WHEN WEB_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) WEB_MEM
+		, ROUND(AVG(CASE WHEN WEB_CNT = 1 THEN AVG_MEM_USE_RT END),2) WEB_MEM_RT
+		, ROUND(SUM(CASE WHEN WEB_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) WEB_STRG
+		, ROUND(AVG(CASE WHEN WEB_CNT = 1 THEN AVG_STRG_USE_RT END),2) WEB_STRG_RT
+		, SUM(CASE WHEN WAS_CNT = 1 THEN LAST_VCORE_QTY END) WAS_VCORE
+		, ROUND(AVG(CASE WHEN WAS_CNT = 1 THEN AVG_CPU_USE_RT END),2) WAS_CPU_RT
+		, ROUND(SUM(CASE WHEN WAS_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) WAS_MEM
+		, ROUND(AVG(CASE WHEN WAS_CNT = 1 THEN AVG_MEM_USE_RT END),2) WAS_MEM_RT
+		, ROUND(SUM(CASE WHEN WAS_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) WAS_STRG
+		, ROUND(AVG(CASE WHEN WAS_CNT = 1 THEN AVG_STRG_USE_RT END),2) WAS_STRG_RT
+		, SUM(CASE WHEN DB_CNT = 1 THEN LAST_VCORE_QTY END) DB_VCORE
+		, ROUND(AVG(CASE WHEN DB_CNT = 1 THEN AVG_CPU_USE_RT END),2) DB_CPU_RT
+		, ROUND(SUM(CASE WHEN DB_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) DB_MEM
+		, ROUND(AVG(CASE WHEN DB_CNT = 1 THEN AVG_MEM_USE_RT END),2) DB_MEM_RT
+		, ROUND(SUM(CASE WHEN DB_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) DB_STRG
+		, ROUND(AVG(CASE WHEN DB_CNT = 1 THEN AVG_STRG_USE_RT END),2) DB_STRG_RT
+		, SUM(CASE WHEN WIN_CNT = 1 THEN LAST_VCORE_QTY END) WIN_VCORE
+		, ROUND(AVG(CASE WHEN WIN_CNT = 1 THEN AVG_CPU_USE_RT END),2) WIN_CPU_RT
+		, ROUND(SUM(CASE WHEN WIN_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) WIN_MEM
+		, ROUND(AVG(CASE WHEN WIN_CNT = 1 THEN AVG_MEM_USE_RT END),2) WIN_MEM_RT
+		, ROUND(SUM(CASE WHEN WIN_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) WIN_STRG
+		, ROUND(AVG(CASE WHEN WIN_CNT = 1 THEN AVG_STRG_USE_RT END),2) WIN_STRG_RT
+		, SUM(CASE WHEN TEST_CNT = 1 THEN LAST_VCORE_QTY END) TEST_VCORE
+		, ROUND(AVG(CASE WHEN TEST_CNT = 1 THEN AVG_CPU_USE_RT END),2) TEST_CPU_RT
+		, ROUND(SUM(CASE WHEN TEST_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) TEST_MEM
+		, ROUND(AVG(CASE WHEN TEST_CNT = 1 THEN AVG_MEM_USE_RT END),2) TEST_MEM_RT
+		, ROUND(SUM(CASE WHEN TEST_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) TEST_STRG
+		, ROUND(AVG(CASE WHEN TEST_CNT = 1 THEN AVG_STRG_USE_RT END),2) TEST_STRG_RT
+		, SUM(CASE WHEN ETC_CNT = 1 THEN LAST_VCORE_QTY END) ETC_VCORE
+		, ROUND(AVG(CASE WHEN ETC_CNT = 1 THEN AVG_CPU_USE_RT END),2) ETC_CPU_RT
+		, ROUND(SUM(CASE WHEN ETC_CNT = 1 THEN LAST_MEM_SUM_CAPA END)/1024/1024/1024,2) ETC_MEM
+		, ROUND(AVG(CASE WHEN ETC_CNT = 1 THEN AVG_MEM_USE_RT END),2) ETC_MEM_RT
+		, ROUND(SUM(CASE WHEN ETC_CNT = 1 THEN LAST_STRG_SUM_CAPA END)/1024/1024/1024/1024,2) ETC_STRG
+		, ROUND(AVG(CASE WHEN ETC_CNT = 1 THEN AVG_STRG_USE_RT END),2) ETC_STRG_RT
+		, ROUND(SUM(CASE WHEN SERVC_SEQ IS NOT NULL THEN OCP_CPU_ASGN_CAPA END)/1000,2) OCP_CPU_ASGN_CAPA
+		, ROUND(AVG(CASE WHEN SERVC_SEQ IS NOT NULL THEN OCP_AVG_CPU_USE_RT END),2) OCP_AVG_CPU_USE_RT
+		, ROUND(SUM(CASE WHEN SERVC_SEQ IS NOT NULL THEN OCP_MEM_TOT_CAPA END)/1024/1024/1024,2) OCP_MEM_TOT_CAPA
+		, ROUND(AVG(CASE WHEN SERVC_SEQ IS NOT NULL THEN OCP_AVG_MEM_USE_RT END),2) OCP_AVG_MEM_USE_RT
+		, ROUND(SUM(CASE WHEN SERVC_SEQ IS NOT NULL THEN OCP_STRG_TOT_CAPA END)/1024/1024/1024,2) OCP_STRG_TOT_CAPA
+	FROM (
+		SELECT
+			  VM.INSTITUTION_NM
+			, VM.INSTITUTION_ID
+			, VM.JOB_ID
+			, VM.WEB_CNT
+			, VM.WAS_CNT
+			, VM.DB_CNT
+			, VM.WIN_CNT
+			, VM.TEST_CNT
+			, VM.ETC_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD = '01' THEN 1 ELSE 0 END,0) OS_LINUX_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD = '02' THEN 1 ELSE 0 END,0) OS_HP_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD = '03' THEN 1 ELSE 0 END,0) OS_AIX_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD = '04' THEN 1 ELSE 0 END,0) OS_WIN_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD = '09' THEN 1 ELSE 0 END,0) OS_SOLARIS_CNT
+			, COALESCE(CASE WHEN B.OS_TY_CD NOT IN ('01','02','03','04','09') OR B.OS_TY_CD IS NULL THEN 1 ELSE 0 END,0) OS_ETC_CNT
+			, COLCT.LAST_VCORE_QTY
+			, COLCT.AVG_CPU_USE_RT
+			, COLCT.LAST_MEM_SUM_CAPA
+			, COLCT.AVG_MEM_USE_RT
+			, COLCT.LAST_STRG_SUM_CAPA
+			, COLCT.AVG_STRG_USE_RT
+			, NULL SERVC_SEQ
+			, 0 LAST_POD_QTY
+			, 0 OCP_CPU_ASGN_CAPA
+			, 0.00 OCP_AVG_CPU_USE_RT
+			, 0 OCP_MEM_TOT_CAPA
+			, 0.00 OCP_AVG_MEM_USE_RT
+			, 0 OCP_STRG_TOT_CAPA
+		FROM (
+			SELECT
+				  A.RSRC_POOL_ID
+				, A.UUID
+				, MAX(A.VM_SEQ) VM_SEQ
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, MAX(A.COLCT_DT) COLCT_DT
+					</when>
+					<otherwise>
+						, MAX(A.COLCT_YM) COLCT_YM
+					</otherwise>
+				</choose>
+				, MAX(JOB.INSTITUTION_ID) INSTITUTION_ID
+				, MAX(JOB.INSTITUTION_NM) INSTITUTION_NM
+				, MAX(JOB.JOB_ID) JOB_ID
+				, (SELECT COUNT(1) FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ) AND Q.PRPOS_CL_CD = '02') WEB_CNT
+				, (SELECT COUNT(1) FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ) AND Q.PRPOS_CL_CD = '03') WAS_CNT
+				, (SELECT COUNT(1) FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ) AND Q.PRPOS_CL_CD = '01') DB_CNT
+				, (SELECT COUNT(1) FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ) AND Q.PRPOS_CL_CD = '04') WIN_CNT
+				, (SELECT COUNT(1) FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ) AND Q.PRPOS_CL_CD = '05') TEST_CNT
+				, (SELECT CASE WHEN COUNT(1) = 0 THEN 1 ELSE 0 END FROM RC_CLSTR_PRPOS Q WHERE Q.CLSTR_SEQ = MAX(A.CLSTR_SEQ)) ETC_CNT
+			FROM
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						ST_VM_COLCT_SUM_1DD A LEFT JOIN ST_VM_JOB_1DD JOB ON A.COLCT_DT = JOB.COLCT_DT AND A.VM_SEQ = JOB.VM_SEQ
+					</when>
+					<otherwise>
+						ST_VM_COLCT_SUM_1MM A LEFT JOIN ST_LAST_DAY LAST ON A.COLCT_YM = LAST.YM LEFT JOIN ST_VM_JOB_1DD JOB
+						ON LAST.LAST_DAY = JOB.COLCT_DT AND A.VM_SEQ = JOB.VM_SEQ
+					</otherwise>
+				</choose>
+			WHERE 1 = 1
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd)'>
+					AND a.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'03')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'04' AND #{year}||'06')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'09')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'10' AND #{year}||'12')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'06')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'12')
+				</when>
+				<when test='"YY".equals(searchTrmCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym like #{year}||'%')
+				</when>
+			</choose>
+			<if test="institutionId != null and !institutionId.isEmpty()">
+				<foreach collection="institutionId" open="AND JOB.INSTITUTION_ID IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+			GROUP BY A.RSRC_POOL_ID, A.UUID
+			) VM, RC_VM B
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					, ST_VM_COLCT_SUM_1DD COLCT
+				</when>
+				<otherwise>
+					, ST_VM_COLCT_SUM_1MM COLCT
+				</otherwise>
+			</choose>
+			WHERE 1 = 1
+			  AND VM.VM_SEQ = B.VM_SEQ
+			  AND VM.RSRC_POOL_ID = COLCT.RSRC_POOL_ID
+			  AND VM.UUID = COLCT.UUID
+			  AND VM.VM_SEQ = COLCT.VM_SEQ
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					AND VM.COLCT_DT = COLCT.COLCT_DT
+				</when>
+				<otherwise>
+					AND VM.COLCT_YM = COLCT.COLCT_YM
+				</otherwise>
+			</choose>
+			UNION ALL
+			SELECT
+				  A.INSTITUTION_NM
+				, A.INSTITUTION_ID
+				, NULL JOB_ID
+				, 0 WEB_CNT
+				, 0 WAS_CNT
+				, 0 DB_CNT
+				, 0 WIN_CNT
+				, 0 TEST_CNT
+				, 0 ETC_CNT
+				, 0 OS_LINUX_CNT
+				, 0 OS_HP_CNT
+				, 0 OS_AIX_CNT
+				, 0 OS_WIN_CNT
+				, 0 OS_SOLARIS_CNT
+				, 0 OS_ETC_CNT
+				, 0 LAST_VCORE_QTY
+				, 0.00 AVG_CPU_USE_RT
+				, 0 LAST_MEM_SUM_CAPA
+				, 0.00 AVG_MEM_USE_RT
+				, 0 LAST_STRG_SUM_CAPA
+				, 0.00 AVG_STRG_USE_RT
+				, A.SERVC_SEQ
+				, A.LAST_POD_QTY
+				, A.CPU_ASGN_CAPA AS OCP_CPU_ASGN_CAPA
+				, A.AVG_CPU_USE_RT AS OCP_AVG_CPU_USE_RT
+				, A.MEM_TOT_CAPA AS OCP_MEM_TOT_CAPA
+				, A.AVG_MEM_USE_RT AS OCP_AVG_MEM_USE_RT
+				, A.STRG_TOT_CAPA AS OCP_STRG_TOT_CAPA
+			FROM
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					ST_RX_SERVC_SUM_1DD A
+				</when>
+				<otherwise>
+					ST_RX_SERVC_SUM_1MM A
+				</otherwise>
+			</choose>
+			WHERE 1 = 1
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd)'>
+					AND a.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'03')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'04' AND #{year}||'06')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'09')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'10' AND #{year}||'12')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'06')
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'12')
+				</when>
+				<when test='"YY".equals(searchTrmCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+										where b.colct_ym like #{year}||'%')
+				</when>
+			</choose>
+			<if test="institutionId != null and !institutionId.isEmpty()">
+				<foreach collection="institutionId" open="AND A.INSTITUTION_ID IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+		) LIST
+		GROUP BY GROUPING SETS((INSTITUTION_NM,INSTITUTION_ID), ())
+		ORDER BY INSTITUTION_NM COLLATE "C" ASC
+	</select>
+
+</mapper>

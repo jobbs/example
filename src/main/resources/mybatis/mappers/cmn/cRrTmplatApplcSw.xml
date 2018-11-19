@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrTmplatApplcSw">
+
+	<resultMap id="resultRrTmplatApplcSw" type="ncis.cmn.entity.RrTmplatApplcSw">
+        <result property="swSeq"     	column="SW_SEQ"/>  <!-- 소프트웨어ID -->
+        <result property="tmplatSeq"	column="TMPLAT_SEQ"/>  <!-- 템플릿시퀀스 -->
+	</resultMap>
+
+	<insert id="insertRrTmplatApplcSw">
+		/* ncis.sql.cmn.rrTmplatApplcSw.insertRrTmplatApplcSw */
+		INSERT INTO RR_TMPLAT_APPLC_SW ( SW_SEQ  /* 소프트웨어ID */
+										,TMPLAT_SEQ  /* 템플릿시퀀스 */
+		) VALUES (   #{swSeq}  /* 소프트웨어ID */
+					,#{tmplatSeq}  /* 템플릿시퀀스 */
+		)
+	</insert>
+
+	<delete id="deleteRrTmplatApplcSw">
+		/* ncis.sql.cmn.rrTmplatApplcSw.deleteRrTmplatApplcSw */
+		DELETE FROM RR_TMPLAT_APPLC_SW
+        WHERE TMPLAT_SEQ = #{tmplatSeq}  /* 템플릿시퀀스 */
+	</delete>
+
+	<delete id="deleteRrTmplatApplcSwAll">
+		/* ncis.sql.cmn.rrTmplatApplcSw.deleteRrTmplatSw */
+		DELETE FROM RR_TMPLAT_APPLC_SW
+        WHERE SW_SEQ IN
+		<if test="updtCheck != null and !updtCheck.isEmpty()">
+			<foreach collection="updtCheck" item="item" open="(" close=")" separator=",">
+				 #{item}  /* 소프트웨어시퀀스 */
+			</foreach>
+		</if>
+	</delete>
+
+</mapper>

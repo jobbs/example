@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.ZErrRpt">
+
+	<resultMap type="ncis.cmn.entity.ZErrRpt" id="resultZErrRpt">
+		<result property="errRptSeq"     column="ERR_RPT_SEQ"/>
+		<result property="errTitle"      column="ERR_TITLE"/>
+		<result property="errCont"       column="ERR_CONT"/>
+		<result property="errCateCd"     column="ERR_CATE_CD"/>
+		<result property="procssStatCd"  column="PROCSS_STAT_CD"/>
+		<result property="errTyCd"       column="ERR_TY_CD"/>
+		<result property="chargeId"      column="CHARGE_ID"/>
+		<result property="regUsrId"      column="REG_USR_ID"/>
+		<result property="regDttm"       column="REG_DTTM"/>
+		<result property="updtUsrId"     column="UPDT_USR_ID"/>
+		<result property="updtDttm"      column="UPDT_DTTM"/>
+	</resultMap>
+
+	<insert id="insertZErrRpt">
+		/* ncis.sql.cmn.ZErrRpt.insertZErrRpt */
+		<selectKey order="BEFORE" keyProperty="errRptSeq" resultType="Long">
+			SELECT nextval('Z_ERR_RPT_SEQ')
+		</selectKey>
+		INSERT INTO Z_ERR_RPT (
+			ERR_RPT_SEQ
+			,ERR_TITLE
+			,ERR_CONT
+			,ERR_CATE_CD
+			,PROCSS_STAT_CD
+			,ERR_TY_CD
+			,CHARGE_ID
+			,REG_USR_ID
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		) VALUES (
+			#{errRptSeq}
+			,#{errTitle }
+			,#{errCont }
+			,#{errCateCd }
+			,#{procssStatCd }
+			,#{errTyCd }
+			,#{chargeId }
+			,#{regUsrId }
+			,now()
+			,#{updtUsrId }
+			,now()
+		)
+	</insert>
+
+	<update id="updateZErrRpt">
+		/* ncis.sql.cmn.ZErrRpt.updateZErrRpt */
+		UPDATE Z_ERR_RPT SET
+			ERR_TITLE = #{errTitle }
+			,ERR_CONT = #{errCont }
+			,ERR_CATE_CD = #{errCateCd }
+			,PROCSS_STAT_CD = #{procssStatCd }
+			,ERR_TY_CD = #{errTyCd }
+			,CHARGE_ID = #{chargeId }
+			,UPDT_USR_ID = #{updtUsrId }
+			,UPDT_DTTM = now()
+		WHERE ERR_RPT_SEQ = #{errRptSeq}
+	</update>
+
+	<update id="updateZerrRptStat">
+		/* ncis.sql.cmn.ZErrRpt.updateZErrRptStat */
+		UPDATE Z_ERR_RPT SET PROCSS_STAT_CD = #{procssStatCd }
+		WHERE ERR_RPT_SEQ = #{errRptSeq}
+	</update>
+
+	<update id="deleteZErrRpt">
+		/* ncis.sql.cmn.ZErrRpt.deleteZErrRpt */
+		DELETE FROM Z_ERR_RPT WHERE ERR_RPT_SEQ = #{value}
+	</update>
+
+	<insert id="insertZErrRptFile">
+		/* ncis.sql.cmn.ZErrRpt.insertZErrRptFile */
+		INSERT INTO Z_ERR_RPT_FILE (
+			ERR_RPT_SEQ
+			,FILE_PATH
+			,FILE_ORI_NM
+			,FILE_TMP_NM
+			,FILE_ORDER
+			,REG_DTTM
+			,REG_USR_ID
+		) VALUES (
+			#{errRptSeq}
+			,#{filePath}
+			,#{originFileName}
+			,#{saveFileName}
+			,#{order}
+			,now()
+			,#{regId}
+		)
+	</insert>
+
+	<delete id="deleteZErrRptFiles">
+		/* ncis.sql.cmn.ZErrRpt.deleteZErrRptFiles */
+		DELETE FROM Z_ERR_RPT_FILE
+		WHERE ERR_RPT_SEQ = #{errRptSeq}
+		<if test="deleteFile != null and !deleteFile.isEmpty()">
+			<foreach collection="deleteFile" open="AND FILE_SEQ IN(" close=")" separator="," item="item">
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+</mapper>

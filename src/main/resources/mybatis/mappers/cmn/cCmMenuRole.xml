@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmMenuRole">
+
+	<resultMap id="resultCmMenuRole" type="ncis.cmn.entity.CmMenuRole">
+	    <result property="menuSeq"     column="MENU_SEQ"/>  <!-- 메뉴SEQ -->
+        <result property="roleCd"     column="ROLE_CD"/>  <!-- 롤코드 -->
+        <result property="readYn"     column="READ_YN"/>  <!-- 읽기권한 -->
+        <result property="writeYn"     column="WRITE_YN"/>  <!-- 쓰기권한 -->
+        <result property="actYn"     column="ACT_YN"/>  <!-- 실행권한 -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+	</resultMap>
+
+	<!-- 메뉴롤 등록 -->
+	<insert id="insertCmMenuRole">
+	/* ncis.sql.cmn.cmMenuRole.insertCmMenuRole */
+	INSERT INTO CM_MENU_ROLE (
+	             MENU_SEQ  /* 메뉴SEQ */
+	           , ROLE_CD  /* 롤코드 */
+	           , READ_YN  /* 읽기권한 */
+	           , WRITE_YN  /* 쓰기권한 */
+	           , ACT_YN  /* 실행권한 */
+	           , REG_DTTM  /* 등록일시 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , UPDT_USER_ID  /* 수정자ID */
+	) VALUES (
+	           #{menuSeq}  /* 메뉴SEQ */
+	         , #{roleCd}  /* 롤코드 */
+	         , #{readYn}  /* 읽기권한 */
+	         , #{writeYn}  /* 쓰기권한 */
+	         , #{actYn}  /* 실행권한 */
+	         , now()  /* 등록일시 */
+	         , #{regUserId}  /* 등록자ID */
+	         , now()  /* 수정일시 */
+	         , #{updtUserId}  /* 수정자ID */
+	)
+	</insert>
+
+	<!-- 메뉴롤 수정 -->
+	<update id="updateCmMenuRole">
+	/* ncis.sql.cmn.cmMenuRole.updateCmMenuRole */
+	UPDATE CM_MENU_ROLE
+	         SET MENU_SEQ = #{menuSeq}  /* 메뉴SEQ */
+	           , ROLE_CD = #{roleCd}  /* 롤코드 */
+	           , READ_YN = #{readYn}  /* 읽기권한 */
+	           , WRITE_YN = #{writeYn}  /* 쓰기권한 */
+	           , ACT_YN = #{actYn}  /* 실행권한 */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+         WHERE MENU_SEQ = #{menuSeq}  /* 메뉴SEQ */
+           AND ROLE_CD = #{roleCd}  /* 롤코드 */
+
+	</update>
+
+	<!-- 메뉴롤 삭제 -->
+	<delete id="deleteCmMenuRole">
+	/* ncis.sql.cmn.cmMenuRole.deleteCmMenuRole */
+	DELETE FROM CM_MENU_ROLE
+         WHERE MENU_SEQ = #{menuSeq}  /* 메뉴SEQ */
+           AND ROLE_CD = #{roleCd}  /* 롤코드 */
+
+	</delete>
+
+</mapper>

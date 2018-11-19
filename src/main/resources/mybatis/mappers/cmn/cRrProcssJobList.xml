@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrProcssJobList">
+
+	<resultMap id="resultRrProcssJobList" type="ncis.cmn.entity.RrProcssJobList">
+        <result property="procssJobInstSeq"     column="PROCSS_JOB_INST_SEQ"/>  <!-- 프로세스업무인스턴스SEQ -->
+        <result property="procssInstSeq"     column="PROCSS_INST_SEQ"/>  <!-- 프로세스인스턴스SEQ -->
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+        <result property="uJobId"     column="U_JOB_ID"/>  <!-- 단위업무ID -->
+        <result property="uJobNm"     column="U_JOB_NM"/>  <!-- 단위업무명 -->
+        <result property="strtDttm"     column="STRT_DTTM"/>  <!-- 시작일시 -->
+        <result property="endDttm"     column="END_DTTM"/>  <!-- 종료일시 -->
+        <result property="statCd"     column="STAT_CD"/>  <!-- 상태코드 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="dc"     column="DC"/>  <!-- 설명 -->
+	</resultMap>
+
+	<!-- 프로세스업무목록 등록 -->
+	<insert id="insertRrProcssJobList">
+
+	<selectKey order="BEFORE" keyProperty="procssJobInstSeq" resultType="Integer">
+			SELECT nextval('rr_procss_job_list_sq01')
+	</selectKey>
+
+	INSERT INTO RR_PROCSS_JOB_LIST (
+	             PROCSS_JOB_INST_SEQ  /* 프로세스업무인스턴스SEQ */
+	           , PROCSS_INST_SEQ  /* 프로세스인스턴스SEQ */
+	           , U_JOB_ID  /* 단위업무ID */
+	           , U_JOB_NM  /* 단위업무명 */
+	           , STRT_DTTM  /* 시작일시 */
+	           , STAT_CD  /* 상태코드 */
+	           , REG_USER_ID  /* 등록자ID */
+	) VALUES (
+	           #{procssJobInstSeq}  /* 프로세스업무인스턴스SEQ */
+	         , #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	         , (SELECT U_JOB_ID FROM RR_UNIT_JOB WHERE PROCSS_SEQ =#{procssSeq} AND U_JOB_SEQ=1)
+	         , (SELECT U_JOB_NM FROM RR_UNIT_JOB WHERE PROCSS_SEQ =#{procssSeq} AND U_JOB_SEQ=1)
+	         , now()  /* 시작일시 */
+	         , #{statCd}  /* 상태코드 */
+	         , #{regUserId}  /* 등록자ID */
+	)
+	</insert>
+
+	<!-- 프로세스업무목록 수정 -->
+	<update id="updateRrProcssJobList">
+	UPDATE RR_PROCSS_JOB_LIST
+	         SET PROCSS_JOB_INST_SEQ = #{procssJobInstSeq}  /* 프로세스업무인스턴스SEQ */
+	           , PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	           , PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+	           , U_JOB_ID = #{uJobId}  /* 단위업무ID */
+	           , U_JOB_NM = #{uJobNm}  /* 단위업무명 */
+	           , STRT_DTTM = now()  /* 시작일시 */
+	           , END_DTTM = now()  /* 종료일시 */
+	           , STAT_CD = #{statCd}  /* 상태코드 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , DC = #{dc}  /* 설명 */
+         WHERE PROCSS_JOB_INST_SEQ = #{procssJobInstSeq}  /* 프로세스업무인스턴스SEQ */
+
+	</update>
+
+	<!-- 프로세스업무목록 삭제 -->
+	<delete id="deleteRrProcssJobList">
+	DELETE FROM RR_PROCSS_JOB_LIST
+         WHERE PROCSS_JOB_INST_SEQ = #{procssJobInstSeq}  /* 프로세스업무인스턴스SEQ */
+	</delete>
+
+	<!-- 해당 프로세스업무목록 전체 삭제 -->
+	<delete id="deleteRrProcssJobListAll">
+	DELETE FROM RR_PROCSS_JOB_LIST
+         WHERE PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	</delete>
+
+	<!-- 단위업무 상태 수정 -->
+	<update id="updateProcssJobStat">
+	UPDATE RR_PROCSS_JOB_LIST
+	  SET STAT_CD = #{statCd}  /* 상태코드 */
+	  ,RE_PROCSS_CNT = (SELECT MAX(COALESCE(RE_PROCSS_CNT,0))+1
+	  									FROM RR_PROCSS_JOB_LIST
+	  									WHERE PROCSS_JOB_INST_SEQ = #{procssJobInstSeq} AND PROCSS_INST_SEQ = #{procssInstSeq}  )
+	   WHERE PROCSS_JOB_INST_SEQ = #{procssJobInstSeq}  /* 프로세스업무인스턴스SEQ */
+	   AND PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	</update>
+
+</mapper>

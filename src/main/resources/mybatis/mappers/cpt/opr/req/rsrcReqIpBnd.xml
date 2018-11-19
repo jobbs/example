@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.ipbnd">
+
+	<resultMap type="ncis.cpt.rsrc.zone.vo.NetVo" id="resultNetVo" extends="ncis.sql.cmn.rcNet.resultRcNet"></resultMap>
+	<resultMap type="ncis.cpt.opr.ip.vo.IpVo" id="resultIpVo" extends="ncis.sql.cmn.rnIp.resultRnIp"></resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.IpBndVo" id="resultIpBndVo" extends="ncis.sql.cmn.rnIpBnd.resultRnIpBnd">
+		<result property="prposClCd" column="PRPOS_CL_CD"/>
+		<result property="prposClNm" column="PRPOS_CL_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test="ipStatCd != null and !ipStatCd.isEmpty()">
+			AND	RN_IP.IP_STAT_CD = #{ipStatCd}
+		</if>
+		<if test="bndSeq != null">
+			AND	RN_IP.BND_SEQ = #{bndSeq}
+		</if>
+		<if test='natYn != null and natYn.equals("Y")'>
+			AND 1=1
+			AND	RN_IP.NAT_IP_ADDR IS NOT NULL
+			AND trim(RN_IP.NAT_IP_ADDR) <![CDATA[ <> '' ]]>
+		</if>
+	</sql>
+
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<if test='searchUserId != null and searchUserId != ""'>
+			AND ( EXISTS (SELECT 1 FROM CM_RSRC_POOL_USER WHERE CM_RSRC_POOL_USER.REGION_ID = RN_IP_BND.REGION_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId})
+     		OR EXISTS (SELECT 1 FROM CM_USR WHERE CM_USR.MNG_REGION_ID = RN_IP_BND.REGION_ID AND CM_USR.USER_ID = #{searchUserId}))
+			</if>
+		</if>
+	</sql>
+
+	<!-- IP 대역 조회   :ip대역에 관한 권한은 따로 협의가 필요하여 삭제됨.-->
+	<select id="selectIpBndList" resultMap="resultIpBndVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.ipbnd.selectIpBndList */
+		SELECT	RN_IP_BND.BND_SEQ  /* 대역SEQ */
+		        , RN_IP_BND.IP_BND_NM  /* IP대역명 */
+		        , RN_IP_BND.USE_YN  /* 사용여부 */
+		        , RN_IP_BND.BND_STRT_IP  /* 대역시작IP주소 */
+		        , RN_IP_BND.BND_END_IP  /* 대역종료IP주소 */
+		        , RN_IP_BND.SUBNET_MASK  /* 서브넷마스크 */
+		        , RN_IP_BND.GTWY_IP_ADDR  /* 게이트웨이IP주소 */
+		        , RN_IP_BND.VLAN  /* VLAN */
+		        , RN_IP_BND.ASGN_IP_QTY  /* 할당IP수 */
+		        , RN_IP_BND.UNASGN_IP_QTY  /* 미할당IP수 */
+		        , RN_IP_BND.BLK_IP_QTY  /* 블럭IP수 */
+		        , RN_IP_BND_INSTITUTION.INSTITUTION_ID  /* 기관ID */
+		        , RN_IP_BND.REG_USER_ID  /* 등록자ID */
+		        , TO_CHAR(RN_IP_BND.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') REG_DTTM  /* 등록일시 */
+		        , RN_IP_BND.UPDT_USER_ID  /* 수정자ID */
+		        , TO_CHAR(RN_IP_BND.UPDT_DTTM, 'YYYY-MM-DD HH24:MI:SS') UPDT_DTTM  /* 수정일시 */
+		        , RN_IP_BND.NET_CL_CD  /* 망구분 */
+		        , RN_IP_BND.REGION_ID  /* 리전ID */
+		        , TB_PRPOS_CL_CD.PRPOS_CL_CD /* 용도 코드 */
+	 			, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD ='104' AND GRP_CD='005' AND CD = TB_PRPOS_CL_CD.PRPOS_CL_CD) AS PRPOS_CL_NM  /*용도 크드명*/
+		  FROM	RN_IP_BND
+	INNER JOIN	RN_IP_BND_INSTITUTION
+			ON	RN_IP_BND.BND_SEQ = RN_IP_BND_INSTITUTION.BND_SEQ
+	INNER JOIN  CM_INSTITUTION
+			ON	RN_IP_BND_INSTITUTION.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+	INNER JOIN  RN_IP_BND_PRPOS TB_PRPOS_CL_CD
+	   		ON 	RN_IP_BND.BND_SEQ = TB_PRPOS_CL_CD.BND_SEQ
+	       AND 	PRPOS_CL_CD IN (SELECT CD
+	       						  FROM CM_CODE
+								 WHERE PARENT_CD = '104'
+	                               AND VAR_VL2 = #{prposClCd}
+	                               AND VAR_VL1 = '118'
+	                               AND VAR_VL4 = #{nicPrposCd}
+	                               AND VAR_VL3 = '128')
+ 		 WHERE RN_IP_BND_INSTITUTION.INSTITUTION_ID = #{institutionId}
+   	 	   AND RN_IP_BND.NET_CL_CD = #{netClCd}
+   	 	   AND RN_IP_BND.REGION_ID = #{searchRegion} /* adding */
+	<include refid="validateAuth"/>
+    ORDER BY  RN_IP_BND.ip_bnd_nm asc
+	</select>
+
+	<!--  IP 목록 조회  : ip대역에 관한 권한은 따로 협의가 필요하여 삭제됨.  -->
+	<select id="selectIpList" resultMap="resultIpVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.ipbnd.selectIpList */
+		SELECT  RN_IP.IP_ADDR					/* IP주소  */
+				, RN_IP.BND_SEQ					/* 대역SEQ */
+				, RN_IP.IP_STAT_CD				/* IP상태코드 */
+				, RN_IP.ASGN_DT					/* 할당일자 */
+				, RN_IP.CHNG_DT					/* 변경일자 */
+				, RN_IP.VIP_YN					/* VIP여부 */
+				, RN_IP.WITHDRAW_DT				/* 회수일자 */
+				, RN_IP.NAT_IP_ADDR				/* NAT_IP주소 */
+				, RN_IP.NETWK_INTFC_SEQ			/* 네트워크인터페이스SEQ */
+				, RN_IP.RMK						/* 비고 */
+				, RN_IP.UPDT_USER_ID			/* 수정자ID */
+				, RN_IP.UPDT_DTTM				/* 수정일시 */
+	   	  FROM 	RN_IP
+	INNER JOIN	RN_IP_BND ON   RN_IP.BND_SEQ = RN_IP_BND.BND_SEQ
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<include refid="search"/>
+		</trim>
+  	  ORDER BY IP_ADDR
+   </select>
+</mapper>
+

@@ -1,0 +1,2428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.JobResStte">
+
+	<resultMap type="ncis.dsb.stts.res.vo.JobResStteVo" id="resultJobResStteVo">
+		<result property="institutionId" column="INSTITUTION_ID"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="institutionCnt" column="INSTITUTION_CNT"/>
+		<result property="jobId" column="job_id"/>
+		<result property="jobNm" column="job_nm"/>
+		<result property="web" column="web"/>
+		<result property="was" column="was"/>
+		<result property="db" column="db"/>
+		<result property="win" column="win"/>
+		<result property="test" column="test"/>
+		<result property="servcCnt" column="SERVC_CNT"/>
+		<result property="podQty" column="POD_QTY"/>
+		<result property="osWin" column="os_win"/>
+		<result property="osLinux" column="os_linux"/>
+		<result property="osHp" column="os_hp"/>
+		<result property="osAix" column="os_aix"/>
+		<result property="osSolaris" column="os_solaris"/>
+		<result property="osEtc" column="os_etc"/>
+		<result property="webVcore" column="web_vcore"/>
+		<result property="webCpuRt" column="web_cpu_rt"/>
+		<result property="webMem" column="web_mem"/>
+		<result property="webMemRt" column="web_mem_rt"/>
+		<result property="webStrg" column="web_strg"/>
+		<result property="webStrgRt" column="web_strg_rt"/>
+		<result property="wasVcore" column="was_vcore"/>
+		<result property="wasCpuRt" column="was_cpu_rt"/>
+		<result property="wasMem" column="was_mem"/>
+		<result property="wasMemRt" column="was_mem_rt"/>
+		<result property="wasStrg" column="was_strg"/>
+		<result property="wasStrgRt" column="was_strg_rt"/>
+		<result property="dbVcore" column="db_vcore"/>
+		<result property="dbCpuRt" column="db_cpu_rt"/>
+		<result property="dbMem" column="db_mem"/>
+		<result property="dbMemRt" column="db_mem_rt"/>
+		<result property="dbStrg" column="db_strg"/>
+		<result property="dbStrgRt" column="db_strg_rt"/>
+		<result property="winVcore" column="win_vcore"/>
+		<result property="winCpuRt" column="win_cpu_rt"/>
+		<result property="winMem" column="win_mem"/>
+		<result property="winMemRt" column="win_mem_rt"/>
+		<result property="winStrg" column="win_strg"/>
+		<result property="winStrgRt" column="win_strg_rt"/>
+		<result property="testVcore" column="test_vcore"/>
+		<result property="testCpuRt" column="test_cpu_rt"/>
+		<result property="testMem" column="test_mem"/>
+		<result property="testMemRt" column="test_mem_rt"/>
+		<result property="testStrg" column="test_strg"/>
+		<result property="testStrgRt" column="test_strg_rt"/>
+		<result property="cpuCorQty" column="CPU_ASGN_CAPA"/>
+		<result property="avgCpuUseRt" column="AVG_CPU_USE_RT"/>
+		<result property="memTotCapa" column="MEM_TOT_CAPA"/>
+		<result property="avgMemUseRt" column="AVG_MEM_USE_RT"/>
+		<result property="strgTotCapa" column="STRG_TOT_CAPA"/>
+	</resultMap>
+
+
+	<resultMap type="ncis.dsb.stts.res.vo.JobVmStteVo" id="resultJobVmStteVo">
+	    <result property="institutionNm" column="institution_nm"/>
+	    <result property="institutionId" column="institution_id"/>
+	    <result property="institutionCnt" column="institution_cnt"/>
+		<result property="jobNm" column="job_nm"/>
+		<result property="jobId" column="job_id"/>
+		<result property="jobCnt" column="job_cnt"/>
+		<result property="vmSeq" column="vm_seq"/>
+		<result property="vmCnt" column="vm_cnt"/>
+		<result property="rnCnt" column="rn_cnt"/>
+		<result property="jobAvgCpuUseRt" column="job_avg_cpu_use_rt"/>
+		<result property="jobAvgMemUseRt" column="job_avg_mem_use_rt"/>
+		<result property="jobAvgStrgUseRt" column="job_avg_strg_use_rt"/>
+		<result property="cdNm" column="cd_nm"/>
+		<result property="cd" column="cd"/>
+		<result property="cdCnt" column="cd_cnt"/>
+		<result property="cdLastVcoreQty" column="cd_last_vcore_qty"/>
+		<result property="cdAvgCpuUseRt" column="cd_avg_cpu_use_rt"/>
+		<result property="cdLastMemSumCapa" column="cd_last_mem_sum_capa"/>
+		<result property="cdAvgMemUseRt" column="cd_avg_mem_use_rt"/>
+		<result property="cdLastStrgSumCapa" column="cd_last_strg_sum_capa"/>
+		<result property="cdAvgStrgUseRt" column="cd_avg_strg_use_rt"/>
+		<result property="vmNm" column="vm_nm"/>
+		<result property="vmCompId" column="vm_comp_id"/>
+		<result property="hstNm" column="hst_nm"/>
+		<result property="lastVcoreQty" column="last_vcore_qty"/>
+		<result property="avgCpuUseRt" column="avg_cpu_use_rt"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="avgMemUseRt" column="avg_mem_use_rt"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="avgStrgUseRt" column="avg_strg_use_rt"/>
+		<result property="avgInTrfic" column="avg_in_trfic"/>
+		<result property="avgOutTrfic" column="avg_out_trfic"/>
+		<result property="regionNm" column="region_nm"/>
+		<result property="zoneNm" column="zone_nm"/>
+		<result property="netNm" column="net_nm"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="clstrNm" column="clstr_nm"/>
+		<result property="pmNm" column="pm_nm"/>
+		<result property="pmCompId" column="pm_comp_id"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.JobAxStteVo" id="resultJobAxStteVo">
+	    <result property="institutionNm" 	column="INSTITUTION_NM"/>
+	    <result property="institutionId" 	column="INSTITUTION_ID"/>
+	    <result property="institutionCnt" 	column="INSTITUTION_CNT"/>
+		<result property="jobNm" 			column="JOB_NM"/>
+		<result property="jobId" 			column="JOB_ID"/>
+		<result property="jobCnt" 			column="JOB_CNT"/>
+
+	    <result property="servcNm" 			column="SERVC_NM"/>
+	    <result property="servcSeq"			column="SERVC_SEQ"/>
+	    <result property="servcCnt"			column="SERVC_CNT"/>
+		<result property="podQty" 			column="POD_QTY"/>
+		<result property="servcCpuCorQty" 	column="SERVC_CPU_ASGN_CAPA"/>
+		<result property="servcAvgCpuUseRt" column="SERVC_AVG_CPU_USE_RT"/>
+		<result property="servcMemTotCapa" 	column="SERVC_MEM_TOT_CAPA"/>
+		<result property="servcAvgMemUseRt" column="SERVC_AVG_MEM_USE_RT"/>
+		<result property="servcStrgTotCapa" column="SERVC_STRG_TOT_CAPA"/>
+		<result property="servcAvgInTrfic" 	column="SERVC_AVG_IN_TRFIC"/>
+		<result property="servcAvgOutTrfic" column="SERVC_AVG_OUT_TRFIC"/>
+		<result property="podCpuCorQty" 	column="POD_CPU_ASGN_CAPA"/>
+		<result property="podAvgCpuUseRt" 	column="POD_AVG_CPU_USE_RT"/>
+		<result property="podMemTotCapa" 	column="POD_MEM_TOT_CAPA"/>
+		<result property="podAvgMemUseRt" 	column="POD_AVG_MEM_USE_RT"/>
+		<result property="podStrgTotCapa" 	column="POD_STRG_TOT_CAPA"/>
+		<result property="podAvgInTrfic" 	column="POD_AVG_IN_TRFIC"/>
+		<result property="podAvgOutTrfic" 	column="POD_AVG_OUT_TRFIC"/>
+		<result property="podNm" 			column="POD_NM"/>
+		<result property="podId" 			column="POD_ID"/>
+		<result property="regionNm" 		column="REGION_NM"/>
+		<result property="zoneNm" 			column="ZONE_NM"/>
+		<result property="netNm" 			column="NET_NM"/>
+		<result property="rsrcPoolNm" 		column="RSRC_POOL_NM"/>
+		<result property="atmsclNodeNm" 	column="ATMSCL_NODE_NM"/>
+		<result property="atmsclNodeId" 	column="ATMSCL_NODE_ID"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.JobTimeResUseRtVo" id="resultJobTimeResUseRtVo">
+	    <result property="hstNm" column="hst_nm"/>
+		<result property="useRt00" column="USE_RT00"/>
+		<result property="useRt01" column="USE_RT01"/>
+		<result property="useRt02" column="USE_RT02"/>
+		<result property="useRt03" column="USE_RT03"/>
+		<result property="useRt04" column="USE_RT04"/>
+		<result property="useRt05" column="USE_RT05"/>
+		<result property="useRt06" column="USE_RT06"/>
+		<result property="useRt07" column="USE_RT07"/>
+		<result property="useRt08" column="USE_RT08"/>
+		<result property="useRt09" column="USE_RT09"/>
+		<result property="useRt10" column="USE_RT10"/>
+		<result property="useRt11" column="USE_RT11"/>
+		<result property="useRt12" column="USE_RT12"/>
+		<result property="useRt13" column="USE_RT13"/>
+		<result property="useRt14" column="USE_RT14"/>
+		<result property="useRt15" column="USE_RT15"/>
+		<result property="useRt16" column="USE_RT16"/>
+		<result property="useRt17" column="USE_RT17"/>
+		<result property="useRt18" column="USE_RT18"/>
+		<result property="useRt19" column="USE_RT19"/>
+		<result property="useRt20" column="USE_RT20"/>
+		<result property="useRt21" column="USE_RT21"/>
+		<result property="useRt22" column="USE_RT22"/>
+		<result property="useRt23" column="USE_RT23"/>
+	</resultMap>
+
+
+
+	<sql id="search">
+	           <choose>
+					<when test='"DD".equals(searchTrmCd)'>
+							AND a.COLCT_DT = REPLACE(#{date},'-','')
+
+
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+							AND a.COLCT_DT = REPLACE( #{endDt},'-','')
+
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+						AND a.COLCT_YM = #{year}||#{searchMmCd}
+
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+						AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'01' AND #{year}||'03'
+
+									       )
+
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					    AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'04' AND #{year}||'06'
+
+									       )
+
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					    AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'07' AND #{year}||'09'
+
+									       )
+
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					     AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'10' AND #{year}||'12'
+
+									       )
+
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					      AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'01' AND #{year}||'06'
+
+									       )
+
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					      AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'07' AND #{year}||'12'
+
+									       )
+
+					</when>
+
+					<when test='"YY".equals(searchTrmCd)'>
+					      AND a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_vm_colct_sum_1mm b
+						                       where b.colct_ym like #{year}||'%'
+
+									       )
+
+					</when>
+				</choose>
+				<if test="institutionId != null and !institutionId.isEmpty()">
+ 						<foreach collection="institutionId" open="AND a.institution_id IN(" close=")" separator="," item="item">
+					       	#{item}
+					    </foreach>
+				</if>
+
+
+
+	</sql>
+
+
+	<select id="selectJobResStteList" resultMap="resultJobResStteVo">
+		/* ncis.sql.dsb.stts.res.JobResStte.selectJobResStteList */
+		SELECT	INSTITUTION_ID,
+				INSTITUTION_NM,
+				COUNT(A.INSTITUTION_ID) OVER(PARTITION BY A.INSTITUTION_ID) INSTITUTION_CNT,
+				case when (JOB_NM = lag(JOB_NM)over (order by JOB_NM COLLATE "C")) or (JOB_NM = lead(JOB_NM)over (order by JOB_NM COLLATE "C")) then JOB_NM||'('||job_id||')'
+			    	 else JOB_NM
+		        end JOB_NM,
+				JOB_ID,
+				web,
+				was,
+				db,
+				win,
+				test,
+				SERVC_CNT,
+				POD_QTY,
+				os_win,
+				os_linux,
+				os_hp,
+				os_aix,
+				os_solaris,
+				os_etc,
+				web_vcore,
+				web_cpu_rt,
+				web_mem,
+				web_mem_rt,
+				web_strg,
+				web_strg_rt,
+				was_vcore,
+				was_cpu_rt,
+				was_mem,
+				was_mem_rt,
+				was_strg,
+				was_strg_rt,
+				db_vcore,
+				db_cpu_rt,
+				db_mem,
+				db_mem_rt,
+				db_strg,
+				db_strg_rt,
+				win_vcore,
+				win_cpu_rt,
+				win_mem,
+				win_mem_rt,
+				win_strg,
+				win_strg_rt,
+				test_vcore,
+				test_cpu_rt,
+				test_mem,
+				test_mem_rt,
+				test_strg,
+				test_strg_rt,
+				CPU_ASGN_CAPA,
+				AVG_CPU_USE_RT,
+				MEM_TOT_CAPA,
+				AVG_MEM_USE_RT,
+				STRG_TOT_CAPA
+
+
+		FROM
+				(select  A.INSTITUTION_ID,
+							INST.INSTITUTION_NM,
+							JOB.JOB_NM,
+							AA.JOB_ID,
+					         sum(case when qq.prpos_cl_cd = '02' then 1 else 0 end) web,
+					         sum(case when qq.prpos_cl_cd = '03' then 1 else 0 end) was,
+					         sum(case when qq.prpos_cl_cd = '01' then 1 else 0 end) db,
+					         sum(case when qq.prpos_cl_cd = '04' then 1 else 0 end) win,
+					         sum(case when qq.prpos_cl_cd = '05' then 1 else 0 end) test,
+					         null SERVC_CNT,
+					         null POD_QTY,
+					         sum(case when d.os_ty_cd = '04' then 1 else 0 end) os_win,
+							 sum(case when d.os_ty_cd = '01' then 1 else 0 end) os_linux,
+							 sum(case when d.os_ty_cd = '02' then 1 else 0 end) os_hp,
+							 sum(case when d.os_ty_cd = '03' then 1 else 0 end) os_aix,
+							 sum(case when d.os_ty_cd = '09' then 1 else 0 end) os_solaris,
+							 sum(case when d.os_ty_cd not in ('01','02','03','04','09') or d.os_ty_cd is null then 1 else 0 end) os_etc,
+
+							 sum(case when qq.prpos_cl_cd = '02' then a.last_vcore_qty end) web_vcore,
+						     round(avg(case when qq.prpos_cl_cd = '02' then a.avg_cpu_use_rt end),2)  web_cpu_rt,
+					         round(sum(case when qq.prpos_cl_cd = '02' then a.last_mem_sum_capa end)/1024/1024/1024,0)  web_mem,
+					         round(avg(case when qq.prpos_cl_cd = '02' then a.avg_mem_use_rt end),2)  web_mem_rt,
+					         round(sum(case when qq.prpos_cl_cd = '02' then a.last_strg_sum_capa end)/1024/1024/1024/1024,2)  web_strg,
+					         round(avg(case when qq.prpos_cl_cd = '02' then a.avg_strg_use_rt end),2)  web_strg_rt,
+
+				     		sum(case when qq.prpos_cl_cd = '03' then a.last_vcore_qty end) was_vcore,
+						     round(avg(case when qq.prpos_cl_cd = '03' then a.avg_cpu_use_rt end),2)  was_cpu_rt,
+					         round(sum(case when qq.prpos_cl_cd = '03' then a.last_mem_sum_capa end)/1024/1024/1024,0)  was_mem,
+					         round(avg(case when qq.prpos_cl_cd = '03' then a.avg_mem_use_rt end),2)  was_mem_rt,
+					         round(sum(case when qq.prpos_cl_cd = '03' then a.last_strg_sum_capa end)/1024/1024/1024/1024,2)  was_strg,
+					         round(avg(case when qq.prpos_cl_cd = '03' then a.avg_strg_use_rt end),2)  was_strg_rt,
+
+				     		sum(case when qq.prpos_cl_cd = '01' then a.last_vcore_qty end) db_vcore,
+						     round(avg(case when qq.prpos_cl_cd = '01' then a.avg_cpu_use_rt end),2)  db_cpu_rt,
+					         round(sum(case when qq.prpos_cl_cd = '01' then a.last_mem_sum_capa end)/1024/1024/1024,0)  db_mem,
+					         round(avg(case when qq.prpos_cl_cd = '01' then a.avg_mem_use_rt end),2)  db_mem_rt,
+					         round(sum(case when qq.prpos_cl_cd = '01' then a.last_strg_sum_capa end)/1024/1024/1024/1024,2)  db_strg,
+					         round(avg(case when qq.prpos_cl_cd = '01' then a.avg_strg_use_rt end),2)  db_strg_rt,
+
+				     		sum(case when qq.prpos_cl_cd = '04' then a.last_vcore_qty end) win_vcore,
+						     round(avg(case when qq.prpos_cl_cd = '04' then a.avg_cpu_use_rt end),2)  win_cpu_rt,
+					         round(sum(case when qq.prpos_cl_cd = '04' then a.last_mem_sum_capa end)/1024/1024/1024,0)  win_mem,
+					         round(avg(case when qq.prpos_cl_cd = '04' then a.avg_mem_use_rt end),2)  win_mem_rt,
+					         round(sum(case when qq.prpos_cl_cd = '04' then a.last_strg_sum_capa end)/1024/1024/1024/1024,2)  win_strg,
+					         round(avg(case when qq.prpos_cl_cd = '04' then a.avg_strg_use_rt end),2)  win_strg_rt,
+
+				     		sum(case when qq.prpos_cl_cd = '05' then a.last_vcore_qty end) test_vcore,
+						     round(avg(case when qq.prpos_cl_cd = '05' then a.avg_cpu_use_rt end),2)  test_cpu_rt,
+					         round(sum(case when qq.prpos_cl_cd = '05' then a.last_mem_sum_capa end)/1024/1024/1024,0)  test_mem,
+					         round(avg(case when qq.prpos_cl_cd = '05' then a.avg_mem_use_rt end),2)  test_mem_rt,
+					         round(sum(case when qq.prpos_cl_cd = '05' then a.last_strg_sum_capa end)/1024/1024/1024/1024,2)  test_strg,
+					         round(avg(case when qq.prpos_cl_cd = '05' then a.avg_strg_use_rt end),2)  test_strg_rt,
+
+					         null CPU_ASGN_CAPA,
+						 	 null AVG_CPU_USE_RT,
+							 NULL MEM_TOT_CAPA,
+							 NULL AVG_MEM_USE_RT,
+							 NULL STRG_TOT_CAPA
+
+				          from <choose>
+								 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					                 st_vm_job_1dd aa inner join st_vm_colct_sum_1dd a on a.vm_seq = aa.vm_seq and a.colct_dt = aa.colct_dt
+								 </when>
+							   <otherwise>
+							         st_vm_colct_sum_1mm a INNER JOIN st_last_day b on a.colct_ym = b.ym
+			                                               inner join ST_VM_JOB_1DD aa on b.last_day = aa.colct_dt and a.vm_seq = aa.vm_seq
+
+								</otherwise>
+							  </choose>
+
+					           left join rc_clstr c on a.clstr_seq = c.clstr_seq
+			                   left join rc_vm d on a.vm_seq = d.vm_seq
+			                   left join rc_clstr_prpos qq on a.clstr_seq = qq.clstr_seq and c.clstr_seq = qq.clstr_seq
+			                   LEFT JOIN cm_job JOB ON AA.JOB_ID = JOB.JOB_ID
+			                   LEFT JOIN CM_INSTITUTION INST ON A.INSTITUTION_ID = INST.INSTITUTION_ID
+				      where 1=1
+				            <include refid="search"/>
+				     group by 	JOB.JOB_NM,
+				     			aa.job_id,
+				     			A.INSTITUTION_ID,
+								INST.INSTITUTION_NM
+					 UNION ALL
+							          SELECT	A.INSTITUTION_ID,
+							          			CASE WHEN A.INSTITUTION_NM = '9999' THEN '히히히' ELSE  A.INSTITUTION_NM END INSTITUTION_NM,
+							          			case when a.job_id = '9999' then '히히히' else (select job_nm from cm_job qq where qq.job_id = a.job_id) end job_nm,
+							          			a.job_id,
+										        NULL web,
+										        NULL was,
+										        NULL db,
+										        NULL win,
+										        NULL test,
+										       COUNT(DISTINCT CASE WHEN LAST_POD_QTY <![CDATA[>]]> 0 THEN SERVC_SEQ END) SERVC_CNT,
+												SUM(LAST_POD_QTY) POD_QTY,
+
+										        NULL os_win,
+												NULL os_linux,
+												NULL os_hp,
+												NULL os_aix,
+												NULL os_solaris,
+												NULL os_etc,
+
+												NULL web_vcore,
+												NULL web_cpu_rt,
+										        NULL web_mem,
+										        NULL web_mem_rt,
+										        NULL web_strg,
+										        NULL web_strg_rt,
+
+				     							NULL was_vcore,
+												NULL was_cpu_rt,
+										        NULL was_mem,
+										        NULL was_mem_rt,
+										        NULL was_strg,
+										        NULL was_strg_rt,
+
+				     							NULL db_vcore,
+												NULL db_cpu_rt,
+										        NULL db_mem,
+										        NULL db_mem_rt,
+										        NULL db_strg,
+										        NULL db_strg_rt,
+
+				     							NULL win_vcore,
+												NULL win_cpu_rt,
+										        NULL win_mem,
+										        NULL win_mem_rt,
+										        NULL win_strg,
+										        NULL win_strg_rt,
+
+				     							NULL test_vcore,
+						 						NULL test_cpu_rt,
+										        NULL test_mem,
+										        NULL test_mem_rt,
+										        NULL test_strg,
+										        NULL test_strg_rt,
+
+												COALESCE(ROUND(SUM(CPU_ASGN_CAPA)/1000,2),0) CPU_ASGN_CAPA,
+												ROUND(AVG(avg_cpu_use_rt),2) avg_cpu_use_rt,
+												COALESCE(ROUND(SUM(MEM_TOT_CAPA)/1024/1024/1024,2),0) MEM_TOT_CAPA,
+												ROUND(AVG(avg_mem_use_rt),2) avg_mem_use_rt,
+												COALESCE(ROUND(SUM(STRG_TOT_CAPA)/1024/1024/1024,2),0) STRG_TOT_CAPA
+										      FROM
+
+									                (SELECT
+									                		COALESCE(A.INSTITUTION_NM, '9999') INSTITUTION_NM,
+															COALESCE(A.INSTITUTION_ID,'9999') INSTITUTION_ID,
+									                		COALESCE(A.JOB_ID, '9999') JOB_ID,
+															A.SERVC_SEQ,
+															MAX(A.LAST_POD_QTY) LAST_POD_QTY,
+															MAX(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+															avg(avg_cpu_use_rt) avg_cpu_use_rt,
+															MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+															avg(avg_mem_use_rt) avg_mem_use_rt,
+															MAX(STRG_TOT_CAPA) STRG_TOT_CAPA
+														   FROM
+									                             (SELECT	B.INSTITUTION_ID,
+									                                     	INST.INSTITUTION_NM,
+									                             			B.JOB_ID,
+									                                       <choose>
+																				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																					A.COLCT_DT,
+																				</when>
+																				<otherwise>
+																					A.COLCT_YM,
+																				</otherwise>
+																			</choose>
+																		  A.SERVC_SEQ,
+																		  FIRST_VALUE(A.LAST_POD_QTY) OVER (PARTITION BY B.JOB_ID, A.SERVC_SEQ ORDER BY
+																					<choose>
+																						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																							A.COLCT_DT
+																						</when>
+																						<otherwise>
+																							A.COLCT_YM
+																						</otherwise>
+																					</choose> DESC) LAST_POD_QTY,
+																			FIRST_VALUE(A.CPU_ASGN_CAPA) OVER (PARTITION BY B.JOB_ID, A.SERVC_SEQ ORDER BY
+																					<choose>
+																						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																							A.COLCT_DT
+																						</when>
+																						<otherwise>
+																							A.COLCT_YM
+																						</otherwise>
+																					</choose>DESC) CPU_ASGN_CAPA,
+																			a.avg_cpu_use_rt,
+															               	FIRST_VALUE(A.MEM_TOT_CAPA) OVER (PARTITION BY B.JOB_ID, A.SERVC_SEQ  ORDER BY
+																					<choose>
+																						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																							A.COLCT_DT
+																						</when>
+																						<otherwise>
+																							A.COLCT_YM
+																						</otherwise>
+																					</choose> DESC) MEM_TOT_CAPA,
+																			a.avg_mem_use_rt,
+															               	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY B.JOB_ID, A.SERVC_SEQ  ORDER BY
+															               			<choose>
+																						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																							A.COLCT_DT
+																						</when>
+																						<otherwise>
+																							A.COLCT_YM
+																						</otherwise>
+																					</choose> DESC) STRG_TOT_CAPA
+
+														              FROM
+														              <choose>
+																		 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+															                 ST_RX_SERVC_SUM_1DD A
+																		 </when>
+																	   	<otherwise>
+																	         ST_RX_SERVC_SUM_1MM A
+																		</otherwise>
+																	  </choose>
+																		LEFT JOIN RX_SERVC_AREA B ON A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+																		LEFT JOIN CM_INSTITUTION INST ON B.INSTITUTION_ID = INST.INSTITUTION_ID
+														          where 1=1
+														                <choose>
+																				<when test='"DD".equals(searchTrmCd)'>
+																						AND A.COLCT_DT = REPLACE(#{date},'-','')
+																				</when>
+																				<when test='"DI".equals(searchTrmCd)'>
+																						AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+																				</when>
+																				<when test='"MM".equals(searchTrmCd)'>
+																					AND A.COLCT_YM = #{year}||#{searchMmCd}
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+																					AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+																				    AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+																				    AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+																				    AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+																				</when>
+																				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+									                       							AND A.colct_ym between #{year}||'01' AND #{year}||'06'
+																				</when>
+																				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+																				      AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+																				</when>
+																				<when test='"YY".equals(searchTrmCd)'>
+																				      AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+																				</when>
+																			</choose>
+																			<if test="institutionId != null and !institutionId.isEmpty()">
+															 						<foreach collection="institutionId" open="AND B.institution_id IN(" close=")" separator="," item="item">
+																				       	#{item}
+																				    </foreach>
+																			</if>
+																		) A
+
+														           GROUP BY	A.JOB_ID,
+																			A.INSTITUTION_NM,
+														           			A.INSTITUTION_ID,
+																			A.SERVC_SEQ
+
+															) A
+													 GROUP BY	A.JOB_ID,
+													 			A.INSTITUTION_ID,
+													            A.INSTITUTION_NM
+								) A
+			ORDER BY	INSTITUTION_NM,
+						JOB_NM
+	</select>
+
+	<select id="selectJobVmStteList" resultMap="resultJobVmStteVo">
+
+    /* ncis.sql.dsb.stts.res.JobResStte.selectJobVmStteList */
+
+     select    fn_institution_name(a.institution_id) institution_nm,
+     		   a.institution_id,
+               count(a.institution_id) OVER(partition by a.institution_id) institution_cnt,
+	           (select qq.job_nm from cm_job qq where qq.job_id = aa.job_id) job_nm,
+	           aa.job_id,
+	           count(aa.job_id) OVER(partition by a.institution_id, aa.job_id) job_cnt,
+	           a.vm_seq,
+	           count(a.vm_seq) OVER(partition by aa.job_id) vm_cnt,
+	           row_number() OVER(partition by aa.job_id) rn_cnt,
+	           round(avg(a.avg_cpu_use_rt) OVER(partition by aa.job_id),2) job_avg_cpu_use_rt,
+	           round(avg(a.avg_mem_use_rt) OVER(partition by aa.job_id),2) job_avg_mem_use_rt,
+	           round(avg(a.avg_strg_use_rt) OVER(partition by aa.job_id),2) job_avg_strg_use_rt,
+	           qq.cd_nm,
+	           aa.job_id||','||COALESCE(qq.cd,'') cd,
+	           count(COALESCE(qq.cd,'')) OVER(partition by a.institution_id, aa.job_id, qq.cd ) cd_cnt,
+	           sum(a.last_vcore_qty) OVER(partition by qq.cd_nm) cd_last_vcore_qty,
+	           round(avg(a.avg_cpu_use_rt) OVER(partition by qq.cd_nm),2) cd_avg_cpu_use_rt,
+	           round(sum(a.last_mem_sum_capa) OVER(partition by qq.cd_nm)/1024/1024/1024,0) cd_last_mem_sum_capa,
+	           round(avg(a.avg_mem_use_rt) OVER(partition by qq.cd_nm),2) cd_avg_mem_use_rt,
+	           round(sum(a.last_strg_sum_capa) OVER(partition by qq.cd_nm)/1024/1024/1024,0) cd_last_strg_sum_capa,
+	           round(avg(a.avg_strg_use_rt) OVER(partition by qq.cd_nm),2) cd_avg_strg_use_rt,
+	           b.vm_nm,
+	           b.vm_comp_id,
+	           b.hst_nm,
+	           a.last_vcore_qty,
+	           a.avg_cpu_use_rt,
+	           round(a.last_mem_sum_capa/1024/1024/1024,0) last_mem_sum_capa,
+	           a.avg_mem_use_rt,
+	           round(a.last_strg_sum_capa/1024/1024/1024,0) last_strg_sum_capa,
+			   a.avg_strg_use_rt,
+			   round(a.avg_in_trfic/1024,2) avg_in_trfic,
+			   round(a.avg_out_trfic/1024,2) avg_out_trfic,
+			   fn_region_name(a.region_id) region_nm,
+			   fn_zone_name(a.zone_id) zone_nm,
+			   fn_net_name(a.net_id) net_nm,
+			   (select q.rsrc_pool_nm  from rc_rsrc_pool q where q.rsrc_pool_id = a.rsrc_pool_id) rsrc_pool_nm,
+			   c.pm_nm,
+			   c.pm_comp_id
+
+
+	      from
+	        <choose>
+		  	  <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+	           st_vm_job_1dd aa
+	           inner join st_vm_colct_sum_1dd a on aa.vm_seq = a.vm_seq and aa.colct_dt = a.colct_dt
+	          </when>
+	          <otherwise>
+	           st_vm_colct_sum_1mm a INNER JOIN st_last_day bb on a.colct_ym = bb.ym
+                                     inner join ST_VM_JOB_1DD aa on bb.last_day = aa.colct_dt and a.vm_seq = aa.vm_seq
+
+		       </otherwise>
+		     </choose>
+
+	           left join (select clstr_seq,
+	                             array_to_string(array_agg(t1.prpos_cl_cd),',') cd,
+					             array_to_string(array_agg(t2.cd_nm),',') cd_nm
+				           from  rc_clstr_prpos t1,
+					             cm_code t2
+				         where t1.prpos_cl_cd = t2.cd
+					           and t2.parent_cd = '101'
+				           group by clstr_seq
+			             ) qq on qq.clstr_seq = a.clstr_seq
+	            left join rc_vm b on a.vm_seq = b.vm_seq
+	            left join rc_pm c on a.pm_seq = c.pm_seq
+
+	     where 1=1
+	           <include refid="search"/>
+
+	  order by institution_nm,
+	           job_nm,
+	           qq.cd
+	</select>
+
+	<select id="selectJobAxStteList" resultMap="resultJobAxStteVo">
+    /* ncis.sql.dsb.stts.res.JobResStte.selectJobAxStteList */
+    	SELECT INSTITUTION_NM,
+    		   SERVC.INSTITUTION_ID,
+    		   COUNT(SERVC.INSTITUTION_ID) OVER(PARTITION BY SERVC.INSTITUTION_ID) INSTITUTION_CNT,
+    		   SERVC.JOB_NM,
+    		   SERVC.JOB_ID,
+    		   COUNT(SERVC.JOB_ID) OVER(PARTITION BY SERVC.INSTITUTION_ID, SERVC.JOB_ID) JOB_CNT,
+			   SERVC_NM,
+			   SERVC.SERVC_SEQ,
+			   COUNT(SERVC.SERVC_SEQ) OVER(PARTITION BY SERVC.INSTITUTION_ID, SERVC.SERVC_SEQ) SERVC_CNT,
+			   POD_QTY,
+			   SERVC_CPU_ASGN_CAPA,
+			   SERVC_AVG_CPU_USE_RT,
+			   SERVC_MEM_TOT_CAPA,
+			   SERVC_AVG_MEM_USE_RT,
+			   SERVC_STRG_TOT_CAPA,
+			   SERVC_AVG_IN_TRFIC,
+			   SERVC_AVG_OUT_TRFIC,
+			   POD.POD_CPU_ASGN_CAPA,
+			   POD.POD_AVG_CPU_USE_RT,
+			   POD.POD_MEM_TOT_CAPA,
+			   POD.POD_AVG_MEM_USE_RT,
+			   POD.POD_STRG_TOT_CAPA,
+			   POD.POD_AVG_IN_TRFIC,
+			   POD.POD_AVG_OUT_TRFIC,
+			   POD.POD_NM,
+			   POD.POD_ID,
+			   POD.REGION_NM,
+			   POD.ZONE_NM,
+			   POD.NET_NM,
+			   POD.RSRC_POOL_NM,
+			   POD.ATMSCL_NODE_NM,
+			   POD.ATMSCL_NODE_ID
+
+				FROM
+					(
+     						SELECT	COALESCE(fn_institution_name(a.institution_id),'히히히') institution_nm,
+     								COALESCE(a.institution_id,'9999') institution_id,
+     								COALESCE(A.JOB_ID,'9999') JOB_ID,
+						            COALESCE(A.JOB_NM,'히히히') JOB_NM,
+							       	SERVC_NM,
+							        SERVC_SEQ,
+							       	SUM(LAST_POD_QTY) POD_QTY,
+									COALESCE(ROUND(SUM(CPU_ASGN_CAPA)/1000,2),0) SERVC_CPU_ASGN_CAPA,
+									ROUND(AVG(avg_cpu_use_rt),2) SERVC_AVG_CPU_USE_RT,
+									COALESCE(ROUND(SUM(MEM_TOT_CAPA)/1024/1024/1024,2),0) SERVC_MEM_TOT_CAPA,
+									ROUND(AVG(avg_mem_use_rt),2) SERVC_AVG_MEM_USE_RT,
+									COALESCE(ROUND(SUM(STRG_TOT_CAPA)/1024/1024/1024,2),0) SERVC_STRG_TOT_CAPA,
+									ROUND(AVG(AVG_IN_TRFIC),2)/1024 SERVC_AVG_IN_TRFIC,
+									ROUND(AVG(AVG_OUT_TRFIC)/1024,2) SERVC_AVG_OUT_TRFIC
+							      FROM
+
+						                (SELECT
+						                		A.INSTITUTION_ID,
+						                		A.JOB_ID,
+						                		A.JOB_NM,
+												A.SERVC_SEQ,
+												A.SERVC_NM,
+												MAX(A.LAST_POD_QTY) LAST_POD_QTY,
+												MAX(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+												avg(avg_cpu_use_rt) avg_cpu_use_rt,
+												MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+												avg(avg_mem_use_rt) avg_mem_use_rt,
+												MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+												AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+												AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+											   FROM
+						                             (SELECT B.INSTITUTION_ID,
+						                             		 B.JOB_ID,
+										     				 JOB.JOB_NM,
+						                                       <choose>
+																	<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																		A.COLCT_DT,
+																	</when>
+																	<otherwise>
+																		A.COLCT_YM,
+																	</otherwise>
+																</choose>
+															  A.SERVC_SEQ,
+															  C.SERVC_NM,
+															  FIRST_VALUE(A.LAST_POD_QTY) OVER (PARTITION BY B.INSTITUTION_ID, A.SERVC_SEQ ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT
+																			</when>
+																			<otherwise>
+																				A.COLCT_YM
+																			</otherwise>
+																		</choose> DESC) LAST_POD_QTY,
+																FIRST_VALUE(A.CPU_ASGN_CAPA) OVER (PARTITION BY B.INSTITUTION_ID, A.SERVC_SEQ ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT
+																			</when>
+																			<otherwise>
+																				A.COLCT_YM
+																			</otherwise>
+																		</choose>DESC) CPU_ASGN_CAPA,
+																a.avg_cpu_use_rt,
+												               	FIRST_VALUE(A.MEM_TOT_CAPA) OVER (PARTITION BY B.INSTITUTION_ID, A.SERVC_SEQ  ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT
+																			</when>
+																			<otherwise>
+																				A.COLCT_YM
+																			</otherwise>
+																		</choose> DESC) MEM_TOT_CAPA,
+																a.avg_mem_use_rt,
+												               	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY B.INSTITUTION_ID, A.SERVC_SEQ  ORDER BY
+												               			<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT
+																			</when>
+																			<otherwise>
+																				A.COLCT_YM
+																			</otherwise>
+																		</choose> DESC) STRG_TOT_CAPA,
+																		AVG_IN_TRFIC,
+																		AVG_OUT_TRFIC
+
+											              FROM
+											              <choose>
+															 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												                 ST_RX_SERVC_SUM_1DD A
+															 </when>
+														   	<otherwise>
+														         ST_RX_SERVC_SUM_1MM A
+															</otherwise>
+														  </choose>
+															LEFT JOIN RX_SERVC_AREA B ON A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+															LEFT JOIN RX_SERVC C ON A.SERVC_SEQ = C.SERVC_SEQ
+															LEFT JOIN CM_JOB JOB ON B.JOB_ID = JOB.JOB_ID
+
+											          where 1=1
+											                <choose>
+																	<when test='"DD".equals(searchTrmCd)'>
+																			AND A.COLCT_DT = REPLACE(#{date},'-','')
+																	</when>
+																	<when test='"DI".equals(searchTrmCd)'>
+																			AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+																	</when>
+																	<when test='"MM".equals(searchTrmCd)'>
+																		AND A.COLCT_YM = #{year}||#{searchMmCd}
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+																		AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+																	    AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+																	    AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+																	    AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+																	</when>
+																	<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+						                       							AND A.colct_ym between #{year}||'01' AND #{year}||'06'
+																	</when>
+																	<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+																	      AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+																	</when>
+																	<when test='"YY".equals(searchTrmCd)'>
+																	      AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+																	</when>
+																</choose>
+																AND A.LAST_POD_QTY > 0
+																<if test="institutionId != null and !institutionId.isEmpty()">
+												 						<foreach collection="institutionId" open="AND B.institution_id IN(" close=")" separator="," item="item">
+																	       	#{item}
+																	    </foreach>
+																</if>
+															) A
+
+											           GROUP BY	 A.INSTITUTION_ID,
+																 A.SERVC_SEQ,
+																 A.SERVC_NM,
+																 A.JOB_ID,
+																 A.JOB_NM
+
+												) A
+										 GROUP BY	 A.INSTITUTION_ID,
+										 			 A.SERVC_NM,
+										             A.SERVC_SEQ,
+										             A.JOB_ID,
+													 A.JOB_NM
+					) SERVC LEFT JOIN
+						(SELECT POD.SERVC_SEQ,
+							   	COALESCE(ROUND(POD.CPU_ASGN_CAPA/1000,2),0) POD_CPU_ASGN_CAPA,
+							   	ROUND(POD.AVG_CPU_USE_RT,2) POD_AVG_CPU_USE_RT,
+							   	COALESCE(ROUND(POD.MEM_TOT_CAPA/1024/1024/1024,2),0) POD_MEM_TOT_CAPA,
+							   	ROUND(POD.AVG_MEM_USE_RT,2) POD_AVG_MEM_USE_RT,
+							   	COALESCE(ROUND(POD.STRG_TOT_CAPA/1024/1024/1024,2),0) POD_STRG_TOT_CAPA,
+							   	ROUND(POD.AVG_IN_TRFIC/1024,2) POD_AVG_IN_TRFIC,
+							   	ROUND(POD.AVG_OUT_TRFIC/1024,2) POD_AVG_OUT_TRFIC,
+							   	COALESCE(E.POD_NM,POD.POD_ID) POD_NM,
+							   	POD.POD_ID,
+							   	A.REGION_NM,
+							   	B.ZONE_NM,
+							   	C.NET_NM,
+							   	D.RSRC_POOL_NM,
+							   	F.ATMSCL_NODE_NM,
+							   	POD.ATMSCL_NODE_ID
+				      		FROM
+								 (SELECT
+												A.SERVC_SEQ,
+												A.REGION_ID,
+												A.ZONE_ID,
+												A.NET_ID,
+												A.RSRC_POOL_ID,
+												A.ATMSCL_NODE_ID,
+												A.POD_ID,
+												MAX(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+												avg(avg_cpu_use_rt) avg_cpu_use_rt,
+												MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+												avg(avg_mem_use_rt) avg_mem_use_rt,
+												MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+												AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+												AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+											   FROM
+						                             (SELECT
+															A.COLCT_DT,
+															A.SERVC_SEQ,
+															C.REGION_ID,
+															A.ZONE_ID,
+															A.NET_ID,
+															A.RSRC_POOL_ID,
+															A.ATMSCL_NODE_ID,
+															FIRST_VALUE(A.POD_ID) OVER (PARTITION BY A.SERVC_SEQ, A.POD_ID ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT DESC,  A.COLCT_HOUR DESC
+																			</when>
+																			<otherwise>
+																				A.COLCT_DT DESC
+																			</otherwise>
+																		</choose> ) POD_ID,
+															FIRST_VALUE(A.CPU_ASGN_CAPA) OVER (PARTITION BY A.SERVC_SEQ, A.POD_ID ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT DESC,  A.COLCT_HOUR DESC
+																			</when>
+																			<otherwise>
+																				A.COLCT_DT DESC
+																			</otherwise>
+																		</choose> ) CPU_ASGN_CAPA,
+															B.AVG_CPU_USE_RT,
+															FIRST_VALUE(A.MEM_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ, A.POD_ID ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT DESC,  A.COLCT_HOUR DESC
+																			</when>
+																			<otherwise>
+																				A.COLCT_DT DESC
+																			</otherwise>
+																		</choose> ) MEM_TOT_CAPA,
+															B.AVG_MEM_USE_RT,
+															FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ, A.POD_ID ORDER BY
+																		<choose>
+																			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																				A.COLCT_DT DESC,  A.COLCT_HOUR DESC
+																			</when>
+																			<otherwise>
+																				A.COLCT_DT DESC
+																			</otherwise>
+																		</choose> ) STRG_TOT_CAPA,
+															B.AVG_IN_TRFIC,
+															B.AVG_OUT_TRFIC
+
+											              FROM
+											              <choose>
+															 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												                 ST_RX_POD_SUM_1HH A
+															 </when>
+														   	<otherwise>
+														         ST_RX_POD_SUM_1DD A
+															</otherwise>
+														  </choose>
+														  INNER JOIN
+																    (SELECT
+																	  		A.SERVC_SEQ,
+																			A.POD_ID,
+																		 	AVG(A.AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+																			AVG(A.AVG_MEM_USE_RT) AVG_MEM_USE_RT,
+																			AVG(A.AVG_IN_TRFIC) AVG_IN_TRFIC,
+																			AVG(A.AVG_OUT_TRFIC) AVG_OUT_TRFIC
+																	FROM  <choose>
+																			 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																                 ST_RX_POD_SUM_1HH A
+																			 </when>
+																		   	 <otherwise>
+																		         ST_RX_POD_SUM_1DD A
+																			 </otherwise>
+																		  </choose>
+																	WHERE 1=1
+																			<choose>
+																				<when test='"DD".equals(searchTrmCd)'>
+																				 	AND A.COLCT_DT = REPLACE(#{date},'-','')
+																	      		</when>
+																	      		<when test='"DI".equals(searchTrmCd)'>
+																	      			AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+																	      		</when>
+																	      		<when test='"MM".equals(searchTrmCd)'>
+																					AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+																					AND A.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'03'||'31'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+																					 AND A.COLCT_DT BETWEEN #{year}||'04'||'01' AND #{year}||'06'||'31'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+																					AND A.COLCT_DT BETWEEN #{year}||'07'||'01' AND #{year}||'09'||'31'
+																				</when>
+																				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+																					 AND A.COLCT_DT BETWEEN #{year}||'10'||'01' AND #{year}||'12'||'31'
+																				</when>
+																				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+																					AND A.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'06'||'31'
+																				</when>
+																				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+																					AND A.COLCT_DT BETWEEN #{year}||'07'||'01' AND #{year}||'12'||'31'
+																				</when>
+																				<when test='"YY".equals(searchTrmCd)'>
+																					AND A.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'12'||'31'
+																				</when>
+																			</choose>
+																	GROUP BY
+																	          A.SERVC_SEQ,
+																	          A.POD_ID
+															         ) B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID=B.POD_ID
+															LEFT JOIN RX_SERVC_AREA AREA ON A.SERVC_AREA_SEQ = AREA.SERVC_AREA_SEQ
+															LEFT JOIN RC_RSRC_POOL C ON A.RSRC_POOL_ID = C.RSRC_POOL_ID
+
+											          where 1=1
+											                <choose>
+																	<when test='"DD".equals(searchTrmCd)'>
+																		AND A.COLCT_DT = REPLACE(#{date},'-','')
+																		AND A.COLCT_HOUR IN ( SELECT MAX(COLCT_HOUR)
+																		                      FROM ST_RX_POD_SUM_1HH
+																		                      WHERE 1=1
+																		                             AND SERVC_SEQ = A.SERVC_SEQ
+																		                             AND COLCT_DT = REPLACE(#{date},'-','')
+																		                     )
+																	</when>
+																	<when test='"DI".equals(searchTrmCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD
+															                      			WHERE 1=1
+															                             	AND SERVC_SEQ = A.SERVC_SEQ
+															                             	AND COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+															                   				)
+
+																		AND A.COLCT_DT||A.COLCT_HOUR IN ( SELECT MAX(B.COLCT_DT||B.COLCT_HOUR)
+															            						          FROM ST_RX_POD_SUM_1HH B INNER JOIN ST_RX_SERVC_SUM_1DD C ON B.COLCT_DT = C.COLCT_DT AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      						  WHERE 1=1
+																			                              AND B.SERVC_SEQ = A.SERVC_SEQ
+																			                              AND B.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+															                   							)
+																	</when>
+																	<when test='"MM".equals(searchTrmCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+															                   				)
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'03'||'31'
+															                   				)
+
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'04'||'01' AND #{year}||'06'||'31'
+															                   				)
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'07'||'01' AND #{year}||'09'||'31'
+															                   				)
+																	</when>
+																	<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'10'||'01' AND #{year}||'12'||'31'
+															                   				)
+																	</when>
+																	<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'06'||'31'
+															                   				)
+																	</when>
+																	<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'07'||'01' AND #{year}||'12'||'31'
+															                   				)
+																	</when>
+																	<when test='"YY".equals(searchTrmCd)'>
+																		AND A.COLCT_DT IN ( SELECT MAX(B.COLCT_DT)
+															                       			FROM ST_RX_POD_SUM_1DD B INNER JOIN ST_RX_SERVC_SUM_1MM C ON SUBSTR(B.COLCT_DT,1,6) = C.COLCT_YM AND B.SERVC_SEQ = C.SERVC_SEQ
+															                      			WHERE 1=1
+															                             	AND B.SERVC_SEQ = A.SERVC_SEQ
+															                             	AND B.COLCT_DT BETWEEN #{year}||'01'||'01' AND #{year}||'12'||'31'
+															                   				)
+																	</when>
+																</choose>
+																<if test="institutionId != null and !institutionId.isEmpty()">
+												 						<foreach collection="institutionId" open="AND AREA.institution_id IN(" close=")" separator="," item="item">
+																	       	#{item}
+																	    </foreach>
+																</if>
+															) A
+
+											           GROUP BY	 A.SERVC_SEQ,
+																 A.REGION_ID,
+																 A.ZONE_ID,
+																 A.NET_ID,
+																 A.RSRC_POOL_ID,
+																 A.ATMSCL_NODE_ID,
+																 A.POD_ID
+						   )POD LEFT JOIN RC_REGION A ON POD.REGION_ID = A.REGION_ID
+							    LEFT JOIN RC_ZONE B ON POD.ZONE_ID = B.ZONE_ID
+							    LEFT JOIN RC_NET C ON POD.NET_ID = C.NET_ID
+							    LEFT JOIN RC_RSRC_POOL D ON POD.RSRC_POOL_ID = D.RSRC_POOL_ID
+							    LEFT JOIN RX_SERVC_POD E ON POD.SERVC_SEQ = E.SERVC_SEQ AND POD.POD_ID = E.POD_ID
+							    LEFT JOIN RX_NODE F ON POD.RSRC_POOL_ID = F.RSRC_POOL_ID AND POD.ATMSCL_NODE_ID = F.ATMSCL_NODE_ID
+
+			) POD ON SERVC.SERVC_SEQ = POD.SERVC_SEQ
+			ORDER BY institution_nm, JOB_NM, SERVC.SERVC_SEQ, SERVC_NM, ZONE_NM, NET_NM, RSRC_POOL_NM
+	</select>
+	<select id="selectJobResStteVmList" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectJobResStteVmList*/
+
+
+			SELECT DISTINCT A.VM_SEQ::TEXT,
+			       case when D.VM_COMP_ID ='' or D.VM_COMP_ID is null then D.VM_NM
+                        else D.VM_COMP_ID
+                   end VM_COMP_ID
+
+		 	FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1MM A
+				</when>
+			</choose>
+			<if test='jobId!=null and !"".equals(jobId)'>
+				<choose>
+				  	<when test='"MM".equals(colctCd)'>
+			             INNER JOIN st_last_day b on a.colct_ym = b.ym
+			             inner join ST_VM_JOB_1DD c on b.last_day = c.colct_dt and a.vm_seq = c.vm_seq
+
+					 </when>
+					 <when test='"MI".equals(colctCd) or "HH".equals(colctCd)' >
+					 	INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND C.COLCT_DT = (SELECT MAX(COLCT_DT)
+				                                                                                 FROM ST_VM_JOB_1DD
+				                                                                                )
+					 </when>
+				     <otherwise>
+						INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND A.COLCT_DT = c.COLCT_DT
+				     </otherwise>
+			   </choose>
+		   </if>
+            left join RC_VM D on A.vm_seq = D.vm_seq
+
+			WHERE 1=1
+			<choose>
+				<when test='jobId!=null and !"".equals(jobId)'>
+					AND c.JOB_ID = #{jobId}
+				</when>
+				<otherwise>
+					AND A.VM_SEQ=#{vmSeq}
+				</otherwise>
+			</choose>
+
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0331'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0401' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'0931'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'1001' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+
+
+		ORDER BY 1
+	</select>
+
+
+	<select id="selectJobTimeResUseRtPivot" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectJobTimeResUseRtPivot*/
+		SELECT *
+		FROM CROSSTAB('
+
+		SELECT
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR||'':''||a.COLCT_MI DT,
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR DT,
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				a.COLCT_DT DT,
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				a.COLCT_YM DT,
+			</when>
+		</choose>
+				bb.VM_SEQ,
+			<choose>
+				<when test='"CPU".equals(column)'>
+					AVG_CPU_USE_RT
+				</when>
+				<when test='"MEM".equals(column)'>
+					AVG_MEM_USE_RT
+				</when>
+				<when test='"SAN".equals(column)'>
+					ROUND(CASE WHEN SUM_STRG_SUM_CAPA=0 THEN 0 ELSE SUM_STRG_USE_CAPA/SUM_STRG_SUM_CAPA*100 END,1) AVG_STRG_USE_RT
+				</when>
+				<when test='"NET".equals(column)'>
+					ROUND(AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC
+				</when>
+
+
+			</choose>
+		FROM
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				ST_VM_COLCT_SUM_10MI A
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1HH A
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1DD A
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1MM A
+			</when>
+		</choose>
+		<if test='jobId!=null and !"".equals(jobId)'>
+	        <choose>
+			    <when test='"MM".equals(colctCd)'>
+	                INNER JOIN st_last_day b on a.colct_ym = b.ym
+	                inner join ST_VM_JOB_1DD c on b.last_day = c.colct_dt and a.vm_seq = c.vm_seq
+
+			    </when>
+		       	<when test='"MI".equals(colctCd) or "HH".equals(colctCd)' >
+					 	INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND C.COLCT_DT = (SELECT MAX(COLCT_DT)
+				                                                                                 FROM ST_VM_JOB_1DD
+				                                                                                )
+				</when>
+				<otherwise>
+						INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND A.COLCT_DT = c.COLCT_DT
+				</otherwise>
+			 </choose>
+		</if>
+			left join RC_VM bb on a.vm_seq = bb.vm_Seq
+
+		WHERE 1=1
+		<choose>
+			<when test='jobId!=null and !"".equals(jobId)'>
+				AND    c.job_id=''${jobId}''
+			</when>
+			<otherwise>
+				AND A.VM_SEQ=''${vmSeq}''
+			</otherwise>
+		</choose>
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+		ORDER BY 1,2
+		',
+		'
+			SELECT DISTINCT A.VM_SEQ
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1MM A
+				</when>
+			</choose>
+			<if test='jobId!=null and !"".equals(jobId)'>
+			    <choose>
+			       <when test='"MM".equals(colctCd)'>
+	                 INNER JOIN st_last_day b on a.colct_ym = b.ym
+	                 inner join ST_VM_JOB_1DD c on b.last_day = c.colct_dt and a.vm_seq = c.vm_seq
+
+			       </when>
+		           <when test='"MI".equals(colctCd) or "HH".equals(colctCd)' >
+					 	INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND C.COLCT_DT = (SELECT MAX(COLCT_DT)
+				                                                                                 FROM ST_VM_JOB_1DD
+				                                                                                )
+					</when>
+					<otherwise>
+						INNER JOIN ST_VM_JOB_1DD c ON A.VM_SEQ = c.VM_SEQ AND A.COLCT_DT = c.COLCT_DT
+					</otherwise>
+			     </choose>
+		     </if>
+			  left join RC_VM bb on a.vm_seq = bb.vm_Seq
+		   WHERE 1=1
+		   <choose>
+				<when test='jobId!=null and !"".equals(jobId)'>
+					AND c.job_id=''${jobId}''
+				</when>
+				<otherwise>
+					AND A.VM_SEQ=''${vmSeq}''
+				</otherwise>
+			</choose>
+
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+			ORDER BY 1
+		'
+		)
+		AS
+		(
+			DT TEXT
+			<foreach collection="vmList"  item="item">
+				, "${item.vm_seq}" NUMERIC
+			</foreach>
+
+		)
+	</select>
+
+	<select id="selectAxResSttePodList" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectAxResSttePodList*/
+			SELECT DISTINCT A.POD_ID::TEXT,
+			       A.POD_ID::TEXT POD_NM
+
+		 	FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_POD_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_POD_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_POD_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_RX_POD_SUM_1MM A
+				</when>
+			</choose>
+
+			WHERE 1=1
+			AND A.SERVC_SEQ = #{servcSeq}::INTEGER
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0331'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0401' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'0931'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'1001' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+
+
+		ORDER BY 1
+	</select>
+
+
+	<select id="selectAxTimeResUseRtPivot" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectAxTimeResUseRtPivot*/
+		SELECT x.dt, y.*
+		   FROM
+		  (
+			  select
+			  <choose>
+				<when test='"MI".equals(colctCd)'>
+					dd||' '||hh||':'||mi DT
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					dd||' '||hh DT
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					dd DT
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					dd DT
+				</when>
+			</choose>
+			  from (
+				  select
+				  		<choose>
+							<when test='"DD".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${date}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+									from cm_code
+								limit abs(date_part('day', age(REPLACE('${date}','-','')::date, REPLACE('${date}','-','')::date)))+1
+				  			</when>
+				  			<when test='"DI".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${strtDt}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age(REPLACE('${strtDt}','-','')::date, REPLACE('${endDt}','-','')::date)))+1
+				  			</when>
+				  			<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}${searchMmCd}01', '${year}${searchMmCd}01')))+1
+				  			</when>
+				  			<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}01','yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age('${year}${searchMmCd}01', '${year}${searchMmCd}${lastDay}')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}0301')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+				  				to_char(to_date('${year}04','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0401', '${year}0601')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+				  				to_char(to_date('${year}07','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0701', '${year}0901')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+				  				to_char(to_date('${year}10','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}1001', '${year}1201')))+1
+				  			</when>
+				  			<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}0601')))+1
+				  			</when>
+				  			<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+				  				to_char(to_date('${year}07','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0701', '${year}1201')))+1
+				  			</when>
+				  			<when test='"YY".equals(searchTrmCd)  '>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}1201')))+1
+				  			</when>
+				  		</choose>
+
+				) dd_t
+					<if test='"HH".equals(colctCd) or "MI".equals(colctCd)'>
+						,(
+						  select to_char(row_number() over() -1, 'fm00') hh
+						  from cm_code
+						  limit 24
+						) hh_t
+					</if>
+					<if test='"MI".equals(colctCd)'>
+						,(
+		                 select distinct mi
+		                  from
+							  (select to_char((to_char(row_number() over() -11, 'fm00')::integer/10+1)*10 ,'fm00') as  mi
+								from cm_code
+							    limit 51
+							  ) a
+						) mi_t
+			        </if>
+		        order by 1
+		  ) x
+		  left join
+		  (
+		SELECT *
+		FROM CROSSTAB('
+
+		SELECT
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR||'':''||a.COLCT_MI DT,
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR DT,
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				a.COLCT_DT DT,
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				a.COLCT_YM DT,
+			</when>
+		</choose>
+				A.POD_ID,
+			<choose>
+				<when test='"CPU".equals(column)'>
+					A.AVG_CPU_USE_RT
+				</when>
+				<when test='"MEM".equals(column)'>
+					A.AVG_MEM_USE_RT
+				</when>
+				<when test='"NETIN".equals(column)'>
+					ROUND(A.AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC
+				</when>
+				<when test='"NETOUT".equals(column)'>
+					ROUND(A.AVG_OUT_TRFIC/1024,2) AVG_OUT_TRFIC
+				</when>
+			</choose>
+		FROM
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				ST_RX_POD_SUM_10MI A
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				ST_RX_POD_SUM_1HH A
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				ST_RX_POD_SUM_1DD A
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				ST_RX_POD_SUM_1MM A
+			</when>
+		</choose>
+
+			LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID = B.POD_ID
+
+		WHERE 1=1
+		      AND A.SERVC_SEQ=''${servcSeq}''
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+		ORDER BY 1,2
+		',
+		'
+			SELECT DISTINCT A.POD_ID
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_POD_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_POD_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_POD_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_RX_POD_SUM_1MM A
+				</when>
+			</choose>
+			  LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID=B.POD_ID
+
+		   WHERE 1=1
+		         AND A.SERVC_SEQ=''${servcSeq}''
+
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+			ORDER BY 1
+		'
+		)
+		AS
+		(
+			DT_VAL TEXT
+			<choose>
+				<when test="podList != null and !podList.isEmpty()">
+					<foreach collection="podList"  item="item">
+					, "${item.pod_id}" NUMERIC
+					</foreach>
+				</when>
+				<otherwise>
+					,"null" NUMERIC
+				</otherwise>
+			</choose>
+		)
+	 ) y
+  	on x.dt = y.DT_VAL
+  	order by x.dt
+	</select>
+
+	<select id="selectJobTimeResUseRtCpu" resultMap="resultJobTimeResUseRtVo">
+		/*ncis.sql.dsb.stts.rsrcAsgnStte.selectJobTimeResUseRtCpu*/
+		select hst_nm
+              , COALESCE(ROUND(MAX(USE_RT00),2), 0) USE_RT00
+			  , COALESCE(ROUND(MAX(USE_RT01),2), 0) USE_RT01
+			  , COALESCE(ROUND(MAX(USE_RT02),2), 0) USE_RT02
+			  , COALESCE(ROUND(MAX(USE_RT03),2), 0) USE_RT03
+			  , COALESCE(ROUND(MAX(USE_RT04),2), 0) USE_RT04
+			  , COALESCE(ROUND(MAX(USE_RT05),2), 0) USE_RT05
+			  , COALESCE(ROUND(MAX(USE_RT06),2), 0) USE_RT06
+			  , COALESCE(ROUND(MAX(USE_RT07),2), 0) USE_RT07
+			  , COALESCE(ROUND(MAX(USE_RT08),2), 0) USE_RT08
+			  , COALESCE(ROUND(MAX(USE_RT09),2), 0) USE_RT09
+			  , COALESCE(ROUND(MAX(USE_RT10),2), 0) USE_RT10
+			  , COALESCE(ROUND(MAX(USE_RT11),2), 0) USE_RT11
+			  , COALESCE(ROUND(MAX(USE_RT12),2), 0) USE_RT12
+			  , COALESCE(ROUND(MAX(USE_RT13),2), 0) USE_RT13
+			  , COALESCE(ROUND(MAX(USE_RT14),2), 0) USE_RT14
+			  , COALESCE(ROUND(MAX(USE_RT15),2), 0) USE_RT15
+			  , COALESCE(ROUND(MAX(USE_RT16),2), 0) USE_RT16
+			  , COALESCE(ROUND(MAX(USE_RT17),2), 0) USE_RT17
+			  , COALESCE(ROUND(MAX(USE_RT18),2), 0) USE_RT18
+			  , COALESCE(ROUND(MAX(USE_RT19),2), 0) USE_RT19
+			  , COALESCE(ROUND(MAX(USE_RT20),2), 0) USE_RT20
+			  , COALESCE(ROUND(MAX(USE_RT21),2), 0) USE_RT21
+			  , COALESCE(ROUND(MAX(USE_RT22),2), 0) USE_RT22
+			  , COALESCE(ROUND(MAX(USE_RT23),2), 0) USE_RT23
+			from( select b.hst_nm
+				 , CASE WHEN A.COLCT_HOUR ='00' THEN AVG(AVG_CPU_USE_RT)  END USE_RT00
+				 , CASE WHEN A.COLCT_HOUR ='01' THEN AVG(AVG_CPU_USE_RT)  END USE_RT01
+				 , CASE WHEN A.COLCT_HOUR ='02' THEN AVG(AVG_CPU_USE_RT)  END USE_RT02
+				 , CASE WHEN A.COLCT_HOUR ='03' THEN AVG(AVG_CPU_USE_RT)  END USE_RT03
+				 , CASE WHEN A.COLCT_HOUR ='04' THEN AVG(AVG_CPU_USE_RT)  END USE_RT04
+				 , CASE WHEN A.COLCT_HOUR ='05' THEN AVG(AVG_CPU_USE_RT)  END USE_RT05
+				 , CASE WHEN A.COLCT_HOUR ='06' THEN AVG(AVG_CPU_USE_RT)  END USE_RT06
+				 , CASE WHEN A.COLCT_HOUR ='07' THEN AVG(AVG_CPU_USE_RT)  END USE_RT07
+				 , CASE WHEN A.COLCT_HOUR ='08' THEN AVG(AVG_CPU_USE_RT)  END USE_RT08
+				 , CASE WHEN A.COLCT_HOUR ='09' THEN AVG(AVG_CPU_USE_RT)  END USE_RT09
+				 , CASE WHEN A.COLCT_HOUR ='10' THEN AVG(AVG_CPU_USE_RT)  END USE_RT10
+				 , CASE WHEN A.COLCT_HOUR ='11' THEN AVG(AVG_CPU_USE_RT)  END USE_RT11
+				 , CASE WHEN A.COLCT_HOUR ='12' THEN AVG(AVG_CPU_USE_RT)  END USE_RT12
+				 , CASE WHEN A.COLCT_HOUR ='13' THEN AVG(AVG_CPU_USE_RT)  END USE_RT13
+				 , CASE WHEN A.COLCT_HOUR ='14' THEN AVG(AVG_CPU_USE_RT)  END USE_RT14
+				 , CASE WHEN A.COLCT_HOUR ='15' THEN AVG(AVG_CPU_USE_RT)  END USE_RT15
+				 , CASE WHEN A.COLCT_HOUR ='16' THEN AVG(AVG_CPU_USE_RT)  END USE_RT16
+				 , CASE WHEN A.COLCT_HOUR ='17' THEN AVG(AVG_CPU_USE_RT)  END USE_RT17
+				 , CASE WHEN A.COLCT_HOUR ='18' THEN AVG(AVG_CPU_USE_RT)  END USE_RT18
+				 , CASE WHEN A.COLCT_HOUR ='19' THEN AVG(AVG_CPU_USE_RT)  END USE_RT19
+				 , CASE WHEN A.COLCT_HOUR ='20' THEN AVG(AVG_CPU_USE_RT)  END USE_RT20
+				 , CASE WHEN A.COLCT_HOUR ='21' THEN AVG(AVG_CPU_USE_RT)  END USE_RT21
+				 , CASE WHEN A.COLCT_HOUR ='22' THEN AVG(AVG_CPU_USE_RT)  END USE_RT22
+				 , CASE WHEN A.COLCT_HOUR ='23' THEN AVG(AVG_CPU_USE_RT)  END USE_RT23
+
+			    from st_vm_job_1dd aa
+				 inner join st_vm_colct_sum_10mi a on aa.vm_seq = a.vm_seq and aa.colct_dt = a.colct_dt
+				 left join rc_vm b on a.vm_seq = b.vm_seq
+			  where 1=1
+			    <choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt like #{year}||#{searchMmCd}||'%'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'03'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'04' AND #{year}||'06'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'09'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'10' AND #{year}||'12'
+				                   )
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "01".equals(searchQqCd) '>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'06'
+				                   )
+
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "02".equals(searchQqCd) '>
+					      and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'12'
+				                   )
+					</when>
+			   </choose>
+			   <if test='jobId!=null and !"".equals(jobId)'>
+					AND aa.job_id = #{jobId}
+				</if>
+			     group by b.hst_nm,
+				          a.colct_hour
+			 ) a
+			 group by hst_nm
+			 order by hst_nm
+
+	</select>
+
+	<select id="selectJobTimeResUseRtMem" resultMap="resultJobTimeResUseRtVo">
+		/*ncis.sql.dsb.stts.rsrcAsgnStte.selectJobTimeResUseRtMem*/
+		select hst_nm
+              , COALESCE(ROUND(MAX(USE_RT00),2), 0) USE_RT00
+			  , COALESCE(ROUND(MAX(USE_RT01),2), 0) USE_RT01
+			  , COALESCE(ROUND(MAX(USE_RT02),2), 0) USE_RT02
+			  , COALESCE(ROUND(MAX(USE_RT03),2), 0) USE_RT03
+			  , COALESCE(ROUND(MAX(USE_RT04),2), 0) USE_RT04
+			  , COALESCE(ROUND(MAX(USE_RT05),2), 0) USE_RT05
+			  , COALESCE(ROUND(MAX(USE_RT06),2), 0) USE_RT06
+			  , COALESCE(ROUND(MAX(USE_RT07),2), 0) USE_RT07
+			  , COALESCE(ROUND(MAX(USE_RT08),2), 0) USE_RT08
+			  , COALESCE(ROUND(MAX(USE_RT09),2), 0) USE_RT09
+			  , COALESCE(ROUND(MAX(USE_RT10),2), 0) USE_RT10
+			  , COALESCE(ROUND(MAX(USE_RT11),2), 0) USE_RT11
+			  , COALESCE(ROUND(MAX(USE_RT12),2), 0) USE_RT12
+			  , COALESCE(ROUND(MAX(USE_RT13),2), 0) USE_RT13
+			  , COALESCE(ROUND(MAX(USE_RT14),2), 0) USE_RT14
+			  , COALESCE(ROUND(MAX(USE_RT15),2), 0) USE_RT15
+			  , COALESCE(ROUND(MAX(USE_RT16),2), 0) USE_RT16
+			  , COALESCE(ROUND(MAX(USE_RT17),2), 0) USE_RT17
+			  , COALESCE(ROUND(MAX(USE_RT18),2), 0) USE_RT18
+			  , COALESCE(ROUND(MAX(USE_RT19),2), 0) USE_RT19
+			  , COALESCE(ROUND(MAX(USE_RT20),2), 0) USE_RT20
+			  , COALESCE(ROUND(MAX(USE_RT21),2), 0) USE_RT21
+			  , COALESCE(ROUND(MAX(USE_RT22),2), 0) USE_RT22
+			  , COALESCE(ROUND(MAX(USE_RT23),2), 0) USE_RT23
+			from( select b.hst_nm
+				 , CASE WHEN A.COLCT_HOUR ='00' THEN AVG(AVG_MEM_USE_RT)  END USE_RT00
+				 , CASE WHEN A.COLCT_HOUR ='01' THEN AVG(AVG_MEM_USE_RT)  END USE_RT01
+				 , CASE WHEN A.COLCT_HOUR ='02' THEN AVG(AVG_MEM_USE_RT)  END USE_RT02
+				 , CASE WHEN A.COLCT_HOUR ='03' THEN AVG(AVG_MEM_USE_RT)  END USE_RT03
+				 , CASE WHEN A.COLCT_HOUR ='04' THEN AVG(AVG_MEM_USE_RT)  END USE_RT04
+				 , CASE WHEN A.COLCT_HOUR ='05' THEN AVG(AVG_MEM_USE_RT)  END USE_RT05
+				 , CASE WHEN A.COLCT_HOUR ='06' THEN AVG(AVG_MEM_USE_RT)  END USE_RT06
+				 , CASE WHEN A.COLCT_HOUR ='07' THEN AVG(AVG_MEM_USE_RT)  END USE_RT07
+				 , CASE WHEN A.COLCT_HOUR ='08' THEN AVG(AVG_MEM_USE_RT)  END USE_RT08
+				 , CASE WHEN A.COLCT_HOUR ='09' THEN AVG(AVG_MEM_USE_RT)  END USE_RT09
+				 , CASE WHEN A.COLCT_HOUR ='10' THEN AVG(AVG_MEM_USE_RT)  END USE_RT10
+				 , CASE WHEN A.COLCT_HOUR ='11' THEN AVG(AVG_MEM_USE_RT)  END USE_RT11
+				 , CASE WHEN A.COLCT_HOUR ='12' THEN AVG(AVG_MEM_USE_RT)  END USE_RT12
+				 , CASE WHEN A.COLCT_HOUR ='13' THEN AVG(AVG_MEM_USE_RT)  END USE_RT13
+				 , CASE WHEN A.COLCT_HOUR ='14' THEN AVG(AVG_MEM_USE_RT)  END USE_RT14
+				 , CASE WHEN A.COLCT_HOUR ='15' THEN AVG(AVG_MEM_USE_RT)  END USE_RT15
+				 , CASE WHEN A.COLCT_HOUR ='16' THEN AVG(AVG_MEM_USE_RT)  END USE_RT16
+				 , CASE WHEN A.COLCT_HOUR ='17' THEN AVG(AVG_MEM_USE_RT)  END USE_RT17
+				 , CASE WHEN A.COLCT_HOUR ='18' THEN AVG(AVG_MEM_USE_RT)  END USE_RT18
+				 , CASE WHEN A.COLCT_HOUR ='19' THEN AVG(AVG_MEM_USE_RT)  END USE_RT19
+				 , CASE WHEN A.COLCT_HOUR ='20' THEN AVG(AVG_MEM_USE_RT)  END USE_RT20
+				 , CASE WHEN A.COLCT_HOUR ='21' THEN AVG(AVG_MEM_USE_RT)  END USE_RT21
+				 , CASE WHEN A.COLCT_HOUR ='22' THEN AVG(AVG_MEM_USE_RT)  END USE_RT22
+				 , CASE WHEN A.COLCT_HOUR ='23' THEN AVG(AVG_MEM_USE_RT)  END USE_RT23
+
+			    from st_vm_job_1dd aa
+				 inner join st_vm_colct_sum_10mi a on aa.vm_seq = a.vm_seq and aa.colct_dt = a.colct_dt
+				 left join rc_vm b on a.vm_seq = b.vm_seq
+			  where 1=1
+			    <choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt like #{year}||#{searchMmCd}||'%'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'03'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'04' AND #{year}||'06'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'09'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'10' AND #{year}||'12'
+				                   )
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "01".equals(searchQqCd) '>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'06'
+				                   )
+
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "02".equals(searchQqCd) '>
+					      and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'12'
+				                   )
+					</when>
+			   </choose>
+			   <if test='jobId!=null and !"".equals(jobId)'>
+					AND aa.job_id = #{jobId}
+				</if>
+			     group by b.hst_nm,
+				          a.colct_hour
+			 ) a
+			 group by hst_nm
+			 order by hst_nm
+
+	</select>
+
+
+	<select id="selectJobTimeResUseRtSan" resultMap="resultJobTimeResUseRtVo">
+		/*ncis.sql.dsb.stts.rsrcAsgnStte.selectJobTimeResUseRtSan*/
+		select hst_nm
+              , COALESCE(ROUND(MAX(USE_RT00),2), 0) USE_RT00
+			  , COALESCE(ROUND(MAX(USE_RT01),2), 0) USE_RT01
+			  , COALESCE(ROUND(MAX(USE_RT02),2), 0) USE_RT02
+			  , COALESCE(ROUND(MAX(USE_RT03),2), 0) USE_RT03
+			  , COALESCE(ROUND(MAX(USE_RT04),2), 0) USE_RT04
+			  , COALESCE(ROUND(MAX(USE_RT05),2), 0) USE_RT05
+			  , COALESCE(ROUND(MAX(USE_RT06),2), 0) USE_RT06
+			  , COALESCE(ROUND(MAX(USE_RT07),2), 0) USE_RT07
+			  , COALESCE(ROUND(MAX(USE_RT08),2), 0) USE_RT08
+			  , COALESCE(ROUND(MAX(USE_RT09),2), 0) USE_RT09
+			  , COALESCE(ROUND(MAX(USE_RT10),2), 0) USE_RT10
+			  , COALESCE(ROUND(MAX(USE_RT11),2), 0) USE_RT11
+			  , COALESCE(ROUND(MAX(USE_RT12),2), 0) USE_RT12
+			  , COALESCE(ROUND(MAX(USE_RT13),2), 0) USE_RT13
+			  , COALESCE(ROUND(MAX(USE_RT14),2), 0) USE_RT14
+			  , COALESCE(ROUND(MAX(USE_RT15),2), 0) USE_RT15
+			  , COALESCE(ROUND(MAX(USE_RT16),2), 0) USE_RT16
+			  , COALESCE(ROUND(MAX(USE_RT17),2), 0) USE_RT17
+			  , COALESCE(ROUND(MAX(USE_RT18),2), 0) USE_RT18
+			  , COALESCE(ROUND(MAX(USE_RT19),2), 0) USE_RT19
+			  , COALESCE(ROUND(MAX(USE_RT20),2), 0) USE_RT20
+			  , COALESCE(ROUND(MAX(USE_RT21),2), 0) USE_RT21
+			  , COALESCE(ROUND(MAX(USE_RT22),2), 0) USE_RT22
+			  , COALESCE(ROUND(MAX(USE_RT23),2), 0) USE_RT23
+			from( select b.hst_nm
+				 , CASE WHEN A.COLCT_HOUR ='00' THEN AVG(AVG_STRG_USE_RT)  END USE_RT00
+				 , CASE WHEN A.COLCT_HOUR ='01' THEN AVG(AVG_STRG_USE_RT)  END USE_RT01
+				 , CASE WHEN A.COLCT_HOUR ='02' THEN AVG(AVG_STRG_USE_RT)  END USE_RT02
+				 , CASE WHEN A.COLCT_HOUR ='03' THEN AVG(AVG_STRG_USE_RT)  END USE_RT03
+				 , CASE WHEN A.COLCT_HOUR ='04' THEN AVG(AVG_STRG_USE_RT)  END USE_RT04
+				 , CASE WHEN A.COLCT_HOUR ='05' THEN AVG(AVG_STRG_USE_RT)  END USE_RT05
+				 , CASE WHEN A.COLCT_HOUR ='06' THEN AVG(AVG_STRG_USE_RT)  END USE_RT06
+				 , CASE WHEN A.COLCT_HOUR ='07' THEN AVG(AVG_STRG_USE_RT)  END USE_RT07
+				 , CASE WHEN A.COLCT_HOUR ='08' THEN AVG(AVG_STRG_USE_RT)  END USE_RT08
+				 , CASE WHEN A.COLCT_HOUR ='09' THEN AVG(AVG_STRG_USE_RT)  END USE_RT09
+				 , CASE WHEN A.COLCT_HOUR ='10' THEN AVG(AVG_STRG_USE_RT)  END USE_RT10
+				 , CASE WHEN A.COLCT_HOUR ='11' THEN AVG(AVG_STRG_USE_RT)  END USE_RT11
+				 , CASE WHEN A.COLCT_HOUR ='12' THEN AVG(AVG_STRG_USE_RT)  END USE_RT12
+				 , CASE WHEN A.COLCT_HOUR ='13' THEN AVG(AVG_STRG_USE_RT)  END USE_RT13
+				 , CASE WHEN A.COLCT_HOUR ='14' THEN AVG(AVG_STRG_USE_RT)  END USE_RT14
+				 , CASE WHEN A.COLCT_HOUR ='15' THEN AVG(AVG_STRG_USE_RT)  END USE_RT15
+				 , CASE WHEN A.COLCT_HOUR ='16' THEN AVG(AVG_STRG_USE_RT)  END USE_RT16
+				 , CASE WHEN A.COLCT_HOUR ='17' THEN AVG(AVG_STRG_USE_RT)  END USE_RT17
+				 , CASE WHEN A.COLCT_HOUR ='18' THEN AVG(AVG_STRG_USE_RT)  END USE_RT18
+				 , CASE WHEN A.COLCT_HOUR ='19' THEN AVG(AVG_STRG_USE_RT)  END USE_RT19
+				 , CASE WHEN A.COLCT_HOUR ='20' THEN AVG(AVG_STRG_USE_RT)  END USE_RT20
+				 , CASE WHEN A.COLCT_HOUR ='21' THEN AVG(AVG_STRG_USE_RT)  END USE_RT21
+				 , CASE WHEN A.COLCT_HOUR ='22' THEN AVG(AVG_STRG_USE_RT)  END USE_RT22
+				 , CASE WHEN A.COLCT_HOUR ='23' THEN AVG(AVG_STRG_USE_RT)  END USE_RT23
+
+			    from st_vm_job_1dd aa
+				 inner join st_vm_colct_sum_10mi a on aa.vm_seq = a.vm_seq and aa.colct_dt = a.colct_dt
+				 left join rc_vm b on a.vm_seq = b.vm_seq
+			  where 1=1
+			    <choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.colct_dt = replace(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt like #{year}||#{searchMmCd}||'%'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'03'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'04' AND #{year}||'06'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'09'
+				                   )
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					    and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'10' AND #{year}||'12'
+				                   )
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "01".equals(searchQqCd) '>
+					     and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'01' AND #{year}||'06'
+				                   )
+
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "02".equals(searchQqCd) '>
+					      and a.colct_dt  =
+				                  (select max(colct_dt)
+				                      from st_vm_colct_sum_10mi qq
+				                    where qq.colct_dt between #{year}||'07' AND #{year}||'12'
+				                   )
+					</when>
+			   </choose>
+			   <if test='jobId!=null and !"".equals(jobId)'>
+					AND aa.job_id = #{jobId}
+				</if>
+			     group by b.hst_nm,
+				          a.colct_hour
+			 ) a
+			 group by hst_nm
+			 order by hst_nm
+
+	</select>
+
+
+
+</mapper>

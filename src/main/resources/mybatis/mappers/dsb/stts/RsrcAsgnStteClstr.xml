@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.rsrcAsgnStteClstr">
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.RsrcAsgnStteClstrVo" id="resultRsrcAsgnStteClstrVo">
+
+		<result property="mm" column="mm"/>
+		<result property="mmQ" column="mm_q"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="clstrSeq" column="clstr_seq"/>
+		<result property="clstrNm" column="clstr_nm"/>
+		<result property="pmSeq" column="pm_seq"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="lastVSrvrQty" column="last_v_srvr_qty"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="vmLastAsgnStrgCapa" column="vm_last_asgn_strg_capa"/>
+		<result property="vrlzRt" column="vrlz_rt"/>
+		<result property="vcoreRt" column="vcore_rt"/>
+		<result property="memRt" column="mem_rt"/>
+		<result property="sanRt" column="san_rt"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.RsrcAsgnStteClstrAxVo" id="resultRsrcAsgnStteClstrAxVo">
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="nodeQty" column="NODE_QTY"/>
+		<result property="cpuCorQty" column="CPU_COR_QTY"/>
+		<result property="memTotCapa" column="MEM_TOT_CAPA"/>
+		<result property="strgTotCapa" column="STRG_TOT_CAPA"/>
+		<result property="quotaPodQty" column="QUOTA_POD_QTY"/>
+		<result property="quotaCpuCorQty" column="QUOTA_CPU_COR_QTY"/>
+		<result property="quotaMemTotCapa" column="QUOTA_MEM_TOT_CAPA"/>
+		<result property="asgnCpuRt" column="ASGN_CPU_RT"/>
+		<result property="asgnMemRt" column="ASGN_MEM_RT"/>
+		<result property="lastPodQty" column="LAST_POD_QTY"/>
+		<result property="cpuUseCapa" column="CPU_USE_CAPA"/>
+		<result property="memUseCapa" column="MEM_USE_CAPA"/>
+		<result property="nodeUseCpuRt" column="NODE_USE_CPU_RT"/>
+		<result property="nodeUseMemRt" column="NODE_USE_MEM_RT"/>
+		<result property="quotaUsePodRt" column="QUOTA_USE_POD_RT"/>
+		<result property="quotaUseCpuRt" column="QUOTA_USE_CPU_RT"/>
+		<result property="quotaUseMemRt" column="QUOTA_USE_MEM_RT"/>
+	</resultMap>
+
+	<select id="selectRsrcAsgnStteClstrList" resultMap="resultRsrcAsgnStteClstrVo">
+
+			/* ncis.sql.dsb.stts.rsrcAsgnStteClstr.selectRsrcAsgnStteClstrList */
+			select   t.mm,
+	                 t.mm_q,
+	                 t.rsrc_pool_nm,
+	                 t.clstr_seq,
+	                 <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+					   <if test="dtlGubun == 'dtl' ">
+					 	t.clstr_nm,
+					 	</if>
+					</if>
+
+	                 t.pm_seq,
+	                 t.last_cpu_cor_qty,
+	                 t.last_mem_sum_capa,
+	                 t.last_strg_sum_capa,
+	                 t.last_v_srvr_qty,
+	                 qq.last_asgn_vcor_qty,
+	                 qq.last_asgn_mem_capa,
+	                 qq.vm_last_asgn_strg_capa,
+	                 round(t.vrlz_rt,2) vrlz_rt,
+
+	                 round(case when t.last_cpu_cor_qty = 0 then 0 else qq.last_asgn_vcor_qty/t.last_cpu_cor_qty::numeric*100 end,2) vcore_rt,
+				     round(case when t.last_mem_sum_capa = 0 then 0 else qq.last_asgn_mem_capa/t.last_mem_sum_capa::numeric*100 end ,2) mem_rt,
+
+	                 round(case when t.last_strg_sum_capa = 0 then 0 else qq.vm_last_asgn_strg_capa/t.last_strg_sum_capa::numeric*100 end,2)  san_rt
+
+            from
+
+				  (select    substr(a.colct_ym,1,4)||'년' mm,
+							 substr(a.colct_ym,5,2)||'월' mm_q,
+
+							 (select qq.rsrc_pool_nm from rc_rsrc_pool qq where qq.rsrc_pool_id = a.rsrc_pool_id) rsrc_pool_nm,
+							 a.rsrc_pool_id,
+							 count(distinct a.clstr_seq) clstr_seq,
+							 <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+							   <if test="dtlGubun == 'dtl' ">
+							 	(select qq.clstr_nm from rc_clstr qq where qq.clstr_seq = a.clstr_seq) clstr_nm,
+							 	</if>
+							 </if>
+							 count(a.pm_seq) pm_seq,
+							 sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+							 sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+							 sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) last_strg_sum_capa,
+							 sum(a.last_v_srvr_qty) last_v_srvr_qty,
+
+							 sum(a.last_v_srvr_qty)/count(a.pm_seq)::numeric*100 vrlz_rt
+
+
+
+				      from st_pm_colct_sum_1mm a
+					      where
+						       1=1
+						      <if test="region != null and !region.isEmpty()">
+
+						       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+						         	#{item}
+						       		</foreach>
+						     </if>
+
+					         <if test="year != null and !year.isEmpty()">
+					            <if test="mm != null and !mm.isEmpty()">
+					              and a.colct_ym like #{year}||#{mm}||'%'
+					            </if>
+					         </if>
+
+					     <if test="year != null and !year.isEmpty()">
+					         group by substr(a.colct_ym,1,4),
+					                  substr(a.colct_ym,5,2),
+					                  rsrc_pool_id
+					                  <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+						   				<if test="dtlGubun == 'dtl' ">
+						                ,clstr_seq
+						                </if>
+						              </if>
+					     </if>
+	                       )t
+                           left join
+		                       (select
+												         substr(a.colct_ym,1,4)||'년' mm,
+											             substr(a.colct_ym,5,2)||'월' mm_q,
+													     a.rsrc_pool_id,
+													     <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+									   					      <if test="dtlGubun == 'dtl' ">
+									                             (select qq.clstr_nm from rc_clstr qq where qq.clstr_seq = a.clstr_seq) clstr_nm,
+									                          </if>
+									                       </if>
+														 sum(a.last_vcore_qty) last_asgn_vcor_qty,
+						 								 sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa,
+											             sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) vm_last_asgn_strg_capa
+
+												     from st_vm_colct_sum_1mm a
+												   where 1=1
+												        <if test="region != null and !region.isEmpty()">
+
+												       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+												         	#{item}
+												       		</foreach>
+												       </if>
+
+												       <if test="year != null and !year.isEmpty()">
+											              and a.colct_ym like #{year}||#{mm}||'%'
+											          </if>
+
+											     <if test="year != null and !year.isEmpty()">
+									                group by substr(a.colct_ym,1,4),
+								                             substr(a.colct_ym,5,2),
+								                             a.rsrc_pool_id
+								                             <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+													   				<if test="dtlGubun == 'dtl' ">
+													                ,clstr_seq
+													                </if>
+													           </if>
+								                 </if>
+
+								     ) qq on t.mm = qq.mm and t.mm_q = qq.mm_q and t.rsrc_pool_id = qq.rsrc_pool_id
+						                        <if test="dtlGubun != null and !dtlGubun.isEmpty()">
+											   		<if test="dtlGubun == 'dtl' ">
+											               and t.clstr_nm = qq.clstr_nm
+										            </if>
+									            </if>
+
+
+	</select>
+
+	<select id="selectRsrcAsgnStteClstrAxList" resultMap="resultRsrcAsgnStteClstrAxVo">
+			/* ncis.sql.dsb.stts.rsrcAsgnStteClstr.selectRsrcAsgnStteClstrAxList */
+	SELECT  QUOTA.RSRC_POOL_NM,
+			NODE.NODE_QTY,
+			NODE.CPU_COR_QTY,
+			NODE.MEM_TOT_CAPA,
+			NODE.STRG_TOT_CAPA,
+			QUOTA.QUOTA_POD_QTY,
+			QUOTA.QUOTA_CPU_COR_QTY,
+			QUOTA.QUOTA_MEM_TOT_CAPA,
+			ROUND(CASE WHEN NODE.CPU_COR_QTY = 0 THEN 0 ELSE QUOTA.QUOTA_CPU_COR_QTY/NODE.CPU_COR_QTY::NUMERIC*100 END,2) ASGN_CPU_RT,
+			ROUND(CASE WHEN NODE.MEM_TOT_CAPA = 0 THEN 0 ELSE QUOTA.QUOTA_MEM_TOT_CAPA/NODE.MEM_TOT_CAPA::NUMERIC*100 END,2) ASGN_MEM_RT,
+			SERVC.LAST_POD_QTY,
+			SERVC.CPU_USE_CAPA,
+			SERVC.MEM_USE_CAPA,
+			ROUND(CASE WHEN NODE.CPU_COR_QTY = 0 THEN 0 ELSE SERVC.CPU_USE_CAPA/NODE.CPU_COR_QTY::NUMERIC*100 END,2) NODE_USE_CPU_RT,
+			ROUND(CASE WHEN NODE.MEM_TOT_CAPA = 0 THEN 0 ELSE SERVC.MEM_USE_CAPA/NODE.MEM_TOT_CAPA::NUMERIC*100 END,2) NODE_USE_MEM_RT,
+
+			ROUND(CASE WHEN QUOTA.QUOTA_POD_QTY = 0 THEN 0 ELSE SERVC.LAST_POD_QTY/QUOTA.QUOTA_POD_QTY::NUMERIC*100 END,2) QUOTA_USE_POD_RT,
+			ROUND(CASE WHEN QUOTA.QUOTA_CPU_COR_QTY = 0 THEN 0 ELSE SERVC.CPU_USE_CAPA/QUOTA.QUOTA_CPU_COR_QTY::NUMERIC*100 END,2) QUOTA_USE_CPU_RT,
+			ROUND(CASE WHEN QUOTA.QUOTA_MEM_TOT_CAPA = 0 THEN 0 ELSE SERVC.MEM_USE_CAPA/QUOTA.QUOTA_MEM_TOT_CAPA::NUMERIC*100 END,2) QUOTA_USE_MEM_RT
+
+	 FROM	(SELECT A.COLCT_YM,
+					A.RSRC_POOL_ID,
+					POOL.RSRC_POOL_NM,
+					SUM(A.LAST_POD_QTY) QUOTA_POD_QTY,
+					SUM(A.LAST_CPU_COR_QTY) QUOTA_CPU_COR_QTY,
+					SUM(A.LAST_MEM_TOT_CAPA) QUOTA_MEM_TOT_CAPA
+			FROM ST_RX_SERVC_AREA_1MM A
+				 LEFT JOIN RC_RSRC_POOL POOL ON A.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+			WHERE 1=1
+			 <if test="region != null and !region.isEmpty()">
+				<foreach collection="region" open="AND POOL.region_id IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+			<if test="year != null and !year.isEmpty()">
+				AND A.COLCT_YM LIKE #{year}||#{mm}||'%'
+			</if>
+			GROUP BY A.COLCT_YM,
+					 A.RSRC_POOL_ID,
+					 POOL.RSRC_POOL_NM
+			) QUOTA	LEFT JOIN
+			(SELECT A.COLCT_YM,
+					A.RSRC_POOL_ID,
+					COUNT(A.ATMSCL_NODE_ID) NODE_QTY,
+					SUM(A.CPU_COR_QTY) CPU_COR_QTY,
+					ROUND(SUM(A.MEM_TOT_CAPA)/1024/1024/1024,2) MEM_TOT_CAPA,
+					ROUND(SUM(A.STRG_TOT_CAPA)/1024/1024/1024,2) STRG_TOT_CAPA
+			FROM ST_RX_NODE_SUM_1MM A
+				 LEFT JOIN RC_RSRC_POOL POOL ON A.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+			WHERE 1=1
+			 <if test="region != null and !region.isEmpty()">
+				<foreach collection="region" open="AND POOL.region_id IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+			<if test="year != null and !year.isEmpty()">
+				AND A.COLCT_YM LIKE #{year}||#{mm}||'%'
+			</if>
+			GROUP BY	A.COLCT_YM,
+						A.RSRC_POOL_ID
+			) NODE ON NODE.COLCT_YM = QUOTA.COLCT_YM AND NODE.RSRC_POOL_ID = QUOTA.RSRC_POOL_ID
+			LEFT JOIN
+
+	 		(SELECT A.COLCT_YM,
+					A.RSRC_POOL_ID,
+					POOL.RSRC_POOL_NM,
+					SUM(A.LAST_POD_QTY) LAST_POD_QTY,
+					ROUND(SUM(A.CPU_USE_CAPA)/1000,2) CPU_USE_CAPA,
+					ROUND(SUM(A.MEM_USE_CAPA)/1024/1024/1024,2) MEM_USE_CAPA
+
+			FROM ST_RX_SERVC_SUM_1MM A
+				 LEFT JOIN RC_RSRC_POOL POOL ON A.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+			WHERE 1=1
+			 <if test="region != null and !region.isEmpty()">
+				<foreach collection="region" open="AND POOL.region_id IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+			</if>
+			<if test="year != null and !year.isEmpty()">
+				AND A.COLCT_YM LIKE #{year}||#{mm}||'%'
+			</if>
+			GROUP BY A.COLCT_YM,
+					A.RSRC_POOL_ID,
+					POOL.RSRC_POOL_NM
+			) SERVC ON SERVC.COLCT_YM = NODE.COLCT_YM AND SERVC.RSRC_POOL_ID = NODE.RSRC_POOL_ID
+	</select>
+
+
+
+
+</mapper>

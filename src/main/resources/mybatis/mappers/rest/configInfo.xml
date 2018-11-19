@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.rest.config">
+
+	<resultMap id="resultNicInfoVo" extends="resultVm" type="ncis.rest.intfc.conf.vo.VmVO">
+		<collection property="nicInfos" column="vmSeq" select="selectNicInfoList"/>
+	</resultMap>
+
+    <resultMap id="resultVm" type="ncis.rest.intfc.conf.vo.VmVO">
+		<result property="managingKey" column="managingKey"/>           <!-- 가상서버 UUID   -->
+		<result property="hostName" column="hostName"/>                 <!-- 호스트 명       -->
+		<result property="vmConfId" column="vmConfId"/>                 <!-- 가상서버 구성ID -->
+		<result property="rprsntIpAddress" column="rprsntIpAddress"/>   <!-- 대표IP주소      -->
+		<result property="osTypeCode" column="osTypeCode"/>             <!-- 운영체제 코드     -->
+		<result property="osType" column="osType"/>                     <!-- 운영체제 명     -->
+		<result property="cpuCoreCnt" column="cpuCoreCnt"/>             <!-- CPU 코어 개수   -->
+		<result property="memorySize" column="memorySize"/>             <!-- 메모리 용량     -->
+		<result property="diskSize" column="diskSize"/>                 <!-- 디스크 용량     -->
+		<result property="pmConfId" column="pmConfId"/>                 <!-- 물리서버 구성ID -->
+		<result property="clusterConfId" column="clusterConfId"/>       <!-- 클러스터 구성ID -->
+	</resultMap>
+
+    <resultMap id="resultNicInfoListVo" type="ncis.rest.intfc.conf.vo.NicInfoVO">
+		<result property="nicTypeCode" column="nicTypeCode"/>			<!-- 네크워크인터페이스:용도 -->
+		<result property="nicType" column="nicType"/>			<!-- 네크워크인터페이스:용도 -->
+		<result property="ipAddress" column="ipAddress"/>   <!-- 네크워크인터페이스:IP -->
+		<result property="macAddress" column="macAddress"/> <!-- 네크워크인터페이스:MAC주소 -->
+	</resultMap>
+
+	<!-- 존 구성정보 조회 -->
+	<select id="selectZoneInfoList" resultType="ncis.rest.intfc.conf.vo.ZoneVO">
+	<![CDATA[
+    SELECT '' AS znConfId                                    /* 존 구성ID   */
+	     , Z.ZONE_ID AS managingKey                          /* 존 UUID     */
+	     , Z.ZONE_NM AS zoneName                             /* 존 이름     */
+	     , (
+            SELECT COUNT(C.*) AS CNT
+		      FROM RC_RSRC_POOL AS P
+		         , RC_CLSTR AS C
+		     WHERE P.ZONE_ID       = Z.ZONE_ID
+		       AND P.RSRC_POOL_ID  = C.RSRC_POOL_ID
+		       AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+		       AND P.DEL_YN = 'N'
+		       AND C.DEL_YN = 'N'
+           ) AS clusterCnt                                   /* 클러스터 개수 */
+	     , (
+            SELECT COUNT(PM.*) AS CNT
+		      FROM RC_RSRC_POOL P
+		         , RC_CLSTR AS C
+		         , RC_PM AS PM
+		     WHERE P.ZONE_ID       = Z.ZONE_ID
+		       AND P.RSRC_POOL_ID  = C.RSRC_POOL_ID
+		       AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+               AND C.CLSTR_SEQ     = PM.CLSTR_SEQ
+               AND P.DEL_YN = 'N'
+		       AND C.DEL_YN = 'N'
+		       AND PM.DEL_YN = 'N'
+           ) AS pmCnt                                        /* 물리서버 개수 */
+	     , (
+            SELECT COUNT(VM.*) AS CNT
+		      FROM RC_RSRC_POOL AS P
+		         , RC_CLSTR AS C
+		         , RC_PM AS PM
+                 , RC_VM AS VM
+		     WHERE P.ZONE_ID = Z.ZONE_ID
+		       AND P.RSRC_POOL_ID  = C.RSRC_POOL_ID
+		       AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+               AND C.CLSTR_SEQ     = PM.CLSTR_SEQ
+               AND PM.PM_SEQ       = VM.PM_SEQ
+               AND P.DEL_YN = 'N'
+		       AND C.DEL_YN = 'N'
+		       AND PM.DEL_YN = 'N'
+		       AND VM.DEL_YN = 'N'
+           ) AS vmCnt                                               /* 가상서버 개수 */
+      FROM RC_ZONE AS Z
+	]]>
+	</select>
+
+	<!-- 클러스터 구성정보 조회 -->
+	<select id="selectClusterInfoList" resultType="ncis.rest.intfc.conf.vo.ClusterVO">
+	<![CDATA[
+	WITH PVM AS (
+	       SELECT CASE WHEN VPM.CLSTR_SEQ = NULL THEN VVM.CLSTR_SEQ
+	                   ELSE VPM.CLSTR_SEQ
+	               END AS CLSTR_SEQ
+	            , VPM.CNT AS PM_CNT
+	            , VVM.CNT AS VM_CNT
+	         FROM (SELECT C.CLSTR_SEQ
+	                    , COUNT(PM.*) AS CNT
+		             FROM RC_CLSTR AS C
+	                    , RC_PM AS PM
+		            WHERE C.CLSTR_SEQ = PM.CLSTR_SEQ
+		            AND C.DEL_YN = 'N'
+		            AND PM.DEL_YN = 'N'
+	                GROUP BY C.CLSTR_SEQ) AS VPM
+	               FULL OUTER JOIN (SELECT PM.CLSTR_SEQ
+	                                     , COUNT(VM.*) AS CNT
+	  	                              FROM RC_CLSTR AS C
+	                                     , RC_PM AS PM
+	                                     , RC_VM AS VM
+		                             WHERE PM.CLSTR_SEQ = C.CLSTR_SEQ
+	                                   AND PM.PM_SEQ    = VM.PM_SEQ
+	                                   AND C.DEL_YN = 'N'
+		            				   AND PM.DEL_YN = 'N'
+		            				   AND VM.DEL_YN = 'N'
+	                                 GROUP BY PM.CLSTR_SEQ) AS VVM
+	               ON VPM.CLSTR_SEQ = VVM.CLSTR_SEQ
+	           )
+
+		SELECT  COALESCE(C.CLSTR_COMP_ID, '' ) AS  clConfId                             /* 클러스터구성ID  */
+	         , C.UUID AS managingKey                                    /* 클러스터 UUID   */
+	         , Z.ZONE_NM AS zoneName                                    /* 존 이름         */
+	         , C.CLSTR_NM AS clusterName                                /* 클러스터 이름   */
+	         , COALESCE(PVM.PM_CNT,0) AS pmCnt	                                    /* 물리서버 개수   */
+	         , COALESCE(PVM.VM_CNT,0) AS vmCnt	                                    /* 가상서버 개수   */
+	        , C.RSRC_POOL_ID AS parentManagingKey	                        /* 상위 존 UUID    */
+	      FROM RC_CLSTR AS C
+	             LEFT JOIN PVM ON C.CLSTR_SEQ = PVM.CLSTR_SEQ
+	         , RC_RSRC_POOL AS P
+	         , RC_ZONE AS Z
+	     WHERE P.ZONE_ID       = Z.ZONE_ID
+	       AND C.RSRC_POOL_ID  = P.RSRC_POOL_ID
+	       AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+	       AND P.CTL_TRGT_YN = 'Y'							/*제어대상 여부*/
+	       AND P.DEL_YN = 'N'
+	       AND C.DEL_YN = 'N'
+      ]]>
+	</select>
+
+	<!-- 물리서버 구성정보 조회 -->
+	<select id="selectPmInfoList" resultType="ncis.rest.intfc.conf.vo.PmVO">
+	<![CDATA[
+	SELECT  COALESCE(PM.PM_COMP_ID , '' ) AS pmConfId                                   /* 물리서버 구성ID    */
+     	 , PM.UUID AS managingKey                                      /* 물리서버 UUID      */
+	     , PM.RPRSNT_IP_ADDR AS ipAddress                              /* IP주소             */
+	     , '' AS osType                                                /* 운영체제 명        */
+	     , PM.CPU_CORE_QTY AS cpuCoreCnt                               /* CPU 코어 개수      */
+	     , PM.MEM_CAPA AS memorySize                                   /* 메모리 용량        */
+	     , P.VRLZ_SW_TY_CD AS hypervisorTypeCode                           /* 하이퍼바이저 타입  코드*/
+	     , CD.CD_NM AS hypervisorType                                   /* 하이퍼바이저 타입  */
+	     , COALESCE(C.CLSTR_COMP_ID , C.UUID ) AS clusterConfId                            /* 클러스터 구성ID    */
+	     , C.UUID AS parentManagingKey                                 /* 상위 클러스터 UUID */
+	   FROM RC_PM AS PM
+	       , RC_CLSTR C
+	       , RC_RSRC_POOL P
+	       LEFT OUTER JOIN CM_CODE CD
+			ON P.VRLZ_SW_TY_CD = CD.CD AND CD.PARENT_CD = '100' AND CD.PARENT_GRP_CD = '001' AND CD.USE_YN = 'Y'
+	  WHERE PM.DEL_YN = 'N'
+	  AND PM.CLSTR_SEQ = C.CLSTR_SEQ AND C.DEL_YN = 'N'
+	  AND P.RSRC_POOL_ID = C.RSRC_POOL_ID AND P.DEL_YN = 'N'
+	  AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+	  AND P.CTL_TRGT_YN = 'Y'							/*제어대상 여부*/
+      ]]>
+	</select>
+
+	<!-- 가상서버 구성정보 조회 -->
+	<select id="selectVmInfoList" resultMap="resultNicInfoVo">
+	<![CDATA[
+	SELECT VM.VM_SEQ AS vmSeq
+         , C.RSRC_POOL_ID||'_'||VM.UUID AS managingKey    /* 가상서버 UUID  2017.11.20   */
+	     , VM.HST_NM AS hostName                                 /* 호스트 명         */
+	     , COALESCE(VM.VM_COMP_ID , '' ) AS vmConfId                             /* 가상서버 구성ID   */
+	     , COALESCE(VM.RPRSNT_IP_ADDR , '' ) AS rprsntIpAddress                  /* IP주소            */
+	     , VM.OS_TY_CD AS osTypeCode                                     /* 운영체제 명       */
+	     , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD='003' AND CD= VM.OS_TY_CD) as osType /* 운영체제 명       */
+	     , VM.CPU_VCORE_QTY AS cpuCoreCnt                            /* CPU 코어 개수     */
+	     , VM.MEM_ASGN_CAPA AS memorySize                        /* 메모리 용량       */
+	     , VM.STRG_ASGN_CAPA AS diskSize                         /* 디스크 용량       */
+	     , COALESCE(PM.PM_COMP_ID , '' ) AS pmConfId                             /* 물리서버 구성ID   */
+	     , COALESCE(C.CLSTR_COMP_ID ,  C.UUID ) AS clusterConfId                      /* 클러스터 구성ID   */
+	  FROM RC_VM AS VM
+	     LEFT OUTER JOIN RC_PM AS PM ON VM.PM_SEQ       = PM.PM_SEQ AND PM.DEL_YN = 'N'
+	     , RC_CLSTR AS C
+	     , RC_RSRC_POOL AS P
+	 WHERE VM.CLSTR_SEQ    = C.CLSTR_SEQ
+	   AND C.RSRC_POOL_ID  = P.RSRC_POOL_ID
+	   AND P.RSRC_POOL_CL_CD = '01'                  /*컴퓨팅 자원풀 */
+	   AND P.CTL_TRGT_YN = 'Y'							/*제어대상 여부*/
+	   AND P.DEL_YN = 'N'
+	   AND C.DEL_YN = 'N'
+	   AND VM.DEL_YN = 'N'
+      ]]>
+	</select>
+
+	<!-- 네트워크인터페이스 정보 목록 -->
+	<select id="selectNicInfoList" resultMap="resultNicInfoListVo">
+	<![CDATA[
+	SELECT N.NIC_PRPOS_CD AS nicTypeCode     /* 용도   코드          */
+		 , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD = '005' AND CD = N.NIC_PRPOS_CD) AS nicType     /* 용도               */
+	     , I.IP_ADDR AS ipAddress       /* IP                 */
+	     , N.MAC_ADDR AS macAddress     /* MAC주소            */
+	  FROM RC_NETWK_INTFC AS N          /* 네트워크인터페이스 */
+	     , RN_IP AS I                   /* IP                 */
+	 WHERE N.VM_SEQ         = #{vmSeq}
+	   AND N.NETWK_INTFC_SEQ = I.NETWK_INTFC_SEQ
+	   AND N.DEL_YN = 'N'
+      ]]>
+	</select>
+
+
+	<resultMap id="resultTemplatePurposeCodeVo" type="ncis.rest.intfc.conf.vo.TemplateVO">
+		<result property="centerId" column="centerId"/>           <!-- 센터 구분 코드(리전ID)   -->
+		<result property="templateId" column="templateId"/>                 <!-- 호스트 명       -->
+		<result property="templateName" column="templateName"/>                 <!-- 템플릿 명 -->
+		<result property="osName" column="osName"/>                     <!-- 운영체제 명     -->
+		<result property="osVersion" column="osVersion"/>             <!-- 운영체제 버전   -->
+		<result property="osPlatform" column="osPlatform"/>             <!-- 운영체제 플랫폼 명    -->
+		<result property="osKernel" column="osKernel"/>                 <!-- 운영체제 커널 명     -->
+		<result property="osBits" column="osBits"/>                 <!-- 운영체제 비트 -->
+		<result property="osLanguage" column="osLanguage"/>       <!-- 운영체제 언어 명 -->
+		<result property="osTypeCode" column="osTypeCode"/>       <!-- 운영체제 코드 (운영체제 운영코드) -->
+		<result property="osType" column="osType"/>       <!-- 운영체제 코드 (운영체제 운영코드) -->
+		<result property="networkCode" column="networkCode"/>       <!-- 네트워크 유형 코드([망]망 구분코드) -->
+		<result property="networkName" column="networkName"/>       <!-- 네트워크 유형 코드([망]망 구분코드) -->
+		<collection property="purposeCodes" column="templateId" select="selectTemplatePurposeInfoList"/>
+	</resultMap>
+
+	<!-- 가상서버템플릿 구성정보 조회 -->
+	<select id="selectTemplateInfoList" resultMap="resultTemplatePurposeCodeVo">
+	<![CDATA[
+	WITH V_NET AS (
+	    SELECT Z.REGION_ID, P.RSRC_POOL_ID, N.NET_CL_CD
+	      FROM RC_RSRC_POOL AS P
+	         , RC_NET N
+	         , RC_ZONE_NET_MATRIX M
+	         , RC_ZONE Z
+	     WHERE P.NET_ID  = N.NET_ID
+	       AND N.NET_ID  = M.NET_ID
+	       AND M.ZONE_ID = Z.ZONE_ID
+	       AND P.DEL_YN = 'N'
+	)
+	SELECT V_NET.REGION_ID AS centerId                  /* 센터 구분 코드(리전ID) */
+	     , TM.TMPLAT_SEQ AS templateId                   /* 템플릿 일련번호        */
+	     , TM.TMPLAT_NM AS templateName                 /* 템플릿 명              */
+	     , TM.OS_TY_CD AS osFamily                      /* 운영체제 유형 명       */
+	     , TM.OS_NM AS osName                           /* 운영체제 명            */
+	     , TM.OS_VER AS osVersion                       /* 운영체제 버전          */
+	     , TM.PLTFRM AS osPlatform                      /* 운영체제 플랫폼 명     */
+	     , TM.KRNL_VER AS osKernel                      /* 운영체제 커널 명       */
+	     , TM.OS_BIT AS osBits                          /* 운영체제 비트          */
+	     , TM.LANG AS osLanguage                        /* 운영체제 언어 명       */
+	     , TM.OS_TY_CD AS osTypeCode                        /* 운영체제 코드 (운영체제 운영코드)   */
+	     , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD = '003' AND PARENT_CD = '102' AND CD = TM.OS_TY_CD) AS osType
+	     , V_NET.NET_CL_CD AS networkCode               /* 네트워크 유형 코드([망]망 구분코드) */
+	     , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD = '067' AND PARENT_CD = 'NETCD' AND CD = V_NET.NET_CL_CD) AS networkName
+	  FROM RR_TMPLAT AS TM           /* 템플릿 */
+         LEFT OUTER JOIN V_NET
+           ON TM.RSRC_POOL_ID = V_NET.RSRC_POOL_ID
+      WHERE TM.DEL_YN = 'N'
+      ]]>
+	</select>
+
+	<!-- 가상서버템플릿 용도 구성정보 조회 -->
+	<select id="selectTemplatePurposeInfoList" resultType="ncis.rest.intfc.conf.vo.TemplatePrposVO">
+	<![CDATA[
+	SELECT PRPOS_CD  purposeCode        /* 용도 유형 코드 */
+	      , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD = '002' AND PARENT_CD = '101' AND CD = PRPOS_CD)   purposeCodeName        /* 용도 유형 코드 */
+	  FROM RR_TMPLAT_PRPOS              /* 템플릿 용도    */
+	 WHERE TMPLAT_SEQ = #{tmplatSeq}    /* 템플릿ID       */
+      ]]>
+	</select>
+
+
+	<!-- 소프트웨어 구성정보 조회 -->
+	<select id="selectSoftwareInfoList" resultType="ncis.rest.intfc.conf.vo.SoftwareVO">
+	<![CDATA[
+	SELECT SW.SW_SEQ AS swId          /* 소프트웨어 일련번호 */
+	     , SW.SW_NM AS swName        /* 소프트웨어 명       */
+	     , SW.SW_VER AS swVersion    /* 소프트웨어 버전     */
+	  FROM RR_SW AS SW
+      ]]>
+	</select>
+
+	<!-- 템플릿소프트웨어 구성정보 조회 -->
+	<select id="selectTemplateSwInfoList" resultType="ncis.rest.intfc.conf.vo.TemplateSwVO">
+	<![CDATA[
+	SELECT SW_SEQ AS swId              /* 소프트웨어 일련번호 */
+	     , TMPLAT_SEQ AS templateId    /* 템플릿 일련번호     */
+	  FROM RR_TMPLAT_APPLC_SW
+      ]]>
+	</select>
+
+	<!-- 스펙정보 구성정보 조회 -->
+	<select id="selectSpecInfoList" resultType="ncis.rest.intfc.conf.vo.SpecInfoVO">
+	<![CDATA[
+	SELECT SP.SPEC_SEQ AS specTypeId       /* 스펙 ID              */
+	     , SP.SPEC_NM AS specTypeName     /* 스펙 이름            */
+	     , SP.CPU_VCORE AS cpuCores       /* CPU 코어수           */
+	     , SP.MEM AS memorySize           /* 메모리 사이즈        */
+	     , SP.SPEC_CL_CD AS osCode        /* OS타입(SPEC구분코드?) */
+	  FROM RR_SPEC SP
+	  WHERE SP.SPEC_CL_CD != '05'
+	  UNION ALL
+	  SELECT SP.SPEC_SEQ AS specTypeId       /* 스펙 ID              */
+	     , SP.SPEC_NM AS specTypeName     /* 스펙 이름            */
+	     , SP.CPU_VCORE AS cpuCores       /* CPU 코어수           */
+	     , SP.MEM AS memorySize           /* 메모리 사이즈        */
+	     , '01' AS osCode        /* OS타입(SPEC구분코드?) */
+	  FROM RR_SPEC SP
+	  WHERE SP.SPEC_CL_CD = '05'
+	  UNION ALL
+	  SELECT SP.SPEC_SEQ AS specTypeId       /* 스펙 ID              */
+	     , SP.SPEC_NM AS specTypeName     /* 스펙 이름            */
+	     , SP.CPU_VCORE AS cpuCores       /* CPU 코어수           */
+	     , SP.MEM AS memorySize           /* 메모리 사이즈        */
+	     , '04' AS osCode        /* OS타입(SPEC구분코드?) */
+	  FROM RR_SPEC SP
+	  WHERE SP.SPEC_CL_CD = '05'
+      ]]>
+	</select>
+
+	<!-- 구분코드 구성정보 조회 -->
+	<select id="selectCategoryCodeInfoList" resultType="ncis.rest.intfc.conf.vo.CategoryCodeVO">
+	<![CDATA[
+	SELECT
+	         PARENT_GRP_CD  AS parentGrpCd/*부모그룹코드*/
+	       , PARENT_CD AS parentCd /*부모코드*/
+	       , GRP_CD AS grpCd/*그룹코드*/
+	       , CD AS cd/*코드*/
+	       , CD_NM AS cdNm /*코드명*/
+	       , CD_DESC AS cdDesc   /*설명*/
+	FROM   CM_CODE
+	WHERE  USE_YN = 'Y'
+      ]]>
+	</select>
+
+	<!-- 업무정보 구성정보 조회 -->
+	<select id="selectApplInfoList" resultType="ncis.rest.intfc.conf.vo.ApplInfoVO">
+	<![CDATA[
+	SELECT INS.INSTITUTION_ID AS custId    /* 부처코드 */
+	     , J.JOB_ID AS applId              /* 업무코드 */
+	     , INS.USE_YN AS useYn             /* 사용유무 */
+	  FROM CM_INSTITUTION AS INS
+	     , CM_JOB AS J
+	 WHERE INS.INSTITUTION_ID = J.INSTITUTION_ID
+      ]]>
+	</select>
+
+
+</mapper>

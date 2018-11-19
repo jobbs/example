@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrTmplat">
+
+	<resultMap id="resultRrTmplat" type="ncis.cmn.entity.RrTmplat">
+        <result property="tmplatId"     	column="TMPLAT_ID"/>  <!-- 템플릿ID -->
+        <result property="tmplatNm"     	column="TMPLAT_NM"/>  <!-- 템플릿명 -->
+        <result property="tmplatClCd"     	column="TMPLAT_CL_CD"/>  <!-- 템플릿구분코드 -->
+        <result property="useYn"     		column="USE_YN"/>  <!-- 사용여부 -->
+        <result property="rmk"     			column="RMK"/>  <!-- 비고 -->
+        <result property="vrlzSwTyCd"     	column="VRLZ_SW_TY_CD"/>  <!-- 가상화SW유형코드 -->
+        <result property="osTyCd"     		column="OS_TY_CD"/>  <!-- 운영체제유형코드 -->
+        <result property="osNm"     		column="OS_NM"/>  <!-- 운영체제명 -->
+        <result property="osVer"     		column="OS_VER"/>  <!-- 운영체제버전 -->
+        <result property="pltfrm"     		column="PLTFRM"/>  <!-- 플랫폼 -->
+        <result property="osBit"     		column="OS_BIT"/>  <!-- 운영체제비트 -->
+        <result property="krnlVer"     		column="KRNL_VER"/>  <!-- 커널버전 -->
+        <result property="lang"     		column="LANG"/>  <!-- 언어 -->
+        <result property="strgAsgnCapa"     column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당용량(GB) -->
+        <result property="tmplatVer"     	column="TMPLAT_VER"/>  <!-- 템플릿버전 -->
+        <result property="tmplatValidId"    column="TMPLAT_VALID_ID"/>  <!-- 템플릿유효ID -->
+        <result property="rsrcPoolId"     	column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+        <result property="regUserId"     	column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDttm"     		column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="updtUserId"     	column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     	column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="tmplatSeq"     	column="TMPLAT_SEQ"/>  <!-- 템플릿시퀀스 -->
+        <result property="delUserId"   		column="DEL_USER_ID"/>   <!-- 삭제여부 -->
+        <result property="delDttm"   		column="DEL_DTTM"/>   <!-- 삭제여부 -->
+        <result property="delYn"   			column="DEL_YN"/>   <!-- 삭제여부 -->
+	</resultMap>
+
+	<insert id="insertRrTmplat">
+		<selectKey order="BEFORE" keyProperty="tmplatSeq" resultType="integer">
+			SELECT nextval('rr_tmplat_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rrTmplat.insertRrTmplat */
+		INSERT INTO RR_TMPLAT (
+		             TMPLAT_ID  /* 템플릿ID */
+		           , TMPLAT_NM  /* 템플릿명 */
+		           , TMPLAT_CL_CD  /* 템플릿구분코드 */
+		           , USE_YN  /* 사용여부 */
+		           , RMK  /* 비고 */
+		           , VRLZ_SW_TY_CD  /* 가상화SW유형코드 */
+		           , OS_TY_CD  /* 운영체제유형코드 */
+		           , OS_NM  /* 운영체제명 */
+		           , OS_VER  /* 운영체제버전 */
+		           , PLTFRM  /* 플랫폼 */
+		           , OS_BIT  /* 운영체제비트 */
+		           , KRNL_VER  /* 커널버전 */
+		           , LANG  /* 언어 */
+		           , STRG_ASGN_CAPA  /* 스토리지할당용량(GB) */
+		           , TMPLAT_VER  /* 템플릿버전 */
+		           , TMPLAT_VALID_ID  /* 템플릿유효ID */
+		           , RSRC_POOL_ID  /* 자원풀ID */
+		           , REG_USER_ID  /* 등록자ID */
+		           , REG_DTTM  /* 등록일시 */
+		           , UPDT_USER_ID  /* 수정자ID */
+		           , UPDT_DTTM  /* 수정일시 */
+		           , TMPLAT_SEQ	/* 템플릿 시퀀스 */
+		           , DEL_YN	/* 삭제여부 */
+		           , S_ROUTING_SCRIPT_SEQ
+		) VALUES (
+		           #{tmplatId}  /* 템플릿ID */
+		         , #{tmplatNm}  /* 템플릿명 */
+		         , #{tmplatClCd}  /* 템플릿구분코드 */
+		         , #{useYn}  /* 사용여부 */
+		         , #{rmk}  /* 비고 */
+		         , #{vrlzSwTyCd}  /* 가상화SW유형코드 */
+		         , #{osTyCd}  /* 운영체제유형코드 */
+		         , #{osNm}  /* 운영체제명 */
+		         , #{osVer}  /* 운영체제버전 */
+		         , #{pltfrm}  /* 플랫폼 */
+		         , #{osBit}  /* 운영체제비트 */
+		         , #{krnlVer}  /* 커널버전 */
+		         , #{lang}  /* 언어 */
+		         , #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+		         , #{tmplatVer}  /* 템플릿버전 */
+		         , #{tmplatValidId}  /* 템플릿유효ID */
+		         , #{rsrcPoolId}  /* 자원풀ID */
+		         , #{regUserId}  /* 등록자ID */
+		         , now()  /* 등록일시 */
+		         , #{updtUserId}  /* 수정자ID */
+		         , now()  /* 수정일시 */
+		         , #{tmplatSeq}	/* 템플릿 시퀀스 */
+		         , 'N'	/* 삭제여부 */
+		         , #{sRoutingScriptSeq}
+		)
+	</insert>
+
+	<update id="updateRrTmplatUseY">
+		/* ncis.sql.cmn.rrTmplat.updateRrTmplatUseY */
+		UPDATE RR_TMPLAT
+		SET USE_YN = 'Y'  /* 사용여부 */
+        WHERE TMPLAT_SEQ = (#{value}::int) /* 템플릿ID */
+	</update>
+
+	<update id="updateRrTmplatUseN">
+		/* ncis.sql.cmn.rrTmplat.updateRrTmplatUseN */
+		UPDATE RR_TMPLAT
+		SET USE_YN = 'N'  /* 사용여부 */
+        WHERE TMPLAT_SEQ = (#{value}::int) /* 템플릿ID */
+	</update>
+
+	<update id="updateRrTmplat">
+		/* ncis.sql.cmn.rrTmplat.updateRrTmplat */
+		UPDATE RR_TMPLAT
+		SET  TMPLAT_NM = #{tmplatNm}  /* 템플릿명 */
+           , TMPLAT_CL_CD = #{tmplatClCd}  /* 템플릿구분코드 */
+           , USE_YN = #{useYn}  /* 사용여부 */
+           , RMK = #{rmk}  /* 비고 */
+           , VRLZ_SW_TY_CD = #{vrlzSwTyCd}  /* 가상화SW유형코드 */
+           , OS_TY_CD = #{osTyCd}  /* 운영체제유형코드 */
+           , OS_NM = #{osNm}  /* 운영체제명 */
+           , OS_VER = #{osVer}  /* 운영체제버전 */
+           , PLTFRM = #{pltfrm}  /* 플랫폼 */
+           , OS_BIT = #{osBit}  /* 운영체제비트 */
+           , KRNL_VER = #{krnlVer}  /* 커널버전 */
+           , LANG = #{lang}  /* 언어 */
+           , STRG_ASGN_CAPA = #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+           , TMPLAT_VER = #{tmplatVer}  /* 템플릿버전 */
+           , S_ROUTING_SCRIPT_SEQ = #{sRoutingScriptSeq}
+           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+           , UPDT_DTTM = now()  /* 수정일시 */
+           , VM_CRE_PRCSS_YN = #{vmCrePrcssYn} /* 가상화진행여부 */
+        WHERE TMPLAT_SEQ = (#{tmplatSeq}::int)  /* 템플릿시퀀스 */
+
+	</update>
+
+	<delete id="deleteRrTmplat">
+		/* ncis.sql.cmn.rrTmplat.deleteRrTmplat */
+		UPDATE RR_TMPLAT
+		SET	DEL_USER_ID = #{userId}
+			, DEL_DTTM = NOW()
+			, DEL_YN = 'Y'
+	    WHERE TMPLAT_SEQ = (#{tmplatSeq}::int)  /* 템플릿ID */
+	</delete>
+
+	<update id="updateRrTmplatRsrcReqInit">
+		/* ncis.sql.cmn.rrTmplat.updateRrTmplatRsrcReq */
+		UPDATE RR_TMPLAT SET VM_CRE_PRCSS_YN = 'N'
+		WHERE TMPLAT_SEQ IN (SELECT TMPLAT_SEQ FROM RR_RSRC_REQ_DTL_VM WHERE RSRC_REQ_NO = #{rsrcReqNo})
+	</update>
+
+
+
+
+</mapper>

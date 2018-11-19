@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rcVrSwtch">
+
+	<resultMap type="ncis.cpt.opr.ip.vo.VrSwtchVo" id="resultVrSwtchVo" extends="ncis.sql.cmn.rcVrSwtch.resultRcVrSwtch">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM"/>
+		<result property="vrlzSwTyCdId" column="VRLZ_SW_TY_CD"/>
+		<result property="dataCntrNm" column="DATA_CNTR_NM" />
+	</resultMap>
+
+	<sql id="search">
+		AND A.DEL_YN = 'N'
+		<if test='searchRegionId != null and !searchRegionId.isEmpty()'>
+			AND A.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchNetClCd != null and !searchNetClCd.isEmpty()'>
+			AND A.NET_CL_CD = #{searchNetClCd}
+		</if>
+		<if test='rsrcPoolId != null and !rsrcPoolId.isEmpty()'>
+			AND A.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		AND B.NETWK_NM like '%'||#{netwkNm}||'%'
+		<if test='searchVrlzSwTyCdList != null'>
+			<choose>
+				<when test="searchVrlzSwTyCdList.length > 0">
+				AND A.VRLZ_SW_TY_CD IN (
+					<foreach collection="searchVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+					</foreach>
+					)
+				</when>
+				<otherwise>
+				AND A.VRLZ_SW_TY_CD ISNULL;
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectVrSwtchTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.rcVrSwtch.selectVrSwtchTotCnt */
+		SELECT
+			COUNT(1)
+		FROM
+			RC_RSRC_POOL A
+		INNER JOIN RC_VR_SWTCH B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID AND B.DEL_YN = 'N'
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectVrSwtchList" resultMap="resultVrSwtchVo">
+	/* ncis.sql.cpt.rnVrSwtch.selectVrSwtchList */
+		SELECT
+			A.VRLZ_SW_TY_CD,
+			A.NET_CL_CD,
+			A.REGION_ID,
+			B.VR_SWTCH_SEQ,
+			B.VR_SWTCH_UUID,
+			B.VLAN,
+			B.NETWK_NM,
+			E.REGION_NM AS REGION_NM,
+			C.CD_NM AS NET_NM,
+			D.CD_NM AS VRLZ_SWTY_CD_NM,
+			A.RSRC_POOL_NM,
+			(SELECT DATA_CNTR_NM FROM RC_DATA_CNTR WHERE RC_DATA_CNTR.DATA_CNTR_SEQ = B.DATA_CNTR_SEQ ) AS DATA_CNTR_NM
+		FROM
+			RC_RSRC_POOL A
+		INNER JOIN RC_VR_SWTCH B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID AND B.DEL_YN = 'N'
+		LEFT JOIN CM_CODE C ON C.CD = A.NET_CL_CD AND C.GRP_CD = '067' AND C.PARENT_CD = 'NETCD'
+		LEFT JOIN CM_CODE D ON D.CD = A.VRLZ_SW_TY_CD AND D.GRP_CD = '001' AND D.PARENT_CD = '100'
+		LEFT JOIN RC_REGION E ON E.REGION_ID = A.REGION_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVrSwtchListByBndSeq" resultMap="resultVrSwtchVo">
+	/* ncis.sql.cpt.rnVrSwtch.selectVrSwtchListByBndSeq */
+		SELECT
+			A.RSRC_POOL_NM,
+			A.VRLZ_SW_TY_CD,
+			A.NET_CL_CD,
+			A.REGION_ID,
+			B.VR_SWTCH_SEQ,
+			B.VR_SWTCH_UUID,
+			B.VLAN,
+			B.NETWK_NM,
+			F.REGION_NM AS REGION_NM,
+			D.CD_NM AS NET_NM,
+			E.CD_NM AS VRLZ_SWTY_CD_NM,
+			(SELECT DATA_CNTR_NM FROM RC_DATA_CNTR WHERE RC_DATA_CNTR.DATA_CNTR_SEQ = B.DATA_CNTR_SEQ ) AS DATA_CNTR_NM
+		FROM
+			RC_RSRC_POOL A
+		INNER JOIN RC_VR_SWTCH AS B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID AND B.DEL_YN = 'N'
+		INNER JOIN RN_VR_SWTCH_ASGN AS C ON B.VR_SWTCH_SEQ = C.VR_SWTCH_SEQ
+		LEFT JOIN CM_CODE D ON D.CD = A.NET_CL_CD AND D.GRP_CD = '067' AND D.PARENT_CD = 'NETCD'
+		LEFT JOIN CM_CODE E ON E.CD = A.VRLZ_SW_TY_CD AND E.GRP_CD = '001' AND E.PARENT_CD = '100'
+		LEFT JOIN RC_REGION F ON F.REGION_ID = A.REGION_ID
+		WHERE
+			C.BND_SEQ = #{bndSeq}
+	</select>
+
+</mapper>

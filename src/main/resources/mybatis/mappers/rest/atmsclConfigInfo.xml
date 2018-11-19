@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.rest.config">
+	<!-- 서비스 구성정보 조회 -->
+	<resultMap id="resultHstInfoVo" extends="resultServc" type="ncis.rest.intfc.conf.vo.CfServcVO">
+		<collection property="hstInfos" column="SERVC_SEQ" select="selectHstInfoList"/>
+	</resultMap>
+	<resultMap id="resultServc" type="ncis.rest.intfc.conf.vo.CfServcVO">
+		<result property="servcSeq" 		column="SERVC_SEQ"/>        <!-- 서비스SEQ   -->
+		<result property="servcAreaSeq" 	column="SERVC_AREA_SEQ"/>   <!-- 서비스영역SEQ   -->
+		<result property="servcId" 			column="SERVC_ID"/>         <!-- 서비스ID -->
+		<result property="servcNm" 			column="SERVC_NM"/>   		<!-- 서비스명      -->
+		<result property="servcUid" 		column="SERVC_UID"/>        <!-- 서비스UID     -->
+		<result property="rmk" 				column="RMK"/>              <!-- 비고     -->
+		<result property="reqCpuCorQty" 	column="REQ_CPU_COR_QTY"/>  <!-- 요청CPU코어수   -->
+		<result property="reqMemCapa" 		column="REQ_MEM_CAPA"/>     <!-- 요청메모리용량     -->
+		<result property="lmttCpuCorQty" 	column="LMTT_CPU_COR_QTY"/> <!-- 제한CPU코어수     -->
+		<result property="lmttMemCapa" 		column="LMTT_MEM_CAPA"/>    <!-- 제한메모리용량 -->
+		<result property="basImgId" 		column="BAS_IMG_ID"/>       <!-- 베이스이미지ID -->
+		<result property="gitAddr" 			column="gitAddr"/>          <!-- Git주소 -->
+	</resultMap>
+	 <resultMap id="resultHstInfoListVo" type="ncis.rest.intfc.conf.vo.CfRuteVO">
+		<result property="hstNm" column="HST_NM"/>			<!-- 호스트명 -->
+	</resultMap>
+
+	<!-- 배포 구성정보 조회 -->
+	<resultMap id="resultDistrbInfoVo" extends="resultDistrb" type="ncis.rest.intfc.conf.vo.CfDistrbConfVO">
+		<collection property="distrbEnvConfInfos" column="{param1=SERVC_SEQ, param2=DISTRB_CONF_ID}" select="selectDistrbEnvInfoList">
+			<id property="servcSeq" 		column="SERVC_SEQ" />
+			<id property="distrbConfId" 	column="DISTRB_CONF_ID" />
+		</collection>
+	</resultMap>
+	<resultMap id="resultDistrb" type="ncis.rest.intfc.conf.vo.CfDistrbConfVO">
+		<result property="servcSeq" 		column="SERVC_SEQ"/>        <!-- 서비스SEQ   -->
+		<result property="distrbConfId" 	column="DISTRB_CONF_ID"/>   <!-- 배포설정ID   -->
+		<result property="distrbConfNm" 	column="DISTRB_CONF_NM"/>   <!-- 배포설정명 -->
+	</resultMap>
+	 <resultMap id="resultDistrbEnvInfoListVo" type="ncis.rest.intfc.conf.vo.CfDistrbEnvConfVO">
+		<result property="envVarNm" 	column="ENV_VAR_NM"/>			<!-- 환경변수명 -->
+		<result property="envVarVl" 	column="ENV_VAR_VL"/>			<!-- 환경변수값 -->
+		<result property="varVlTyCd" 	column="VAR_VL_TY_CD"/>			<!-- 변수값유형코드 -->
+		<result property="creDttm" 		column="CRE_DTTM"/>				<!-- 생성일시 -->
+		<result property="updtDttm" 	column="UPDT_DTTM"/>			<!-- 수정일시 -->
+	</resultMap>
+
+	<!-- 오토스케일링 구성정보 조회 -->
+	<resultMap id="resultServcSclngInfoListVo" extends="resultServcSclng" type="ncis.rest.intfc.conf.vo.CfServcSclngVO">
+		<collection property="sclngThresConfInfos" column="{param1=SERVC_SEQ, param2=SCALR_ID" select="selectAutoScalerThresInfoList">
+			<id property="servcSeq" 		column="SERVC_SEQ" />
+			<id property="scalrId" 			column="SCALR_ID" />
+		</collection>
+	</resultMap>
+	<resultMap id="resultServcSclng" type="ncis.rest.intfc.conf.vo.CfServcSclngVO">
+		<result property="servcSeq" 	column="SERVC_SEQ"/>        <!-- 서비스SEQ   -->
+		<result property="scalrId" 		column="SCALR_ID"/>   		<!-- 스케일러ID   -->
+		<result property="sclngClNm" 	column="SCLNG_CL_NM"/>   	<!-- 스케일링구분코드명 -->
+		<result property="scalrNm" 		column="SCALR_NM"/>   		<!-- 스케일러명 -->
+		<result property="nowPodQty" 	column="NOW_POD_QTY"/>   	<!-- 현재POD수 -->
+		<result property="minPodQty" 	column="MIN_POD_QTY"/>   	<!-- 최소POD수 -->
+		<result property="maxPodQty" 	column="MAX_POD_QTY"/>   	<!-- 최대POD수 -->
+		<result property="alarmYn" 		column="ALARM_YN"/>   		<!-- 알림여부 -->
+		<result property="creDttm" 		column="CRE_DTTM"/>   		<!-- 생성일시 -->
+		<result property="updtDttm" 	column="UPDT_DTTM"/>   		<!-- 수정일시 -->
+		<result property="lastSclDttm" 	column="LAST_SCL_DTTM"/>   	<!-- 최종스케일일시 -->
+		<result property="creUserId" 	column="CRE_USER_ID"/>   	<!-- 생성자ID -->
+		<result property="updtUserId" 	column="UPDT_USER_ID"/>   	<!-- 수정자ID -->
+	</resultMap>
+	 <resultMap id="resultServcThresInfoListVo" type="ncis.rest.intfc.conf.vo.CfSclngThresConfVO">
+		<result property="thresClNm" 	column="THRES_CL_NM"/>		<!-- 임계치구분코드명 -->
+		<result property="thresVl" 		column="THRES_VL"/>			<!-- 임계치값 -->
+		<result property="sclGrpNm" 	column="SCL_GRP_NM"/>		<!-- 스케일그룹코드명 -->
+	</resultMap>
+
+	<!-- 서비스영역 구성정보 조회 -->
+	<select id="selectServcnsInfoList" resultType="ncis.rest.intfc.conf.vo.CfServcNsVO">
+		/* ncis.sql.rest.config.selectServcnsInfoList */
+		SELECT A.SERVC_AREA_SEQ
+		     , A.SERVC_AREA_ID
+		     , A.SERVC_AREA_NM
+		     , A.SERVC_AREA_UID
+		     , A.INSTITUTION_ID
+		     , A.JOB_ID
+		     , A.RSRC_POOL_ID
+		     , A.SERVC_AREA_COMP_ID
+		     , A.RMK
+		     , B.REQ_CPU_COR_QTY
+             , B.REQ_MEM_CAPA
+		     , B.LMTT_CPU_COR_QTY
+		     , B.LMTT_MEM_CAPA
+		     , B.MAX_POD_QTY
+		     , C.MIN_CPU_COR_QTY
+		     , C.MIN_MEM_CAPA
+		     , C.MAX_CPU_COR_QTY
+		     , C.MAX_MEM_CAPA
+		  FROM RX_SERVC_AREA A
+		  LEFT JOIN RX_SERVC_AREA_LMTT_CONF B ON A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ AND B.LMTT_TY_CD = '01'
+		  LEFT JOIN RX_SERVC_AREA_LMTT_CONF C ON A.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ AND C.LMTT_TY_CD = '02'
+		 WHERE A.DEL_YN = 'N'
+			  <if test='servcAreaCompId!=null and !"".equals(servcAreaCompId)'>
+			  	AND A.SERVC_AREA_COMP_ID=#{servcAreaCompId}
+			  </if>
+		 ORDER BY A.SERVC_AREA_SEQ
+    </select>
+
+	<!-- 서비스 구성정보 조회 -->
+	<select id="selectServcInfoList" resultMap="resultHstInfoVo">
+		/* ncis.sql.rest.config.selectServcInfoList */
+ 		SELECT A.SERVC_SEQ
+		     , A.SERVC_AREA_SEQ
+		     , A.SERVC_ID
+		     , A.SERVC_NM
+		     , A.SERVC_UID
+		     , A.RMK
+		     , C.REQ_CPU_COR_QTY
+             , C.REQ_MEM_CAPA
+             , C.LMTT_CPU_COR_QTY
+             , C.LMTT_MEM_CAPA
+             , E.BAS_IMG_ID
+             , E.REPO_ADDR AS gitAddr
+  		  FROM RX_SERVC A, RX_SERVC_AREA B, RX_SERVC_AREA_LMTT_CONF C, RX_BLD_CONF E
+ 		 WHERE A.DEL_YN = 'N'
+ 		   AND B.DEL_YN = 'N'
+ 		   AND C.LMTT_TY_CD = '01'
+ 		   AND A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+ 		   AND B.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+ 		   AND A.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+ 		   AND A.SERVC_SEQ = E.SERVC_SEQ
+ 		 ORDER BY A.SERVC_SEQ
+    </select>
+	<!-- 호스트 정보 목록 -->
+	<select id="selectHstInfoList" resultMap="resultHstInfoListVo">
+		<![CDATA[
+		/* ncis.sql.rest.config.selectHstInfoList */
+		 SELECT A.HST_NM
+	     FROM RX_SERVC_ROUTE A
+	     WHERE A.SERVC_SEQ=#{servcSeq}
+    	]]>
+    </select>
+
+    <!-- 빌드 구성정보 조회 -->
+	<select id="selectBuildInfoList" resultType="ncis.rest.intfc.conf.vo.CfBldConfVO">
+		/* ncis.sql.rest.config.selectBuildInfoList */
+ 		SELECT A.SERVC_SEQ,
+		       A.BLD_ID,
+		       A.BLD_NM,
+		       A.BAS_IMG_ID,
+		       A.REPO_ADDR,
+		       A.GIT_BRNCH_NM,
+		       A.GIT_BEST_PATH,
+		       A.SCRTKY_ID,
+		       A.CRE_IMG_NM,
+		       A.CRE_IMG_ID,
+		       A.IMG_TAG,
+		       A.SERVC_AREA_SEQ,
+		       A.LAST_BLD_VER,
+		       A.LAST_BLD_DTTM,
+		       TO_CHAR(A.CRE_DTTM,'YYYYMMDDHH24MI') CRE_DTTM,
+		       TO_CHAR(A.UPDT_DTTM,'YYYYMMDDHH24MI') UPDT_DTTM,
+		       A.CRE_USER_ID,
+		       A.UPDT_USER_ID
+
+		FROM RX_BLD_CONF A INNER JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ AND B.DEL_YN='N' AND B.SERVC_TY_CD IN ('01', '02')
+    </select>
+
+	<!-- 디플로이 구성정보 조회 -->
+	<select id="selectDistrbInfoList" resultMap="resultDistrbInfoVo">
+		/* ncis.sql.rest.config.selectDistrbInfoList */
+ 		SELECT A.SERVC_SEQ,
+	       	   A.DISTRB_CONF_ID,
+	       	   A.DISTRB_CONF_NM
+
+		FROM RX_DISTRB_CONF A INNER JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ AND B.DEL_YN = 'N' AND B.SERVC_TY_CD IN ('01','02')
+		WHERE 1=1
+	    	  AND A.TEST_YN='N'
+    </select>
+
+	<!-- 디플로이 환경설정 구성정보 조회 -->
+	<select id="selectDistrbEnvInfoList" resultMap="resultDistrbEnvInfoListVo">
+		/* ncis.sql.rest.config.selectDistrbEnvInfoList */
+ 		SELECT A.ENV_VAR_NM,
+	       	   A.ENV_VAR_VL,
+		       A.VAR_VL_TY_CD,
+		       TO_CHAR(A.CRE_DTTM,'YYYYMMDDHH24MI') CRE_DTTM,
+		       TO_CHAR(A.UPDT_DTTM,'YYYYMMDDHH24MI') UPDT_DTTM
+		FROM RX_DISTRB_ENV_CONF A INNER JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ AND B.DEL_YN = 'N' AND B.SERVC_TY_CD IN ('01','02')
+		WHERE 1=1
+		      AND A.SERVC_SEQ = #{param1}
+		      AND A.DISTRB_CONF_ID = #{param2}
+    </select>
+
+    <!-- 오토스케일링 환경설정 구성정보 조회 -->
+	<select id="selectAutoScalerInfoList" resultMap="resultServcSclngInfoListVo">
+		/* ncis.sql.rest.config.selectAutoScalerInfoList */
+ 		SELECT B.SERVC_SEQ,
+		       B.SCALR_ID,
+		       (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '304' AND PARENT_GRP_CD='103' AND CD = B.SCLNG_CL_CD) SCLNG_CL_NM,
+		       B.SCALR_NM,
+		       B.NOW_POD_QTY,
+		       B.MIN_POD_QTY,
+		       B.MAX_POD_QTY,
+		       B.ALARM_YN,
+		       TO_CHAR(B.CRE_DTTM,'YYYYMMDDHH24MI') CRE_DTTM,
+		       TO_CHAR(B.UPDT_DTTM,'YYYYMMDDHH24MI') UPDT_DTTM,
+		       TO_CHAR(B.LAST_SCL_DTTM,'YYYYMMDDHH24MI') LAST_SCL_DTTM,
+		       B.CRE_USER_ID,
+		       B.UPDT_USER_ID
+
+		FROM RX_SERVC A INNER JOIN RX_SERVC_SCLNG B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.DEL_YN='N' AND A.SERVC_TY_CD IN ('01', '02')
+		WHERE B.USE_YN='Y'
+    </select>
+
+	<!-- 오토스케일링 임계치 환경설정 구성정보 조회 -->
+	<select id="selectAutoScalerThresInfoList" resultMap="resultServcThresInfoListVo">
+		/* ncis.sql.rest.config.selectAutoScalerThresInfoList */
+
+ 		SELECT (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '314' AND PARENT_GRP_CD='113' AND CD = B.THRES_CL_CD) THRES_CL_NM,
+		       B.END_THRES_VL THRES_VL,
+		       (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '313' AND PARENT_GRP_CD='112' AND CD = C.SCL_GRP_CD) SCL_GRP_NM
+
+		FROM RX_SERVC A INNER JOIN RX_SERVC_SCLNG_THRES_CONF B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.DEL_YN='N' AND A.SERVC_TY_CD IN ('01', '02')
+		                LEFT JOIN RX_SERVC_SCLNG_GRP_COMP C ON B.SERVC_SEQ = C.SERVC_SEQ AND B.SCALR_ID = C.SCALR_ID AND B.THRES_CL_CD = C.THRES_CL_CD
+		WHERE 1=1
+		      AND B.SERVC_SEQ = #{param1}
+		      AND B.SCALR_ID = #{param2}
+    </select>
+
+    <!-- 베이스이미지 구성정보 조회 -->
+	<select id="selectImgInfoList" resultType="ncis.rest.intfc.conf.vo.CfImgVO">
+		/* ncis.sql.rest.config.selectImgInfoList */
+		SELECT A.IMG_ID
+			 , A.IMG_NM
+			 , A.IMG_UID
+			 , A.IMG_REPO_ADDR
+			 , A.SERVC_AREA_SEQ
+			 , A.IMG_VER
+			 , A.IMG_CAPA AS basImgCapa
+			 , A.WRK_PATH_NM
+			 , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD = '099' AND PARENT_CD = '300' AND CD = A.IMG_TY_CD) AS imgTyNm
+			 , A.RMK
+          FROM RX_IMG A, RX_SERVC_AREA B
+         WHERE B.DEL_YN = 'N'
+ 	   	   AND A.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+ 	   	   AND A.RSRC_POOL_ID   = B.RSRC_POOL_ID
+ 	   	 ORDER BY A.SERVC_AREA_SEQ
+    </select>
+
+</mapper>

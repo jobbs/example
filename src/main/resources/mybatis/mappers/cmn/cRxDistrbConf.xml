@@ -1,0 +1,425 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxDistrbConf">
+	<!-- 배포 등록 -->
+	<insert id="insertRxDistrbConf" parameterType="ncis.cmn.entity.RxDistrbConf">
+
+		/* ncis.sql.cmn.rxDistrbConf.insertRxDistrbConf */
+		INSERT INTO RX_DISTRB_CONF(
+	         SERVC_SEQ  /* 서비스SEQ */
+	         , DISTRB_CONF_ID  /* 배포설정ID */
+	         , DISTRB_CONF_NM  /* 배포설정명 */
+	         , TMPLAT_NM  /* 템플릿명 */
+	         , CNTANR_ID  /* 컨테이너ID */
+	         , IMG_ID  /* 이미지ID */
+	         , IMG_TAG  /* 이미지태그 */
+	         , RE_STRT_POLICY_CL_CD  /* 재기동정책구분코드 */
+	         , DNS_POLICY_CL_CD  /* DNS정책구분코드 */
+	         , RPLCA_QTY  /* 복제수 */
+	         , TEST_YN  /* 테스트여부 */
+	         , LAST_DISTRB_DTTM  /* 최종배포일시 */
+	         , LAST_DISTRB_VER  /* 최종배포버전 */
+	         , STAT_CD  /* 상태코드 */
+	         , RMK  /* 비고 */
+	         , CRE_DTTM  /* 생성일시 */
+	         , CRE_USER_ID  /* 생성자ID */
+	         , REQ_CPU_COR_QTY  /* 요청CPU코어수 */
+	         , REQ_MEM_CAPA  /* 요청메모리용량 */
+	         , LMTT_CPU_COR_QTY  /* 제한CPU코어수 */
+	         , LMTT_MEM_CAPA  /* 제한메모리용량 */
+        ) VALUES (
+			 #{servcSeq}  /* 서비스SEQ */
+	         , #{distrbConfId}  /* 배포설정ID */
+	         , #{distrbConfNm}  /* 배포설정명 */
+	         , #{tmplatNm}  /* 템플릿명 */
+	         , #{cntanrId}  /* 컨테이너ID */
+	         , #{imgId}  /* 이미지ID */
+	         , #{imgTag}  /* 이미지태그 */
+	         , #{reStrtPolicyClCd}  /* 재기동정책구분코드 */
+	         , #{dnsPolicyClCd}  /* DNS정책구분코드 */
+	         , #{rplcaQty}  /* 복제수 */
+	         , #{testYn}  /* 테스트여부 */
+	         , #{lastDistrbDttm}  /* 최종배포일시 */
+	         , #{lastDistrbVer}  /* 최종배포버전 */
+	         , #{statCd}  /* 상태코드 */
+	         , #{rmk}  /* 비고 */
+	         , now()  /* 생성일시 */
+	         , #{creUserId}  /* 생성자ID */
+	         , #{reqCpuCorQty}  /* 요청CPU코어수 */
+	         , #{reqMemCapa}  /* 요청메모리용량 */
+	         , #{lmttCpuCorQty}  /* 제한CPU코어수 */
+	         , #{lmttMemCapa}  /* 제한메모리용량 */
+        )
+	</insert>
+
+	<!-- 배포 삭제 -->
+	<delete id="deleteRxDistrbConf">
+		/* ncis.sql.cmn.rxDistrbConf.deleteRxDistrbConf */
+		DELETE FROM RX_DISTRB_CONF
+        WHERE SERVC_SEQ = #{servcSeq}
+        <if test="distrbConfId != null and !distrbConfId.isEmpty()">
+        AND DISTRB_CONF_ID = #{distrbConfId}
+        </if>
+	</delete>
+
+	<!-- 배포 수정 -->
+	<update id="updateRxDistrbConf">
+		/* ncis.sql.cmn.rxDistrbConf.updateRxDistrbConf */
+		UPDATE RX_DISTRB_CONF
+         SET DISTRB_CONF_NM = #{distrbConfNm}  /* 배포설정명 */
+         , TMPLAT_NM = #{tmplatNm}  /* 템플릿명 */
+         , CNTANR_ID = #{cntanrId}  /* 컨테이너ID */
+         , IMG_ID = #{imgId}  /* 이미지ID */
+         , IMG_TAG = #{imgTag}  /* 이미지태그 */
+         , RE_STRT_POLICY_CL_CD = #{reStrtPolicyClCd}  /* 재기동정책구분코드 */
+         , DNS_POLICY_CL_CD = #{dnsPolicyClCd}  /* DNS정책구분코드 */
+         , RPLCA_QTY = #{rplcaQty}  /* 복제수 */
+         , TEST_YN = #{testYn}  /* 테스트여부 */
+         , LAST_DISTRB_DTTM = #{lastDistrbDttm}  /* 최종배포일시 */
+         , LAST_DISTRB_VER = #{lastDistrbVer}  /* 최종배포버전 */
+         , STAT_CD = #{statCd}  /* 상태코드 */
+         , RMK = #{rmk}  /* 비고 */
+         , UPDT_DTTM = now()  /* 수정일시 */
+         , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+         , REQ_CPU_COR_QTY = #{reqCpuCorQty}  /* 요청CPU코어수 */
+         , REQ_MEM_CAPA = #{reqMemCapa}  /* 요청메모리용량 */
+         , LMTT_CPU_COR_QTY = #{lmttCpuCorQty}  /* 제한CPU코어수 */
+         , LMTT_MEM_CAPA = #{lmttMemCapa}  /* 제한메모리용량 */
+        WHERE SERVC_SEQ = #{servcSeq}
+        AND DISTRB_CONF_ID = #{distrbConfId}
+	</update>
+	<!-- 배포 버전정보 수정 -->
+	<update id="updateRxDistrbConfVer">
+		/* ncis.sql.cmn.rxDistrbConf.updateRxDistrbConfVer */
+		UPDATE RX_DISTRB_CONF
+			SET
+              LAST_DISTRB_DTTM = now()  /* 최종배포일시 */
+         	, LAST_DISTRB_VER = #{lastDistrbVer}  /* 최종배포버전 */
+         	, STAT_CD = #{statCd}  /* 상태코드 */
+         	, UPDT_DTTM = now()  /* 수정일시 */
+         	, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+         	, RMK = #{rmk}
+        WHERE SERVC_SEQ = #{servcSeq}
+	</update>
+	<!-- PVC 추가 -->
+	<insert id="insertPvcStrgAdd">
+	/*ncis.sql.cmn.rxDistrbConf.insertPvcStrgAdd*/
+	INSERT INTO
+		RX_PVC(
+            SERVC_AREA_SEQ
+            , PVC_ID
+            , PVC_NM
+            , PVC_UID
+            , REQ_STRG_CAPA
+            , ACCSS_MODE_CL_CD
+            , CRE_DTTM
+            , PV_ID
+            , STAT_CD
+            )
+    VALUES
+    		(
+    		  #{servcAreaSeq}
+    		, #{pvcId}
+    		, #{pvcNm}
+    		, #{pvcUid}
+    		, #{reqStrgCapa}
+    		, #{accssModeClCd}
+    		, now()
+    		, #{pvId}
+    		, #{statCd}
+    		);
+
+	</insert>
+	<insert id="insertDistrbAsgn">
+	/*ncis.sql.cmn.rxDistrbConf.insertDistrbAsgn*/
+	INSERT INTO
+		RX_DISTRB_CONF_PVC_ASGN(
+              SERVC_AREA_SEQ
+            , SERVC_SEQ
+            , DISTRB_CONF_ID
+            , PVC_ID
+            , VOLUM_NM
+            , MOUNT_PATH
+            , CRE_DTTM
+            )
+   		 VALUES
+   		  (
+			 #{servcAreaSeq}
+			,#{servcSeq}
+			,#{distrbConfId}
+			,#{pvcId}
+			,#{volumeNm}
+			,#{mountPath}
+			,now()
+		  );
+
+	</insert>
+	<insert id="insertReplicasAdd">
+	/*ncis.sql.cmn.rxDistrbConf.insertReplicasAdd*/
+	INSERT INTO
+		RX_MNUL_SCL_HSTRY
+		(
+           	  SERVC_SEQ
+            , DISTRB_CONF_ID
+            , NOW_POD_QTY
+            , CHNG_POD_QTY
+            , SCL_REASN
+            , CPU_USE_RT
+            , MEM_USE_RT
+            , REG_USER_ID
+            , REG_DTTM
+            )
+    VALUES (
+    		 #{servcSeq}
+    		,#{distrbConfId}
+    		,#{nowPodQty}
+    		,#{chngPodQty}
+    		,#{sclReasn}
+    		,#{avgCpuUseRt}
+            ,#{avgMemUseRt}
+            ,#{regUserId}
+            ,now()
+            );
+
+	</insert>
+	<update id="updateRsrcLt">
+	/*ncis.sql.cmn.rxDistrbConf.updateRsrcLt*/
+		UPDATE RX_DISTRB_CONF
+   				SET
+   				     REQ_CPU_COR_QTY = #{reqCpuCorQty}
+   				   , REQ_MEM_CAPA= #{reqMemCapa}
+   				   , LMTT_CPU_COR_QTY= #{lmttCpuCorQty}
+   				   , LMTT_MEM_CAPA= #{lmttMemCapa}
+ 		 WHERE RX_DISTRB_CONF.SERVC_SEQ = #{servcSeq} AND RX_DISTRB_CONF.DISTRB_CONF_ID = #{distrbConfId}
+
+	</update>
+		<update id="updateRsrcLtHstry">
+	/*ncis.sql.cmn.rxDistrbConf.updateRsrcLtHstry*/
+		UPDATE RX_DISTRB_HSTRY
+   				SET
+   				     REQ_CPU_COR_QTY = #{reqCpuCorQty}
+   				   , REQ_MEM_CAPA= #{reqMemCapa}
+   				   , LMTT_CPU_COR_QTY= #{lmttCpuCorQty}
+   				   , LMTT_MEM_CAPA= #{lmttMemCapa}
+ 		 WHERE RX_DISTRB_HSTRY.SERVC_SEQ = #{servcSeq}
+ 		 AND RX_DISTRB_HSTRY.DISTRB_CONF_ID = #{distrbConfId}
+ 		 AND RX_DISTRB_HSTRY.DISTRB_ID = #{distrbId}
+
+	</update>
+	<!-- 기존 환경변수 삭제 -->
+	<delete id="deleteDistrbConf">
+	/* ncis.sql.cmn.rxDistrbConf.deleteDistrbConf */
+	DELETE FROM
+		RX_DISTRB_ENV_CONF
+    WHERE SERVC_SEQ = #{servcSeq} AND DISTRB_CONF_ID = #{distrbConfId} AND VAR_VL_TY_CD = #{varVlTyCd}
+	</delete>
+
+	<!-- 환경변수 추가  -->
+	<insert id="insertDistrbConf">
+	/*ncis.sql.cmn.rxDistrbConf.insertDistrbConf */
+	INSERT INTO RX_DISTRB_ENV_CONF
+			(
+            servc_seq
+            , distrb_conf_id
+            , env_var_nm
+            , env_var_vl
+            , var_vl_ty_cd
+            , cre_dttm
+            )
+    VALUES
+    		(
+   			 #{servcSeq}
+   			 , #{distrbConfId}
+   			 , #{envVarNm}
+   			 , #{envVarVl}
+   			 , #{varVlTyCd}
+   			 , now()
+            );
+	</insert>
+
+	<insert id="insertDistrbAutoConf">
+	/*ncis.sql.cmn.rxDistrbConf.insertDistrbAutoConf */
+	INSERT INTO RX_SERVC_SCLNG
+			(
+           	  SERVC_SEQ
+            , SCALR_ID
+            , SCLNG_CL_CD
+            , SCALR_NM
+            , NOW_POD_QTY
+            , MIN_POD_QTY
+            , MAX_POD_QTY
+            , USE_YN
+            , ALARM_YN
+            , CRE_DTTM
+            , CRE_USER_ID
+            )
+    VALUES (
+    		 #{servcSeq}
+    		,#{scalrId}
+    		,#{sclngClCd}
+    		,#{scalrNm}
+    		,#{nowPodQty}
+    		,#{minPodQty}
+    		,#{maxPodQty}
+    		,#{useYn}
+    		,#{alarmYn}
+    		,now()
+    		,#{creUserId}
+            );
+
+	</insert>
+
+	<insert id="insertDistrbAutoThresConf">
+	/*ncis.sql.cmn.rxDistrbConf.insertDistrbAutoThresConf */
+	INSERT INTO RX_SERVC_SCLNG_THRES_CONF
+				(
+            		  SERVC_SEQ
+            		, SCALR_ID
+            		, THRES_CL_CD
+            		, STRT_THRES_VL
+            		, END_THRES_VL
+            	)
+    VALUES 		(
+    				  #{servcSeq}
+    				, #{scalrId}
+    				, #{thresClCd}
+    				, #{strtThresVl}
+    				, #{endThresVl}
+    			);
+
+	</insert>
+
+	<insert id="insertDistrbMultiSclGrpConf">
+	/*ncis.sql.cmn.rxDistrbConf.insertDistrbMultiSclGrpConf */
+	INSERT INTO RX_SERVC_SCLNG_GRP_COMP
+				(
+            		  SERVC_SEQ
+            		, SCL_GRP_CD
+            		, SCALR_ID
+            		, THRES_CL_CD
+            	)
+    VALUES 		(
+    				  #{servcSeq}
+    				, #{sclGrpCd}
+    				, #{scalrId}
+    				, #{thresClCd}
+    			);
+
+	</insert>
+
+	<!--재배포 이력 insert  -->
+	<insert id="insertRxDistrbHstry">
+	/*ncis.sql.cmn.rxDistrbConf.insertRxDistrbHstry*/
+	INSERT INTO RX_DISTRB_HSTRY(
+	            servc_seq
+	            , distrb_id
+	            , distrb_conf_id
+	            , distrb_ver
+	            , distrb_dttm
+	            , distrb_stat_cd
+	            , cre_dttm
+	            , tmplat_nm
+	            , re_strt_policy_cl_cd
+	            , dns_policy_cl_cd
+	            , req_cpu_cor_qty
+	            , req_mem_capa
+	            , lmtt_cpu_cor_qty
+	            , lmtt_mem_capa
+	            , rplca_qty
+	            )
+	    VALUES (
+	    		  #{servcSeq}
+	    		, #{distrbId}
+	    		, #{distrbConfId}
+	    		, #{lastDistrbVer}
+	    		, now()
+	    		, #{statCd}
+	    		, now()
+	    		, #{tmplatNm}
+	    		, #{reStrtPolicyClCd}
+	    		, #{dnsPolicyClCd}
+	    		, #{reqCpuCorQty}
+	            , #{reqMemCapa}
+	    		, #{lmttCpuCorQty}
+	    		, #{lmttMemCapa}
+	            , #{rplcaQty}
+	            );
+
+	</insert>
+
+	<!-- 배포 상태 수정 -->
+	<update id="updateRxDistrbConfStat">
+		/* ncis.sql.cmn.rxDistrbConf.updateRxDistrbConfStat */
+		UPDATE RX_DISTRB_CONF
+          SET STAT_CD = #{statCd}
+         , UPDT_DTTM = now()
+         , UPDT_USER_ID = #{updtUserId}
+        WHERE SERVC_SEQ = #{servcSeq}
+        AND DISTRB_CONF_ID = #{distrbConfId}
+	</update>
+
+		<!-- 배포 설정 정보 수정 -->
+	<update id="updateRxDistrbConfSave">
+		/* ncis.sql.cmn.rxDistrbConf.updateRxDistrbConfSave */
+		UPDATE RX_DISTRB_CONF
+          SET
+           UPDT_DTTM = now()
+         , UPDT_USER_ID = #{updtUserId}
+         , RMK = #{rmk}
+        WHERE SERVC_SEQ = #{servcSeq}
+        AND DISTRB_CONF_ID = #{distrbConfId}
+	</update>
+
+	<update id="updateInitRsrcLt">
+	/*ncis.sql.cmn.rxDistrbConf.updateInitRsrcLt*/
+		UPDATE RX_DISTRB_CONF
+   				SET
+   				     REQ_CPU_COR_QTY = NULL
+   				   , REQ_MEM_CAPA= NULL
+   				   , LMTT_CPU_COR_QTY= NULL
+   				   , LMTT_MEM_CAPA= NULL
+ 		 WHERE RX_DISTRB_CONF.SERVC_SEQ = #{servcSeq} AND RX_DISTRB_CONF.DISTRB_CONF_ID = #{distrbConfId}
+
+	</update>
+	<update id="updateInitRsrcLtHstry">
+	/*ncis.sql.cmn.rxDistrbConf.updateInitRsrcLtHstry*/
+		UPDATE RX_DISTRB_HSTRY
+   				SET
+   				     REQ_CPU_COR_QTY = NULL
+   				   , REQ_MEM_CAPA = NULL
+   				   , LMTT_CPU_COR_QTY = NULL
+   				   , LMTT_MEM_CAPA= NULL
+ 		 WHERE RX_DISTRB_HSTRY.SERVC_SEQ = #{servcSeq}
+ 		 AND RX_DISTRB_HSTRY.DISTRB_CONF_ID = #{distrbConfId}
+ 		 AND RX_DISTRB_HSTRY.DISTRB_ID = #{distrbId}
+
+	</update>
+
+	<delete id="deleteDistrbAsgn">
+	/*ncis.sql.cmn.rxDistrbConf.deleteDistrbAsgn*/
+		DELETE FROM RX_DISTRB_CONF_PVC_ASGN
+		WHERE SERVC_AREA_SEQ = #{servcAreaSeq} AND SERVC_SEQ = #{servcSeq} AND DISTRB_CONF_ID = #{distrbConfId} AND PVC_ID = #{pvcId}
+	</delete>
+
+	<delete id="deletePvcStrgAdd">
+	/*ncis.sql.cmn.rxDistrbConf.deletePvcStrgAdd*/
+		DELETE FROM RX_PVC
+		WHERE SERVC_AREA_SEQ = #{servcAreaSeq} AND PVC_ID = #{pvcId} AND PV_ID = #{pvId}
+	</delete>
+
+	<update id="updateRxDistrbSync">
+	/* ncis.sql.cmn.rxDistrbConf.updateRxDistrbSync */
+		UPDATE	RX_DISTRB_CONF
+		   SET
+		          CRE_DTTM = #{distrbDttmSync}  /* 생성일자 */
+         		, LAST_DISTRB_VER = #{lastDistrbVer}  /* 최종배포버전 */
+         		, STAT_CD = #{statCd}  /* 상태코드 */
+         		, UPDT_DTTM = now()  /* 수정일시 */
+         		, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+         		, RPLCA_QTY = #{rplcaQty}
+         WHERE  RX_DISTRB_CONF.SERVC_SEQ = #{servcSeq}
+           AND  RX_DISTRB_CONF.DISTRB_CONF_ID = #{distrbConfId}
+
+	</update>
+
+</mapper>

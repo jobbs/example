@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.dtl">
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqVo" id="resultRsrcReqVo" extends="ncis.sql.cmn.rrRsrcReq.resultRrRsrcReq">
+		<result property="rsrcReqUserNm" column="RSRC_REQ_USER_NM"/>
+		<result property="rsrcReqPrcssStatNm" column="RSRC_REQ_PRCSS_STAT_NM"/>
+		<result property="reqInstitutionNm" column="REQ_INSTITUTION_NM"/>
+		<result property="rsrcReqMobile" column="RSRC_REQ_MOBILE"/>
+		<result property="rsrcReqEmail" column="RSRC_REQ_EMAIL"/>
+		<result property="exeUserNm" column="EXE_USER_NM"/>
+		<result property="rsrcReqTyNm" column="RSRC_REQ_TY_NM"/>
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="exeDttm" column="EXE_DTTM"/>
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/>
+	</resultMap>
+
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+						/* 운영자 권한  */
+						AND RR_RSRC_REQ.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+				</when>
+				<otherwise>
+						/* 담당자 권한 */
+						AND RR_RSRC_REQ.RSRC_REQ_USER_ID = #{searchUserId}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<if test = "rsrcReqNo != null and rsrcReqNo != ''">
+			RR_RSRC_REQ.RSRC_REQ_NO = #{rsrcReqNo}	/* 요청 번호 */
+		</if>
+	</sql>
+
+	<!-- 자원요청상세 조회 -->
+	<select id="selectRsrcReqInfo" resultMap="resultRsrcReqVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqInfo */
+		SELECT	RSRC_REQ_NO  																	 		/* 자원요청번호 */
+			    , RSRC_REQ_USER_ID  																	/* 자원요청자ID */
+			    , RSRC_REQ_USER_NM  																	/* 자원요청자 명 */
+			    , RSRC_REQ_DTTM																			/* 자원요청일시 */
+			    , REG_DTTM																				/* 등록일시 */
+			    , RSRC_REQ_PRCSS_STAT_CD 																/* 자원요청진행상태코드 */
+			    , FN_CODE_NAME('007', RSRC_REQ_PRCSS_STAT_CD ) RSRC_REQ_PRCSS_STAT_NM 		/* 자원요청진행상태코드명 */
+				, REQ_INSTITUTION_ID																	/* 요청기관ID  */
+				,CASE WHEN  FN_INSTITUTION_NAME(REQ_INSTITUTION_ID) IS NOT NULL THEN FN_INSTITUTION_NAME(REQ_INSTITUTION_ID)
+					ELSE REQ_USER_INSTITUTION_NM
+			     END AS REQ_INSTITUTION_NM		/* 요청기관명  */
+				, FN_INSTITUTION_NAME(REQ_INSTITUTION_ID) 	REQ_INSTITUTION_NM
+			    , SBJCT  									/* 제목 */
+			    , TICKT_NO 	 								/* 티켓번호 */
+			    , REGION_ID									/* 리전ID */
+			    , FN_REGION_NAME(REGION_ID) REGION_NM		/* 리전명 */
+			    , TEST_YN  									/* 테스트여부 */
+				, LINK_YN  									/* 연계여부 */
+			    , COMPT_DTTM	 							/* 완료일시 */
+			    , REG_USER_ID  								/* 등록자ID */
+			    , REG_USER_NM								/* 등록자명  */
+			    , RSRC_REQ_MOBILE 							/* 등록자 핸드폰 */
+				, RSRC_REQ_EMAIL 							/* 등록자 이메일 */
+				, RSRC_REQ_TY_CD							/* 자원요청유형코드 */
+				, FN_CODE_NAME('008', RSRC_REQ_TY_CD ) RSRC_REQ_TY_NM     /* 자원요청유형코드명 */
+				, HA_COMP_YN								/* HA 구성 YN */
+			    , EXE_USER_ID  												/* 실행자ID */
+			    , EXE_USER_NM												/* 실행자명   */
+				, TO_CHAR(EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM		/* 실행시간   */
+				, PROCSS_INST_SEQ											/* 프로세스 인스턴스 SEQ */
+		from	(
+			SELECT	RR_RSRC_REQ.RSRC_REQ_NO
+			        , RR_RSRC_REQ.RSRC_REQ_USER_ID
+			        , RSRC_REQ_USER.USER_NM  AS RSRC_REQ_USER_NM
+			        , TO_CHAR(RR_RSRC_REQ.RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+			         ,TO_CHAR(RR_RSRC_REQ.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') REG_DTTM
+			        , RR_RSRC_REQ.RSRC_REQ_PRCSS_STAT_CD
+			        , CASE	WHEN RR_RSRC_REQ.REQ_INSTITUTION_ID IS NOT NULL THEN RR_RSRC_REQ.REQ_INSTITUTION_ID
+		        			ELSE  RSRC_REQ_USER.INSTITUTION_ID
+		    		  END AS REQ_INSTITUTION_ID
+		    		, RSRC_REQ_USER.INSTITUTION_NM AS REQ_USER_INSTITUTION_NM
+			        , RR_RSRC_REQ.SBJCT
+			        , RR_RSRC_REQ.TICKT_NO
+			        , RR_RSRC_REQ.REGION_ID
+			        , RR_RSRC_REQ.TEST_YN
+			        , RR_RSRC_REQ.LINK_YN
+			        , TO_CHAR(RR_RSRC_REQ.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+			        , RR_RSRC_REQ.REG_USER_ID
+			        , (SELECT USER_NM FROM CM_USR WHERE USER_ID = RR_RSRC_REQ.REG_USER_ID ) REG_USER_NM
+			        , RSRC_REQ_USER.MOBILE AS RSRC_REQ_MOBILE
+				    , RSRC_REQ_USER.EMAIL AS RSRC_REQ_EMAIL
+			        , RR_RSRC_REQ.RSRC_REQ_TY_CD
+			        , RR_RSRC_REQ.EXE_USER_ID
+					,(SELECT CASE WHEN MAX(HA_GRP_ID) IS NULL THEN 'N' ELSE 'Y' END FROM RR_HA_COMP WHERE RSRC_REQ_NO=RR_RSRC_REQ.RSRC_REQ_NO AND RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_VM.RSRC_REQ_SEQ) HA_COMP_YN
+				 	, (SELECT USER_NM FROM CM_USR WHERE USER_ID = RR_RSRC_REQ.EXE_USER_ID) EXE_USER_NM
+				 	, CASE	WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('01','02','03','09','10') THEN RR_RSRC_REQ_DTL_VM.EXE_DTTM
+				 			WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('05','06','07','08') THEN RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM
+				 			WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('04') THEN RR_RSRC_REQ_DTL_NETWK.EXE_DTTM
+				 		END AS EXE_DTTM
+					, CASE	WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('01','02','03','09','10') THEN RR_RSRC_REQ_DTL_VM.PROCSS_INST_SEQ
+				 			WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('05','06','07','08') THEN RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ
+				 			WHEN RR_RSRC_REQ.RSRC_REQ_TY_CD IN('04') THEN RR_RSRC_REQ_DTL_NETWK.PROCSS_INST_SEQ
+					  END AS PROCSS_INST_SEQ
+			  FROM	RR_RSRC_REQ
+		 LEFT JOIN 	CM_USR RSRC_REQ_USER
+			  	ON	RSRC_REQ_USER.USER_ID = RR_RSRC_REQ.RSRC_REQ_USER_ID
+		 LEFT JOIN	RR_RSRC_REQ_DTL_P_RSRC
+		 		ON	RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+		 LEFT JOIN  RR_RSRC_REQ_DTL_VM
+		 		ON	RR_RSRC_REQ_DTL_VM.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+		 LEFT JOIN  RR_RSRC_REQ_DTL_NETWK
+		 		ON	RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+			<trim prefix="WHERE" prefixOverrides="AND | OR">
+				<include refid="search" />
+			  	<include refid="validateAuth" />
+			</trim>
+		) X
+	</select>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.menu">
+
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultTree">
+		<id property="key" column="MENU_SEQ" javaType="Long"/>
+		<result property="title" column="MENU_NM"/>
+		<result property="parentKey" column="PARENT_SEQ" javaType="Long"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.menu.vo.MenuVo" id="resultMenuVo" extends="ncis.sql.cmn.menu.resultMenu">
+		<association property="parent" 			column="PARENT_SEQ" 		select="selectMenu" notNullColumn="PARENT_SEQ" />
+		<association property="menuRoleList" 	column="MENU_SEQ" 			select="selectMenuRole" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.menu.vo.MenuRoleVo" id="resultMenuRoleVo">
+		<result property="menuSeq"       	column="MENU_SEQ"/>
+		<result property="roleCd"     		column="ROLE_CD"/>
+		<result property="readYn"       	column="READ_YN"/>
+		<result property="writeYn"      	column="WRITE_YN"/>
+		<result property="actYn"      		column="ACT_YN"/>
+		<result property="regDttm"      	column="REG_DTTM"/>
+		<result property="regUserId"        column="REG_USER_ID"/>
+		<result property="updtDttm"     	column="UPDT_DTTM"/>
+		<result property="updtUserId"      	column="UPDT_USER_ID"/>
+		<result property="roleNm"   		column="ROLE_NM"/>
+	</resultMap>
+
+	<sql id="search">
+	</sql>
+
+	<select id="selectMenu" resultMap="resultMenuVo" parameterType="Long">
+	/* ncis.sql.cpt.menu.selectMenu */
+		SELECT
+			MENU_SEQ, PARENT_SEQ, MENU_NM, MENU_PATTERN, MENU_FILE, MENU_DESC, MENU_LEVEL,
+			POPUP_YN, USE_YN, MENU_ORDER, REG_DTTM, REG_USER_ID, UPDT_DTTM, UPDT_USER_ID
+		FROM CM_MENU
+		WHERE MENU_SEQ = #{value}
+	</select>
+
+	<select id="selectMenuListTree" resultMap="resultTree" parameterType="java.util.HashMap">
+	/* ncis.sql.cpt.menu.selectMenuListTree */
+		WITH RECURSIVE MENU AS (
+				SELECT M.*
+				FROM CM_MENU M
+				<where>
+					<choose>
+						<when test="parentId != null">
+						PARENT_SEQ = #{parentId}
+						</when>
+						<otherwise>
+						PARENT_SEQ IS NULL
+						</otherwise>
+					</choose>
+				</where>
+			UNION ALL
+				SELECT M.*
+				FROM CM_MENU M
+			JOIN MENU ON MENU.MENU_SEQ = M.PARENT_SEQ
+			<where>
+				<choose>
+					<when test="state != null">
+					USE_YN= #{state}
+					</when>
+				</choose>
+			</where>
+		)
+		SELECT * FROM MENU
+		ORDER BY MENU_LEVEL, MENU_ORDER
+	</select>
+
+	<select id="selectChildMenu" resultMap="resultMenuVo" parameterType="Long">
+	/* ncis.sql.cpt.menu.selectChildMenu */
+		SELECT
+			MENU_SEQ, PARENT_SEQ, MENU_NM, MENU_PATTERN, MENU_FILE, MENU_DESC, MENU_LEVEL,
+			POPUP_YN, USE_YN, MENU_ORDER, REG_DTTM, REG_USER_ID, UPDT_DTTM, UPDT_USER_ID
+		FROM CM_MENU
+		WHERE PARENT_SEQ = #{value}
+	</select>
+
+	<select id="selectMenuRole" resultMap="resultMenuRoleVo">
+	/* ncis.sql.cpt.menu.selectMenuRole */
+		SELECT
+			MR.MENU_SEQ,
+			MR.ROLE_CD,
+			MR.READ_YN,
+			MR.WRITE_YN,
+			MR.ACT_YN,
+			MR.REG_DTTM,
+			MR.REG_USER_ID,
+			MR.UPDT_DTTM,
+			MR.UPDT_USER_ID,
+			RI.ROLE_NM
+		FROM
+			CM_MENU_ROLE MR LEFT JOIN CM_ROLE RI ON MR.ROLE_CD=RI.ROLE_CD
+		WHERE
+			MENU_SEQ = #{value }
+			AND MR.ROLE_CD != 'SYSADM'
+		ORDER BY (
+			CASE RI.ROLE_CD
+				WHEN 'OPRADM' THEN 1
+				WHEN 'OPRCHR' THEN 2
+				ELSE 3
+			END
+		), RI.ROLE_NM
+	</select>
+
+	<select id="selectMenuRoleList" resultMap="resultMenuRoleVo">
+	/* ncis.sql.cpt.menu.selectMenuRoleList */
+		SELECT
+			RI.ROLE_CD,
+			RI.ROLE_NM,
+			RI.USE_YN,
+			RI.REG_DTTM,
+			RI.REG_USER_ID,
+			RI.UPDT_DTTM,
+			RI.UPDT_USER_ID,
+			MR.READ_YN,
+			MR.WRITE_YN,
+			MR.ACT_YN
+		FROM CM_ROLE RI LEFT OUTER JOIN CM_MENU_ROLE MR ON RI.ROLE_CD=MR.ROLE_CD AND MR.MENU_SEQ=#{value}
+		WHERE RI.ROLE_CD != 'SYSADM'
+		ORDER BY
+		 (
+			CASE RI.ROLE_CD
+				WHEN 'OPRADM' THEN 1
+				WHEN 'OPRCHR' THEN 2
+				ELSE 3
+			END
+		),
+		RI.ROLE_NM
+	</select>
+
+	<select id="getExistsPattern" resultType="Integer">
+	/* ncis.sql.cpt.menu.getExistsPattern */
+		SELECT COUNT(*) FROM CM_MENU
+		WHERE
+			MENU_PATTERN = #{menuPattern }
+			<if test="menuSeq != null ">
+			AND MENU_SEQ != #{menuSeq }
+			</if>
+	</select>
+
+	<select id="selectMaxOrder" resultType="Integer">
+	/* ncis.sql.cpt.menu.selectMaxOrder */
+		SELECT MAX(MENU_ORDER)
+		FROM CM_MENU
+		WHERE PARENT_SEQ = #{value}
+	</select>
+
+</mapper>

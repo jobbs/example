@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.rsrcPool">
+
+	<resultMap type="ncis.cpt.rsrc.pool.vo.RsrcPoolVo" id="resultRsrcPoolVo" extends="ncis.sql.cmn.rcRsrcPool.resultRcRsrcPool">
+		<result property="regionNm" column="REGION_NM" />
+		<result property="zoneNm" column="ZONE_NM" />
+		<result property="netNm" column="NET_NM" />
+		<result property="rsrcPoolVersion" column="RSRC_POOL_VERSION"/>
+	    <result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM "/>
+	    <result property="wholeAsgnCapa" column="WHOLE_ASGN_CAPA"/>
+	    <result property="StrgUseCapa" column="STRG_USE_CAPA"/>
+	    <result property="vmAsgnCapa" column="VM_ASGN_CAPA"/>
+	    <result property="StrMrgnCapa" column="STR_MRGN_CAPA"/>
+	    <result property="tmplatAsgnCapa" column="TMPLAT_ASGN_CAPA"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.strg.vo.RsrcPoolVrStrgVo" id="resultRsrcPoolVrStrgVo">
+		<!-- 공통 -->
+		<result property="zoneId" column="ZONE_ID"/>
+		<result property="netId" column="NET_ID"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="regionNm" column="REGION_NM" />
+		<result property="zoneNm" column="ZONE_NM" />
+		<result property="netNm" column="NET_NM" />
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="vrlzSwTyCdId" column="VRLZ_SW_TY_CD"/>
+	    <result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM "/>
+	    <!-- 자원풀 -->
+		<result property="sumWholeAsgnCapa" column="SUM_WHOLE_ASGN_CAPA" />
+		<result property="sumStrgUseCapa" column="SUM_STRG_USE_CAPA" />
+		<result property="sumVmAsgnCapa" column="SUM_VM_ASGN_CAPA" />
+	    <result property="sumStrMrgnCapa" column="SUM_STR_MRGN_CAPA "/>
+	    <result property="sumTmplatAsgnCapa" column="SUM_TMPLAT_ASGN_CAPA" />
+	    <result property="sumVmSnapshtAsgnCapa" column="SUM_VM_SNAPSHT_ASGN_CAPA" />
+	    <result property="cnt" column="CNT "/>
+	    <result property="rnkCnt" column="RNK_CNT"/>
+	    <result property="rnk" column="RNK"/>
+
+	    <!-- 스토리지 -->
+	    <result property="strgDmnSeq" column="STRG_DMN_SEQ"/>
+	    <result property="strgDmnNm" column="STRG_DMN_NM"/>
+	    <result property="wholeAsgnCapa" column="WHOLE_ASGN_CAPA"/>
+	    <result property="strgUseCapa" column="STRG_USE_CAPA"/>
+	    <result property="vmAsgnCapa" column="VM_ASGN_CAPA"/>
+	    <result property="strMrgnCapa" column="STR_MRGN_CAPA"/>
+	    <result property="tmplatAsgnCapa" column="TMPLAT_ASGN_CAPA"/>
+	    <result property="vmSnapshtAsgnCapa" column="VM_SNAPSHT_ASGN_CAPA"/>
+	    <result property="vmAsgnCapaSingle" column="VM_ASGN_CAPA_SINGLE" />
+	    <result property="vmSnapshtAsgnCapaSingle" column="VM_SNAPSHT_ASGN_CAPA_SINGLE" />
+	</resultMap>
+
+	<sql id="search">
+		AND P.DEL_YN = 'N'
+		<if test="searchRegionId != null and !searchRegionId.isEmpty()">
+		AND P.REGION_ID = #{searchRegionId}
+		</if>
+		<if test="searchZoneId != null and !searchZoneId.isEmpty()">
+		AND P.ZONE_ID LIKE #{searchZoneId}
+		</if>
+		<if test="searchNetId != null and !searchNetId.isEmpty()">
+		AND P.NET_ID = #{searchNetId}
+		</if>
+		<if test="searchNetClCd != null and !searchNetClCd.isEmpty()">
+		AND P.NET_CL_CD = #{searchNetClCd}
+		</if>
+		<if test="searchPoolNm != null and !searchPoolNm.isEmpty()">
+			AND P.RSRC_POOL_NM LIKE '%' || #{searchPoolNm} || '%'
+		</if>
+		<if test='searchSwTypeCd != null and !searchSwTypeCd.isEmpty()'>
+			<choose>
+				<when test='searchPoolTypeCd != null and !searchPoolTypeCd.isEmpty() and searchPoolTypeCd.equals("CN")'>
+				AND P.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100' AND VAR_VL1 IN ('COM','NET') AND USE_YN ='Y')
+				</when>
+				<otherwise>
+				AND P.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100' AND VAR_VL1 = #{searchSwTypeCd}  AND USE_YN ='Y' )
+				</otherwise>
+			</choose>
+
+		</if>
+		<if test='searchPoolTypeCd != null and !searchPoolTypeCd.isEmpty()'>
+			<choose>
+				<when test='searchPoolTypeCd.equals("CN")'>
+					AND P.RSRC_POOL_CL_CD IN ('01','03')
+				</when>
+				<when test='searchPoolTypeCd.equals("AUTO")'>
+					AND P.RSRC_POOL_CL_CD IN ('01','03', '05')
+				</when>
+				<otherwise>
+					AND P.RSRC_POOL_CL_CD = #{searchPoolTypeCd}
+				</otherwise>
+			</choose>
+
+		</if>
+		<choose>
+			<when test='searchCtlTrgtYn != null and !searchCtlTrgtYn.isEmpty()'>
+				<choose>
+					<when test='searchCtlTrgtYn.equals("Y")'>
+					AND P.CTL_TRGT_YN = 'Y'
+					</when>
+					<otherwise>
+
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+			<!-- AND P.CTL_TRGT_YN = 'Y' -->
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="search_VrStrg">
+		AND RC_RSRC_POOL.DEL_YN = 'N'
+		<if test='searchRegionId != null and searchRegionId != ""'>
+			AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchZoneId != null and searchZoneId != ""'>
+			AND RC_RSRC_POOL.ZONE_ID = #{searchZoneId}
+		</if>
+		<if test='searchNetId != null and searchNetId != ""'>
+			AND RC_RSRC_POOL.NET_ID = #{searchNetId}
+		</if>
+		<if test='searchNetClCd != null and searchNetClCd != ""'>
+			AND RC_RSRC_POOL.NET_CL_CD = #{searchNetClCd}
+		</if>
+		<if test='searchRsrcPoolId != null and searchRsrcPoolId != ""'>
+			AND RC_RSRC_POOL.RSRC_POOL_ID = #{searchRsrcPoolId}
+		</if>
+		<if test='searchVrlzSwTyCdList != null'>
+			<!-- 포함 -->
+			<choose>
+				<when test="searchVrlzSwTyCdList.length > 0">
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+					<foreach collection="searchVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+					</foreach>
+					)
+				</when>
+				<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							RSRC_POOL_ID,
+							USER_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							USER_ID = #{searchUserId}
+					) U ON RC_RSRC_POOL.RSRC_POOL_ID = U.RSRC_POOL_ID
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgRsrcPoolUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgVmUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprChr">
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectUserRsrcPoolTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectUserRsrcPoolTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+
+			<if test="!sysAdm">
+			LEFT JOIN (
+				SELECT
+					RSRC_POOL_ID,
+					USER_ID
+				FROM
+					CM_RSRC_POOL_USER
+
+				WHERE
+					USER_ID = #{searchUserId}
+			) U ON P.RSRC_POOL_ID = U.RSRC_POOL_ID
+			</if>
+
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectUserRsrcPoolList" resultMap="resultRsrcPoolVo">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectUserRsrcPoolList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			P.RSRC_POOL_ID
+			, RSRC_POOL_NM
+			, RSRC_POOL_VERSION
+			, VRLZ_SW_TY_CD
+			, fn_code_name('001', VRLZ_SW_TY_CD) AS VRLZ_SW_TY_CD_NM
+			, UUID
+			, P.REG_DTTM
+			, P.REG_USER_ID
+			, P.ZONE_ID
+			, P.NET_ID
+			, P.REGION_ID
+			, REGION_NM
+			, ZONE_NM
+			, NET_NM
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+			<if test="byRole and !sysAdm">
+			INNER JOIN (
+				SELECT
+					RSRC_POOL_ID,
+					USER_ID
+				FROM
+					CM_RSRC_POOL_USER
+				WHERE
+					USER_ID = #{searchUserId}
+			) U ON P.RSRC_POOL_ID = U.RSRC_POOL_ID
+			</if>
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY RSRC_POOL_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectRsrcPoolTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectRsrcPoolTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectRsrcPoolList" resultMap="resultRsrcPoolVo">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectRsrcPoolList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			P.RSRC_POOL_ID
+			, RSRC_POOL_NM
+			, RSRC_POOL_VERSION
+			, VRLZ_SW_TY_CD
+			, fn_code_name('001', VRLZ_SW_TY_CD) AS VRLZ_SW_TY_CD_NM
+			, UUID
+			, P.REG_DTTM
+			, P.REG_USER_ID
+			, P.ZONE_ID
+			, P.NET_ID
+			, P.REGION_ID
+			, P.MNG_CONN_ADDR
+			, P.MNG_PROXY_PORT
+			, REGION_NM
+			, ZONE_NM
+			, NET_NM
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY RSRC_POOL_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectOprRsrcPoolList" resultMap="resultRsrcPoolVo">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectOprRsrcPoolList */
+		SELECT
+			P.RSRC_POOL_ID
+			, RSRC_POOL_NM
+			, RSRC_POOL_VERSION
+			, VRLZ_SW_TY_CD
+			, fn_code_name('001', VRLZ_SW_TY_CD) AS VRLZ_SW_TY_CD_NM
+			, UUID
+			, P.REG_DTTM
+			, P.REG_USER_ID
+			, P.ZONE_ID
+			, P.NET_ID
+			, P.REGION_ID
+			, P.MNG_CONN_ADDR
+			, P.MNG_PROXY_PORT
+			, REGION_NM
+			, ZONE_NM
+			, NET_NM
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY RSRC_POOL_NM
+	</select>
+
+	<select id="selectRsrcPool" resultMap="resultRsrcPoolVo">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectRsrcPool */
+		SELECT
+			RSRC_POOL_ID
+			, RSRC_POOL_NM
+			, RSRC_POOL_VERSION
+			, VRLZ_SW_TY_CD
+			, fn_code_name('001', VRLZ_SW_TY_CD) AS VRLZ_SW_TY_CD_NM
+			, UUID
+			, REG_DTTM
+			, REG_USER_ID
+			, ZONE_ID
+			, NET_ID
+			, REGION_ID
+			, MNG_CONN_ADDR
+			, MNG_PROXY_PORT
+			, (SELECT REGION_NM FROM RC_REGION WHERE RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID) AS REGION_NM
+			, (SELECT ZONE_NM FROM RC_ZONE WHERE RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID) AS ZONE_NM
+			, (SELECT NET_NM FROM RC_NET WHERE RC_NET.NET_ID = RC_RSRC_POOL.NET_ID) AS NET_NM
+		FROM
+			RC_RSRC_POOL
+		WHERE
+			RSRC_POOL_ID = #{value}
+	</select>
+
+	<select id="selectVrStrgRsrcPoolList" resultMap="resultRsrcPoolVrStrgVo">
+		/* ncis.sql.cpt.rsrc.com.rsrcPool.selectVrStrgRsrcPoolList */
+		SELECT
+			B.*
+			, SUM(VM_ASGN_CAPA_SINGLE) OVER(PARTITION BY B.RSRC_POOL_ID) SUM_VM_ASGN_CAPA
+			, SUM(VM_SNAPSHT_ASGN_CAPA_SINGLE) OVER(PARTITION BY B.RSRC_POOL_ID) SUM_VM_SNAPSHT_ASGN_CAPA
+		FROM (
+			 SELECT FIRST_VALUE(RNK)OVER(ORDER BY RNK DESC) RNK_CNT, * FROM (
+				SELECT
+				     RC_RSRC_POOL.REGION_ID /* 센터ID */
+				    , RC_REGION.REGION_NM /* 센터명 */
+				    , RC_RSRC_POOL.ZONE_ID /* 존ID */
+				    , RC_ZONE.ZONE_NM /* 존명 */
+				    , RC_RSRC_POOL.NET_CL_CD /* 망ID */
+				    , D.CD_NM AS NET_NM /* 망명 */
+				    , RC_RSRC_POOL.RSRC_POOL_NM /* 자원풀명 */
+				    , RC_RSRC_POOL.RSRC_POOL_ID /* 자원풀ID */
+				    , RC_RSRC_POOL.VRLZ_SW_TY_CD /* 가상화SW 코드 */
+				    , C.CD_NM AS VRLZ_SW_TY_CD_NM /* 가상화SW 명 */
+				    , COUNT(1) OVER(PARTITION BY RC_RSRC_POOL.RSRC_POOL_ID) AS CNT /* ROWSPAN을 위한 카운트 */
+				    , SUM(RS_VR_STRG.WHOLE_ASGN_CAPA) OVER(PARTITION BY RC_RSRC_POOL.RSRC_POOL_ID) AS SUM_WHOLE_ASGN_CAPA
+				    , SUM(RS_VR_STRG.STRG_USE_CAPA) OVER(PARTITION BY RC_RSRC_POOL.RSRC_POOL_ID) AS SUM_STRG_USE_CAPA
+				    , SUM(RS_VR_STRG.STR_MRGN_CAPA) OVER(PARTITION BY RC_RSRC_POOL.RSRC_POOL_ID) AS SUM_STR_MRGN_CAPA
+				    , SUM(RS_VR_STRG.TMPLAT_ASGN_CAPA) OVER(PARTITION BY RC_RSRC_POOL.RSRC_POOL_ID) AS SUM_TMPLAT_ASGN_CAPA
+				    , (SELECT COALESCE(SUM(RS_VR_DSK.DSK_ASGN_CAPA), 0)
+						FROM RS_VR_DSK
+						INNER JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+						INNER JOIN RC_VM ON RC_VM.VM_SEQ = RS_VM_STRG_ASGN.VM_SEQ AND RC_VM.DEL_YN = 'N'
+						WHERE RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '02') AS VM_ASGN_CAPA_SINGLE
+					, (SELECT COALESCE(SUM(RS_VR_DSK.DSK_ASGN_CAPA), 0)
+						FROM RS_VR_DSK
+						INNER JOIN RS_VM_SNAPSHT_STRG_ASGN ON RS_VM_SNAPSHT_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+						INNER JOIN RC_VM_SNAPSHT ON RC_VM_SNAPSHT.SNAPSHT_SEQ = RS_VM_SNAPSHT_STRG_ASGN.SNAPSHT_SEQ AND RC_VM_SNAPSHT.DEL_YN = 'N'
+						WHERE RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '03') AS VM_SNAPSHT_ASGN_CAPA_SINGLE
+				    , RS_VR_STRG.WHOLE_ASGN_CAPA /* 전체할당용량(GB) */
+				    , RS_VR_STRG.STRG_USE_CAPA /* 스토리지사용용량(GB) */
+				    , RS_VR_STRG.STR_MRGN_CAPA /* 스토리지여유량(GB) */
+				    , RS_VR_STRG.TMPLAT_ASGN_CAPA /* 템플릿할당용량(GB) */
+				    , RS_VR_STRG.STRG_DMN_SEQ /* 스토리지도메인SEQ */
+				    , RS_VR_STRG.STRG_DMN_NM /* 스토리지도메인명 */
+				    , DENSE_RANK() OVER(ORDER BY RC_RSRC_POOL.RSRC_POOL_ID) RNK
+				FROM RC_RSRC_POOL
+				INNER JOIN RS_VR_STRG ON RC_RSRC_POOL.RSRC_POOL_ID = RS_VR_STRG.RSRC_POOL_ID AND RS_VR_STRG.DEL_YN = 'N'
+				INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+				INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+				INNER JOIN CM_CODE D ON D.CD = RC_RSRC_POOL.NET_CL_CD AND D.GRP_CD = '067'  AND D.PARENT_CD = 'NETCD'
+				INNER JOIN CM_CODE C ON C.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND C.GRP_CD = '001' AND C.PARENT_CD = '100'
+				<include refid="fromClauseVrStrgRsrcPoolUserAuthority" />
+				<where>
+					<include refid="search_VrStrg"/>
+				</where>
+		) A
+		ORDER BY REGION_NM, ZONE_NM, NET_NM, RSRC_POOL_NM, WHOLE_ASGN_CAPA DESC
+	) B
+   	WHERE RNK BETWEEN (#{paginationInfo.currentPageNo}-1) * #{paginationInfo.recordCountPerPage} + 1 AND #{paginationInfo.currentPageNo} * #{paginationInfo.recordCountPerPage}
+	ORDER BY RNK , STRG_DMN_NM
+	</select>
+</mapper>

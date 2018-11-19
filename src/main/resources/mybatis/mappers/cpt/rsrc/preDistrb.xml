@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.atmscl.preDistrbService">
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.PreDistrbVo" id="resultPreDistrbList">
+
+		<result property="institutionId" column="INSTITUTION_ID"/>
+        <result property="institutionNm" column="INSTITUTION_NM"/>
+
+        <result property="jobId" column="JOB_ID"/>
+        <result property="jobNm" column="JOB_NM"/>
+
+		<result property="regionId" column="REGION_ID"/>
+        <result property="regionNm" column="REGION_NM"/>
+
+    	<result property="zoneNm" column="ZONE_NM"/>
+    	<result property="zoneId" column="ZONE_ID"/>
+
+		<result property="netNm" column="NET_NM"/>
+		<result property="netId" column="NET_ID"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+
+        <result property="imgId" column="IMG_ID"/>
+		<result property="imgNm" column="IMG_NM"/>
+		<result property="imgVer" column="IMG_VER"/>
+
+		<result property="imgRepoDtlAddr" column="IMG_REPO_DTL_ADDR"/>
+		<result property="preDistrbReqSeq" column="PRE_DISTRB_REQ_SEQ"/>
+
+		<result property="creUserId" column="CRE_USER_ID"/>
+		<result property="creUserNm" column="CRE_USER_NM"/>
+
+		<result property="distrbReqUserId" column="DISTRB_REQ_USER_ID"/>
+		<result property="distrbReqUserNm" column="DISTRB_REQ_USER_NM"/>
+		<result property="distrbReqDttm" column="DISTRB_REQ_DTTM"/>
+
+        <result property="creDttm" column="CRE_DTTM"/>
+
+        <result property="servcAreaSeq" column="SERVC_AREA_SEQ"/>
+        <result property="servcAreaId" column="SERVC_AREA_ID"/>
+
+        <result property="demonSetId" column="DEMON_SET_ID"/>
+        <result property="rmk" column="RMK"/>
+        <result property="distrbComptDttm" column="DISTRB_COMPT_DTTM"/>
+        <result property="distrbStatCd" column="DISTRB_STAT_CD"/>
+        <result property="distrbStatNm" column="DISTRB_STAT_NM"/>
+        <result property="ctlTrgtYn" column="CTL_TRGT_YN"/>
+        <result property="servcId" column="SERVC_ID"/>
+        <result property="servcNm" column="SERVC_NM"/>
+        <result property="servcAreaNm" column="SERVC_AREA_NM"/>
+
+
+	</resultMap>
+
+	<!--  조회 권한 수정 - 시스템관리자 전부 조회(searchUserId : null) , 운영자(OPRADM:센터 별 조회), 담당자(요청사용자 ID로 조회), 일반사용자(요청사용자 ID로 조회)  -->
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+
+					<when test="oprAdm">
+						INNER JOIN CM_RSRC_POOL_USER CM_RSRC_POOL_USER
+						ON CM_RSRC_POOL_USER.RSRC_POOL_ID = RX_SERVC_AREA.RSRC_POOL_ID
+						AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					</when>
+					<when test="oprChr">
+						INNER JOIN CM_JOB_USER
+						ON CM_JOB_USER.JOB_ID = RX_SERVC_AREA.JOB_ID
+						AND CM_JOB_USER.USER_ID = #{searchUserId}
+					</when>
+					<when test="bldAdm">
+						INNER JOIN CM_JOB_USER
+						ON CM_JOB_USER.JOB_ID = RX_SERVC_AREA.JOB_ID
+						AND CM_JOB_USER.USER_ID = #{searchUserId}
+					</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+
+	<sql id="search">
+
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND RC_REGION.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND RC_ZONE.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netClCd != null and !netClCd.isEmpty()">
+			AND RC_NET.NET_Cl_CD = #{netClCd}
+		</if>
+		<if test="rsrcPoolId != null and !rsrcPoolId.isEmpty()">
+			AND RC_RSRC_POOL.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		<if test="institutionNm != null and !institutionNm.isEmpty()">
+			AND CM_INSTITUTION.INSTITUTION_NM LIKE '%' || #{institutionNm} || '%'
+		</if>
+		<if test="jobNm != null and !jobNm.isEmpty()">
+			AND CM_JOB.JOB_NM LIKE '%' || #{jobNm} || '%'
+		</if>
+		<if test="imgNm != null and !imgNm.isEmpty()">
+			AND RX_IMG.IMG_NM LIKE '%' || #{imgNm} || '%'
+		</if>
+		<if test="imgVer != null and !imgNm.isEmpty()">
+			AND RX_IMG.IMG_VER LIKE '%' || #{imgVer} || '%'
+		</if>
+		<if test="ctlTrgtYn != null and !ctlTrgtYn.isEmpty()">
+			AND RC_RSRC_POOL.CTL_TRGT_YN = #{ctlTrgtYn}
+		</if>
+	</sql>
+
+    <!--  사전배포 목록 총건수 조회 -->
+	<select id="selectPreDistrbTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.atmscl.preDistrbService.selectPreDistrbTotCnt */
+		SELECT
+			COUNT(*)
+		FROM RX_SERVC_AREA
+		INNER JOIN (
+				SELECT
+					TBL2.SERVC_SEQ
+					,TBL2.SERVC_AREA_SEQ
+					,TBL2.SERVC_ID
+					,TBL2.SERVC_NM
+				FROM RX_SERVC_AREA TBL1
+
+				INNER JOIN RX_SERVC TBL2
+				ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+				AND TBL2.DEL_YN = 'N' AND TBL2.SERVC_TY_CD IN('01','02')
+				GROUP BY 	TBL2.SERVC_SEQ
+					,TBL2.SERVC_AREA_SEQ
+					,TBL2.SERVC_ID
+					,TBL2.SERVC_NM
+			  ) SC
+		ON RX_SERVC_AREA.SERVC_AREA_SEQ = SC.SERVC_AREA_SEQ
+
+		INNER JOIN RX_IMG
+		ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_IMG.SERVC_AREA_SEQ
+		AND RX_SERVC_AREA.RSRC_POOL_ID = RX_IMG.RSRC_POOL_ID
+
+		INNER JOIN RX_IMG_LST
+		ON RX_IMG_LST.IMG_ID = RX_IMG.IMG_ID
+		AND RX_IMG.RSRC_POOL_ID = RX_IMG_LST.RSRC_POOL_ID
+		AND RX_IMG.SERVC_AREA_SEQ = RX_IMG_LST.SERVC_AREA_SEQ
+
+		INNER JOIN RX_IMG_PRE_DISTRB_LST
+		ON RX_IMG_LST.SERVC_AREA_SEQ = RX_IMG_PRE_DISTRB_LST.SERVC_AREA_SEQ
+		AND RX_IMG_LST.RSRC_POOL_ID = RX_IMG_PRE_DISTRB_LST.RSRC_POOL_ID
+		AND RX_IMG_LST.IMG_ID = RX_IMG_PRE_DISTRB_LST.IMG_ID
+		AND RX_IMG_LST.IMG_REPO_DTL_ADDR = RX_IMG_PRE_DISTRB_LST.IMG_REPO_DTL_ADDR
+
+		LEFT OUTER JOIN CM_INSTITUTION
+		ON RX_SERVC_AREA.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+
+		INNER JOIN RC_RSRC_POOL
+		ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+
+		INNER JOIN RC_REGION
+		ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+		INNER JOIN RC_ZONE
+		ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+
+		INNER JOIN RC_NET
+		ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+
+		LEFT OUTER JOIN CM_JOB
+		ON RX_SERVC_AREA.JOB_ID = CM_JOB.JOB_ID
+		<include refid="validateAuth"/>
+		<where>
+		RX_SERVC_AREA.DEL_YN = 'N'
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<!--  사전배포 목록 조회 -->
+	<select id="selectPreDistrbList" resultMap="resultPreDistrbList">
+		/* ncis.sql.cpt.rsrc.atmscl.preDistrbService.selectPreDistrbList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+
+				CM_INSTITUTION.INSTITUTION_ID
+				,CM_INSTITUTION.INSTITUTION_NM
+				,CM_JOB.JOB_NM
+				,CM_JOB.JOB_ID
+				,RC_REGION.REGION_ID
+				,RC_REGION.REGION_NM
+				,RC_ZONE.ZONE_NM
+				,RC_NET.NET_NM
+				,RC_NET.NET_ID
+				,RC_NET.NET_CL_CD
+				,RC_RSRC_POOL.RSRC_POOL_ID
+				,RC_RSRC_POOL.RSRC_POOL_NM
+				,RX_IMG.IMG_NM
+				,RX_IMG.IMG_ID
+				,RX_IMG.IMG_VER
+				,RX_IMG_LST.IMG_REPO_DTL_ADDR
+				,(SELECT USER_NM FROM CM_USR WHERE USER_ID = RX_IMG_PRE_DISTRB_LST.DISTRB_REQ_USER_ID) CRE_USER_NM
+				,TO_CHAR(RX_IMG_PRE_DISTRB_LST.DISTRB_REQ_DTTM, 'YYYY-MM-DD hh24:mi:ss') DISTRB_REQ_DTTM
+				,RX_SERVC_AREA.SERVC_AREA_SEQ
+				,RX_SERVC_AREA.SERVC_AREA_ID
+				,RX_SERVC_AREA.SERVC_AREA_NM
+				,RX_IMG_PRE_DISTRB_LST.PRE_DISTRB_REQ_SEQ
+				,RX_IMG_PRE_DISTRB_LST.DISTRB_STAT_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '307' AND GRP_CD='106' AND CD = RX_IMG_PRE_DISTRB_LST.DISTRB_STAT_CD) AS DISTRB_STAT_NM
+				,SC.SERVC_ID
+				,SC.SERVC_NM
+
+			FROM RX_SERVC_AREA
+			INNER JOIN (
+					SELECT
+						TBL2.SERVC_SEQ
+						,TBL2.SERVC_AREA_SEQ
+						,TBL2.SERVC_ID
+						,TBL2.SERVC_NM
+					FROM RX_SERVC_AREA TBL1
+
+					INNER JOIN RX_SERVC TBL2
+					ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+					AND TBL2.DEL_YN = 'N' AND TBL2.SERVC_TY_CD IN('01','02')
+					GROUP BY 	TBL2.SERVC_SEQ
+						,TBL2.SERVC_AREA_SEQ
+						,TBL2.SERVC_ID
+						,TBL2.SERVC_NM
+				  ) SC
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = SC.SERVC_AREA_SEQ
+
+			INNER JOIN RX_IMG
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_IMG.SERVC_AREA_SEQ
+			AND RX_SERVC_AREA.RSRC_POOL_ID = RX_IMG.RSRC_POOL_ID
+
+			INNER JOIN RX_IMG_LST
+			ON RX_IMG_LST.IMG_ID = RX_IMG.IMG_ID
+			AND RX_IMG.RSRC_POOL_ID = RX_IMG_LST.RSRC_POOL_ID
+			AND RX_IMG.SERVC_AREA_SEQ = RX_IMG_LST.SERVC_AREA_SEQ
+
+			INNER JOIN RX_IMG_PRE_DISTRB_LST
+			ON RX_IMG_LST.SERVC_AREA_SEQ = RX_IMG_PRE_DISTRB_LST.SERVC_AREA_SEQ
+			AND RX_IMG_LST.RSRC_POOL_ID = RX_IMG_PRE_DISTRB_LST.RSRC_POOL_ID
+			AND RX_IMG_LST.IMG_ID = RX_IMG_PRE_DISTRB_LST.IMG_ID
+			AND RX_IMG_LST.IMG_REPO_DTL_ADDR = RX_IMG_PRE_DISTRB_LST.IMG_REPO_DTL_ADDR
+
+			LEFT OUTER JOIN CM_INSTITUTION
+			ON RX_SERVC_AREA.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+
+			INNER JOIN RC_RSRC_POOL
+			ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+
+			INNER JOIN RC_REGION
+			ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+			INNER JOIN RC_ZONE
+			ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+
+			INNER JOIN RC_NET
+			ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+
+			LEFT OUTER JOIN CM_JOB
+			ON RX_SERVC_AREA.JOB_ID = CM_JOB.JOB_ID
+			<include refid="validateAuth"/>
+			<where>
+			RX_SERVC_AREA.DEL_YN = 'N'
+				<include refid="search"/>
+			</where>
+			ORDER BY RX_IMG_PRE_DISTRB_LST.DISTRB_REQ_DTTM DESC
+			<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	 <!--  사전배포 이미지 총건수 조회 -->
+	<select id="selectPreDistrbTotCntP" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.atmscl.preDistrbService.selectPreDistrbTotCntP */
+		SELECT
+			COUNT(*)
+		FROM RX_SERVC_AREA
+
+			INNER JOIN RX_SERVC
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_SERVC.SERVC_AREA_SEQ
+			AND RX_SERVC.DEL_YN = 'N'
+
+			INNER JOIN RX_DISTRB_CONF
+			ON RX_DISTRB_CONF.SERVC_SEQ = RX_SERVC.SERVC_SEQ
+
+			INNER JOIN RX_IMG
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_IMG.SERVC_AREA_SEQ
+			AND RX_SERVC_AREA.RSRC_POOL_ID = RX_IMG.RSRC_POOL_ID
+			AND RX_DISTRB_CONF.IMG_ID = RX_IMG.IMG_ID
+
+			INNER JOIN RX_IMG_LST
+			ON RX_IMG_LST.IMG_ID = RX_IMG.IMG_ID
+			AND RX_IMG.RSRC_POOL_ID = RX_IMG_LST.RSRC_POOL_ID
+			AND RX_IMG.SERVC_AREA_SEQ = RX_IMG_LST.SERVC_AREA_SEQ
+
+			LEFT OUTER JOIN CM_INSTITUTION
+			ON RX_SERVC_AREA.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+
+			INNER JOIN RC_RSRC_POOL
+			ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+
+			INNER JOIN RC_REGION
+			ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+			INNER JOIN RC_ZONE
+			ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+
+			INNER JOIN RC_NET
+			ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+
+			LEFT OUTER JOIN CM_JOB
+			ON RX_SERVC_AREA.JOB_ID = CM_JOB.JOB_ID
+		<include refid="validateAuth"/>
+		<where>
+		RX_IMG_LST.CRE_DTTM IN (SELECT MAX(RX_IMG_LST.CRE_DTTM) FROM RX_IMG_LST GROUP BY RX_IMG_LST.IMG_ID)
+		AND RX_SERVC_AREA.DEL_YN = 'N'
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<!--  사전배포 이미지 조회 -->
+	<select id="selectPreDistrbListP" resultMap="resultPreDistrbList">
+		/* ncis.sql.cpt.rsrc.atmscl.preDistrbService.selectPreDistrbListP */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+
+				CM_INSTITUTION.INSTITUTION_ID
+				,CM_INSTITUTION.INSTITUTION_NM
+				,CM_JOB.JOB_NM
+				,CM_JOB.JOB_ID
+				,RC_REGION.REGION_ID
+				,RC_REGION.REGION_NM
+				,RC_ZONE.ZONE_ID
+				,RC_ZONE.ZONE_NM
+				,RC_NET.NET_NM
+				,RC_NET.NET_ID
+				,RC_NET.NET_CL_CD
+				,RC_RSRC_POOL.RSRC_POOL_ID
+				,RC_RSRC_POOL.RSRC_POOL_NM
+				,RX_IMG.IMG_NM
+				,RX_IMG.IMG_ID
+				,RX_IMG.IMG_VER
+				,RX_IMG_LST.IMG_REPO_DTL_ADDR
+				,RX_SERVC_AREA.CRE_USER_ID
+				,TO_CHAR(RX_IMG_LST.CRE_DTTM, 'YYYY-MM-DD') CRE_DTTM
+				,RX_SERVC_AREA.SERVC_AREA_SEQ
+				,RX_SERVC_AREA.SERVC_AREA_ID
+				,RX_SERVC.SERVC_NM
+				,RX_SERVC.SERVC_ID
+
+			FROM RX_SERVC_AREA
+
+			INNER JOIN RX_SERVC
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_SERVC.SERVC_AREA_SEQ
+			AND RX_SERVC.DEL_YN = 'N'
+
+			INNER JOIN RX_DISTRB_CONF
+			ON RX_DISTRB_CONF.SERVC_SEQ = RX_SERVC.SERVC_SEQ
+
+			INNER JOIN RX_IMG
+			ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_IMG.SERVC_AREA_SEQ
+			AND RX_SERVC_AREA.RSRC_POOL_ID = RX_IMG.RSRC_POOL_ID
+			AND RX_DISTRB_CONF.IMG_ID = RX_IMG.IMG_ID
+
+			INNER JOIN RX_IMG_LST
+			ON RX_IMG_LST.IMG_ID = RX_IMG.IMG_ID
+			AND RX_IMG.RSRC_POOL_ID = RX_IMG_LST.RSRC_POOL_ID
+			AND RX_IMG.SERVC_AREA_SEQ = RX_IMG_LST.SERVC_AREA_SEQ
+
+			LEFT OUTER JOIN CM_INSTITUTION
+			ON RX_SERVC_AREA.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+
+			INNER JOIN RC_RSRC_POOL
+			ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+
+			INNER JOIN RC_REGION
+			ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+			INNER JOIN RC_ZONE
+			ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+
+			INNER JOIN RC_NET
+			ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+
+			LEFT OUTER JOIN CM_JOB
+			ON RX_SERVC_AREA.JOB_ID = CM_JOB.JOB_ID
+			<include refid="validateAuth"/>
+			<where>
+			RX_IMG_LST.CRE_DTTM IN (SELECT MAX(RX_IMG_LST.CRE_DTTM) FROM RX_IMG_LST GROUP BY RX_IMG_LST.IMG_ID)
+			AND RX_SERVC_AREA.DEL_YN = 'N'
+				<include refid="search"/>
+			</where>
+			ORDER BY RX_IMG_LST.CRE_DTTM DESC
+			<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<!--  사전배포 상세 조회 -->
+	<select id="updatePreDistrb" resultMap="resultPreDistrbList">
+		/*ncis.sql.cpt.rsrc.atmscl.preDistrbService.updatePreDistrb*/
+
+		SELECT
+			 CM_INSTITUTION.INSTITUTION_ID
+			,CM_INSTITUTION.INSTITUTION_NM
+			,CM_JOB.JOB_NM
+			,CM_JOB.JOB_ID
+			,RC_REGION.REGION_ID
+			,RC_REGION.REGION_NM
+			,RC_ZONE.ZONE_ID
+			,RC_ZONE.ZONE_NM
+			,RC_NET.NET_NM
+			,RC_NET.NET_ID
+			,RC_NET.NET_CL_CD
+			,RC_RSRC_POOL.RSRC_POOL_ID
+			,RC_RSRC_POOL.RSRC_POOL_NM
+			,RX_IMG.IMG_NM
+			,RX_IMG.IMG_VER
+			,RX_IMG_PRE_DISTRB_LST.IMG_REPO_DTL_ADDR
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = RX_IMG_PRE_DISTRB_LST.DISTRB_REQ_USER_ID) DISTRB_REQ_USER_NM
+			,TO_CHAR(RX_IMG_PRE_DISTRB_LST.DISTRB_REQ_DTTM, 'YYYY-MM-DD hh24:mi:ss') DISTRB_REQ_DTTM
+			,RX_IMG_PRE_DISTRB_LST.DISTRB_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '307' AND GRP_CD='106' AND CD = RX_IMG_PRE_DISTRB_LST.DISTRB_STAT_CD) AS DISTRB_STAT_NM
+			,TO_CHAR(RX_IMG_PRE_DISTRB_LST.DISTRB_COMPT_DTTM, 'YYYY-MM-DD hh24:mi:ss') DISTRB_COMPT_DTTM
+			,RX_IMG_PRE_DISTRB_LST.RMK
+			,RX_IMG_PRE_DISTRB_LST.DEMON_SET_ID
+			,RX_SERVC_AREA.SERVC_AREA_ID
+			,RX_SERVC_AREA.SERVC_AREA_SEQ
+			,RX_IMG_PRE_DISTRB_LST.PRE_DISTRB_REQ_SEQ
+			,RC_RSRC_POOL.CTL_TRGT_YN
+			,SC.SERVC_NM
+			,RX_SERVC_AREA.SERVC_AREA_NM
+		FROM RX_SERVC_AREA
+		INNER JOIN RX_IMG
+		ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_IMG.SERVC_AREA_SEQ
+		AND RX_SERVC_AREA.RSRC_POOL_ID = RX_IMG.RSRC_POOL_ID
+		INNER JOIN RX_IMG_LST
+		ON RX_IMG.SERVC_AREA_SEQ = RX_IMG_LST.SERVC_AREA_SEQ
+		AND RX_IMG.RSRC_POOL_ID = RX_IMG_LST.RSRC_POOL_ID
+		AND RX_IMG.IMG_ID = RX_IMG_LST.IMG_ID
+		INNER JOIN RX_IMG_PRE_DISTRB_LST
+		ON RX_IMG_LST.SERVC_AREA_SEQ = RX_IMG_PRE_DISTRB_LST.SERVC_AREA_SEQ
+		AND RX_IMG_LST.RSRC_POOL_ID = RX_IMG_PRE_DISTRB_LST.RSRC_POOL_ID
+		AND RX_IMG_LST.IMG_ID = RX_IMG_PRE_DISTRB_LST.IMG_ID
+		AND RX_IMG_LST.IMG_REPO_DTL_ADDR = RX_IMG_PRE_DISTRB_LST.IMG_REPO_DTL_ADDR
+		INNER JOIN RC_RSRC_POOL
+		ON RC_RSRC_POOL.RSRC_POOL_ID = RX_SERVC_AREA.RSRC_POOL_ID
+		AND RC_RSRC_POOL.DEL_YN = 'N'
+		INNER JOIN RC_REGION
+		ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		INNER JOIN RC_ZONE
+		ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_NET
+		ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		LEFT OUTER JOIN CM_JOB
+		ON RX_SERVC_AREA.JOB_ID = CM_JOB.JOB_ID
+		LEFT OUTER JOIN CM_INSTITUTION
+		ON RX_SERVC_AREA.INSTITUTION_ID = CM_INSTITUTION.INSTITUTION_ID
+			INNER JOIN (
+		SELECT
+			TBL2.SERVC_SEQ
+			,TBL2.SERVC_AREA_SEQ
+			,TBL2.SERVC_ID
+			,TBL2.SERVC_NM
+		FROM RX_SERVC_AREA TBL1
+
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+		AND TBL2.DEL_YN = 'N' AND TBL2.SERVC_TY_CD IN('01','02')
+		GROUP BY 	TBL2.SERVC_SEQ
+			,TBL2.SERVC_AREA_SEQ
+			,TBL2.SERVC_ID
+			,TBL2.SERVC_NM
+		) SC
+		ON RX_SERVC_AREA.SERVC_AREA_SEQ = SC.SERVC_AREA_SEQ
+		WHERE RX_IMG_PRE_DISTRB_LST.PRE_DISTRB_REQ_SEQ = #{preDistrbReqSeq}
+		AND RX_IMG_PRE_DISTRB_LST.SERVC_AREA_SEQ = #{servcAreaSeq}
+		AND RX_SERVC_AREA.DEL_YN = 'N'
+	</select>
+
+
+</mapper>

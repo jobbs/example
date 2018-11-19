@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaDistrb">
+
+	<resultMap id="resultOaDistrb" type="ncis.cmn.entity.OaDistrb">
+	    <result property="distrbSeq"     column="DISTRB_SEQ"/>  <!-- 배포SEQ -->
+        <result property="distrbDttm"     column="DISTRB_DTTM"/>  <!-- 배포일시 -->
+        <result property="distrbReasnCd"     column="DISTRB_REASN_CD"/>  <!-- 배포사유코드 -->
+        <result property="distrbPath"     column="DISTRB_PATH"/>  <!-- 배포경로 -->
+        <result property="distrbExeUserId"     column="DISTRB_EXE_USER_ID"/>  <!-- 배포실행자ID -->
+        <result property="ticketId"     column="TICKET_ID"/>  <!-- 티켓ID -->
+        <result property="rmk"     column="RMK"/>  <!-- 비고 -->
+	</resultMap>
+
+	<!-- 배포 등록 -->
+	<insert id="insertOaDistrb">
+		<selectKey order="BEFORE" keyProperty="distrbSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('oa_distrb_sq01')
+		</selectKey>
+		INSERT INTO OA_DISTRB (
+		             DISTRB_SEQ  /* 배포SEQ */
+		           , DISTRB_DTTM  /* 배포일시 */
+		           , DISTRB_REASN_CD  /* 배포사유코드 */
+		           , DISTRB_PATH  /* 배포경로 */
+		           , DISTRB_EXE_USER_ID  /* 배포실행자ID */
+		           , TICKET_ID  /* 티켓ID */
+		           , RMK  /* 비고 */
+		) VALUES (
+		           #{distrbSeq}  /* 배포SEQ */
+		         , now()  /* 배포일시 */
+		         , #{distrbReasnCd}  /* 배포사유코드 */
+		         , #{distrbPath}  /* 배포경로 */
+		         , #{distrbExeUserId}  /* 배포실행자ID */
+		         , #{ticketId}  /* 티켓ID */
+		         , #{rmk}  /* 비고 */
+		)
+	</insert>
+
+	<!-- 배포 수정 -->
+	<update id="updateOaDistrb">
+	UPDATE OA_DISTRB
+	         SET DISTRB_ID = #{distrbId}  /* 배포ID */
+	           , DISTRB_DTTM = now()  /* 배포일시 */
+	           , DISTRB_REASN_CD = #{distrbReasnCd}  /* 배포사유코드 */
+	           , DISTRB_PATH = #{distrbPath}  /* 배포경로 */
+	           , DISTRB_EXE_USER_ID = #{distrbExeUserId}  /* 배포실행자ID */
+	           , TICKET_ID = #{ticketId}  /* 티켓ID */
+	           , RMK = #{rmk}  /* 비고 */
+         WHERE DISTRB_ID = #{distrbId}  /* 배포ID */
+
+	</update>
+
+	<!-- 배포 삭제 -->
+	<delete id="deleteOaDistrb">
+	DELETE FROM OA_DISTRB
+         WHERE DISTRB_ID = #{distrbId}  /* 배포ID */
+
+	</delete>
+
+</mapper>

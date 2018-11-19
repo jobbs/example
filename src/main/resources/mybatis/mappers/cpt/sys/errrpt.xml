@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.errrpt">
+
+	<resultMap type="ncis.cpt.sys.errrpt.vo.ErrRptVo" id="resultErrRptVo" extends="ncis.sql.cmn.ZErrRpt.resultZErrRpt">
+		<result property="errCateNm" column="ERR_CATE_NM"/>
+		<result property="errTyNm" column="ERR_TY_NM"/>
+		<result property="chargeNm" column="CHARGE_NM"/>
+		<result property="procssStatNm" column="PROCSS_STAT_NM"/>
+		<result property="regUsrNm" column="REG_USR_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.errrpt.vo.ErrRptProcssVo" id="resultErrRptProcssVo" extends="ncis.sql.cmn.ZErrRptProcss.resultZErrRptProcss">
+		<result property="procssStatNm" column="PROCSS_STAT_NM"/>
+		<result property="regUsrNm" column="REG_USR_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.errrpt.vo.ErrRptVo" id="resultErrRptDetailVo" extends="ncis.sql.cmn.ZErrRpt.resultZErrRpt">
+		<collection property="errRptRpocsses" column="ERR_RPT_SEQ" select="selectErrRptProcssList"/>
+		<collection property="errRptFiles" column="ERR_RPT_SEQ" select="selectErrRptFileList"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.errrpt.vo.ErrRptFileVo" id="resultErrRptFileVo">
+		<id property="seq" column="FILE_SEQ"/>
+		<result property="parentSeq" column="ERR_RPT_SEQ"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="originFileName" column="FILE_ORI_NM"/>
+		<result property="saveFileName" column="FILE_TMP_NM"/>
+		<result property="order" column="FILE_ORDER"/>
+		<result property="regId" column="REG_USER_ID"/>
+	</resultMap>
+
+	<sql id="search">
+
+ 		<if test="searchSbjct != null and !searchSbjct.isEmpty()">
+			AND ERR_TITLE LIKE '%' || #{searchSbjct} || '%'
+		</if>
+
+		<if test="searchContent != null and !searchContent.isEmpty()">
+			AND ERR_CONT LIKE '%' || #{searchContent} || '%'
+		</if>
+
+		<if test="searchChargeNm != null and !searchChargeNm.isEmpty()">
+			AND CHARGE_ID LIKE '%' || #{searchChargeNm} || '%'
+		</if>
+
+		<if test="searchErrTyCd != null and !searchErrTyCd.isEmpty()">
+			AND ERR_TY_CD = #{searchErrTyCd}
+		</if>
+
+		<if test="searchErrCateCd != null and !searchErrCateCd.isEmpty()">
+			AND ERR_CATE_CD = #{searchErrCateCd}
+		</if>
+
+		<if test="searchProcssStatCd != null and !searchProcssStatCd.isEmpty()">
+			AND PROCSS_STAT_CD = #{searchProcssStatCd}
+		</if>
+
+	</sql>
+
+	<select id="selectErrRptTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.errrpt.selectErrRptTotCnt */
+		SELECT COUNT(*) FROM Z_ERR_RPT
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectErrRptList" resultMap="resultErrRptVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.errrpt.selectErrRptList */
+		SELECT
+			ERR_RPT_SEQ
+			,ERR_TITLE
+			,ERR_CONT
+			,ERR_CATE_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = ERR_CATE_CD AND GRP_CD='070') AS ERR_CATE_NM
+			,PROCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = PROCSS_STAT_CD AND GRP_CD='070') AS PROCSS_STAT_NM
+			,ERR_TY_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = ERR_TY_CD AND GRP_CD='070') AS ERR_TY_NM
+			,CHARGE_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = CHARGE_ID) AS CHARGE_NM
+			,REG_USR_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = REG_USR_ID) AS REG_USR_NM
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		FROM Z_ERR_RPT
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY REG_DTTM DESC
+
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectErrRpt" resultMap="resultErrRptDetailVo">
+		/* ncis.sql.cpt.errrpt.selectErrRpt */
+		SELECT
+			ERR_RPT_SEQ
+			,ERR_TITLE
+			,ERR_CONT
+			,ERR_CATE_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = ERR_CATE_CD AND GRP_CD='070') AS ERR_CATE_NM
+			,PROCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = PROCSS_STAT_CD AND GRP_CD='070') AS PROCSS_STAT_NM
+			,ERR_TY_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = ERR_TY_CD AND GRP_CD='070') AS ERR_TY_NM
+			,CHARGE_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = CHARGE_ID) AS CHARGE_NM
+			,REG_USR_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = REG_USR_ID) AS REG_USR_NM
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		FROM Z_ERR_RPT
+		<where>
+			ERR_RPT_SEQ = #{value }
+		</where>
+	</select>
+
+	<select id="selectErrRptProcssList" resultMap="resultErrRptProcssVo">
+		/* ncis.sql.cpt.errrpt.selectErrRptProcssList */
+		SELECT
+			ERR_RPT_PROCSS_SEQ
+			,ERR_RPT_SEQ
+			,PROCSS_CONT
+			,PROCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = PROCSS_STAT_CD AND GRP_CD='070') AS PROCSS_STAT_NM
+			,REG_USR_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = REG_USR_ID) AS REG_USR_NM
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		FROM Z_ERR_RPT_PROCSS
+		WHERE ERR_RPT_SEQ = ${value }
+		ORDER BY REG_DTTM DESC
+	</select>
+
+	<select id="selectErrRptProcss" resultMap="resultErrRptProcssVo">
+		/* ncis.sql.cpt.errrpt.selectErrRptProcss */
+		SELECT
+			ERR_RPT_PROCSS_SEQ
+			,ERR_RPT_SEQ
+			,PROCSS_CONT
+			,PROCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD = PROCSS_STAT_CD AND GRP_CD='070') AS PROCSS_STAT_NM
+			,REG_USR_ID
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = REG_USR_ID) AS REG_USR_NM
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		FROM Z_ERR_RPT_PROCSS
+		WHERE ERR_RPT_PROCSS_SEQ = ${value }
+	</select>
+
+	<select id="selectErrRptFile" resultMap="resultErrRptFileVo">
+		/* ncis.sql.cpt.errrpt.selectErrRptFile */
+		SELECT
+			FILE_SEQ,
+			ERR_RPT_SEQ,
+			FILE_PATH,
+			FILE_ORI_NM,
+			FILE_TMP_NM,
+			FILE_ORDER,
+			REG_DTTM,
+			REG_USR_ID
+		FROM Z_ERR_RPT_FILE
+		WHERE FILE_SEQ = #{value}
+	</select>
+
+	<select id="selectErrRptFileList" resultMap="resultErrRptFileVo">
+		/* ncis.sql.cpt.errrpt.selectErrRptFileList */
+		SELECT
+			FILE_SEQ,
+			ERR_RPT_SEQ,
+			FILE_PATH,
+			FILE_ORI_NM,
+			FILE_TMP_NM,
+			FILE_ORDER,
+			REG_DTTM,
+			REG_USR_ID
+		FROM Z_ERR_RPT_FILE
+		WHERE ERR_RPT_SEQ = #{value}
+	</select>
+
+</mapper>

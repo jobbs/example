@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnsroutingscript">
+
+	<resultMap id="resultRoutingScript" type="ncis.cmn.entity.RnSRoutingScript">
+		<result property="sRoutingScriptSeq"   column="S_ROUTING_SCRIPT_SEQ"/>
+		<result property="osTyCd"              column="OS_TY_CD"/>
+		<result property="osVer"               column="OS_VER"/>
+		<result property="script"              column="SCRIPT"/>
+		<result property="dc"                  column="DC"/>
+		<result property="useYn"               column="USE_YN"/>
+		<result property="regDttm"             column="REG_DTTM"/>
+		<result property="regUserId"           column="REG_USER_ID"/>
+		<result property="updtDttm"            column="UPDT_DTTM"/>
+		<result property="updtUserId"          column="UPDT_USER_ID"/>
+	</resultMap>
+
+	<!-- IP 등록 -->
+	<insert id="insertRnSRoutingScript">
+	/* ncis.sql.cmn.rnsroutingscript.insertRnSRoutingScript */
+	INSERT INTO RN_S_ROUTING_SCRIPT(
+		OS_TY_CD,
+		OS_VER,
+		SCRIPT,
+		DC,
+		USE_YN,
+		REG_DTTM,
+		REG_USER_ID,
+		UPDT_DTTM,
+		UPDT_USER_ID
+	) VALUES (
+		#{osTyCd}
+		, #{osVer}
+		, #{script}
+		, #{dc}
+		, #{useYn}
+		, NOW()
+		, #{regUserId}
+		, NOW()
+		, #{updtUserId}
+	)
+	</insert>
+
+	<!-- IP 수정 -->
+	<update id="updateRnSRoutingScript">
+	/* ncis.sql.cmn.rnsroutingscript.updateRnSRoutingScript */
+	UPDATE RN_S_ROUTING_SCRIPT SET
+		OS_TY_CD=#{osTyCd},
+		OS_VER=#{osVer},
+		SCRIPT=#{script},
+		DC=#{dc},
+		USE_YN=#{useYn},
+		UPDT_DTTM=NOW(),
+		UPDT_USER_ID=#{updtUserId}
+	WHERE
+		S_ROUTING_SCRIPT_SEQ=#{sRoutingScriptSeq}
+	</update>
+
+	<!-- IP 삭제 -->
+	<delete id="deleteRnSRoutingScript">
+	/* ncis.sql.cmn.rnsroutingscript.deleteRnSRoutingScript */
+	DELETE FROM RN_S_ROUTING_SCRIPT
+         WHERE S_ROUTING_SCRIPT_SEQ = #{sRoutingScriptSeq}
+	</delete>
+
+</mapper>

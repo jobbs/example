@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.axlog">
+
+	<resultMap type="ncis.dsb.stts.log.axLog.vo.AxLogVo" id="resultAxLogVo">
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="jobNm" column="JOB_NM"/>
+		<result property="logColctDttm" column="LOG_COLCT_DTTM"/>
+		<result property="servcAreaCompId" column="SERVC_AREA_COMP_ID"/>
+		<result property="servcAreaNm" column="SERVC_AREA_NM"/>
+		<result property="logMsg" column="LOG_MSG"/>
+	</resultMap>
+
+	<sql id="search">
+		AND LOG.LOG_COLCT_DTTM BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		<if test='jobId!=null and !"".equals(jobId)'>
+			AND AREA.JOB_ID =#{jobId}
+		</if>
+
+		<if test='servcAreaCompId!=null and !"".equals(servcAreaCompId)'>
+			AND AREA.SERVC_AREA_COMP_ID LIKE '%'||#{servcAreaCompId}||'%'
+		</if>
+	</sql>
+
+
+	<select id="selectAxLogTotCnt" resultType="Integer">
+		/*ncis.sql.dsb.stts.axlog.selectAxLogTotCnt*/
+		SELECT COUNT(*)
+		FROM ST_RX_LOG_COLCT LOG LEFT JOIN RX_SERVC_AREA AREA ON LOG.SERVC_AREA_SEQ = AREA.SERVC_AREA_SEQ
+								 LEFT JOIN CM_JOB JOB ON AREA.JOB_ID = JOB.JOB_ID
+		WHERE 1=1
+		<include refid="search"/>
+	</select>
+
+	<select id="selectAxLogList" resultMap="resultAxLogVo">
+		/*ncis.sql.dsb.stts.axlog.selectAxLogList*/
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			INST.INSTITUTION_NM,
+			JOB.JOB_NM,
+			LOG.LOG_COLCT_DTTM::CHARACTER VARYING,
+			AREA.SERVC_AREA_COMP_ID,
+			AREA.SERVC_AREA_NM,
+			LOG.LOG_MSG
+
+		FROM ST_RX_LOG_COLCT LOG LEFT JOIN RX_SERVC_AREA AREA ON LOG.SERVC_AREA_SEQ = AREA.SERVC_AREA_SEQ
+								 LEFT JOIN CM_JOB JOB ON AREA.JOB_ID = JOB.JOB_ID
+								 LEFT JOIN CM_INSTITUTION INST ON AREA.INSTITUTION_ID = INST.INSTITUTION_ID
+		WHERE 1=1
+		<include refid="search"/>
+		ORDER BY LOG.LOG_COLCT_DTTM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+</mapper>

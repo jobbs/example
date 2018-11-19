@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.phyrsrc">
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqPhyRsrcVo" id="resultRsrcReqPhyRsrcVo" extends="ncis.sql.cmn.rrRsrcReqDtlPRsrc.resultRrRsrcReqDtlPRsrc">
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="clstrNm" column="CLSTR_NM"/>
+		<result property="pmNm" column="PM_NM"/>
+		<result property="rsrcReqTyNm" column="RSRC_REQ_TY_NM"/>
+		<result property="rsrcReqClstrPropsReqListCd" column="RSRC_REQ_CLSTR_PRPOS_REQ_LIST_CD"/>
+		<result property="rsrcReqClstrPropsReqListNm" column="RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM"/>
+		<result property="ipAddr" column="IP_ADDR"/>
+		<result property="vrlzSwTyCd" column="VRLZ_SW_TY_CD"/>
+		<result property="vrlzSwTyNm" column="VRLZ_SW_TY_NM"/>
+		<result property="vrlzSwTyVl2" column="VRLZ_SW_TY_VL2"/>
+		<result property="rsrcReqClstrPropsReqListNmTxt" column="RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM_TXT"/>
+		<result property="dataCntrSeq" column="DATA_CNTR_SEQ"/>
+		<result property="dataCntrNm" column="DATA_CNTR_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqPhyRsrcVo" id="resultDataCntrVo">
+		<result property="dataCntrSeq" column="DATA_CNTR_SEQ"/>
+		<result property="dataCntrNm" column="DATA_CNTR_NM"/>
+	</resultMap>
+
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					/* 운영자 권한  수정*/
+					AND RR_RSRC_REQ.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+				</when>
+				<otherwise>
+					/* 담당자 권한 수정*/
+					AND RR_RSRC_REQ.RSRC_REQ_USER_ID = #{searchUserId}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		1=1
+		<if test = "rsrcReqNo != null and rsrcReqNo != ''">
+			AND  RR_RSRC_REQ.RSRC_REQ_NO =#{rsrcReqNo}
+			AND  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ = (SELECT  MAX(RSRC_REQ_SEQ)
+		  							FROM  RR_RSRC_REQ_DTL_P_RSRC
+		  						   WHERE  RSRC_REQ_NO = #{rsrcReqNo} )
+		</if>
+	</sql>
+
+	<!-- 자원요청 물리 자원 정보 조회  -->
+	<select id="selectRsrcReqPhyRsrc" resultMap="resultRsrcReqPhyRsrcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectRsrcReqPhyRsrc*/
+	SELECT RR_RSRC_REQ.RSRC_REQ_NO			/* 자원요청 번호 */
+				, RR_RSRC_REQ.SBJCT				/* 자원요청 제목 */
+				, RR_RSRC_REQ.EXE_USER_ID		/* 실행자  ID */
+		        , (SELECT USER_NM FROM CM_USR WHERE  RR_RSRC_REQ.EXE_USER_ID = CM_USR.USER_ID) USER_NM	/* 실행자명 */
+	            , RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ		/* 자원요청 일련번호  */
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD					/* 자원요청 유형 코드 */
+				, FN_CODE_NAME('008', RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD	) RSRC_REQ_TY_NM						/*  자원요청 유형 코드 명 */
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD			/* 자원요청 진행 상태 코드 */
+				,RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ					/* 프로세스 인스턴스 SEQ */
+				,RR_RSRC_REQ_DTL_P_RSRC.RJCT_TY_CD						/* 반려 유형코드 */
+				,RR_RSRC_REQ_DTL_P_RSRC.RJCT_REASN						/* 반려 사유 */
+
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.RJCT_DTTM, 'YYYY-MM-DD HH24:MI:SS') RJCT_DTTM  /*  반려 일시 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM   /* 실행 일시 */
+
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_CN						/* 자원요청내용 */
+				,RR_RSRC_REQ_DTL_P_RSRC.UUID	/*UUID*/
+
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') REG_DTTM  		/* 등록일시 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM   /* 완료일시 */
+
+				,RR_RSRC_REQ_DTL_P_RSRC.NET_CL_CD	/* 망구분코드 */
+                ,RR_RSRC_REQ.REGION_ID			/* region ID */
+                ,FN_NET_NAME(RR_RSRC_REQ.REGION_ID) REGION_NM				/* NET ID */
+                ,RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID				/* ZONE_ID */
+                ,FN_ZONE_NAME(RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID)	ZONE_NM		/* ZONE 명 */
+                ,RR_RSRC_REQ_DTL_P_RSRC.NET_ID				/* NET ID */
+                ,FN_NET_NAME(RR_RSRC_REQ_DTL_P_RSRC.NET_ID)	NET_NM/* NET 명 */
+                ,RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID				/* RSRC_POOL ID */
+                ,(SELECT RSRC_POOL_NM FROM RC_RSRC_POOL WHERE RSRC_POOL_ID = RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID)	RSRC_POOL_NM		/* RSRC_POOL ID */
+                ,RR_RSRC_REQ_DTL_P_RSRC.PM_ID			/* 물리서버 ID */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.PM_NM			/* 물리서버 명 */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.PM_COMP_ID		/* 물리서버 구성 ID */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.IP_ADDR			/* 물리서버 IP  */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.CLSTR_COMP_ID	/* 클러스터  구성 ID */
+		        ,RC_CLSTR.CLSTR_ID						/* 클러스터  ID */
+		        ,RC_CLSTR.CLSTR_NM						/* 클러스터  명 */
+		        , RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+		        , RR_RSRC_REQ_DTL_P_RSRC.DATA_CNTR_SEQ
+		        , (SELECT DATA_CNTR_NM FROM RC_DATA_CNTR WHERE DATA_CNTR_SEQ = RR_RSRC_REQ_DTL_P_RSRC.DATA_CNTR_SEQ ) DATA_CNTR_NM
+       FROM RR_RSRC_REQ_DTL_P_RSRC
+	LEFT JOIN RR_RSRC_REQ  ON RR_RSRC_REQ.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+ 	LEFT JOIN RC_CLSTR  ON RC_CLSTR.CLSTR_SEQ = RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+ 	<trim prefix="WHERE" >
+ 		<include refid="search" />
+ 		<include refid="validateAuth" />
+ 	</trim>
+		ORDER BY  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ DESC
+	</select>
+
+	<!-- 물리서버 추가 정보 조회  -->
+	<select id="selectRsrcReqPhySrvrAdd" resultMap="resultRsrcReqPhyRsrcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectRsrcReqPhySrvrAdd  */
+		SELECT RR_RSRC_REQ.RSRC_REQ_NO			/* 자원요청 번호 */
+				, RR_RSRC_REQ.SBJCT				/* 자원요청 제목 */
+				, RR_RSRC_REQ.EXE_USER_ID		/* 실행자  ID */
+		        , (SELECT USER_NM FROM CM_USR WHERE  RR_RSRC_REQ.EXE_USER_ID = CM_USR.USER_ID) USER_NM	/* 실행자명 */
+	            , RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ		/* 자원요청 일련번호  */
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD					/* 자원요청 유형 코드 */
+				, FN_CODE_NAME('008', RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD	) RSRC_REQ_TY_NM						/*  자원요청 유형 코드 명 */
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD			/* 자원요청 진행 상태 코드 */
+				,RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ					/* 프로세스 인스턴스 SEQ */
+				,RR_RSRC_REQ_DTL_P_RSRC.RJCT_TY_CD						/* 반려 유형코드 */
+				,RR_RSRC_REQ_DTL_P_RSRC.RJCT_REASN						/* 반려 사유 */
+
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.RJCT_DTTM, 'YYYY-MM-DD HH24:MI:SS') RJCT_DTTM  /*  반려 일시 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM   /* 실행 일시 */
+
+				,RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_CN						/* 자원요청내용 */
+				,RR_RSRC_REQ_DTL_P_RSRC.UUID	/*UUID*/
+
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') REG_DTTM  		/* 등록일시 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM   /* 완료일시 */
+
+				,RC_RSRC_POOL.NET_CL_CD	/* 망구분코드 */
+                ,RR_RSRC_REQ.REGION_ID			/* region ID */
+                ,FN_NET_NAME(RR_RSRC_REQ.REGION_ID) REGION_NM				/* NET ID */
+                ,RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID				/* ZONE_ID */
+                ,FN_ZONE_NAME(RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID)	ZONE_NM		/* ZONE 명 */
+                ,RR_RSRC_REQ_DTL_P_RSRC.NET_ID				/* NET ID */
+                ,FN_NET_NAME(RR_RSRC_REQ_DTL_P_RSRC.NET_ID)	NET_NM/* NET 명 */
+                ,RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID				/* RSRC_POOL ID */
+                ,(SELECT RSRC_POOL_NM FROM RC_RSRC_POOL WHERE RSRC_POOL_ID = RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID)	RSRC_POOL_NM		/* RSRC_POOL ID */
+                ,RR_RSRC_REQ_DTL_P_RSRC.PM_ID			/* 물리서버 ID */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.PM_NM			/* 물리서버 명 */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.PM_COMP_ID		/* 물리서버 구성 ID */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.IP_ADDR			/* 물리서버 IP  */
+		        ,RR_RSRC_REQ_DTL_P_RSRC.CLSTR_COMP_ID	/* 클러스터  구성 ID */
+		        ,RC_CLSTR.CLSTR_ID						/* 클러스터  ID */
+		        ,RC_CLSTR.CLSTR_NM						/* 클러스터  명 */
+		        , RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+		        , RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+         FROM 	RR_RSRC_REQ_DTL_P_RSRC
+	LEFT JOIN 	RR_RSRC_REQ
+			ON RR_RSRC_REQ.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+ 	LEFT JOIN 	RC_CLSTR
+ 			ON RC_CLSTR.CLSTR_SEQ = RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+ 	LEFT JOIN 	RC_RSRC_POOL
+	 		ON  RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+ 	<trim prefix="WHERE" >
+ 		<include refid="search" />
+ 		<include refid="validateAuth" />
+ 	</trim>
+		ORDER BY  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ DESC
+	</select>
+
+	<!-- 자원요청상세 물리 서버 삭제 정보 조회  -->
+	<select id="selectRsrcReqPhySrvrDel" resultMap="resultRsrcReqPhyRsrcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectRsrcReqPhySrvrDel  */
+		SELECT   RC_CLSTR.CLSTR_ID
+				, RC_CLSTR.CLSTR_NM
+		        , RC_CLSTR.CLSTR_COMP_ID
+		        , RC_PM.PM_COMP_ID
+		        , RC_PM.PM_ID
+		        , RC_PM.PM_NM
+		        , RC_PM.RPRSNT_IP_ADDR AS IP_ADDR
+		        , RC_RSRC_POOL.RSRC_POOL_ID
+		        , RC_RSRC_POOL.REGION_ID
+		        , RC_RSRC_POOL.ZONE_ID
+		        , RC_RSRC_POOL.NET_ID
+		        , FN_REGION_NAME(RC_RSRC_POOL.REGION_ID) REGION_NM
+		        , FN_ZONE_NAME(RC_RSRC_POOL.ZONE_ID) ZONE_NM
+		        , FN_NET_NAME(RC_RSRC_POOL.NET_ID) NET_NM
+		        , RR_RSRC_REQ_DTL_P_RSRC.UUID
+				, RR_RSRC_REQ_DTL_P_RSRC.REG_DTTM
+				, RR_RSRC_REQ_DTL_P_RSRC.COMPT_DTTM
+				, RC_RSRC_POOL.NET_CL_CD
+		   		, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD
+				, FN_CODE_NAME('008' , RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD) RSRC_REQ_TY_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD
+				, FN_CODE_NAME('007' , RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD) RSRC_REQ_TY_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ
+				, RR_RSRC_REQ_DTL_P_RSRC.RJCT_TY_CD
+				, FN_CODE_NAME('009' , RR_RSRC_REQ_DTL_P_RSRC.RJCT_TY_CD) RSRC_REQ_TY_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.RJCT_REASN
+				, RR_RSRC_REQ_DTL_P_RSRC.RJCT_DTTM
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_CN
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+		        , RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+		  FROM 	RR_RSRC_REQ_DTL_P_RSRC
+	 LEFT JOIN 	RR_RSRC_REQ
+	 		ON	RR_RSRC_REQ.RSRC_REQ_NO= RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+     LEFT JOIN 	RC_PM
+     		ON RC_PM.PM_SEQ = RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+	 LEFT JOIN 	RC_CLSTR
+	 		ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+	 LEFT JOIN 	RC_RSRC_POOL
+	 		ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+	<trim prefix="WHERE" >
+ 		<include refid="search" />
+ 		<include refid="validateAuth" />
+ 	</trim>
+		ORDER BY  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ DESC
+	</select>
+
+	<!-- 자원요청상세_물리자원 조회(단일) 클러스터 추가 -->
+	<select id="selectRsrcReqClstrAdd" resultMap="resultRsrcReqPhyRsrcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectRsrcReqClstrAdd */
+		SELECT   RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				, RC_RSRC_POOL.NET_CL_CD
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD
+				, RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_CN
+				, RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID
+				, (SELECT ZONE_NM FROM RC_ZONE WHERE ZONE_ID = RR_RSRC_REQ_DTL_P_RSRC.ZONE_ID) AS ZONE_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.NET_ID
+				, (SELECT NET_NM FROM RC_NET WHERE NET_ID = RR_RSRC_REQ_DTL_P_RSRC.NET_ID) AS NET_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.CLSTR_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.CLSTR_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.CLSTR_COMP_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_COMP_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.UUID
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD
+				, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD= '107' AND GRP_CD = '008'  AND CD = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				, (SELECT array_to_string(array_agg(L.PRPOS_CL_CD), ',' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_CD
+				, (SELECT array_to_string(array_agg(CD_NM), '' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			   INNER JOIN CM_CODE C
+				       ON C.PARENT_CD = '101'
+				      AND C.GRP_CD = '002'
+				      AND C.CD = L.PRPOS_CL_CD
+		            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM
+				, (SELECT array_to_string(array_agg(CD_NM), ', ' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			   INNER JOIN CM_CODE C
+				       ON C.PARENT_CD = '101'
+				      AND C.GRP_CD = '002'
+				      AND C.CD = L.PRPOS_CL_CD
+		            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM_TXT
+				,IP_ADDR
+ 				,RC_RSRC_POOL.RSRC_POOL_NM
+ 				,RC_RSRC_POOL.VRLZ_SW_TY_CD
+ 				, (SELECT CD_NM FROM CM_CODE WHERE GRP_CD= '001' AND PARENT_CD='100' AND CD = RC_RSRC_POOL.VRLZ_SW_TY_CD) VRLZ_SW_TY_NM
+ 				, (SELECT VAR_VL2 FROM CM_CODE WHERE GRP_CD= '001' AND PARENT_CD='100' AND CD = RC_RSRC_POOL.VRLZ_SW_TY_CD) VRLZ_SW_TY_VL2
+ 				, RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+		    , RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+		    , RR_RSRC_REQ_DTL_P_RSRC.DATA_CNTR_SEQ
+		    , (SELECT DATA_CNTR_NM FROM RC_DATA_CNTR WHERE DATA_CNTR_SEQ = RR_RSRC_REQ_DTL_P_RSRC.DATA_CNTR_SEQ ) DATA_CNTR_NM
+		  FROM	RR_RSRC_REQ_DTL_P_RSRC
+    INNER JOIN	RR_RSRC_REQ
+    	   	ON  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+   	 LEFT JOIN	RC_RSRC_POOL
+   		   	ON RC_RSRC_POOL.RSRC_POOL_ID = RR_RSRC_REQ_DTL_P_RSRC.RSRC_POOL_ID
+		<trim prefix="WHERE" >
+ 			<include refid="search" />
+ 			<include refid="validateAuth" />
+ 		</trim>
+		ORDER BY  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ DESC
+	</select>
+
+	<!-- 자원요청상세_물리자원 조회(단일)  클러스터 삭제 -->
+	<select id="selectRsrcReqClstrDel" resultMap="resultRsrcReqPhyRsrcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectRsrcReqClstrDel */
+			SELECT   RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_PRCSS_STAT_CD
+				, RR_RSRC_REQ_DTL_P_RSRC.PROCSS_INST_SEQ
+				, TO_CHAR(RR_RSRC_REQ_DTL_P_RSRC.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_CN
+				, RC_RSRC_POOL.ZONE_ID
+				, (SELECT ZONE_NM FROM RC_ZONE WHERE ZONE_ID = RC_RSRC_POOL.ZONE_ID) AS ZONE_NM
+				, RC_RSRC_POOL.NET_ID
+				, RC_RSRC_POOL.NET_CL_CD
+				, (SELECT NET_NM FROM RC_NET WHERE NET_ID = RC_RSRC_POOL.NET_ID) AS NET_NM
+				, RC_RSRC_POOL.RSRC_POOL_ID
+				, RC_CLSTR.CLSTR_ID
+				, RC_CLSTR.CLSTR_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.CLSTR_COMP_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_COMP_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_ID
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.UUID
+				, RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD
+				, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD= '107' AND GRP_CD = '008'  AND CD = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				, (SELECT array_to_string(array_agg(L.PRPOS_CL_CD), ', ' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_CD
+
+				, (SELECT array_to_string(array_agg(CD_NM), '' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			   INNER JOIN CM_CODE C
+				       ON C.PARENT_CD = '101'
+				      AND C.GRP_CD = '002'
+				      AND C.CD = L.PRPOS_CL_CD
+		            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM
+			 , (SELECT array_to_string(array_agg(CD_NM), ', ' ) as prpos_cl_cd
+				     FROM RR_CLSTR_PRPOS_REQ_LIST L
+			   INNER JOIN CM_CODE C
+				       ON C.PARENT_CD = '101'
+				      AND C.GRP_CD = '002'
+				      AND C.CD = L.PRPOS_CL_CD
+		            WHERE L.RSRC_REQ_NO = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO
+			              AND L.RSRC_REQ_SEQ = RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ
+				   )  AS RSRC_REQ_CLSTR_PRPOS_REQ_LIST_NM_TXT
+				,IP_ADDR
+				,  RC_RSRC_POOL.RSRC_POOL_NM
+				, RR_RSRC_REQ_DTL_P_RSRC.PM_SEQ
+		        , RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+
+		 FROM	RR_RSRC_REQ_DTL_P_RSRC
+   INNER JOIN	RR_RSRC_REQ
+    	   ON   RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+   LEFT   JOIN  RC_CLSTR  ON RC_CLSTR.CLSTR_SEQ = RR_RSRC_REQ_DTL_P_RSRC.CLSTR_SEQ
+   LEFT   JOIN  RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+	<trim prefix="WHERE" >
+ 			<include refid="search" />
+ 			<include refid="validateAuth" />
+	</trim>
+		ORDER BY  RR_RSRC_REQ_DTL_P_RSRC.RSRC_REQ_SEQ DESC
+	</select>
+
+	<!-- 물리서버 하위에 사용중인 가상서버가 있는 수향 조회   -->
+	<select id="selectDisableDeleteVmCnt" resultType="Integer">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectDisableDeleteVmCnt */
+	SELECT  COUNT(RC_VM.PM_SEQ)
+	  FROM	RC_VM
+INNER JOIN 	RC_PM ON  RC_PM.PM_SEQ = RC_VM.PM_SEQ
+	 WHERE 	RC_VM.DEL_YN = 'N'
+	   AND	RC_PM.PM_SEQ = #{pmSeq};
+	</select>
+
+	<!-- 데이터센터 조회   -->
+	<select id="selectDataCntrList" resultMap="resultDataCntrVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.phyrsrc.selectDataCntrList */
+	SELECT
+		   DATA_CNTR_SEQ
+	     , B.RSRC_POOL_NM||' > '||DATA_CNTR_NM DATA_CNTR_NM
+  	  FROM RC_DATA_CNTR A
+  	 INNER JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID AND B.DEL_YN = 'N'
+     WHERE A.DEL_YN= 'N'
+     ORDER BY B.RSRC_POOL_NM, DATA_CNTR_NM
+	</select>
+
+</mapper>

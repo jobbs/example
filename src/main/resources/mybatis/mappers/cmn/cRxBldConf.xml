@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxBldConf">
+	<!-- 빌드설정 등록 -->
+	<insert id="insertRxBldConf" parameterType="ncis.cmn.entity.RxBldConf">
+
+		/* ncis.sql.cmn.rxBldConf.insertRxBldConf */
+		INSERT INTO RX_BLD_CONF(
+			SERVC_SEQ  /* 서비스SEQ */
+			, BLD_ID  /* 빌드ID */
+			, BLD_NM  /* 빌드명 */
+			, BAS_IMG_ID  /* 베이스이미지ID */
+			, REPO_TY_CD  /* 저장소유형코드 */
+			, REPO_ADDR  /* 저장소주소 */
+			, GIT_BRNCH_NM  /* GIT브랜치명 */
+			, GIT_BEST_PATH  /* GIT최상위경로 */
+			, SCRTKY_ID  /* 보안키ID */
+			, CRE_IMG_NM  /* 생성이미지명 */
+			, CRE_IMG_ID  /* 생성이미지ID */
+			, IMG_TAG  /* 이미지태그 */
+			, SERVC_AREA_SEQ  /* 서비스영역SEQ */
+			, LAST_BLD_VER  /* 최종빌드버전 */
+			, LAST_BLD_DTTM  /* 최종빌드일시 */
+			, CRE_DTTM  /* 생성일시 */
+			, CRE_USER_ID  /* 생성자ID */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{bldId}  /* 빌드ID */
+			, #{bldNm}  /* 빌드명 */
+			, #{basImgId}  /* 베이스이미지ID */
+			, #{repoTyCd}  /* 저장소유형코드 */
+			, #{repoAddr}  /* 저장소주소 */
+			, #{gitBrnchNm}  /* GIT브랜치명 */
+			, #{gitBestPath}  /* GIT최상위경로 */
+			, #{scrtkyId}  /* 보안키ID */
+			, #{creImgNm}  /* 생성이미지명 */
+			, #{creImgId}  /* 생성이미지ID */
+			, #{imgTag}  /* 이미지태그 */
+			, #{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{lastBldVer}  /* 최종빌드버전 */
+			, now()  /* 최종빌드일시 */
+			, now()  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+        )
+	</insert>
+
+	<!-- 빌드설정 수정 -->
+	<update id="updateRxBldConf">
+		/* ncis.sql.cmn.rxBldConf.updateRxBldConf */
+		UPDATE RX_BLD_CONF
+         SET BLD_NM = #{bldNm}  /* 빌드명 */
+         , BAS_IMG_ID = #{basImgId}  /* 베이스이미지ID */
+         , REPO_TY_CD = #{repoTyCd}  /* 저장소유형코드 */
+         , REPO_ADDR = #{repoAddr}  /* 저장소주소 */
+         , GIT_BRNCH_NM = #{gitBrnchNm}  /* GIT브랜치명 */
+         , GIT_BEST_PATH = #{gitBestPath}  /* GIT최상위경로 */
+         , SCRTKY_ID = #{scrtkyId}  /* 보안키ID */
+         , CRE_IMG_NM = #{creImgNm}  /* 생성이미지명 */
+         , CRE_IMG_ID = #{creImgId}  /* 생성이미지ID */
+         , IMG_TAG = #{imgTag}  /* 이미지태그 */
+         , SERVC_AREA_SEQ = #{servcAreaSeq}  /* 서비스영역SEQ */
+         , LAST_BLD_VER = #{lastBldVer}  /* 최종빌드버전 */
+         , UPDT_DTTM = now()  /* 수정일시 */
+         , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+   		AND BLD_ID = #{bldId}  /* 빌드ID */
+	</update>
+
+	<!-- 빌드설정 버전정보 수정 -->
+	<update id="updateRxBldConfBldVer">
+		/* ncis.sql.cmn.rxBldConf.updateRxBldConf */
+		UPDATE RX_BLD_CONF
+			SET LAST_BLD_VER = #{lastBldVer}  /* 최종빌드버전 */
+			, LAST_BLD_DTTM = now() /* 최종빌드일시 */
+			, UPDT_DTTM = now()  /* 수정일시 */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+   		AND BLD_ID = #{bldId}  /* 빌드ID */
+	</update>
+
+	<!-- 빌드설정 삭제 -->
+	<delete id="deleteRxBldConf">
+		/* ncis.sql.cmn.rxBldConf.deleteRxBldConf */
+		DELETE FROM RX_BLD_CONF
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+        <if test="bldId != null and !bldId.isEmpty()">
+   			AND BLD_ID = #{bldId}  /* 빌드ID */
+   		</if>
+	</delete>
+
+	<!-- 빌드처리 후 설정 수정 -->
+	<update id="updateBldConf">
+		/* ncis.sql.cmn.rxBldConf.updateBldConf */
+		UPDATE RX_BLD_CONF
+		SET
+			SCRTKY_ID = #{scrtkyId}
+			,GIT_BRNCH_NM = #{gitBrnchNm}
+			,GIT_BEST_PATH = #{gitBestPath}
+			,REPO_ADDR = #{repoAddr}
+			,BAS_IMG_ID = #{basImgId}
+			,UPDT_DTTM = now()
+			,UPDT_USER_ID = #{updtUserId}
+			,LAST_BLD_VER = #{lastBldVer}
+			,LAST_BLD_DTTM = now()
+		WHERE SERVC_SEQ = #{servcSeq} AND BLD_ID = #{bldId}
+	</update>
+
+	<!-- 빌드이력 생성-->
+	<insert id="insertBldHstry" parameterType="ncis.cmn.entity.RxBldHstry">
+		/* ncis.sql.cmn.rxBldConf.insertBldHstry */
+		INSERT INTO RX_BLD_HSTRY(
+			  SERVC_SEQ  			/*	서비스SEQ			*/
+			, BLD_HSTRY_ID 			/*	빌드이력 ID			*/
+			, BLD_ID  				/*	빌드ID 			*/
+			, BLD_VER				/*	빌드버전 			*/
+			, BAS_IMG_SERVC_AREA_ID /*	베이스이미지서비스영역ID*/
+			, BAS_IMG_ID			/*	베이스이미지ID		*/
+			, REPO_TY_CD  			/* 	저장소유형코드 		*/
+			, REPO_ADDR 			/*	 저장소주소 			*/
+			, GIT_BRNCH_NM  		/* 	GIT브랜치명 		*/
+			, GIT_BEST_PATH 		/* 	GIT최상위경로 		*/
+			, SCRTKY_ID  			/* 	보안키ID 			*/
+			, CRE_IMG_ID  			/* 	생성이미지ID		*/
+			, CRE_IMG_NM  			/* 	생성이미지명 		*/
+			, IMG_TAG  				/* 	이미지태그 			*/
+			, BLD_STAT_CD			/*  빌드상태코드 		*/
+			, CRE_DTTM  			/*	 생성일시			*/
+			, CRE_USER_ID  			/* 	 생성자ID 			*/
+	    )
+        VALUES (
+			  #{servcSeq}  			/* 서비스SEQ */
+			, #{bldHstryId}  		/* 빌드ID */
+			, #{bldId}  			/* 빌드ID */
+			, #{bldVer} 			/* 빌드버전 */
+			, #{basImgServcAreaId}  /* 베이스이미지ID */
+			, #{basImgId} 			/* 베이스이미지ID */
+			, #{repoTyCd}  			/* 저장소유형코드 */
+			, #{repoAddr}  			/* 저장소주소 */
+			, #{gitBrnchNm}  		/* GIT브랜치명 */
+			, #{gitBestPath}  		/* GIT최상위경로 */
+			, #{scrtkyId}  			/* 보안키ID */
+			, #{creImgId}  			/* 생성이미지ID */
+			, #{creImgNm}  			/* 생성이미지명 */
+			, #{imgTag}  			/* 이미지태그 */
+			, #{bldStatCd}          /* 빌드상태코드 */
+			, now()  				/* 생성일시 */
+			, #{creUserId}  		/* 생성자ID */
+        )
+	</insert>
+	<update id="updateBldConfSync">
+		/* ncis.sql.cmn.rxBldConf.updateBldConfSync */
+		UPDATE RX_BLD_CONF
+			SET LAST_BLD_VER = #{lastBldVer}  /* 최종빌드버전 */
+			, LAST_BLD_DTTM = #{bldDttmSync} /* 최종빌드일시 */
+			, UPDT_DTTM = now()  /* 수정일시 */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+   		AND BLD_ID = #{bldId}  /* 빌드ID */
+	</update>
+</mapper>

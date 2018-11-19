@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.role">
+
+	<resultMap type="ncis.cpt.sys.role.vo.RoleVo" id="resultRoleVo" extends="ncis.sql.cmn.cmRole.resultRole">
+		<result property="roleTyNm" column="ROLE_TY_NM" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.menu.vo.MenuVo" id="resultMenuVo" extends="ncis.sql.cmn.menu.resultMenu">
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.role.vo.RoleMenuVo" id="resultRoleMenuVo" extends="resultMenuVo">
+		<association property="menuRole" resultMap="ncis.sql.cpt.menu.resultMenuRoleVo"></association>
+	</resultMap>
+
+	<sql id="search">
+
+		<if test="searchRoleCd != null and !searchRoleCd.isEmpty()">
+			AND ROLE_CD LIKE '%' || #{searchRoleCd} || '%'
+		</if>
+
+		<if test="searchRoleNm != null and !searchRoleNm.isEmpty()">
+			AND ROLE_NM LIKE '%' || #{searchRoleNm} || '%'
+		</if>
+
+		<if test="searchText != null and !searchText.isEmpty()">
+			<choose>
+				<when test="searchColumn == 'roleCode'">
+					AND ROLE_CD LIKE '%' || #{searchText} || '%'
+				</when>
+				<when test="searchColumn == 'roleName'">
+					AND ROLE_NM LIKE '%' || #{searchText} || '%'
+				</when>
+				<otherwise>
+					AND (
+						ROLE_CD LIKE '%' || #{searchText} || '%' OR
+						ROLE_NM LIKE '%' || #{searchText} || '%'
+					)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectRoleTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.role.selectRoleTotCnt */
+		SELECT COUNT(*) FROM CM_ROLE
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="selectRoleListSql">
+		/* ncis.sql.cpt.role.selectRoleListSql */
+		SELECT  ROLE_CD
+				,ROLE_NM
+				,ROLE_TY_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=CM_ROLE.ROLE_TY_CD AND GRP_CD='090') AS ROLE_TY_NM
+				,USE_YN
+				,REG_DTTM
+				,REG_USER_ID
+				,UPDT_DTTM
+				,UPDT_USER_ID
+		FROM CM_ROLE
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY (
+		        CASE ROLE_CD
+		            WHEN 'SYSADM' THEN 0
+		            WHEN 'OPRADM' THEN 1
+		            WHEN 'OPRCHR' THEN 2
+		            ELSE 4
+		        END
+		    ), ROLE_CD
+	</sql>
+
+	<select id="selectRoleAllList" resultMap="resultRoleVo">
+		/* ncis.sql.cpt.role.selectRoleAllList */
+		<include refid="selectRoleListSql" />
+	</select>
+
+	<select id="selectRoleList" resultMap="resultRoleVo">
+		/* ncis.sql.cpt.role.selectRoleList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectRoleListSql" />
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectRole" resultMap="resultRoleVo">
+	/* ncis.sql.cpt.role.selectRole */
+		SELECT
+			ROLE_CD
+			,ROLE_NM
+			,ROLE_TY_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=CM_ROLE.ROLE_TY_CD AND GRP_CD='090') AS ROLE_TY_NM
+			,USE_YN
+			,REG_DTTM
+			,REG_USER_ID
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		FROM CM_ROLE
+		WHERE ROLE_CD = #{value}
+	</select>
+
+	<select id="selectRoleMenuList" resultMap="resultRoleMenuVo">
+		/* ncis.sql.cpt.role.selectRoleMenuList */
+		SELECT MI.*, MR.ROLE_CD, MR.READ_YN, MR.WRITE_YN, MR.ACT_YN
+		FROM
+			CM_MENU MI LEFT JOIN (
+				SELECT * FROM CM_MENU_ROLE WHERE ROLE_CD = #{value}
+			) MR
+			ON MI.MENU_SEQ = MR.MENU_SEQ
+		ORDER BY MENU_LEVEL, MENU_ORDER
+	</select>
+
+</mapper>

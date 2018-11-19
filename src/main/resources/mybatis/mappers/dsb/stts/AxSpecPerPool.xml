@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.axusert.axSpecPerPool">
+
+	<resultMap type="ncis.dsb.stts.axusert.vo.AxSpecPerPoolVo" id="resultAxSpecPerPoolVo">
+	 	<result property="no"          	 	column="NO"/>
+		<result property="rsrcPoolId"    	column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm"    	column="RSRC_POOL_NM"/>
+		<result property="minCpuCorQty"  	column="MIN_CPU_COR_QTY"/>
+		<result property="avgCpuCorQty"     column="AVG_CPU_COR_QTY"/>
+		<result property="maxCpuCorQty"     column="MAX_CPU_COR_QTY"/>
+		<result property="minMemTotCapa"    column="MIN_MEM_TOT_CAPA"/>
+		<result property="avgMemTotCapa"    column="AVG_MEM_TOT_CAPA"/>
+		<result property="maxMemTotCapa"    column="MAX_MEM_TOT_CAPA"/>
+		<result property="minStrgTotCapa"   column="MIN_STRG_TOT_CAPA"/>
+		<result property="avgStrgTotCapa"   column="AVG_STRG_TOT_CAPA"/>
+		<result property="maxStrgTotCapa"   column="MAX_STRG_TOT_CAPA"/>
+	</resultMap>
+
+	<select id="selectAxSpecPerPoolTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axSpecPerPool.selectAxSpecPerPoolTotCnt */
+		SELECT COUNT(*)
+		FROM(
+			SELECT DISTINCT st1mm.RSRC_POOL_ID
+			  FROM ST_RX_POD_SUM_1MM st1mm LEFT JOIN RC_RSRC_POOL pool ON st1mm.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			WHERE 1=1
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND pool.REGION_ID = #{regionId}
+				</if>
+				<choose>
+					<when test='"".equals(month)'>
+						AND st1mm.COLCT_YM LIKE #{year}||'%'
+					</when>
+					<otherwise>
+						AND st1mm.COLCT_YM = #{year}||#{month}
+					</otherwise>
+				</choose>
+
+		) a
+	</select>
+
+	<select id="selectAxSpecPerPoolList" resultMap="resultAxSpecPerPoolVo">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axSpecPerPool.selectAxSpecPerPoolList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			#{paginationInfo.firstRecordIndex} + (ROW_NUMBER() OVER(ORDER BY  ST1MM.RSRC_POOL_ID)) AS NO,
+			st1mm.RSRC_POOL_ID RSRC_POOL_ID,
+			pool.RSRC_POOL_NM RSRC_POOL_NM,
+			ROUND(MIN(st1mm.CPU_ASGN_CAPA)/1000,2) MIN_CPU_COR_QTY,
+			ROUND(AVG(st1mm.CPU_ASGN_CAPA)/1000, 2) AVG_CPU_COR_QTY,
+			ROUND(MAX(st1mm.CPU_ASGN_CAPA)/1000,2) MAX_CPU_COR_QTY,
+			ROUND(MIN(st1mm.MEM_TOT_CAPA)/1024/1024/1024, 2) MIN_MEM_TOT_CAPA,
+			ROUND(AVG(st1mm.MEM_TOT_CAPA)/1024/1024/1024, 2) AVG_MEM_TOT_CAPA,
+			ROUND(MAX(st1mm.MEM_TOT_CAPA)/1024/1024/1024, 2) MAX_MEM_TOT_CAPA,
+			ROUND(MIN(st1mm.STRG_TOT_CAPA)/1024/1024/1024, 2) MIN_STRG_TOT_CAPA,
+			ROUND(AVG(st1mm.STRG_TOT_CAPA)/1024/1024/1024, 2) AVG_STRG_TOT_CAPA,
+			ROUND(MAX(st1mm.STRG_TOT_CAPA)/1024/1024/1024, 2) MAX_STRG_TOT_CAPA
+
+		FROM ST_RX_SERVC_SUM_1MM st1mm LEFT JOIN RC_RSRC_POOL pool ON st1mm.RSRC_POOL_ID = pool.RSRC_POOL_ID
+
+		WHERE 1=1
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND pool.REGION_ID = #{regionId}
+			</if>
+			<choose>
+				<when test='"".equals(month)'>
+					AND COLCT_YM LIKE #{year}||'%'
+				</when>
+				<otherwise>
+					AND COLCT_YM = #{year}||#{month}
+				</otherwise>
+			</choose>
+
+		GROUP BY st1mm.RSRC_POOL_ID, pool.RSRC_POOL_NM
+		ORDER BY st1mm.RSRC_POOL_ID
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+</mapper>

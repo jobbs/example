@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.pm">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.PmVo" id="resultPmVo" extends="ncis.sql.cmn.rcPm.resultRcPm">
+		<result property="regionId"        column="REGION_ID"/>
+	    <result property="regionNm"        column="REGION_NM"/>
+	    <result property="zoneId"          column="ZONE_ID"/>
+	    <result property="zoneNm"          column="ZONE_NM"/>
+	    <result property="netId"           column="NET_ID"/>
+	    <result property="netNm"           column="NET_NM"/>
+   	    <result property="netClCd"         column="NET_CL_CD"/>
+	    <result property="netClCdNm"       column="NET_CL_CD_NM"/>
+	    <result property="rsrcPoolId"      column="RSRC_POOL_ID"/>
+	    <result property="rsrcPoolNm"      column="RSRC_POOL_NM"/>
+	    <result property="ctlTrgtYn"       column="CTL_TRGT_YN"/>
+	    <result property="clstrNm"         column="CLSTR_NM"/>
+	    <result property="vrlzSwTyCd"      column="VRLZ_SW_TY_CD"/>
+	    <result property="vrlzSwTyCdNm"    column="VRLZ_SW_TY_CD_NM"/>
+	    <result property="statCdNm"        column="STAT_CD_NM"/>
+	    <result property="delYnNm"         column="DEL_YN_NM"/>
+	    <result property="vmCnt"           column="VM_CNT"/>
+	    <result property="totCpuVcoreQty"  column="TOT_CPU_VCORE_QTY"/>
+	    <result property="totCpuEnt"       column="TOT_CPU_ENT"/>
+	    <result property="totMemAsgnCapa"  column="TOT_MEM_ASGN_CAPA"/>
+	    <result property="totStrgAsgnCapa" column="TOT_STRG_ASGN_CAPA"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.PmVo" id="resultPmVoDetail" extends="resultPmVo">
+	    <collection property="oprRelateChargerVoList" column="{searchCompId = PM_COMP_ID}" select="ncis.sql.cpt.rsrc.com.oprRelateCharger.selectOprRelateChargerListByCompId"/>
+	</resultMap>
+
+	<sql id="order">
+		<choose>
+			<when test='orderBy != null and "migr".equals(orderBy)'>
+				ORDER BY COALESCE(VM.TOT_MEM_ASGN_CAPA, 0)/(CASE RC_PM.MEM_CAPA WHEN 0 THEN NULL ELSE RC_PM.MEM_CAPA END)::FLOAT ASC NULLS LAST, RC_PM.MEM_CAPA DESC
+			</when>
+			<when test='orderBy != null and "pmList".equals(orderBy)'>
+				ORDER BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM, RC_NET.NET_NM, RC_RSRC_POOL.RSRC_POOL_NM, RC_PM.PM_NM
+			</when>
+			<otherwise>
+				ORDER BY TOT_CPU_VCORE_QTY ASC
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="search">
+		<choose>
+			<when test='netPmSltAt'>
+				RC_PM.PM_CL_CD IN ('01','02')
+			</when>
+			<otherwise>
+				RC_PM.PM_CL_CD = '01'
+			</otherwise>
+		</choose>
+		<if test='searchDelYn != null and searchDelYn != ""'>
+		AND RC_PM.DEL_YN = #{searchDelYn}
+		<!-- 일치 -->
+		</if>
+		<if test='searchRegionId != null and searchRegionId != ""'>
+		AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		<!-- 일치 -->
+		</if>
+		<if test='searchZoneId != null and searchZoneId != ""'>
+		AND RC_RSRC_POOL.ZONE_ID = #{searchZoneId}
+		<!-- 일치 -->
+		</if>
+		<if test='searchNetId != null and searchNetId != ""'>
+		AND RC_RSRC_POOL.NET_ID = #{searchNetId}
+		<!-- 일치 -->
+		</if>
+		<if test='searchNetClCd != null and searchNetClCd != ""'>
+		AND RC_RSRC_POOL.NET_CL_CD = #{searchNetClCd}
+		<!-- 일치 -->
+		</if>
+		<if test='searchRsrcPoolId != null and searchRsrcPoolId != ""'>
+		AND RC_CLSTR.RSRC_POOL_ID = #{searchRsrcPoolId}
+		<!-- 일치 -->
+		</if>
+		<if test='searchStatCd != null and searchStatCd != ""'>
+		AND STAT_CD.VAR_VL1 = #{searchStatCd}
+		<!-- 일치 -->
+		</if>
+		<if test='searchClstrSeq != null and searchClstrSeq != ""'>
+		AND RC_PM.CLSTR_SEQ  = #{searchClstrSeq}
+		<!-- 일치 -->
+		</if>
+		<if test='containsClstrNm != null and containsClstrNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_CLSTR.CLSTR_NM LIKE '%' || #{containsClstrNm} || '%'
+		</if>
+		<if test='searchPmNm != null and searchPmNm != ""'>
+		AND RC_PM.PM_NM LIKE '%' || #{searchPmNm} || '%'
+		<!-- 유사 -->
+		</if>
+		<if test='searchPmId != null and searchPmId != ""'>
+		AND RC_PM.PM_ID LIKE '%' || #{searchPmId} || '%'
+		<!-- 유사 -->
+		</if>
+		<if test='searchRprsntIpAddr != null and searchRprsntIpAddr != ""'>
+		AND RC_PM.RPRSNT_IP_ADDR LIKE '%' || #{searchRprsntIpAddr} || '%'
+		<!-- 일치 -->
+		</if>
+		<if test='searchPmCompId != null and searchPmCompId != ""'>
+		AND RC_PM.PM_COMP_ID LIKE '%' || #{searchPmCompId} || '%'
+		<!-- 유사 -->
+		</if>
+		<if test='searchNotPmSeq != null and searchNotPmSeq != ""'>
+		<!-- 불일치 -->
+		AND RC_PM.PM_SEQ != #{searchNotPmSeq}
+		</if>
+		<if test='searchVrlzSwTyCdList != null'>
+			<choose>
+				<when test="searchVrlzSwTyCdList.length > 0">
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+					<foreach collection="searchVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+					</foreach>
+					)
+				</when>
+				<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IS NULL
+				</otherwise>
+			</choose>
+		<!-- 포함 -->
+		</if>
+	</sql>
+
+	<select id="selectPmTotCnt" resultType="Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			RC_PM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			LEFT JOIN (
+				SELECT
+					RC_VM.PM_SEQ
+					, COUNT(RC_VM.*) AS VM_CNT
+					, COALESCE(SUM(RC_VM.CPU_ENT), 0) AS TOT_CPU_ENT
+					, COALESCE(SUM(RC_VM.CPU_VCORE_QTY), 0) AS TOT_CPU_VCORE_QTY
+					, COALESCE(SUM(RC_VM.MEM_ASGN_CAPA), 0) AS TOT_MEM_ASGN_CAPA
+					, COALESCE(SUM(RC_VM.STRG_ASGN_CAPA), 0) AS TOT_STRG_ASGN_CAPA
+				FROM
+					RC_VM
+					INNER JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ
+				WHERE
+                 	RC_VM.DEL_YN = 'N'
+					AND RC_PM.DEL_YN = 'N'
+				GROUP BY RC_VM.PM_SEQ
+			) VM ON VM.PM_SEQ = RC_PM.PM_SEQ
+			LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_PM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '073'
+            LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '075'
+            LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+            LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+		<where>
+			<include refid="search"/>
+		</where>
+
+	</select>
+
+	<select id="selectPmList" resultMap="resultPmVo">
+		/* ncis.sql.cpt.rsrc.com.pm.selectPmList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RC_PM.PM_SEQ
+			, RC_PM.PM_ID
+			, RC_PM.PM_NM
+			, STAT_CD.VAR_VL1 AS STAT_CD
+			, RC_PM.RPRSNT_IP_ADDR
+			, (CASE WHEN STAT_CD.VAR_VL1 = '02' THEN RC_PM.CPU_USE_RT ELSE 0 END) AS CPU_USE_RT
+			, RC_PM.CPU_CORE_QTY
+			, RC_PM.MEM_CAPA
+			, (CASE WHEN STAT_CD.VAR_VL1 = '02' THEN RC_PM.MEM_USE_RT ELSE 0 END) AS MEM_USE_RT
+			, RC_PM.UUID
+			, RC_PM.PM_COMP_ID
+			, RC_PM.CLSTR_SEQ
+			, RC_PM.PM_CL_CD
+			, RC_PM.REG_USER_ID
+			, TO_CHAR(RC_PM.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS REG_DTTM
+			, RC_PM.DEL_USER_ID
+			, TO_CHAR(RC_PM.DEL_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS DEL_DTTM
+			, RC_PM.UPDT_USER_ID
+			, TO_CHAR(RC_PM.DEL_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS UPDT_DTTM
+			, RC_PM.NETWK_IN
+			, RC_PM.NETWK_OUT
+			, RC_PM.RMK
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_ID
+			, RC_NET.NET_NM
+			, RC_NET.NET_CL_CD
+			, NET_CL_CD.CD_NM AS NET_CL_CD_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.CTL_TRGT_YN
+			, RC_CLSTR.CLSTR_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, STAT_GRP_CD.CD_NM STAT_CD_NM
+			, COALESCE(VM.VM_CNT, 0) AS VM_CNT
+			, COALESCE(VM.TOT_CPU_VCORE_QTY, 0) AS TOT_CPU_VCORE_QTY
+			, COALESCE(VM.TOT_CPU_ENT, 0) AS TOT_CPU_ENT
+			, COALESCE(VM.TOT_MEM_ASGN_CAPA, 0) AS TOT_MEM_ASGN_CAPA
+			, COALESCE(VM.TOT_STRG_ASGN_CAPA, 0) AS TOT_STRG_ASGN_CAPA
+		FROM
+			RC_PM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			LEFT JOIN (
+				SELECT
+					RC_VM.PM_SEQ
+					, COUNT(RC_VM.*) AS VM_CNT
+					, COALESCE(SUM(RC_VM.CPU_ENT), 0) AS TOT_CPU_ENT
+					, COALESCE(SUM(RC_VM.CPU_VCORE_QTY), 0) AS TOT_CPU_VCORE_QTY
+					, COALESCE(SUM(RC_VM.MEM_ASGN_CAPA), 0) AS TOT_MEM_ASGN_CAPA
+					, COALESCE(SUM(RC_VM.STRG_ASGN_CAPA), 0) AS TOT_STRG_ASGN_CAPA
+				FROM
+					RC_VM
+					INNER JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ
+				WHERE
+                 	RC_VM.DEL_YN = 'N'
+					AND RC_PM.DEL_YN = 'N'
+				GROUP BY RC_VM.PM_SEQ
+			) VM ON VM.PM_SEQ = RC_PM.PM_SEQ
+			LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_PM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '073'
+            LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '075'
+            LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+            LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+		<where>
+			<include refid="search"/>
+		</where>
+		<include refid="order"/>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectPm" resultMap="resultPmVoDetail">
+		/* ncis.sql.cpt.rsrc.com.pm.selectPm */
+		SELECT
+			RC_PM.PM_SEQ
+			, RC_PM.PM_ID
+			, RC_PM.PM_NM
+			, STAT_CD.VAR_VL1 AS STAT_CD
+			, RC_PM.RPRSNT_IP_ADDR
+			, (CASE WHEN STAT_CD.VAR_VL1 = '02' THEN RC_PM.CPU_USE_RT ELSE 0 END) AS CPU_USE_RT
+			, RC_PM.CPU_CORE_QTY
+			, RC_PM.MEM_CAPA
+			, (CASE WHEN STAT_CD.VAR_VL1 = '02' THEN RC_PM.MEM_USE_RT ELSE 0 END) AS MEM_USE_RT
+			, RC_PM.UUID
+			, RC_PM.PM_COMP_ID
+			, RC_PM.CLSTR_SEQ
+			, RC_PM.PM_CL_CD
+			, RC_PM.REG_USER_ID
+			, TO_CHAR(RC_PM.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS REG_DTTM
+			, RC_PM.DEL_USER_ID
+			, TO_CHAR(RC_PM.DEL_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS DEL_DTTM
+			, RC_PM.UPDT_USER_ID
+			, TO_CHAR(RC_PM.DEL_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS UPDT_DTTM
+			, RC_PM.NETWK_IN
+			, RC_PM.NETWK_OUT
+			, RC_PM.RMK
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_ID
+			, RC_NET.NET_NM
+			, RC_NET.NET_CL_CD
+			, NET_CL_CD.CD_NM AS NET_CL_CD_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.CTL_TRGT_YN
+			, RC_CLSTR.CLSTR_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, STAT_GRP_CD.CD_NM STAT_CD_NM
+			, COALESCE(VM.VM_CNT, 0) AS VM_CNT
+			, COALESCE(VM.TOT_CPU_VCORE_QTY, 0) AS TOT_CPU_VCORE_QTY
+			, COALESCE(VM.TOT_CPU_ENT, 0) AS TOT_CPU_ENT
+			, COALESCE(VM.TOT_MEM_ASGN_CAPA, 0) AS TOT_MEM_ASGN_CAPA
+			, COALESCE(VM.TOT_STRG_ASGN_CAPA, 0) AS TOT_STRG_ASGN_CAPA
+			, RC_PM.DEL_YN
+		FROM
+			RC_PM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			LEFT JOIN (
+				SELECT
+					RC_VM.PM_SEQ
+					, COUNT(RC_VM.*) AS VM_CNT
+					, COALESCE(SUM(RC_VM.CPU_ENT), 0) AS TOT_CPU_ENT
+					, COALESCE(SUM(RC_VM.CPU_VCORE_QTY), 0) AS TOT_CPU_VCORE_QTY
+					, COALESCE(SUM(RC_VM.MEM_ASGN_CAPA), 0) AS TOT_MEM_ASGN_CAPA
+					, COALESCE(SUM(RC_VM.STRG_ASGN_CAPA), 0) AS TOT_STRG_ASGN_CAPA
+				FROM
+					RC_VM
+					INNER JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ
+				WHERE
+                 	RC_VM.DEL_YN = 'N'
+					AND RC_PM.DEL_YN = 'N'
+				GROUP BY RC_VM.PM_SEQ
+			) VM ON VM.PM_SEQ = RC_PM.PM_SEQ
+			LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_PM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '073'
+            LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '075'
+            LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+            LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		WHERE
+			RC_PM.PM_SEQ = #{value}
+	</select>
+
+	<select id="selectPmTotCntByPmCompId" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.pm.selectPmTotCntByPmCompId */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_PM
+		WHERE
+			PM_COMP_ID = #{value}
+			AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectPmSeqByIpAddr" resultType="BigDecimal">
+		/* ncis.sql.cpt.rsrc.com.pm.selectPmSeqByIpAddr */
+		SELECT
+			PM_SEQ
+		FROM
+			RC_PM
+		WHERE
+			RPRSNT_IP_ADDR = #{value}
+			AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectPmSttsByUser" resultType="HashMap">
+		/* ncis.sql.cpt.rsrc.com.pm.selectPmSttsByUser */
+		SELECT
+			COUNT(RC_PM.*) AS PM_CNT
+			, COALESCE(SUM(RC_PM.CPU_CORE_QTY), 0) AS TOT_CPU_CORE_QTY
+			, COALESCE(SUM(RC_PM.MEM_CAPA), 0) AS TOT_MEM_CAPA
+			, ROUND(COALESCE(SUM(RC_PM.NETWK_IN), 0)::numeric, 1) AS TOT_NETWK_IN
+			, ROUND(COALESCE(SUM(RC_PM.NETWK_OUT), 0)::numeric, 1) AS TOT_NETWK_OUT
+		FROM
+			RC_PM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			<if test="!sysAdm">
+				<choose>
+					<when test="oprAdm">
+						INNER JOIN (
+							SELECT
+								DISTINCT CM_RSRC_POOL_USER.RSRC_POOL_ID
+							FROM
+								CM_RSRC_POOL_USER
+							WHERE
+								CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+					</when>
+					<otherwise>
+						INNER JOIN (
+							SELECT NULL
+						) EMPTY ON NULL
+					</otherwise>
+				</choose>
+			</if>
+		WHERE
+			RC_PM.DEL_YN = 'N'
+			AND RC_PM.PM_CL_CD = '01'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100' AND VAR_VL1 = 'COM')
+	</select>
+
+</mapper>

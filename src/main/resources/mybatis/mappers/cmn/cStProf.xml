@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.StProf">
+
+
+
+	<select id="selectStProfSeq"  resultType="Long">
+		SELECT nextval('ST_PROF_SQ01')
+	</select>
+
+	<insert id="insertStProf" parameterType="ncis.cmn.entity.StProf">
+		<selectKey order="BEFORE" keyProperty="profId" resultType="Long">
+			SELECT nextval('ST_PROF_SQ01')
+		</selectKey>
+		/* ncis.sql.cmn.StProf.insertStProf */
+		INSERT INTO ST_PROF
+		(
+			  PROF_ID
+			, PROF_NM
+			, DC
+		)
+		VALUES
+		(
+			  #{profId}
+			, #{profNm}
+			, #{dc}
+		)
+	</insert>
+
+	<update id="updateStProf" parameterType="ncis.cmn.entity.StProf">
+		/* ncis.sql.cmn.StProf.updateStProf */
+		UPDATE ST_PROF
+		 SET
+			  PROF_NM	= #{profNm}
+			, DC		= #{dc}
+		WHERE PROF_ID 	= #{profId}
+	</update>
+
+	<update id="deleteStProf" parameterType="Long">
+		/* ncis.sql.cmn.StProf.deleteStProf */
+		DELETE FROM ST_PROF WHERE PROF_ID = #{value}
+	</update>
+
+</mapper>

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsVrStrg">
+
+	<resultMap id="resultRsVrStrg" type="ncis.cmn.entity.RsVrStrg">
+        <result property="strgDmnSeq"     column="STRG_DMN_SEQ"/>  <!-- 스토리지도메인SEQ -->
+        <result property="strgDmnNm"     column="STRG_DMN_NM"/>  <!-- 스토리지도메인명 -->
+        <result property="strgDmnTyCd"     column="STRG_DMN_TY_CD"/>  <!-- 스토리지도메인유형코드 -->
+        <result property="creDt"     column="CRE_DT"/>  <!-- 생성일자 -->
+        <result property="wholeAsgnCapa"     column="WHOLE_ASGN_CAPA"/>  <!-- 전체할당용량(GB) -->
+        <result property="strgUseCapa"     column="STRG_USE_CAPA"/>  <!-- 스토리지사용용량(GB) -->
+        <result property="vmAsgnCapa"     column="VM_ASGN_CAPA"/>  <!-- 가상서버할당량(GB) -->
+        <result property="strMrgnCapa"     column="STR_MRGN_CAPA"/>  <!-- 스토리지여유량(GB) -->
+        <result property="tmplatAsgnCapa"     column="TMPLAT_ASGN_CAPA"/>  <!-- 템플릿할당용량(GB) -->
+        <result property="uuid"     column="UUID"/>  <!-- UUID -->
+        <result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+	</resultMap>
+
+	<!-- 가상스토리지 등록 -->
+	<insert id="insertRsVrStrg">
+	INSERT INTO RS_VR_STRG (
+	             STRG_DMN_SEQ  /* 스토리지도메인SEQ */
+	           , STRG_DMN_NM  /* 스토리지도메인명 */
+	           , STRG_DMN_TY_CD  /* 스토리지도메인유형코드 */
+	           , CRE_DT  /* 생성일자 */
+	           , WHOLE_ASGN_CAPA  /* 전체할당용량(GB) */
+	           , STRG_USE_CAPA  /* 스토리지사용용량(GB) */
+	           , VM_ASGN_CAPA  /* 가상서버할당량(GB) */
+	           , STR_MRGN_CAPA  /* 스토리지여유량(GB) */
+	           , TMPLAT_ASGN_CAPA  /* 템플릿할당용량(GB) */
+	           , UUID  /* UUID */
+	           , RSRC_POOL_ID  /* 자원풀ID */
+	) VALUES (
+	           #{strgDmnSeq}  /* 스토리지도메인SEQ */
+	         , #{strgDmnNm}  /* 스토리지도메인명 */
+	         , #{strgDmnTyCd}  /* 스토리지도메인유형코드 */
+	         , #{creDt}  /* 생성일자 */
+	         , #{wholeAsgnCapa}  /* 전체할당용량(GB) */
+	         , #{strgUseCapa}  /* 스토리지사용용량(GB) */
+	         , #{vmAsgnCapa}  /* 가상서버할당량(GB) */
+	         , #{strMrgnCapa}  /* 스토리지여유량(GB) */
+	         , #{tmplatAsgnCapa}  /* 템플릿할당용량(GB) */
+	         , #{uuid}  /* UUID */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	)
+	</insert>
+
+	<!-- 가상스토리지 수정 -->
+	<update id="updateRsVrStrg">
+	UPDATE RS_VR_STRG
+	         SET STRG_DMN_SEQ = #{strgDmnSeq}  /* 스토리지도메인SEQ */
+	           , STRG_DMN_NM = #{strgDmnNm}  /* 스토리지도메인명 */
+	           , STRG_DMN_TY_CD = #{strgDmnTyCd}  /* 스토리지도메인유형코드 */
+	           , CRE_DT = #{creDt}  /* 생성일자 */
+	           , WHOLE_ASGN_CAPA = #{wholeAsgnCapa}  /* 전체할당용량(GB) */
+	           , STRG_USE_CAPA = #{strgUseCapa}  /* 스토리지사용용량(GB) */
+	           , VM_ASGN_CAPA = #{vmAsgnCapa}  /* 가상서버할당량(GB) */
+	           , STR_MRGN_CAPA = #{strMrgnCapa}  /* 스토리지여유량(GB) */
+	           , TMPLAT_ASGN_CAPA = #{tmplatAsgnCapa}  /* 템플릿할당용량(GB) */
+	           , UUID = #{uuid}  /* UUID */
+	           , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+         WHERE STRG_DMN_SEQ = #{strgDmnSeq}  /* 스토리지도메인SEQ */
+
+	</update>
+
+	<!-- 가상스토리지 삭제 -->
+	<delete id="deleteRsVrStrg">
+	DELETE FROM RS_VR_STRG
+         WHERE STRG_DMN_SEQ = #{strgDmnSeq}  /* 스토리지도메인SEQ */
+
+	</delete>
+
+</mapper>

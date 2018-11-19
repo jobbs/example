@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.strg.vrDsk">
+
+	<resultMap type="ncis.cpt.rsrc.strg.vo.VrDskVo" id="resultVrDskVo" extends="ncis.sql.cmn.rsVrDsk.resultRsVrDsk">
+		<result property="vmInstlLoca" column="VM_INST_LOCA"/>
+		<result property="strgDmnNm"   column="STRG_DMN_NM"/>
+		<result property="strgDmnUuid" column="STRG_DMN_UUID"/>
+	</resultMap>
+
+	<sql id="search">
+		AND RS_VR_DSK.DEL_YN = 'N'
+		<if test='searchVrStrgSeq != null and searchVrStrgSeq != ""'>
+		AND RS_VR_DSK.STRG_DMN_SEQ = #{searchVrStrgSeq}
+		</if>
+		<if test='searchVmSeq != null and searchVmSeq != ""'>
+		AND RC_VM.VM_SEQ = #{searchVmSeq}
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrDsk">
+	LEFT JOIN RS_VR_STRG ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ
+	LEFT JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+	lEFT JOIN RC_VM ON RC_VM.VM_SEQ = RS_VM_STRG_ASGN.VM_SEQ
+	</sql>
+
+	<select id="selectVrDskListTotCnt" resultType="Integer">
+		/*  ncis.sql.cpt.rsrc.strg.vrDisk.selectVrDskListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RS_VR_DSK
+			<include refid="fromClauseVrDsk" />
+		<where>
+			<include refid="search" />
+		</where>
+	</select>
+
+	<select id="selectVrDskList" resultMap="resultVrDskVo">
+		/*  ncis.sql.cpt.rsrc.strg.vrDisk.selectVrDskList */
+		SELECT
+			RS_VR_DSK.VR_DSK_SEQ                               /* 가상디스크SEQ */
+			, RS_VR_DSK.VR_DSK_NM                              /* 가상디스크명 */
+			, RS_VR_DSK.VR_DSK_UUID                            /* 가상디스크 UUID */
+			, RS_VR_DSK.PRPOS                                  /* 용도코드 */
+			, FN_CODE_NAME('076', RS_VR_DSK.PRPOS) AS PRPOS_NM /* 용도코드이름 */
+			, RS_VR_DSK.CRE_DT                                 /* 생성일자 */
+			, RS_VR_DSK.DSK_STAT_CD                            /* 가상디스크 상태코드 */
+			, RS_VR_DSK.DSK_TY_CD                              /* 가상디스크 유형코드 */
+			, RS_VR_DSK.DSK_ASGN_CAPA                          /* 디스크 할당용량 */
+			, RS_VR_DSK.DSK_ERYY_INSTL_LOCA                    /* 디스크 초기 설치위치 */
+			, RS_VR_DSK.STRG_DMN_SEQ                           /* 스토리지 도메인 SEQ */
+			, RS_VR_DSK.DEL_USER_ID                            /* 삭제자ID */
+			, RS_VR_DSK.DEL_DTTM                               /* 삭제일시 */
+			, RS_VR_DSK.DEL_YN                                 /* 삭제여부 */
+			, RS_VR_DSK.RMK                                    /* 비고 */
+			, RC_VM.VM_NM AS VM_INST_LOCA                      /* VM 명 */
+			, RS_VR_STRG.STRG_DMN_NM                           /* 스토리지도메인 명 */
+			, RS_VR_STRG.UUID STRG_DMN_UUID                    /* 스토리지도메인 UUID */
+			, RS_VR_STRG.STRG_DMN_SEQ                          /* 스토리지도메인SEQ */
+		FROM
+			RS_VR_DSK
+			<include refid="fromClauseVrDsk" />
+		<where>
+			<include refid="search" />
+		</where>
+		ORDER BY RS_VR_DSK.VR_DSK_SEQ ASC
+	</select>
+
+	<select id="selectVrDsk" resultMap="resultVrDskVo">
+		/*  ncis.sql.cpt.rsrc.strg.vrDisk.selectVrDsk */
+		SELECT
+			RS_VR_DSK.VR_DSK_SEQ                               /* 가상디스크SEQ */
+			, RS_VR_DSK.VR_DSK_NM                              /* 가상디스크명 */
+			, RS_VR_DSK.VR_DSK_UUID                            /* 가상디스크 UUID */
+			, RS_VR_DSK.PRPOS                                  /* 용도코드 */
+			, FN_CODE_NAME('076', RS_VR_DSK.PRPOS) AS PRPOS_NM /* 용도코드이름 */
+			, RS_VR_DSK.CRE_DT                                 /* 생성일자 */
+			, RS_VR_DSK.DSK_STAT_CD                            /* 가상디스크 상태코드 */
+			, RS_VR_DSK.DSK_TY_CD                              /* 가상디스크 유형코드 */
+			, RS_VR_DSK.DSK_ASGN_CAPA                          /* 디스크 할당용량 */
+			, RS_VR_DSK.DSK_ERYY_INSTL_LOCA                    /* 디스크 초기 설치위치 */
+			, RS_VR_DSK.STRG_DMN_SEQ                           /* 스토리지 도메인 SEQ */
+			, RS_VR_DSK.DEL_USER_ID                            /* 삭제자ID */
+			, RS_VR_DSK.DEL_DTTM                               /* 삭제일시 */
+			, RS_VR_DSK.DEL_YN                                 /* 삭제여부 */
+			, RS_VR_DSK.RMK                                    /* 비고 */
+			, RC_VM.VM_NM AS VM_INST_LOCA                      /* VM 명 */
+			, RS_VR_STRG.STRG_DMN_NM                           /* 스토리지도메인 명 */
+		FROM
+			RS_VR_DSK
+			<include refid="fromClauseVrDsk" />
+		WHERE
+			RS_VR_DSK.VR_DSK_SEQ = #{vrDskSeq}
+			AND RS_VR_DSK.DEL_YN = 'N'
+	</select>
+
+</mapper>

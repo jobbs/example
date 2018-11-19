@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stEvntDspthCharger">
+
+	<resultMap id="resultStEvntDspthCharger" type="ncis.cmn.entity.StEvntDspthCharger">
+        <result property="dspthTrgtId"     column="DSPTH_TRGT_ID"/>  <!-- 통보대상자ID -->
+        <result property="dspthConfId"     column="DSPTH_CONF_ID"/>  <!-- 통보설정ID -->
+	</resultMap>
+
+	<!-- 이벤트통보대상자 등록 -->
+	<insert id="insertStEvntDspthCharger">
+	/* ncis.sql.cmn.stEvntDspthCharger.insertStEvntDspthCharger */
+	INSERT INTO ST_EVNT_DSPTH_CHARGER (
+	             DSPTH_TRGT_ID  /* 통보대상자ID */
+	           , DSPTH_CONF_ID  /* 통보설정ID */
+	) VALUES (
+	           #{dspthTrgtId}  /* 통보대상자ID */
+	         , #{dspthConfId}  /* 통보설정ID */
+	)
+	</insert>
+	<insert id="insertStEvntDspthChargerPm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfDspthVo">
+		/* ncis.sql.cmn.stEvntDspthCharger.insertStEvntDspthChargerPm */
+		INSERT INTO ST_EVNT_DSPTH_CHARGER
+		( DSPTH_CONF_ID, DSPTH_TRGT_ID)
+			(SELECT J.DSPTH_CONF_ID,#{dspthTrgtId}
+			 FROM
+			 	<if test="!allRsrcPoolAuth">
+			 		CM_RSRC_POOL_USER A,
+			 	</if>
+			 	RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I,ST_DSPTH_CONF J
+			 WHERE 1=1
+			 <if test="!allRsrcPoolAuth">
+			 	AND  A.USER_ID =  #{searchUserId}
+			 	AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			 </if>
+			 AND  B.REGION_ID = C.REGION_ID
+			 AND  C.ZONE_ID = D.ZONE_ID
+			 AND  E.ZONE_ID = D.ZONE_ID
+			 AND  E.NET_ID = C.NET_ID
+			 AND  I.NET_ID = C.NET_ID
+			 AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			 AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+			 AND  G.PM_SEQ = J.THRES_TRGT_SRVR_SEQ
+			 AND  J.TRGT_SRVR_CL_CD ='02'
+			 <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND B.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND D.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND E.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND F.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND G.PM_SEQ=#{pmSeq}
+			 </if>
+		 )
+	</insert>
+	<insert id="insertStEvntDspthChargerVm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfDspthVo">
+	/* ncis.sql.cmn.stEvntDspthCharger.insertStEvntDspthChargerVm */
+		INSERT INTO ST_EVNT_DSPTH_CHARGER
+		( DSPTH_CONF_ID, DSPTH_TRGT_ID)
+		SELECT DSPTH_CONF_ID, #{dspthTrgtId}
+		FROM	(SELECT DISTINCT J.DSPTH_CONF_ID
+			 FROM
+			 <if test="!allJobAuth">
+			 	CM_JOB_USER A,
+			 </if>
+			 	RC_VM B, ST_DSPTH_CONF J, RC_VM_JOB C
+			 WHERE 1=1
+			 <if test="!allJobAuth">
+			 	AND A.USER_ID =  #{searchUserId}
+			 	AND A.JOB_ID= C.JOB_ID
+			 </if>
+			 AND C.VM_SEQ = B.VM_SEQ
+			 AND J.TRGT_SRVR_CL_CD ='01'
+			 AND B.VM_SEQ = J.THRES_TRGT_SRVR_SEQ
+			 <if test='institutionId !=null and !"".equals( institutionId )'>
+				AND B.INSTITUTION_ID = #{institutionId}
+			</if>
+			<if test='jobId !=null and !"".equals( jobId )'>
+				AND C.JOB_ID = #{jobId}
+			</if>
+			<if test='vmSeq !=null and !"".equals( vmSeq )'>
+				AND B.VM_SEQ = #{vmSeq}
+			</if>
+		 ) A
+	</insert>
+
+	<insert id="insertStEvntDspthChargerAx" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfDspthVo">
+	/* ncis.sql.cmn.stEvntDspthCharger.insertStEvntDspthChargerAx */
+		INSERT INTO ST_EVNT_DSPTH_CHARGER
+		( DSPTH_CONF_ID, DSPTH_TRGT_ID)
+		SELECT DSPTH_CONF_ID, #{dspthTrgtId}
+		FROM	(SELECT DISTINCT J.DSPTH_CONF_ID
+			 FROM
+			 <if test="!allJobAuth">
+			 	CM_JOB_USER A,
+			 </if>
+			 	RX_SERVC_AREA B INNER JOIN RX_SERVC C ON B.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+			 	                INNER JOIN ST_DSPTH_CONF J ON C.SERVC_SEQ= J.THRES_TRGT_SRVR_SEQ
+			 WHERE 1=1
+			 <if test="!allJobAuth">
+			 	AND A.USER_ID =  #{searchUserId}
+			 	AND A.JOB_ID= B.JOB_ID
+			 </if>
+			 AND J.TRGT_SRVR_CL_CD ='03'
+			 <if test='institutionId !=null and !"".equals( institutionId )'>
+				AND B.INSTITUTION_ID = #{institutionId}
+			</if>
+			<if test='jobId !=null and !"".equals( jobId )'>
+				AND B.JOB_ID = #{jobId}
+			</if>
+			<if test='servcSeq !=null and !"".equals( servcSeq )'>
+				AND C.SERVC_SEQ = #{servcSeq}
+			</if>
+		 ) A
+	</insert>
+
+	<!-- 이벤트통보대상자 수정 -->
+	<update id="updateStEvntDspthCharger">
+	/* ncis.sql.cmn.stEvntDspthCharger.updateStEvntDspthCharger */
+	UPDATE ST_EVNT_DSPTH_CHARGER
+	         SET DSPTH_TRGT_ID = #{dspthTrgtId}  /* 통보대상자ID */
+	           , DSPTH_CONF_ID = #{dspthConfId}  /* 통보설정ID */
+         WHERE DSPTH_TRGT_ID = #{dspthTrgtId}  /* 통보대상자ID */
+
+	</update>
+
+	<!-- 이벤트통보대상자 삭제 -->
+	<delete id="deleteStEvntDspthCharger">
+	/* ncis.sql.cmn.stEvntDspthCharger.deleteStEvntDspthCharger */
+	DELETE FROM ST_EVNT_DSPTH_CHARGER
+         WHERE DSPTH_TRGT_ID = #{dspthTrgtId}  /* 통보대상자ID */
+
+	</delete>
+	<delete id="deleteStEvntDspthChargerPm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" >
+	/* ncis.sql.cmn.stEvntDspthCharger.deleteStEvntDspthChargerPm */
+		DELETE FROM ST_EVNT_DSPTH_CHARGER X
+		WHERE 1=1
+		AND  EXISTS
+		(SELECT 1
+			 FROM
+			  	<if test="!allRsrcPoolAuth">
+			  		CM_RSRC_POOL_USER A,
+			  	</if>
+			 		RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I,ST_DSPTH_CONF J
+					 WHERE 1=1
+					 <if test="!allRsrcPoolAuth">
+					  	AND  A.USER_ID = #{searchUserId}
+					  	AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					  </if>
+					  AND  B.REGION_ID = C.REGION_ID
+					  AND  C.ZONE_ID = D.ZONE_ID
+					  AND  E.ZONE_ID = D.ZONE_ID
+					  AND  E.NET_ID = C.NET_ID
+					  AND  I.NET_ID = C.NET_ID
+					  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+					  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+					 <if test='regionId !=null and !"".equals(regionId)'>
+					 	AND B.REGION_ID =#{regionId}
+					 </if>
+					 <if test='zoneId !=null and !"".equals(zoneId)'>
+					 	AND D.ZONE_ID =#{zoneId}
+					 </if>
+					 <if test='netId !=null and !"".equals( netId )'>
+					 	AND E.NET_ID = #{netId}
+					 </if>
+					 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+					 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+					 </if>
+					 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+					 	AND F.CLSTR_SEQ = #{clstrSeq}
+					 </if>
+					 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+					 	AND G.PM_SEQ=#{pmSeq}
+					 </if>
+					 AND G.PM_SEQ = J.THRES_TRGT_SRVR_SEQ
+					 AND J.TRGT_SRVR_CL_CD ='02'
+					 AND J.DSPTH_CONF_ID =X.DSPTH_CONF_ID
+					 )
+	</delete>
+	<delete id="deleteStEvntDspthChargerVm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" >
+	/* ncis.sql.cmn.stEvntDspthCharger.deleteStEvntDspthChargerVm */
+		SELECT * FROM ST_EVNT_DSPTH_CHARGER X
+		WHERE 1=1
+		AND  EXISTS
+			(SELECT 1
+			 FROM
+			 <if test="!allJobAuth">
+			 	CM_JOB_USER A,
+			 </if>
+			 RC_VM B, ST_DSPTH_CONF J, RC_VM_JOB C
+			 WHERE 1=1
+			 <if test="!allJobAuth">
+			 	AND A.USER_ID = #{searchUserId}
+			 	AND A.JOB_ID = C.JOB_ID
+			 </if>
+			 AND B.VM_SEQ = C.VM_SEQ
+			 AND B.VM_SEQ= J.THRES_TRGT_SRVR_SEQ
+			 AND J.TRGT_SRVR_CL_CD ='01'
+			 AND J.DSPTH_CONF_ID =X.DSPTH_CONF_ID
+			<if test='institutionId !=null and !"".equals( institutionId )'>
+				AND B.INSTITUTION_ID = #{institutionId}
+			</if>
+			<if test='jobId !=null and !"".equals( jobId )'>
+				AND C.JOB_ID = #{jobId}
+			</if>
+			<if test='vmSeq !=null and !"".equals( vmSeq )'>
+				AND B.VM_SEQ = #{vmSeq}
+			</if>
+		)
+	</delete>
+
+	<delete id="deleteStEvntDspthChargerAx" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" >
+	/* ncis.sql.cmn.stEvntDspthCharger.deleteStEvntDspthChargerAx */
+		DELETE FROM ST_EVNT_DSPTH_CHARGER X
+		WHERE 1=1
+		AND  EXISTS
+			(SELECT 1
+			 FROM
+			 <if test="!allJobAuth">
+			 	CM_JOB_USER A,
+			 </if>
+			 RX_SERVC_AREA B INNER JOIN RX_SERVC C ON B.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+			                 INNER JOIN ST_DSPTH_CONF J ON C.SERVC_SEQ= J.THRES_TRGT_SRVR_SEQ
+			 WHERE 1=1
+			 <if test="!allJobAuth">
+			 	AND A.USER_ID = #{searchUserId}
+			 	AND A.JOB_ID = B.JOB_ID
+			 </if>
+			 AND J.TRGT_SRVR_CL_CD ='03'
+			 AND J.DSPTH_CONF_ID =X.DSPTH_CONF_ID
+			<if test='institutionId !=null and !"".equals( institutionId )'>
+				AND B.INSTITUTION_ID = #{institutionId}
+			</if>
+			<if test='jobId !=null and !"".equals( jobId )'>
+				AND B.JOB_ID = #{jobId}
+			</if>
+			<if test='servcSeq !=null and !"".equals( servcSeq )'>
+				AND C.SERVC_SEQ = #{servcSeq}
+			</if>
+		)
+	</delete>
+
+</mapper>

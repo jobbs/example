@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmSeqnum">
+
+	<select id="selectForUpdate" resultType="java.util.HashMap">
+	/* ncis.sql.cmn.cmSeqnum.selectForUpdate */
+		SELECT * FROM CM_SEQ_NUM WHERE SEQ_NUM_CL = #{classfy} AND SEQ_NUM_PRFX = #{prefix } FOR UPDATE
+	</select>
+
+	<update id="updateSeqNum">
+	/* ncis.sql.cmn.cmSeqnum.updateSeqNum */
+		WITH UPSERT AS (
+			SELECT #{prefix}::text as SEQ_NUM_PRFX, #{classfy}::text AS SEQ_NUM_CL
+		),
+		UPDATE_OPTION AS (
+			UPDATE CM_SEQ_NUM SN
+			SET
+				SEQ_NUM_ORDER = SEQ_NUM_ORDER + 1
+			FROM UPSERT
+			WHERE
+				SN.SEQ_NUM_CL = UPSERT.SEQ_NUM_CL AND SN.SEQ_NUM_PRFX = UPSERT.SEQ_NUM_PRFX
+		)
+		INSERT INTO CM_SEQ_NUM (
+			SEQ_NUM_PRFX, SEQ_NUM_CL, SEQ_NUM_ORDER
+		)
+		SELECT
+			UPSERT.SEQ_NUM_PRFX,
+			UPSERT.SEQ_NUM_CL,
+			1
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_SEQ_NUM AS SN
+				WHERE SN.SEQ_NUM_PRFX = UPSERT.SEQ_NUM_PRFX
+					AND SN.SEQ_NUM_CL = UPSERT.SEQ_NUM_CL
+			)
+	</update>
+
+	<select id="selectSeqNum" resultType="String">
+	/* ncis.sql.cmn.cmSeqnum.selectSeqNum */
+		SELECT
+			SEQ_NUM_PRFX||
+			lpad(
+				SEQ_NUM_ORDER::text,
+				(SELECT SEQ_NUM_LENGTH FROM CM_SEQ_NUM_INFO SNI WHERE SNI.SEQ_NUM_CL = SN.SEQ_NUM_CL )::integer,
+				'0'
+			)
+		FROM CM_SEQ_NUM SN
+		WHERE
+			SEQ_NUM_CL = #{classfy} AND SEQ_NUM_PRFX = #{prefix }
+	</select>
+
+</mapper>

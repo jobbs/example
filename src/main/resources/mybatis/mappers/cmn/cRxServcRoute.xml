@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcRoute">
+	<!-- 라우트  등록 -->
+	<insert id="insertRxServcRoute" parameterType="ncis.cmn.entity.RxServcRoute">
+
+		/* ncis.sql.cmn.rxServcRoute.insertRxServcRoute */
+		INSERT INTO RX_SERVC_ROUTE(
+			SERVC_SEQ  /* 서비스SEQ */
+			, ROUTE_ID  /* 라우트ID */
+			, ROUTE_NM  /* 라우트명 */
+			, ROUTE_UID  /* 라우트UID */
+			, TARGT_PORT  /* 타겟포트 */
+			, HST_NM  /* 호스트명 */
+			, PATH  /* 경로 */
+			, TLS_TRMNTN_CL_CD  /* TLS터미네이션구분코드 */
+			, CRTFCT_KEY  /* 인증서키 */
+			, PRVT_KEY  /* 개인키 */
+			, CA_CRTFCT_KEY  /* CA인증서키 */
+			, DSTN_CA_CRTFCT_KEY  /* 목적지CA인증서키 */
+			, CRE_DTTM  /* 생성일시 */
+			, CRE_USER_ID  /* 생성자ID */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{routeId}  /* 라우트ID */
+			, #{routeNm}  /* 라우트명 */
+			, #{routeUid}  /* 라우트UID */
+			, #{targtPort}  /* 타겟포트 */
+			, #{hstNm}  /* 호스트명 */
+			, #{path}  /* 경로 */
+			, #{tlsTrmntnClCd}  /* TLS터미네이션구분코드 */
+			, #{crtfctKey}  /* 인증서키 */
+			, #{prvtKey}  /* 개인키 */
+			, #{caCrtfctKey}  /* CA인증서키 */
+			, #{dstnCaCrtfctKey}  /* 목적지CA인증서키 */
+			, now()  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+        )
+	</insert>
+
+	<!-- 라우트 수정 -->
+	<update id="updateRxServcRoute">
+		/* ncis.sql.cmn.rxServcRoute.updateRxServcRoute */
+		UPDATE RX_SERVC_ROUTE
+			, ROUTE_NM = #{routeNm}  /* 라우트명 */
+			, ROUTE_UID = #{routeUid}  /* 라우트UID */
+			, TARGT_PORT = #{targtPort}  /* 타겟포트 */
+			, HST_NM = #{hstNm}  /* 호스트명 */
+			, PATH = #{path}  /* 경로 */
+			, TLS_TRMNTN_CL_CD = #{tlsTrmntnClCd}  /* TLS터미네이션구분코드 */
+			, CRTFCT_KEY = #{crtfctKey}  /* 인증서키 */
+			, PRVT_KEY = #{prvtKey}  /* 개인키 */
+			, CA_CRTFCT_KEY = #{caCrtfctKey}  /* CA인증서키 */
+			, DSTN_CA_CRTFCT_KEY = #{dstnCaCrtfctKey}  /* 목적지CA인증서키 */
+     	WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+       	AND ROUTE_ID = #{routeId}  /* 라우트ID */
+
+	</update>
+
+	<!-- 라우트 삭제 -->
+	<delete id="deleteRxServcRoute">
+		/* ncis.sql.cmn.rxServcRoute.deleteRxServcRoute */
+		DELETE FROM RX_SERVC_ROUTE
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+        <if test="routeId != null and !routeId.isEmpty()">
+       	AND ROUTE_ID = #{routeId}  /* 라우트ID */
+       	</if>
+	</delete>
+
+</mapper>

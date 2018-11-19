@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.axusert.axServcUsefulRng">
+
+	<resultMap type="ncis.dsb.stts.axusert.vo.AxServcUsefulMemVo" id="resultMemCntVo">
+		<result property="lastVcoreQty" column="CPU_ASGN_CAPA"/>
+		<result property="lastMemSumCapa8" column="MEM_TOT_CAPA8"/>
+		<result property="lastMemSumCapa16" column="MEM_TOT_CAPA16"/>
+		<result property="lastMemSumCapa24" column="MEM_TOT_CAPA24"/>
+		<result property="lastMemSumCapa32" column="MEM_TOT_CAPA32"/>
+		<result property="lastMemSumCapa48" column="MEM_TOT_CAPA48"/>
+		<result property="lastMemSumCapa64" column="MEM_TOT_CAPA64"/>
+		<result property="lastMemSumCapa128" column="MEM_TOT_CAPA128"/>
+		<result property="lastMemSumCapaetc" column="MEM_TOT_CAPAETC"/>
+		<result property="total" column="TOTAL"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.axusert.vo.AxServcUsefulSanVo" id="resultSanCntVo">
+		<result property="total" column="TOTAL"/>
+		<result property="lastStrgSumCapa0" column="STRG_TOT_CAPA0"/>
+		<result property="lastStrgSumCapa1" column="STRG_TOT_CAPA1"/>
+		<result property="lastStrgSumCapa2" column="STRG_TOT_CAPA2"/>
+		<result property="lastStrgSumCapa3" column="STRG_TOT_CAPA3"/>
+		<result property="lastStrgSumCapa4" column="STRG_TOT_CAPA4"/>
+		<result property="lastStrgSumCapa" column="STRG_TOT_CAPA"/>
+	</resultMap>
+
+
+<resultMap type="ncis.dsb.stts.axusert.vo.AxServcUsefulMemVo" id="resultMemCntRtVo">
+		<result property="lastVcoreQty" column="CPU_ASGN_CAPA"/>
+		<result property="lastMemSumCapa8" column="MEM_TOT_CAPA8"/>
+		<result property="lastMemSumCapa16" column="MEM_TOT_CAPA16"/>
+		<result property="lastMemSumCapa24" column="MEM_TOT_CAPA24"/>
+		<result property="lastMemSumCapa32" column="MEM_TOT_CAPA32"/>
+		<result property="lastMemSumCapa48" column="MEM_TOT_CAPA48"/>
+		<result property="lastMemSumCapa64" column="MEM_TOT_CAPA64"/>
+		<result property="lastMemSumCapa128" column="MEM_TOT_CAPA128"/>
+		<result property="lastMemSumCapaetc" column="MEM_TOT_CAPAETC"/>
+		<result property="total" column="TOTAL"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.axusert.vo.AxServcUsefulSanVo" id="resultSanCntRtVo">
+		<result property="total" column="TOTAL"/>
+		<result property="lastStrgSumCapa0" column="STRG_TOT_CAPA0"/>
+		<result property="lastStrgSumCapa1" column="STRG_TOT_CAPA1"/>
+		<result property="lastStrgSumCapa2" column="STRG_TOT_CAPA2"/>
+		<result property="lastStrgSumCapa3" column="STRG_TOT_CAPA3"/>
+		<result property="lastStrgSumCapa4" column="STRG_TOT_CAPA4"/>
+		<result property="lastStrgSumCapa" column="STRG_TOT_CAPAA"/>
+	</resultMap>
+
+
+<select id="selectMemCntList" resultMap="resultMemCntVo">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axServcUsefulRng.selectMemCntList */
+
+	SELECT	CASE
+				WHEN CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)='888' THEN '기타'
+				WHEN CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)='999' THEN '계'
+				ELSE CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)
+			END	CPU_ASGN_CAPA,
+			COALESCE(B.MEM_TOT_CAPA8,0)	MEM_TOT_CAPA8,
+			COALESCE(B.MEM_TOT_CAPA16,0) MEM_TOT_CAPA16,
+			COALESCE(B.MEM_TOT_CAPA24,0) MEM_TOT_CAPA24,
+			COALESCE(B.MEM_TOT_CAPA32,0) MEM_TOT_CAPA32,
+			COALESCE(B.MEM_TOT_CAPA48,0) MEM_TOT_CAPA48,
+			COALESCE(B.MEM_TOT_CAPA64,0) MEM_TOT_CAPA64,
+			COALESCE(B.MEM_TOT_CAPA128,0) MEM_TOT_CAPA128,
+			COALESCE(B.MEM_TOT_CAPAETC,0) MEM_TOT_CAPAETC,
+			COALESCE(B.MEM_TOT_CAPA8,0)+COALESCE(B.MEM_TOT_CAPA16,0)+COALESCE(B.MEM_TOT_CAPA24,0)+COALESCE(B.MEM_TOT_CAPA32,0)+
+			COALESCE(B.MEM_TOT_CAPA48,0)+COALESCE(B.MEM_TOT_CAPA64,0)+COALESCE(B.MEM_TOT_CAPA128,0)+COALESCE(B.MEM_TOT_CAPAETC,0) TOTAL
+
+	FROM
+			(
+			SELECT 2 CPU_ASGN_CAPA 		UNION ALL
+			SELECT 4					UNION ALL
+			SELECT 6					UNION ALL
+			SELECT 8					UNION ALL
+			SELECT 10					UNION ALL
+			SELECT 12					UNION ALL
+			SELECT 14					UNION ALL
+			SELECT 16					UNION ALL
+			SELECT 888					UNION ALL
+			SELECT 999
+			) A
+		LEFT JOIN
+				(SELECT COALESCE(CPU_ASGN_CAPA,999) CPU_ASGN_CAPA,
+						SUM(MEM_TOT_CAPA8) MEM_TOT_CAPA8,
+						SUM(MEM_TOT_CAPA16) MEM_TOT_CAPA16,
+						SUM(MEM_TOT_CAPA24) MEM_TOT_CAPA24,
+						SUM(MEM_TOT_CAPA32) MEM_TOT_CAPA32,
+						SUM(MEM_TOT_CAPA48) MEM_TOT_CAPA48,
+						SUM(MEM_TOT_CAPA64) MEM_TOT_CAPA64,
+						SUM(MEM_TOT_CAPA128) MEM_TOT_CAPA128,
+						SUM(MEM_TOT_CAPAETC) MEM_TOT_CAPAETC
+				FROM
+					(SELECT
+						CASE 	WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 2 THEN 2
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 4 THEN 4
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 6 THEN 6
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 8 THEN 8
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 10 THEN 10
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 12 THEN 12
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 14 THEN 14
+								WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 16 THEN 16
+								ELSE 888
+						END CPU_ASGN_CAPA,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END MEM_TOT_CAPA8,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 8  AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 16 THEN 1 ELSE 0 END MEM_TOT_CAPA16,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 16 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 24 THEN 1 ELSE 0 END MEM_TOT_CAPA24,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 24 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 32 THEN 1 ELSE 0 END MEM_TOT_CAPA32,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 32 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 48 THEN 1 ELSE 0 END MEM_TOT_CAPA48,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 48 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 64 THEN 1 ELSE 0 END MEM_TOT_CAPA64,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 64 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 128 THEN 1 ELSE 0 END MEM_TOT_CAPA128,
+						CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 128 THEN 1 ELSE 0 END MEM_TOT_CAPAETC
+
+					FROM
+						(SELECT SERVC_SEQ,
+								ROUND(MAX(A.CPU_ASGN_CAPA)/1000,0) CPU_ASGN_CAPA,
+								ROUND(SUM(A.MEM_TOT_CAPA)/1024/1024/1024,0) MEM_TOT_CAPA
+						FROM (
+								SELECT 	A.COLCT_YM,
+										A.SERVC_SEQ,
+										FIRST_VALUE(CPU_ASGN_CAPA) OVER (PARTITION BY SERVC_SEQ  ORDER BY  COLCT_YM DESC) CPU_ASGN_CAPA,
+										FIRST_VALUE(MEM_TOT_CAPA) OVER (PARTITION BY SERVC_SEQ  ORDER BY  COLCT_YM DESC) MEM_TOT_CAPA
+
+								FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+								WHERE 1=1
+								AND COLCT_YM = #{year}||#{mm}
+									<if test="region != null and !region.isEmpty()">
+										<foreach collection="region" open="AND B.region_id IN(" close=")" separator="," item="item">
+											#{item}
+										</foreach>
+									</if>
+							) A
+							WHERE A.CPU_ASGN_CAPA IS NOT NULL
+							GROUP BY SERVC_SEQ
+						) A
+					) A
+				GROUP BY GROUPING SETS((CPU_ASGN_CAPA),())
+				) B
+			ON A.CPU_ASGN_CAPA = B.CPU_ASGN_CAPA
+				ORDER BY A.CPU_ASGN_CAPA
+
+	</select>
+
+	<select id="selectSanCntList" resultMap="resultSanCntVo">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axServcUsefulRng.selectSanCntList */
+				SELECT
+						COUNT(SERVC_SEQ) TOTAL,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[<=]]> 0.5 THEN 1 ELSE 0 END) STRG_TOT_CAPA0,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[>]]> 0.5 AND STRG_TOT_CAPA <![CDATA[<=]]> 1 THEN 1 ELSE 0 END) STRG_TOT_CAPA1,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[>]]> 1 AND STRG_TOT_CAPA <![CDATA[<=]]> 2 THEN 1 ELSE 0 END) STRG_TOT_CAPA2,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[>]]> 2 AND STRG_TOT_CAPA <![CDATA[<=]]> 4 THEN 1 ELSE 0 END) STRG_TOT_CAPA3,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[>]]> 4 AND STRG_TOT_CAPA <![CDATA[<=]]> 8 THEN 1 ELSE 0 END) STRG_TOT_CAPA4,
+						SUM(CASE WHEN STRG_TOT_CAPA <![CDATA[>]]> 8 THEN 1 ELSE 0 END) STRG_TOT_CAPA
+
+				FROM (
+						SELECT	SERVC_SEQ,
+								ROUND(SUM(A.STRG_TOT_CAPA)/1024/1024/1024,0) STRG_TOT_CAPA
+						FROM (
+								SELECT 	A.COLCT_YM,
+										A.SERVC_SEQ,
+										FIRST_VALUE(STRG_TOT_CAPA) OVER (PARTITION BY SERVC_SEQ  ORDER BY  COLCT_YM DESC) STRG_TOT_CAPA
+
+								FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+								WHERE 1=1
+								AND COLCT_YM = #{year}||#{mm}
+											<if test="region != null and !region.isEmpty()">
+												<foreach collection="region" open="AND B.region_id IN(" close=")" separator="," item="item">
+													#{item}
+												</foreach>
+											</if>
+								) A
+						WHERE A.STRG_TOT_CAPA IS NOT NULL
+						GROUP BY SERVC_SEQ
+						) A
+
+
+	</select>
+
+	<select id="selectMemCntRtList" resultMap="resultMemCntRtVo">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axServcUsefulRng.selectMemCntRtList*/
+		SELECT	CASE
+					WHEN CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)='888' THEN '기타'
+					WHEN CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)='999' THEN '계'
+					ELSE CAST(A.CPU_ASGN_CAPA AS CHARACTER VARYING)
+				END CPU_ASGN_CAPA,
+				ROUND(COALESCE(B.MEM_TOT_CAPA8,0),1) MEM_TOT_CAPA8,
+				ROUND(COALESCE(B.MEM_TOT_CAPA16,0),1) MEM_TOT_CAPA16,
+				ROUND(COALESCE(B.MEM_TOT_CAPA24,0),1) MEM_TOT_CAPA24,
+				ROUND(COALESCE(B.MEM_TOT_CAPA32,0),1) MEM_TOT_CAPA32,
+				ROUND(COALESCE(B.MEM_TOT_CAPA48,0),1) MEM_TOT_CAPA48,
+				ROUND(COALESCE(B.MEM_TOT_CAPA64,0),1) MEM_TOT_CAPA64,
+				ROUND(COALESCE(B.MEM_TOT_CAPA128,0),1) MEM_TOT_CAPA128,
+				ROUND(COALESCE(B.MEM_TOT_CAPAETC,0),1) MEM_TOT_CAPAETC,
+				ROUND(COALESCE(B.MEM_TOT_CAPA8,0)+COALESCE(MEM_TOT_CAPA16,0)+COALESCE(B.MEM_TOT_CAPA24,0)+COALESCE(B.MEM_TOT_CAPA32,0)+
+				COALESCE(B.MEM_TOT_CAPA48,0)+COALESCE(B.MEM_TOT_CAPA64,0)+COALESCE(B.MEM_TOT_CAPA128,0)+COALESCE(B.MEM_TOT_CAPAETC,0),1) TOTAL
+
+		FROM
+			(
+				SELECT 2 CPU_ASGN_CAPA 		UNION ALL
+				SELECT 4					UNION ALL
+				SELECT 6					UNION ALL
+				SELECT 8					UNION ALL
+				SELECT 10					UNION ALL
+				SELECT 12					UNION ALL
+				SELECT 14					UNION ALL
+				SELECT 16					UNION ALL
+				SELECT 888					UNION ALL
+				SELECT 999
+			) A
+			LEFT JOIN
+					(SELECT COALESCE(CPU_ASGN_CAPA,999) CPU_ASGN_CAPA,
+							SUM(MEM_TOT_CAPA8)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA8,
+							SUM(MEM_TOT_CAPA16)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA16,
+							SUM(MEM_TOT_CAPA24)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA24,
+							SUM(MEM_TOT_CAPA32)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA32,
+							SUM(MEM_TOT_CAPA48)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA48,
+							SUM(MEM_TOT_CAPA64)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA64,
+							SUM(MEM_TOT_CAPA128)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPA128,
+							SUM(MEM_TOT_CAPAETC)/MAX(SERVC_SEQ_CNT)::numeric*100 MEM_TOT_CAPAETC
+					FROM
+						(SELECT
+								CASE 	WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 2 THEN 2
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 4 THEN 4
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 6 THEN 6
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 8 THEN 8
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 10 THEN 10
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 12 THEN 12
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 14 THEN 14
+										WHEN CPU_ASGN_CAPA <![CDATA[<=]]> 16 THEN 16
+										ELSE 888
+								END CPU_ASGN_CAPA,
+								SERVC_SEQ_CNT,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END MEM_TOT_CAPA8,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 8  AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 16 THEN 1 ELSE 0 END MEM_TOT_CAPA16,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 16 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 24 THEN 1 ELSE 0 END MEM_TOT_CAPA24,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 24 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 32 THEN 1 ELSE 0 END MEM_TOT_CAPA32,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 32 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 48 THEN 1 ELSE 0 END MEM_TOT_CAPA48,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 48 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 64 THEN 1 ELSE 0 END MEM_TOT_CAPA64,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 64 AND COALESCE(MEM_TOT_CAPA, 0) <![CDATA[<=]]> 128 THEN 1 ELSE 0 END MEM_TOT_CAPA128,
+								CASE WHEN COALESCE(MEM_TOT_CAPA, 0) <![CDATA[>]]> 128 THEN 1 ELSE 0 END MEM_TOT_CAPAETC
+
+						FROM
+							(SELECT	A.COLCT_YM,
+									A.SERVC_SEQ,
+									CPU_ASGN_CAPA,
+									AVG(ROUND(MEM_TOT_CAPA/1024/1024/1024,0)) OVER (PARTITION BY SERVC_SEQ  ORDER BY  COLCT_YM DESC) MEM_TOT_CAPA,
+									COUNT(SERVC_SEQ) OVER (PARTITION BY COLCT_YM  ORDER BY  COLCT_YM DESC) SERVC_SEQ_CNT
+
+							FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+							WHERE 1=1
+							AND COLCT_YM = #{year}||#{mm}
+							AND CPU_ASGN_CAPA IS NOT NULL
+									<if test="region != null and !region.isEmpty()">
+										<foreach collection="region" open="AND B.region_id IN(" close=")" separator="," item="item">
+											#{item}
+										</foreach>
+									</if>
+
+							) A
+						)A
+					GROUP BY GROUPING SETS((CPU_ASGN_CAPA),())
+					) B
+				ON A.CPU_ASGN_CAPA = B.CPU_ASGN_CAPA
+				ORDER BY A.CPU_ASGN_CAPA
+	</select>
+
+	<select id="selectSanCntRtList" resultMap="resultSanCntRtVo">
+	/* sqlid : ncis.sql.dsb.stts.axusert.axServcUsefulRng.selectSanCntRtList*/
+		SELECT CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(TOTAL/TOTAL::numeric*100,1) END TOTAL,
+					CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(STRG_TOT_CAPA0/TOTAL::numeric*100,1) END STRG_TOT_CAPA0,
+					CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(STRG_TOT_CAPA1/TOTAL::numeric*100,1) END STRG_TOT_CAPA1,
+					CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(STRG_TOT_CAPA2/TOTAL::numeric*100,1) END STRG_TOT_CAPA2,
+					CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(STRG_TOT_CAPA3/TOTAL::numeric*100,1) END STRG_TOT_CAPA3,
+					CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(STRG_TOT_CAPA4/TOTAL::numeric*100,1) END STRG_TOT_CAPA4
+		FROM
+			(
+			SELECT
+				COUNT(SERVC_SEQ) TOTAL,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 0.5 THEN 1 ELSE 0 END) STRG_TOT_CAPA0,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 0.5 AND ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 1 THEN 1 ELSE 0 END) STRG_TOT_CAPA1,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 1 AND ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 2 THEN 1 ELSE 0 END) STRG_TOT_CAPA2,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 2 AND ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 4 THEN 1 ELSE 0 END) STRG_TOT_CAPA3,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 4 AND ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END) STRG_TOT_CAPA4,
+				SUM(CASE WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 8 THEN 1 ELSE 0 END) STRG_TOT_CAPA
+			FROM
+				(
+				SELECT	A.COLCT_YM,
+						A.SERVC_SEQ,
+						SUM(A.STRG_TOT_CAPA) STRG_TOT_CAPA
+				FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				WHERE 1=1
+				AND COLCT_YM = #{year}||#{mm}
+				AND STRG_TOT_CAPA IS NOT NULL
+				<if test="region != null and !region.isEmpty()">
+					<foreach collection="region" open="AND B.region_id IN(" close=")" separator="," item="item">
+						#{item}
+					</foreach>
+				</if>
+				GROUP BY	A.COLCT_YM,
+							A.SERVC_SEQ
+				)A
+			)A
+	</select>
+
+</mapper>

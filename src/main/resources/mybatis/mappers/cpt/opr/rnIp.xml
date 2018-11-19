@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rnIp">
+	<resultMap type="ncis.cpt.opr.ip.vo.IpVo" id="resultIpVo">
+		<result property="ipAddr" column="IP_ADDR"/>
+		<result property="bndSeq" column="BND_SEQ"/>
+		<result property="ipStatCd" column="IP_STAT_CD"/>
+		<result property="asgnDt" column="ASGN_DT"/>
+		<result property="chngDt" column="CHNG_DT"/>
+		<result property="vipYn" column="VIP_YN"/>
+		<result property="withdrawDt" column="WITHDRAW_DT"/>
+		<result property="natIpAddr" column="NAT_IP_ADDR"/>
+		<result property="rmk" column="RMK"/>
+		<result property="netwkIntfcSeq" column="NETWK_INTFC_SEQ"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test="ipStatCd != null and !ipStatCd.isEmpty()">
+			AND RN_IP.IP_STAT_CD = #{ipStatCd}
+		</if>
+		<if test="searchRegion != null and !searchRegion.isEmpty()">
+			AND RN_IP_BND.REGION_ID = #{searchRegion}
+		</if>
+		<if test="searchNet != null and !searchNet.isEmpty()">
+			AND RN_IP_BND.NET_CL_CD = #{searchNet}
+		</if>
+		<if test="searchIpAddr != null and !searchIpAddr.isEmpty()">
+			<choose>
+				<when test="searchIpAddr.split('\\.').length == 4">
+					AND RN_IP.IP_ADDR = #{searchIpAddr}::inet
+				</when>
+				<otherwise>
+<!-- 					AND RN_IP.IP_ADDR <![CDATA[ << ]]> #{searchIpAddr}::cidr -->
+					AND HOST(RN_IP.IP_ADDR) LIKE #{searchIpAddr} || '.%'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="searchVmCompId != null and !searchVmCompId.isEmpty()">
+			AND RC_VM.VM_COMP_ID LIKE '%' || #{searchVmCompId} || '%'
+		</if>
+		<if test="searchVmNm != null and !searchVmNm.isEmpty()">
+			AND RC_VM.VM_NM LIKE '%' || #{searchVmNm} || '%'
+		</if>
+		<if test="searchIpBndNm != null and !searchIpBndNm.isEmpty()">
+			AND RN_IP_BND.IP_BND_NM LIKE '%' || #{searchIpBndNm} || '%'
+		</if>
+		<if test="searchMacAddr != null and !searchMacAddr.isEmpty()">
+			AND UPPER(RC_NETWK_INTFC.MAC_ADDR) LIKE UPPER(#{searchMacAddr}) || '%'
+		</if>
+		<if test="searchInstitutionNm != null and !searchInstitutionNm.isEmpty()">
+			EXISTS (SELECT 1 FROM RN_IP_BND_INSTITUTION WHERE RN_IP_BND_INSTITUTION.BND_SEQ = RN_IP_BND.BND_SEQ AND RN_IP_BND_INSTITUTION.INSTITUTION_ID
+			IN (SELECT INSTITUTION_ID FROM CM_INSTITUTION WHERE INSTITUTION_NM LIKE '%' || #{searchInstitutionNm} || '%'))
+		</if>
+		<if test="searchStartAsgnDt != null and !searchStartAsgnDt.isEmpty()">
+			AND RN_IP.ASGN_DT <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchStartAsgnDt},'YYYY-MM-DD')
+		</if>
+		<if test="searchEndAsgnDt != null and !searchEndAsgnDt.isEmpty()">
+			AND RN_IP.ASGN_DT <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchEndAsgnDt}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="searchStartWithdrawDt != null and !searchStartWithdrawDt.isEmpty()">
+			AND RN_IP.WITHDRAW_DT <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchStartWithdrawDt},'YYYY-MM-DD')
+		</if>
+		<if test="searchEndWithdrawDt != null and !searchEndWithdrawDt.isEmpty()">
+			AND RN_IP.WITHDRAW_DT <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchEndWithdrawDt}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test='searchUserId != null and searchUserId != ""'>
+			<if test="!sysAdm"> <!-- 시스템관리자는 모두 조회 -->
+				<choose>
+					<when test="oprAdm"> <!-- 운영자 -->
+					AND ( EXISTS (SELECT 1 FROM CM_RSRC_POOL_USER WHERE CM_RSRC_POOL_USER.REGION_ID = RN_IP_BND.REGION_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId})
+     				OR EXISTS (SELECT 1 FROM CM_USR WHERE CM_USR.MNG_REGION_ID = RN_IP_BND.REGION_ID AND CM_USR.USER_ID = #{searchUserId}))
+					</when>
+					<otherwise> <!-- 담당자 -->
+					<!-- AND (RN_IP_BND.INSTITUTION_ID IN (SELECT CM_JOB.INSTITUTION_ID FROM CM_JOB WHERE CM_JOB.JOB_ID IN (SELECT JOB_ID FROM CM_JOB_USER WHERE CM_JOB_USER.USER_ID = #{searchUserId})))  -->
+					AND exists (SELECT 1 FROM RN_IP_BND_INSTITUTION WHERE RN_IP_BND_INSTITUTION.BND_SEQ = RN_IP_BND.BND_SEQ
+                               AND RN_IP_BND_INSTITUTION.INSTITUTION_ID IN (SELECT CM_JOB.INSTITUTION_ID FROM CM_JOB WHERE CM_JOB.JOB_ID IN (SELECT JOB_ID FROM CM_JOB_USER WHERE CM_JOB_USER.USER_ID = #{searchUserId})))
+					</otherwise>
+				</choose>
+			</if>
+		</if>
+	</sql>
+
+	<sql id="fromClauseIp">
+		LEFT JOIN RC_NETWK_INTFC ON RC_NETWK_INTFC.NETWK_INTFC_SEQ = RN_IP.NETWK_INTFC_SEQ
+		LEFT JOIN RC_VM ON RC_VM.VM_SEQ = RC_NETWK_INTFC.VM_SEQ
+		LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ
+		LEFT JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+		LEFT JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		LEFT JOIN RN_IP_BND ON RN_IP_BND.BND_SEQ = RN_IP.BND_SEQ
+		LEFT JOIN RC_REGION ON RC_REGION.REGION_ID = RN_IP_BND.REGION_ID
+		LEFT JOIN CM_CODE A ON A.CD = RN_IP_BND.NET_CL_CD AND A.GRP_CD = '067' AND A.PARENT_CD = 'NETCD'
+	</sql>
+
+	<select id="selectIpListTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.rnIp.selectIpListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM RN_IP
+		<include refid="fromClauseIp" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectIpList" resultMap="resultIpVo">
+	/* ncis.sql.cpt.rnIp.selectIpList */
+	<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RN_IP.BND_SEQ
+			, RN_IP.IP_STAT_CD /* 상태 */
+			, RN_IP.IP_ADDR /* IP주소 */
+			, RC_VM.VM_COMP_ID /* 가상서버구성ID */
+			, RC_VM.VM_NM /* 가상서버명 */
+			, RN_IP_BND.IP_BND_NM /* IP대역명 */
+			, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_INSTITUTION.INSTITUTION_NM),',')	FROM CM_INSTITUTION WHERE CM_INSTITUTION.INSTITUTION_ID IN (SELECT RN_IP_BND_INSTITUTION.INSTITUTION_ID FROM RN_IP_BND_INSTITUTION WHERE RN_IP_BND_INSTITUTION.BND_SEQ = RN_IP_BND.BND_SEQ)) AS INSTITUTION_NM /* 사용부처 */
+			, A.CD_NM AS NET_NM
+			, RC_NETWK_INTFC.MAC_ADDR /* MAC주소 */
+			, RN_IP.ASGN_DT /* 할당일자 */
+			, RN_IP.WITHDRAW_DT /* 회수일자 */
+			, RN_IP_BND.REGION_ID /* 센터 ID */
+			, RC_REGION.REGION_NM /* 센터 명 */
+		FROM RN_IP
+		<include refid="fromClauseIp" />
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY RN_IP.IP_ADDR
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+</mapper>
+
+

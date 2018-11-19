@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.AxNodeResStte">
+
+	<resultMap type="ncis.dsb.stts.res.vo.AxNodeResStteVo" id="resultAxNodeResStteVo">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="atmsclNodeNm" column="ATMSCL_NODE_NM"/>
+		<result property="atmsclNodeId" column="ATMSCL_NODE_ID"/>
+		<result property="podQty" column="POD_QTY"/>
+		<result property="cpu" column="CPU_COR_QTY"/>
+		<result property="cpuRt" column="AVG_CPU_USE_RT"/>
+		<result property="mem" column="MEM_TOT_CAPA"/>
+		<result property="memRt" column="AVG_MEM_USE_RT"/>
+		<result property="strg" column="STRG_TOT_CAPA"/>
+		<result property="netwkIn" column="AVG_IN_TRFIC"/>
+		<result property="netwkOut" column="AVG_OUT_TRFIC"/>
+
+	</resultMap>
+
+
+	<sql id="search">
+	           <choose>
+					<when test='"DD".equals(searchTrmCd)'>
+							AND A.COLCT_DT = REPLACE(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+							AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+						AND A.COLCT_YM = #{year}||#{searchMmCd}
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+						AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					    AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					    AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					    AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					     AND A.COLCT_YM between #{year}||'01' AND #{year}||'06'
+					</when>
+					<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					      AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+					</when>
+					<when test='"YY".equals(searchTrmCd)'>
+					      AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+					</when>
+				</choose>
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND B.REGION_ID = #{regionId}
+				</if>
+				<if test='zoneId !=null and !"".equals(zoneId)'>
+					AND A.ZONE_ID = #{zoneId}
+				</if>
+				<if test='netId !=null and !"".equals(netId)'>
+					AND A.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+				</if>
+				<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+					AND A.RSRC_POOL_ID = #{rsrcPoolId}
+				</if>
+
+
+
+	</sql>
+
+
+	<select id="selectAxNodeResStteList" resultMap="resultAxNodeResStteVo">
+		/* ncis.sql.dsb.stts.res.AxNodeResStte.selectAxNodeResStteList */
+
+		       SELECT REGION_NM,
+					  ZONE_NM,
+					  NET_NM,
+					  RSRC_POOL_NM,
+					  NODE.RSRC_POOL_ID,
+					  ATMSCL_NODE_NM,
+					  NODE.ATMSCL_NODE_ID,
+					  NODE.POD_QTY,
+					  ROUND(NODE.CPU_COR_QTY,2) CPU_COR_QTY,
+					  NODE.AVG_CPU_USE_RT,
+					  ROUND(NODE.MEM_TOT_CAPA/1024/1024/1024,2) MEM_TOT_CAPA,
+					  NODE.AVG_MEM_USE_RT,
+					  ROUND(NODE.STRG_TOT_CAPA/1024/1024/1024,2) STRG_TOT_CAPA,
+					  ROUND(NODE.AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC,
+					  ROUND(NODE.AVG_OUT_TRFIC/1024,2) AVG_OUT_TRFIC
+			    FROM
+			     (SELECT REGION_ID,
+			             ZONE_ID,
+			             NET_ID,
+			             RSRC_POOL_ID,
+			             ATMSCL_NODE_ID,
+			             MAX(POD_QTY) POD_QTY,
+			             MAX(CPU_COR_QTY) CPU_COR_QTY,
+			             ROUND(AVG(AVG_CPU_USE_RT),2) AVG_CPU_USE_RT,
+			             MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+			             ROUND(AVG(AVG_MEM_USE_RT),2) AVG_MEM_USE_RT,
+			             MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+			             ROUND(AVG(AVG_IN_TRFIC),2) AVG_IN_TRFIC,
+			             ROUND(AVG(AVG_OUT_TRFIC),2) AVG_OUT_TRFIC
+		            FROM
+		                (SELECT B.REGION_ID,
+					       		A.ZONE_ID,
+					       		A.NET_ID,
+					       		A.RSRC_POOL_ID,
+					       		A.ATMSCL_NODE_ID,
+								FIRST_VALUE(A.POD_QTY) OVER (PARTITION BY A.RSRC_POOL_ID, A.ATMSCL_NODE_ID  ORDER BY
+										<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+												A.COLCT_YM
+											</otherwise>
+										</choose> DESC) POD_QTY,
+								FIRST_VALUE(A.CPU_COR_QTY) OVER (PARTITION BY A.RSRC_POOL_ID, A.ATMSCL_NODE_ID  ORDER BY
+										<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+												A.COLCT_YM
+											</otherwise>
+										</choose>DESC) CPU_COR_QTY,
+				               	A.AVG_CPU_USE_RT,
+				               	FIRST_VALUE(A.MEM_TOT_CAPA) OVER (PARTITION BY A.RSRC_POOL_ID, A.ATMSCL_NODE_ID  ORDER BY
+										<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+												A.COLCT_YM
+											</otherwise>
+										</choose> DESC) MEM_TOT_CAPA,
+				               	A.AVG_MEM_USE_RT,
+				               	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY A.RSRC_POOL_ID, A.ATMSCL_NODE_ID  ORDER BY
+				               			<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+												A.COLCT_YM
+											</otherwise>
+										</choose> DESC) STRG_TOT_CAPA,
+				               	A.AVG_IN_TRFIC,
+				               	A.AVG_OUT_TRFIC
+
+					          FROM <choose>
+									 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						                 ST_RX_NODE_SUM_1DD A
+									 </when>
+								   	<otherwise>
+								         ST_RX_NODE_SUM_1MM A
+									</otherwise>
+								  </choose>
+								   LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+
+					      where 1=1
+					            <include refid="search"/>
+					       ) A
+		           GROUP BY REGION_ID,
+						    ZONE_ID,
+						    NET_ID,
+						    RSRC_POOL_ID,
+						    ATMSCL_NODE_ID
+		  ) NODE LEFT JOIN RC_RSRC_POOL B ON NODE.RSRC_POOL_ID = B.RSRC_POOL_ID
+		         LEFT JOIN RC_REGION C ON NODE.REGION_ID = C.REGION_ID
+		         LEFT JOIN RC_ZONE D ON NODE.ZONE_ID = D.ZONE_ID
+		         LEFT JOIN RC_NET E ON NODE.NET_ID = E.NET_ID
+		         LEFT JOIN RX_NODE F ON NODE.ATMSCL_NODE_ID = F.ATMSCL_NODE_ID
+
+	</select>
+
+	<select id="selectAxNodeResStteNodeList" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.res.AxNodeResStte.selectAxNodeResStteNodeList*/
+			SELECT DISTINCT REPLACE(A.ATMSCL_NODE_ID,'.','')::TEXT ATMSCL_NODE_ID,
+			       D.ATMSCL_NODE_NM
+
+		 	FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_NODE_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_NODE_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_NODE_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_RX_NODE_SUM_1MM A
+				</when>
+			</choose>
+
+            LEFT JOIN RX_NODE D ON A.ATMSCL_NODE_ID = D.ATMSCL_NODE_ID
+
+			WHERE 1=1
+			AND A.RSRC_POOL_ID = #{rsrcPoolId}
+			<if test="atmsclNodeId != null and !atmsclNodeId.isEmpty()">
+				AND A.ATMSCL_NODE_ID = #{atmsclNodeId}
+			</if>
+
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0331'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0401' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'0931'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'1001' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0701' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between #{year}||'0101' AND #{year}||'1231'
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+
+
+		ORDER BY 1
+	</select>
+
+	<select id="selectAxNodeTimeResUseRtPivot" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.res.AxNodeResStte.selectAxNodeTimeResUseRtPivot*/
+		SELECT x.dt, y.*
+		   FROM
+		   (
+			  select
+			  <choose>
+				<when test='"MI".equals(colctCd)'>
+					dd||' '||hh||':'||mi DT
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					dd||' '||hh DT
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					dd DT
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					dd DT
+				</when>
+			</choose>
+			  from (
+				  select
+				  		<choose>
+							<when test='"DD".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${date}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+									from cm_code
+								limit abs(date_part('day', age(REPLACE('${date}','-','')::date, REPLACE('${date}','-','')::date)))+1
+				  			</when>
+				  			<when test='"DI".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${strtDt}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age(REPLACE('${strtDt}','-','')::date, REPLACE('${endDt}','-','')::date)))+1
+				  			</when>
+				  			<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}${searchMmCd}01', '${year}${searchMmCd}01')))+1
+				  			</when>
+				  			<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}01','yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age('${year}${searchMmCd}01', '${year}${searchMmCd}${lastDay}')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}0301')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+				  				to_char(to_date('${year}04','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0401', '${year}0601')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+				  				to_char(to_date('${year}07','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0701', '${year}0901')))+1
+				  			</when>
+				  			<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+				  				to_char(to_date('${year}10','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}1001', '${year}1201')))+1
+				  			</when>
+				  			<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}0601')))+1
+				  			</when>
+				  			<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+				  				to_char(to_date('${year}07','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0701', '${year}1201')))+1
+				  			</when>
+				  			<when test='"YY".equals(searchTrmCd)  '>
+				  				to_char(to_date('${year}01','yyyymm')+ (row_number() over()-1)*interval '1 month','yyyymm') dd
+				  					from cm_code
+								limit abs(date_part('month', age('${year}0101', '${year}1201')))+1
+				  			</when>
+				  		</choose>
+
+				) dd_t
+					<if test='"HH".equals(colctCd) or "MI".equals(colctCd)'>
+						,(
+						  select to_char(row_number() over() -1, 'fm00') hh
+						  from cm_code
+						  limit 24
+						) hh_t
+					</if>
+					<if test='"MI".equals(colctCd)'>
+						,(
+		                 select distinct mi
+		                  from
+							  (select to_char((to_char(row_number() over() -11, 'fm00')::integer/10+1)*10 ,'fm00') as  mi
+								from cm_code
+							    limit 51
+							  ) a
+						) mi_t
+			        </if>
+		        order by 1
+		  ) x
+		  left join
+		  (
+		SELECT *
+		FROM CROSSTAB('
+
+		SELECT
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR||'':''||a.COLCT_MI DT,
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				a.COLCT_DT||'' ''||a.COLCT_HOUR DT,
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				a.COLCT_DT DT,
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				a.COLCT_YM DT,
+			</when>
+		</choose>
+				A.ATMSCL_NODE_ID,
+			<choose>
+				<when test='"CPU".equals(column)'>
+					A.AVG_CPU_USE_RT
+				</when>
+				<when test='"MEM".equals(column)'>
+					A.AVG_MEM_USE_RT
+				</when>
+				<when test='"NETIN".equals(column)'>
+					ROUND(A.AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC
+				</when>
+				<when test='"NETOUT".equals(column)'>
+					ROUND(A.AVG_OUT_TRFIC/1024,2) AVG_OUT_TRFIC
+				</when>
+
+
+			</choose>
+		FROM
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				ST_RX_NODE_SUM_10MI A
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				ST_RX_NODE_SUM_1HH A
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				ST_RX_NODE_SUM_1DD A
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				ST_RX_NODE_SUM_1MM A
+			</when>
+		</choose>
+
+          LEFT JOIN RX_NODE B ON A.ATMSCL_NODE_ID = B.ATMSCL_NODE_ID
+
+		WHERE 1=1
+		AND    A.RSRC_POOL_ID = ''${rsrcPoolId}''
+		<if test="atmsclNodeId != null and !atmsclNodeId.isEmpty()">
+			AND A.ATMSCL_NODE_ID = ''${atmsclNodeId}''
+		</if>
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+		ORDER BY 1,2
+		',
+		'
+			SELECT DISTINCT A.ATMSCL_NODE_ID
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_NODE_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_NODE_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_NODE_SUM_1DD A
+				</when>
+				<when test='"MM".equals(colctCd)'>
+					ST_RX_NODE_SUM_1MM A
+				</when>
+			</choose>
+
+
+			  LEFT JOIN RX_NODE B ON A.ATMSCL_NODE_ID = B.ATMSCL_NODE_ID
+		   WHERE 1=1
+		        AND    A.RSRC_POOL_ID=''${rsrcPoolId}''
+			<if test="atmsclNodeId != null and !atmsclNodeId.isEmpty()">
+				AND A.ATMSCL_NODE_ID = ''${atmsclNodeId}''
+			</if>
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = ''${year}${searchMmCd}''
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}03''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0331''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}04'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0401'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}09''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}0931''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}10'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}1001'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}06''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}0631''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}07'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0701'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between ''${year}01'' AND ''${year}12''
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between ''${year}0101'' AND ''${year}1231''
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+			ORDER BY 1
+		'
+		)
+		AS
+		(
+			DT_VAL TEXT
+			<choose>
+				<when test="nodeList != null and !nodeList.isEmpty()">
+					<foreach collection="nodeList"  item="item">
+					, "${item.atmscl_node_id}" TEXT
+					</foreach>
+				</when>
+				<otherwise>
+					,"null" TEXT
+				</otherwise>
+			</choose>
+		)
+	 ) y
+  	on x.dt = y.DT_VAL
+  	order by x.dt
+	</select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,203 @@
+<html lang="ko">
+<head>
+<style type="text/css">
+A:link { text-decoration:none;}
+</style>
+<title>휴대폰인증서(보관)서비스 다운로드 페이지</title>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+<SCRIPT LANGUAGE=javascript>
+
+	var AllAuto = 0;
+
+	if(navigator.platform == "Win32" || navigator.platform == "Win64")
+	{
+	 setTimeout("AutoinstallUBIKey()", 1000);
+	 }
+	function AutoinstallUBIKey()
+	{
+		if(AllAuto == 0)
+		{
+			if(navigator.userAgent.indexOf("MSIE") != -1 || navigator.userAgent.indexOf("Trident") != -1)				
+			{
+				if(getInternetExplorerVersion() > 8)
+				{
+				installUBIKey();
+				}
+			}
+		}
+		else
+		{
+			installUBIKey();
+		}
+	}
+	function installUBIKey()
+	{
+		if(getWinOSVersion() >= 6.1 )
+		{
+			location.href ="./UBIKey.exe";
+		}
+		else
+		{
+			                      
+			location.href ="./UBIKey_S1.exe";
+		}
+	}
+
+    function getWinOSVersion( )
+    {
+		var ver = -1;
+                     
+        try {
+                if (navigator.platform == "Win32" || navigator.platform == "Win64")
+                {
+                    var ua = navigator.userAgent;
+                    var re = new RegExp("Windows NT\ ([0-9]{1,}[\.0-9]{0,})");   
+                                          
+                    if (re.exec(ua) != null) 
+                    {        
+                        ver = parseFloat(RegExp.$1);                                                  
+                    }
+                    else
+                    {
+						ver = -1;
+                    }
+                }
+            }
+            catch (e)
+            {
+                ver = -1;
+            } 
+            return ver;
+    }
+
+	function getInternetExplorerVersion( )
+	{
+		var ver = -1;
+
+		if (navigator.userAgent.indexOf ("MSIE") != -1	|| navigator.userAgent.indexOf ("Trident") != -1)
+		{
+			var ua = navigator.userAgent;
+			var re = new RegExp("Trident\/([0-9]{1,}[\.0-9]{0,})");   
+			
+			if (re.exec(ua) != null) 
+			{        
+				ver = parseFloat(RegExp.$1);
+				ver += 4;
+			}
+			else
+			{
+				re = new RegExp( "MSIE ([0-9]{1,}[\.0-9]{0,})" );
+				if( re.exec( ua ) != null)
+				{
+					ver = parseFloat( RegExp.$1);
+				}
+			}
+		}
+		return ver;
+	}
+	
+//png파일 투명 처리
+	function setPng24(obj) {
+		if( getInternetExplorerVersion() == 6.0 )
+		{
+		 obj.width=obj.height=1;
+		 obj.className=obj.className.replace(/\bpng24\b/i,'');
+		 obj.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+ obj.src +"',sizingMethod='image');"
+		 obj.src='';
+		}
+	 return '';
+	}
+</SCRIPT>
+<style type="text/css">
+.png24 {
+   tmp:expression(setPng24(this));
+}
+html { overflow:hidden; }
+</style>
+</head>
+
+<body bgcolor="#E6E6E6" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" scroll="no">
+<div align=center style='Display:none'>
+<p> 휴대폰 인증서 서비스 설치 </p>
+<p> 서비스 이용을 위해 아래의 다운로드 버튼을 클릭하여 프로그램을 다운로드 하신 후 설치하여 주시기 바랍니다. </p>
+<p> (정상적으로 서비스실행이 되지 않을 경우, '웹브라우저'를 종료하신 후 재시작 하시기 바랍니다.)</p>
+<p> 휴대폰 인증서 서비스란? </p>
+<p> 인터넷에서 본인 확인 시 필요한 공인인증서를 휴대폰에 저장하여, 필요 시 저장된 인증서를 PC로 전송해 활용할 수 있는 서비스 </p>
+<p> 서비스 이용 요금 </p>
+<p> SKT, KT, LG U+ 이용자는 월정액 900원, 데이터통화료 무료이고 </p>
+<p> 애플 아이폰 이용자는 1년 이용권 $8.99를 구매하여 이용 (APP 다운로드 무료, 데이터통화료 유료) </p>
+</div>
+<!-- 멀티브라우저  수동 설치 페이지  -->
+<div align=center id="MultiBrowserIMG" style='Display:none'>
+<table border="0" width="100%" height="100%" cellspacing="0" cellpadding="0" align="center" class="png24">
+	<tr>
+		<td valign="top">
+			<table border="0" width="450" height="400" align="center" background="img/mbg.png">
+				<tr>
+					<td>
+				  <table border="0" width="400" height="350" align="center">
+                <tr>      
+                  <td align="center" valign="bottom" height="250"><a href="javascript:installUBIKey()"><img alt="다운로드" src="img/btn1.png" border="0" class="png24" ></a></td>     
+                </tr>
+                <tr>
+                	 <td valign="Bottom" align="right"><a href="javascript:window.close()"><img  alt="닫기" src="img/btn_close.png" border="0" class="png24"></a></td>
+                </tr>
+        </table>
+        </td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<!-- Multi OS 수동 설치 페이지 -->
+<div align=center id="MultiOSIMG" style='Display:none'>
+<table border="0" width="100%" height="100%" cellspacing="0" cellpadding="0" align="center" class="png24">
+	<tr>
+		<td valign="middle">
+			<table border="0" width="450" height="400" align="center" background="img/os_bg1.png">
+				<tr>
+					<td>
+				  <table border="0" width="400" height="350" align="center">
+                <tr>
+					<td align="center" valign="bottom" height="200" colspan="2"><a href="Mac/UBIKey-1.0.0.2.pkg"><img alt="MAC" src="img/mac.png" border="0" class="png24"></a></td>
+                   
+                 </tr>
+                 <tr>
+                   <td align="right" valign="bottom" height="24"><a href="Linux/Ubuntu/UBIKey-1.0.0.1-32bit.deb"><img alt="Ubuntux86" src="img/ubuntux86.png" border="0" class="png24"></a></td> 
+                   <td align="left" valign="bottom" height="24"><a href="Linux/Ubuntu/UBIKey-1.0.0.1-64bit.deb"><img alt="Ubutux64" src="img/ubuntux64.png" border="0" class="png24"></a></td> 
+                 </tr>
+                   <tr>
+                   <td align="right" valign="bottom" height="24"><a href="Linux/Fedora/UBIKey-1.0.0.1-32bit.rpm"><img alt="Fedorax86" src="img/fedorax86.png" border="0" class="png24"></a></td> 
+                   <td align="left" valign="bottom" height="24"><a href="Linux/Fedora/UBIKey-1.0.0.1-64bit.rpm"><img alt="Fedorax64" src="img/fedorax64.png" border="0" class="png24"></a></td>   
+                </tr>
+                <tr>
+                	<td></td>
+                	 <td valign="Bottom" align="right"><a href="javascript:window.close()"><img src="img/btn_close.png" border="0" class="png24"></a></td>
+                </tr>
+        </table>
+        </td>
+	</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+</BODY>
+</html>
+
+<SCRIPT LANGUAGE=javascript>
+			if(navigator.platform == "Win32" || navigator.platform == "Win64")
+			{
+				MultiBrowserIMG.style.display = "";
+				window.resizeTo(525,480);
+			}
+			else
+			{
+				MultiOSIMG.style.display = "";
+				window.resizeTo(460,480);
+			}
+</SCRIPT>

@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrRsrcReq">
+
+	<resultMap id="resultRrRsrcReq" type="ncis.cmn.entity.RrRsrcReq">
+        <result property="rsrcReqNo"          column="RSRC_REQ_NO"/>             <!-- 자원요청번호 -->
+        <result property="rsrcReqUserId"      column="RSRC_REQ_USER_ID"/>        <!-- 자원요청자ID -->
+        <result property="rsrcReqDttm"        column="RSRC_REQ_DTTM"/>           <!-- 자원요청일시 -->
+        <result property="rsrcReqPrcssStatCd" column="RSRC_REQ_PRCSS_STAT_CD"/>  <!-- 자원요청진행상태코드 -->
+        <result property="reqInstitutionId"   column="REQ_INSTITUTION_ID"/>      <!-- 요청기관ID -->
+        <result property="sbjct"              column="SBJCT"/>                   <!-- 제목 -->
+        <result property="ticktNo"            column="TICKT_NO"/>                <!-- 티켓번호 -->
+        <result property="regionId"           column="REGION_ID"/>               <!-- 리전ID -->
+        <result property="testYn"             column="TEST_YN"/>                 <!-- 테스트여부 -->
+        <result property="linkYn"             column="LINK_YN"/>                 <!-- 연계여부 -->
+        <result property="comptDttm"          column="COMPT_DTTM"/>              <!-- 완료일시 -->
+        <result property="regUserId"          column="REG_USER_ID"/>             <!-- 등록자ID -->
+        <result property="exeUserId"          column="EXE_USER_ID"/>             <!-- 실행자ID -->
+        <result property="regDttm"            column="REG_DTTM"/>                <!-- 등록일자 -->
+        <result property="rsrcReqTyCd"        column="RSRC_REQ_TY_CD"/>          <!-- 자원요청유형코드 -->
+	</resultMap>
+
+	<!-- 자원요청 등록 -->
+	<insert id="insertRrRsrcReq" parameterType="ncis.cmn.entity.RrRsrcReq">
+		/* ncis.sql.cmn.rrRsrcReq.insertRrRsrcReq */
+		<!-- <selectKey order="BEFORE" keyProperty="rsrcReqNo" resultType="String">
+			SELECT 'R'||TO_CHAR(CURRENT_DATE, 'YYYYMMDD') || LPAD((SELECT COUNT(*)+1 FROM rr_rsrc_req WHERE TO_CHAR(REG_DTTM, 'YYYYMMDD') = TO_CHAR(CURRENT_DATE, 'YYYYMMDD') )::VARCHAR,4,'0')
+		</selectKey> -->
+
+		INSERT INTO RR_RSRC_REQ (
+		             RSRC_REQ_NO             /* 자원요청번호 */
+		           , RSRC_REQ_USER_ID        /* 자원요청자ID */
+		           , RSRC_REQ_DTTM           /* 자원요청일시 */
+		           , RSRC_REQ_PRCSS_STAT_CD  /* 자원요청진행상태코드 */
+		           , REQ_INSTITUTION_ID      /* 요청기관ID */
+		           , SBJCT                   /* 제목 */
+		           , TICKT_NO                /* 티켓번호 */
+		           , REGION_ID               /* 리전ID */
+		           , TEST_YN                 /* 테스트여부 */
+		           , LINK_YN                 /* 연계여부 */
+		           , COMPT_DTTM              /* 완료일시 */
+		           , REG_USER_ID             /* 등록자ID */
+		           , REG_DTTM                /* 등록일자 */
+		           , RSRC_REQ_TY_CD          /* 자원요청유형코드 */
+		           <if test = "haCompYn != null and haCompYn != ''">
+		           , HA_COMP_YN		           /* HA여부 */
+		           </if>
+		           <if test = "displayYn != null and displayYn != ''">
+		           , DISPLAY_YN		           /* 표시여부여부 */
+		           </if>
+			   , RSRC_REQ_CL_CD /* 자원요청구분코드 */
+			   , REQ_CN         /* 요청내용 */
+			   , SAV_ATCH_FILE_NM   /* 저장첨부파일명 */
+			   , ORI_ATCH_FILE_NM   /* 원본첨부파일명 */
+			   , ATCH_FILE_PATH /* 첨부파일경로 */
+			   , ATCH_FILE_SIZE /* 첨부파일크기 */
+
+
+		) VALUES (
+		           #{rsrcReqNo}              /* 자원요청번호 */
+		         , #{rsrcReqUserId}          /* 자원요청자ID */
+		         , NOW()                     /* 자원요청일시 */
+		         , #{rsrcReqPrcssStatCd}     /* 자원요청진행상태코드 */
+		         , #{reqInstitutionId}       /* 요청기관ID */
+		         , #{sbjct}                  /* 제목 */
+		         , #{ticktNo}                /* 티켓번호 */
+		         , #{regionId}               /* 리전ID */
+		         , #{testYn}                 /* 테스트여부 */
+		         , #{linkYn}                 /* 연계여부 */
+		         , #{comptDttm}              /* 완료일시 */
+		         , #{regUserId}              /* 등록자ID */
+		         , NOW()                     /* 등록일자 */
+		         , #{rsrcReqTyCd}            /* 자원요청유형코드 */
+		         <if test = "haCompYn != null and haCompYn != ''">
+		         , #{haCompYn}               /* HA여부 */
+		         </if>
+		         <if test = "displayYn != null and displayYn != ''">
+		         , #{displayYn}              /* 표시여부여부 */
+		         </if>
+			 , #{rsrcReqClCd}  /* 자원요청구분코드 */
+			 , #{reqCn}  /* 요청내용 */
+			 , #{savAtchFileNm}  /* 저장첨부파일명 */
+			 , #{oriAtchFileNm}  /* 원본첨부파일명 */
+			 , #{atchFilePath}  /* 첨부파일경로 */
+			 , #{atchFileSize}  /* 첨부파일크기 */
+		)
+	</insert>
+
+	<!-- 자원요청 수정 -->
+	<update id="updateRrRsrcReq">
+		/* ncis.sql.cmn.rrRsrcReq.updateRrRsrcReq */
+		UPDATE RR_RSRC_REQ
+		   SET
+		   	RSRC_REQ_USER_ID          = #{rsrcReqUserId}       /* 자원요청자ID */
+		     , RSRC_REQ_DTTM          = #{rsrcReqDttm}         /* 자원요청일시 */
+		     , RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		     , REQ_INSTITUTION_ID     = #{reqInstitutionId}    /* 요청기관ID */
+		     , SBJCT                  = #{sbjct}               /* 제목 */
+		     , TICKT_NO               = #{ticktNo}             /* 티켓번호 */
+		     , REGION_ID              = #{regionId}            /* 리전ID */
+		     , TEST_YN                = #{testYn}              /* 테스트여부 */
+		     , LINK_YN                = #{linkYn}              /* 연계여부 */
+		     , COMPT_DTTM             = #{comptDttm}           /* 완료일시 */
+		     , REG_USER_ID            = #{regUserId}           /* 등록자ID */
+		     , REG_DTTM               = #{regDttm}             /* 등록일자 */
+		     , RSRC_REQ_TY_CD         = #{rsrcReqTyCd}         /* 자원요청유형코드 */
+	     WHERE RSRC_REQ_NO            = #{rsrcReqNo}           /* 자원요청번호 */
+	</update>
+
+	<!-- 자원요청 자원요청진행상태코드 수정 -->
+	<update id="updateRsrcReqPrcssStatCd">
+		/* ncis.sql.cmn.rrRsrcReq.updateRsrcReqPrcssStatCd */
+		UPDATE RR_RSRC_REQ
+		   SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		     , COMPT_DTTM             = Now()                  /* 완료일시 */
+	     WHERE TICKT_NO               = #{ticktNo}             /* 티켓번호 */
+		   AND RSRC_REQ_TY_CD         = #{rsrcReqTyCd}         /* 자원요청유형코드 */
+	</update>
+
+
+	<!-- 자원요청 실행정보 수정 -->
+	<update id="updateRrRsrcReqExeInfo">
+		/* ncis.sql.cmn.rrRsrcReq.updateRrRsrcReqExeInfo */
+		UPDATE RR_RSRC_REQ
+		   SET
+		     RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		      <if test=" exeUserId != null and exeUserId != '' ">
+		      	,EXE_USER_ID = #{exeUserId}                      /* 실행자ID */
+		     </if>
+		     <if test=" rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '03' ">
+	  			,COMPT_DTTM             = Now()                  /* 완료일시 */
+		     </if>
+		     <if test=" rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '07' ">
+	  			,COMPT_DTTM             = Now()                  /* 완료일시 */
+		     </if>
+		     <if test=" haCompYn != null and haCompYn != '' ">
+		      	,HA_COMP_YN = #{haCompYn}                      /* HA구성여부 */
+		     </if>
+	     WHERE RSRC_REQ_NO            = #{rsrcReqNo}       /* 자원요청번호 */
+	</update>
+
+
+	<!-- 자원요청 삭제 -->
+	<delete id="deleteRrRsrcReq">
+		/* ncis.sql.cmn.rrRsrcReq.deleteRrRsrcReq */
+		DELETE FROM RR_RSRC_REQ
+	         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+
+	</delete>
+
+	<!-- 자원요청 진행상태변경 -->
+	<update id="updateRsrcReqPrcssStat">
+		/* ncis.sql.cmn.rrRsrcReq.updateRsrcReqPrcssStat */
+		UPDATE RR_RSRC_REQ
+		   SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		   <if test=" rsrcReqPrcssStatCd == '01' ">
+		   ,EXE_USER_ID =''  /* 실행자ID */
+		   </if>
+		   WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+	</update>
+
+	<!-- 삭제여부 수정 -->
+	<update id="updateRsrcReqDeleteYn">
+	UPDATE RR_RSRC_REQ
+	   SET DEL_YN         = #{delYn}       /* 삭제여부 */
+	   ,DEL_USER_ID       = #{delUserId}   /* 삭제자ID */
+	   ,DEL_DTTM          = now()          /* 삭제일시 */
+     WHERE RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+	</update>
+
+
+</mapper>

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrSlbConfIpReqList">
+
+	<resultMap id="resultRrSlbConfIpReqList" type="ncis.cmn.entity.RrSlbConfIpReqList">
+        <result property="rsrcReqNo"	column="RSRC_REQ_NO"/>  <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"	column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+        <result property="ipAddr"		column="IP_ADDR"/>  <!-- IP주소 -->
+        <result property="vipAddr"		column="VIP_ADDR"/>  <!-- VIP주소 -->
+        <result property="port"			column="PORT"/>  <!-- 포트 -->
+        <result property="wvl"			column="WVL"/>  <!-- 가중치(로드밸런싱) -->
+        <result property="dc"			column="DC"/>  <!-- 설명 -->
+        <result property="vmSeq"		column="VM_SEQ"/>  <!-- 가상서버시퀀스 -->
+	</resultMap>
+
+	<!-- SLB설정IP요청목록 등록 -->
+	<insert id="insertRrSlbConfIpReqList">
+		/* ncis.sql.cmn.rrSlbConfIpReqList.insertRrSlbConfIpReqList */
+		INSERT INTO RR_SLB_CONF_IP_REQ_LIST (
+		             RSRC_REQ_NO  /* 자원요청번호 */
+		           , RSRC_REQ_SEQ  /* 자원요청일련번호 */
+		           , IP_ADDR  /* IP주소 */
+		           , VIP_ADDR  /* VIP주소 */
+		           , PORT  /* 포트 */
+		           , WVL  /* 가중치(로드밸런싱) */
+		           , DC  /* 설명 */
+		           , VM_SEQ	/* 가상서버시퀀스 */
+		) VALUES (
+		           #{rsrcReqNo}  /* 자원요청번호 */
+		         , #{rsrcReqSeq}  /* 자원요청일련번호 */
+		         , #{ipAddr}  /* IP주소 */
+		         , #{vipAddr}  /* VIP주소 */
+		         , #{port}  /* 포트 */
+		         , #{wvl}  /* 가중치(로드밸런싱) */
+		         , #{dc}  /* 설명 */
+		         , #{vmSeq}	/* 가상서버시퀀스 */
+		)
+	</insert>
+
+	<!-- SLB설정IP요청목록 수정 -->
+	<update id="updateRrSlbConfIpReqList">
+		/* ncis.sql.cmn.rrSlbConfIpReqList.updateRrSlbConfIpReqList */
+		UPDATE RR_SLB_CONF_IP_REQ_LIST
+		         SET RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+		           , RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+		           , IP_ADDR = #{ipAddr}  /* IP주소 */
+		           , VIP_ADDR = #{vipAddr}  /* VIP주소 */
+		           , PORT = #{port}  /* 포트 */
+		           , WVL = #{wvl}  /* 가중치(로드밸런싱) */
+		           , DC = #{dc}  /* 설명 */
+		           , VM_SEQ = #{vmSeq}	/* 가상서버시퀀스 */
+	         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+	           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	           AND IP_ADDR = #{ipAddr}  /* IP주소 */
+
+	</update>
+
+	<!-- SLB설정IP요청목록 삭제 -->
+	<delete id="deleteRrSlbConfIpReqList">
+		/* ncis.sql.cmn.rrSlbConfIpReqList.deleteRrSlbConfIpReqList */
+		DELETE FROM RR_SLB_CONF_IP_REQ_LIST
+	         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+	           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	           AND IP_ADDR = #{ipAddr}  /* IP주소 */
+
+	</delete>
+
+</mapper>

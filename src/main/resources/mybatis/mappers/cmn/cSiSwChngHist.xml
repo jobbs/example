@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siSwChngHist">
+
+	<resultMap id="resultSiSwChngHist" type="ncis.cmn.entity.SiSwChngHist">
+        <result property="chngDttm"     column="CHNG_DTTM"/>  <!-- 변경일시 -->
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="mngRegionClNm"     column="MNG_REGION_CL_NM"/>  <!-- 관리리전구분명 -->
+        <result property="assetsId"     column="ASSETS_ID"/>  <!-- 자산ID -->
+        <result property="compRsrcNm"     column="COMP_RSRC_NM"/>  <!-- 구성자원명 -->
+        <result property="modlNm"     column="MODL_NM"/>  <!-- 모델명 -->
+        <result property="mnfctCo"     column="MNFCT_CO"/>  <!-- 제조사 -->
+        <result property="useDept"     column="USE_DEPT"/>  <!-- 사용부서명 -->
+        <result property="useDeptId"     column="USE_DEPT_ID"/>  <!-- 사용부서ID -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="institutionNm"     column="INSTITUTION_NM"/>  <!-- 기관명 -->
+        <result property="oprStat"     column="OPR_STAT"/>  <!-- 운영상태 -->
+        <result property="oprChargDeptNm"     column="OPR_CHARG_DEPT_NM"/>  <!-- 운영담당부서(정) -->
+        <result property="oprChargerId"     column="OPR_CHARGER_ID"/>  <!-- 정운영담당자ID -->
+        <result property="cnsgnUseDept"     column="CNSGN_USE_DEPT"/>  <!-- 위탁사용부서(정) -->
+        <result property="cnsgnUesr"     column="CNSGN_UESR"/>  <!-- 위탁사용자(정) -->
+        <result property="instlRegionNm"     column="INSTL_REGION_NM"/>  <!-- 설치리전명 -->
+        <result property="instlFloorNm"     column="INSTL_FLOOR_NM"/>  <!-- 설치층명 -->
+        <result property="instlAreaNm"     column="INSTL_AREA_NM"/>  <!-- 설치영역명 -->
+        <result property="instlXCrdnt"     column="INSTL_X_CRDNT"/>  <!-- 설치X좌표 -->
+        <result property="instlYCrdnt"     column="INSTL_Y_CRDNT"/>  <!-- 설치Y좌표 -->
+        <result property="slaRegJob"     column="SLA_REG_JOB"/>  <!-- SLA등록업무 -->
+        <result property="jobRegDt"     column="JOB_REG_DT"/>  <!-- 업무등록일자 -->
+        <result property="haYn"     column="HA_YN"/>  <!-- 이중화(HA)여부 -->
+        <result property="singlCompYn"     column="SINGL_COMP_YN"/>  <!-- 단일구성여부 -->
+        <result property="drEqpYn"     column="DR_EQP_YN"/>  <!-- DR장비여부 -->
+        <result property="upperCompId"     column="UPPER_COMP_ID"/>  <!-- 상위구성ID -->
+        <result property="upperCompRsrcNm"     column="UPPER_COMP_RSRC_NM"/>  <!-- 상위구성자원명 -->
+        <result property="rmk"     column="RMK"/>  <!-- 비고 -->
+        <result property="hstNm"     column="HST_NM"/>  <!-- 호스트명 -->
+        <result property="instlCompId"     column="INSTL_COMP_ID"/>  <!-- 설치구성ID -->
+        <result property="instlCompRsrcNm"     column="INSTL_COMP_RSRC_NM"/>  <!-- 설치구성자원명 -->
+        <result property="frstInstlVer"     column="FRST_INSTL_VER"/>  <!-- 최초설치버전 -->
+        <result property="nowPatchVer"     column="NOW_PATCH_VER"/>  <!-- 현재패치버전 -->
+        <result property="frstInstlKrnlVer"     column="FRST_INSTL_KRNL_VER"/>  <!-- 최초설치커널버전 -->
+        <result property="nowKrnlVer"     column="NOW_KRNL_VER"/>  <!-- 현재커널버전 -->
+        <result property="swCl"     column="SW_CL"/>  <!-- 소프트웨어구분 -->
+        <result property="licnseQty"     column="LICNSE_QTY"/>  <!-- 라이선스개수 -->
+        <result property="swInstlDt"     column="SW_INSTL_DT"/>  <!-- 소프트웨어설치일자 -->
+        <result property="srcInstlFoldr"     column="SRC_INSTL_FOLDR"/>  <!-- 소스설치폴더 -->
+        <result property="oprChargDeptId"     column="OPR_CHARG_DEPT_ID"/>  <!-- 운영담당부서(정)ID -->
+        <result property="modlOrignlClCd"     column="MODL_ORIGNL_CL_CD"/>  <!-- 모델국산외산구분코드 -->
+        <result property="regionLocaNm"     column="REGION_LOCA_NM"/>  <!-- 리전외부위치명 -->
+        <result property="cnsgnOprChargerId"     column="CNSGN_OPR_CHARGER_ID"/>  <!-- 위탁운영자담당자ID -->
+        <result property="assetsClCd"     column="ASSETS_CL_CD"/>  <!-- 자산구분코드 -->
+        <result property="mnfctCoCd"     column="MNFCT_CO_CD"/>  <!-- 제조사코드 -->
+        <result property="modlCd"     column="MODL_CD"/>  <!-- 모델코드 -->
+        <result property="assetsInstlDt"     column="ASSETS_INSTL_DT"/>  <!-- 자산설치일자 -->
+        <result property="mngRegionClCd"     column="MNG_REGION_CL_CD"/>  <!-- 관리리전구분코드 -->
+	</resultMap>
+
+	<!-- 구성정보_소프트웨어변경이력 등록 -->
+	<insert id="insertSiSwChngHist">
+	INSERT INTO SI_SW_CHNG_HIST (
+	             CHNG_DTTM  /* 변경일시 */
+	           , COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , MNG_REGION_CL_NM  /* 관리리전구분명 */
+	           , ASSETS_ID  /* 자산ID */
+	           , COMP_RSRC_NM  /* 구성자원명 */
+	           , MODL_NM  /* 모델명 */
+	           , MNFCT_CO  /* 제조사 */
+	           , USE_DEPT  /* 사용부서명 */
+	           , USE_DEPT_ID  /* 사용부서ID */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , INSTITUTION_NM  /* 기관명 */
+	           , OPR_STAT  /* 운영상태 */
+	           , OPR_CHARG_DEPT_NM  /* 운영담당부서(정) */
+	           , OPR_CHARGER_ID  /* 정운영담당자ID */
+	           , CNSGN_USE_DEPT  /* 위탁사용부서(정) */
+	           , CNSGN_UESR  /* 위탁사용자(정) */
+	           , INSTL_REGION_NM  /* 설치리전명 */
+	           , INSTL_FLOOR_NM  /* 설치층명 */
+	           , INSTL_AREA_NM  /* 설치영역명 */
+	           , INSTL_X_CRDNT  /* 설치X좌표 */
+	           , INSTL_Y_CRDNT  /* 설치Y좌표 */
+	           , SLA_REG_JOB  /* SLA등록업무 */
+	           , JOB_REG_DT  /* 업무등록일자 */
+	           , HA_YN  /* 이중화(HA)여부 */
+	           , SINGL_COMP_YN  /* 단일구성여부 */
+	           , DR_EQP_YN  /* DR장비여부 */
+	           , UPPER_COMP_ID  /* 상위구성ID */
+	           , UPPER_COMP_RSRC_NM  /* 상위구성자원명 */
+	           , RMK  /* 비고 */
+	           , HST_NM  /* 호스트명 */
+	           , INSTL_COMP_ID  /* 설치구성ID */
+	           , INSTL_COMP_RSRC_NM  /* 설치구성자원명 */
+	           , FRST_INSTL_VER  /* 최초설치버전 */
+	           , NOW_PATCH_VER  /* 현재패치버전 */
+	           , FRST_INSTL_KRNL_VER  /* 최초설치커널버전 */
+	           , NOW_KRNL_VER  /* 현재커널버전 */
+	           , SW_CL  /* 소프트웨어구분 */
+	           , LICNSE_QTY  /* 라이선스개수 */
+	           , SW_INSTL_DT  /* 소프트웨어설치일자 */
+	           , SRC_INSTL_FOLDR  /* 소스설치폴더 */
+	           , OPR_CHARG_DEPT_ID  /* 운영담당부서(정)ID */
+	           , MODL_ORIGNL_CL_CD  /* 모델국산외산구분코드 */
+	           , REGION_LOCA_NM  /* 리전외부위치명 */
+	           , CNSGN_OPR_CHARGER_ID  /* 위탁운영자담당자ID */
+	           , ASSETS_CL_CD  /* 자산구분코드 */
+	           , MNFCT_CO_CD  /* 제조사코드 */
+	           , MODL_CD  /* 모델코드 */
+	           , ASSETS_INSTL_DT  /* 자산설치일자 */
+	           , MNG_REGION_CL_CD  /* 관리리전구분코드 */
+	) VALUES (
+	           now()  /* 변경일시 */
+	         , #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{mngRegionClNm}  /* 관리리전구분명 */
+	         , #{assetsId}  /* 자산ID */
+	         , #{compRsrcNm}  /* 구성자원명 */
+	         , #{modlNm}  /* 모델명 */
+	         , #{mnfctCo}  /* 제조사 */
+	         , #{useDept}  /* 사용부서명 */
+	         , #{useDeptId}  /* 사용부서ID */
+	         , #{institutionId}  /* 기관ID */
+	         , #{institutionNm}  /* 기관명 */
+	         , #{oprStat}  /* 운영상태 */
+	         , #{oprChargDeptNm}  /* 운영담당부서(정) */
+	         , #{oprChargerId}  /* 정운영담당자ID */
+	         , #{cnsgnUseDept}  /* 위탁사용부서(정) */
+	         , #{cnsgnUesr}  /* 위탁사용자(정) */
+	         , #{instlRegionNm}  /* 설치리전명 */
+	         , #{instlFloorNm}  /* 설치층명 */
+	         , #{instlAreaNm}  /* 설치영역명 */
+	         , #{instlXCrdnt}  /* 설치X좌표 */
+	         , #{instlYCrdnt}  /* 설치Y좌표 */
+	         , #{slaRegJob}  /* SLA등록업무 */
+	         , #{jobRegDt}  /* 업무등록일자 */
+	         , #{haYn}  /* 이중화(HA)여부 */
+	         , #{singlCompYn}  /* 단일구성여부 */
+	         , #{drEqpYn}  /* DR장비여부 */
+	         , #{upperCompId}  /* 상위구성ID */
+	         , #{upperCompRsrcNm}  /* 상위구성자원명 */
+	         , #{rmk}  /* 비고 */
+	         , #{hstNm}  /* 호스트명 */
+	         , #{instlCompId}  /* 설치구성ID */
+	         , #{instlCompRsrcNm}  /* 설치구성자원명 */
+	         , #{frstInstlVer}  /* 최초설치버전 */
+	         , #{nowPatchVer}  /* 현재패치버전 */
+	         , #{frstInstlKrnlVer}  /* 최초설치커널버전 */
+	         , #{nowKrnlVer}  /* 현재커널버전 */
+	         , #{swCl}  /* 소프트웨어구분 */
+	         , #{licnseQty}  /* 라이선스개수 */
+	         , #{swInstlDt}  /* 소프트웨어설치일자 */
+	         , #{srcInstlFoldr}  /* 소스설치폴더 */
+	         , #{oprChargDeptId}  /* 운영담당부서(정)ID */
+	         , #{modlOrignlClCd}  /* 모델국산외산구분코드 */
+	         , #{regionLocaNm}  /* 리전외부위치명 */
+	         , #{cnsgnOprChargerId}  /* 위탁운영자담당자ID */
+	         , #{assetsClCd}  /* 자산구분코드 */
+	         , #{mnfctCoCd}  /* 제조사코드 */
+	         , #{modlCd}  /* 모델코드 */
+	         , #{assetsInstlDt}  /* 자산설치일자 */
+	         , #{mngRegionClCd}  /* 관리리전구분코드 */
+	)
+	</insert>
+
+	<!-- 구성정보_소프트웨어변경이력 수정 -->
+	<update id="updateSiSwChngHist">
+	UPDATE SI_SW_CHNG_HIST
+	         SET CHNG_DTTM = now()  /* 변경일시 */
+	           , COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , MNG_REGION_CL_NM = #{mngRegionClNm}  /* 관리리전구분명 */
+	           , ASSETS_ID = #{assetsId}  /* 자산ID */
+	           , COMP_RSRC_NM = #{compRsrcNm}  /* 구성자원명 */
+	           , MODL_NM = #{modlNm}  /* 모델명 */
+	           , MNFCT_CO = #{mnfctCo}  /* 제조사 */
+	           , USE_DEPT = #{useDept}  /* 사용부서명 */
+	           , USE_DEPT_ID = #{useDeptId}  /* 사용부서ID */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , INSTITUTION_NM = #{institutionNm}  /* 기관명 */
+	           , OPR_STAT = #{oprStat}  /* 운영상태 */
+	           , OPR_CHARG_DEPT_NM = #{oprChargDeptNm}  /* 운영담당부서(정) */
+	           , OPR_CHARGER_ID = #{oprChargerId}  /* 정운영담당자ID */
+	           , CNSGN_USE_DEPT = #{cnsgnUseDept}  /* 위탁사용부서(정) */
+	           , CNSGN_UESR = #{cnsgnUesr}  /* 위탁사용자(정) */
+	           , INSTL_REGION_NM = #{instlRegionNm}  /* 설치리전명 */
+	           , INSTL_FLOOR_NM = #{instlFloorNm}  /* 설치층명 */
+	           , INSTL_AREA_NM = #{instlAreaNm}  /* 설치영역명 */
+	           , INSTL_X_CRDNT = #{instlXCrdnt}  /* 설치X좌표 */
+	           , INSTL_Y_CRDNT = #{instlYCrdnt}  /* 설치Y좌표 */
+	           , SLA_REG_JOB = #{slaRegJob}  /* SLA등록업무 */
+	           , JOB_REG_DT = #{jobRegDt}  /* 업무등록일자 */
+	           , HA_YN = #{haYn}  /* 이중화(HA)여부 */
+	           , SINGL_COMP_YN = #{singlCompYn}  /* 단일구성여부 */
+	           , DR_EQP_YN = #{drEqpYn}  /* DR장비여부 */
+	           , UPPER_COMP_ID = #{upperCompId}  /* 상위구성ID */
+	           , UPPER_COMP_RSRC_NM = #{upperCompRsrcNm}  /* 상위구성자원명 */
+	           , RMK = #{rmk}  /* 비고 */
+	           , HST_NM = #{hstNm}  /* 호스트명 */
+	           , INSTL_COMP_ID = #{instlCompId}  /* 설치구성ID */
+	           , INSTL_COMP_RSRC_NM = #{instlCompRsrcNm}  /* 설치구성자원명 */
+	           , FRST_INSTL_VER = #{frstInstlVer}  /* 최초설치버전 */
+	           , NOW_PATCH_VER = #{nowPatchVer}  /* 현재패치버전 */
+	           , FRST_INSTL_KRNL_VER = #{frstInstlKrnlVer}  /* 최초설치커널버전 */
+	           , NOW_KRNL_VER = #{nowKrnlVer}  /* 현재커널버전 */
+	           , SW_CL = #{swCl}  /* 소프트웨어구분 */
+	           , LICNSE_QTY = #{licnseQty}  /* 라이선스개수 */
+	           , SW_INSTL_DT = #{swInstlDt}  /* 소프트웨어설치일자 */
+	           , SRC_INSTL_FOLDR = #{srcInstlFoldr}  /* 소스설치폴더 */
+	           , OPR_CHARG_DEPT_ID = #{oprChargDeptId}  /* 운영담당부서(정)ID */
+	           , MODL_ORIGNL_CL_CD = #{modlOrignlClCd}  /* 모델국산외산구분코드 */
+	           , REGION_LOCA_NM = #{regionLocaNm}  /* 리전외부위치명 */
+	           , CNSGN_OPR_CHARGER_ID = #{cnsgnOprChargerId}  /* 위탁운영자담당자ID */
+	           , ASSETS_CL_CD = #{assetsClCd}  /* 자산구분코드 */
+	           , MNFCT_CO_CD = #{mnfctCoCd}  /* 제조사코드 */
+	           , MODL_CD = #{modlCd}  /* 모델코드 */
+	           , ASSETS_INSTL_DT = #{assetsInstlDt}  /* 자산설치일자 */
+	           , MNG_REGION_CL_CD = #{mngRegionClCd}  /* 관리리전구분코드 */
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 구성정보_소프트웨어변경이력 삭제 -->
+	<delete id="deleteSiSwChngHist">
+	DELETE FROM SI_SW_CHNG_HIST
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

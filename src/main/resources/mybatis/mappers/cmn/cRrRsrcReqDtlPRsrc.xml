@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrRsrcReqDtlPRsrc">
+
+	<resultMap id="resultRrRsrcReqDtlPRsrc" type="ncis.cmn.entity.RrRsrcReqDtlPRsrc">
+        <result property="rsrcReqNo"            column="RSRC_REQ_NO"/>                      <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"           column="RSRC_REQ_SEQ"/>                     <!-- 자원요청일련번호 -->
+        <result property="rsrcReqPrcssStatCd"   column="RSRC_REQ_PRCSS_STAT_CD"/>           <!-- 자원요청진행상태코드 -->
+        <result property="procssInstSeq"        column="PROCSS_INST_SEQ"/>                  <!-- 프로세스인스턴스SEQ -->
+        <result property="exeDttm"              column="EXE_DTTM"/>                         <!-- 실행일시 -->
+        <result property="rsrcReqCn"            column="RSRC_REQ_CN"/>                      <!-- 자원요청내용 -->
+        <result property="zoneId"               column="ZONE_ID"/>                          <!-- 존ID -->
+        <result property="netId"                column="NET_ID"/>                           <!-- 망ID -->
+        <result property="clstrCompId"          column="CLSTR_COMP_ID"/>                    <!-- 클러스터구성ID -->
+        <result property="pmCompId"             column="PM_COMP_ID"/>                       <!-- 물리서버구성ID -->
+        <result property="pmId"                 column="PM_ID"/>                            <!-- 물리서버ID -->
+        <result property="clstrNm"              column="CLSTR_NM"/>                         <!-- 클러스터명 -->
+        <result property="pmNm"                 column="PM_NM"/>                            <!-- 물리서버명 -->
+        <result property="uuid"                 column="UUID"/>                             <!-- UUID -->
+        <result property="rsrcReqTyCd"          column="RSRC_REQ_TY_CD"/>                   <!-- 자원요청유형코드 -->
+        <result property="rsrcPoolId"           column="RSRC_POOL_ID"/>                     <!-- 매니저ID -->
+        <result property="clstrId"              column="CLSTR_ID"/>                         <!-- 클러스터ID -->
+        <result property="comptDttm"            column="COMPT_DTTM"/>                       <!-- 완료일시 -->
+        <result property="regDttm"              column="REG_DTTM"/>                         <!-- 등록일시 -->
+        <result property="rjctTyCd"           	column="RJCT_TY_CD"/>          	 			<!-- 반려유형코드 -->
+        <result property="rjctReasn"          	column="RJCT_REASN"/>           			<!-- 반려사유 -->
+        <result property="rjctDttm"           	column="RJCT_DTTM"/>          				<!-- 반려일시 -->
+        <result property="netClCd"           	column="NET_CL_CD"/>          				<!-- 망구분코드 -->
+        <result property="pmSeq"         	  	column="PM_SEQ"/>          					<!-- 물리서버SEQ -->
+        <result property="clstrSeq"           	column="CLSTR_SEQ"/>          				<!-- 클러스터SEQ -->
+	</resultMap>
+
+	<!-- 자원요청상세_물리자원 등록 -->
+	<insert id="insertRrRsrcReqDtlPRsrc">
+		<!--
+		<selectKey order="BEFORE" keyProperty="rsrcReqSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('RR_RSRC_REQ_DTL_P_RSRC_SQ01')
+		</selectKey>
+		 -->
+
+	INSERT INTO RR_RSRC_REQ_DTL_P_RSRC (
+	        RSRC_REQ_NO                      /* 자원요청번호 */
+	      , RSRC_REQ_SEQ                     /* 자원요청일련번호 */
+	      , RSRC_REQ_PRCSS_STAT_CD           /* 자원요청진행상태코드 */
+	      , PROCSS_INST_SEQ                  /* 프로세스인스턴스SEQ */
+	      , EXE_DTTM                         /* 실행일시 */
+	      , RSRC_REQ_CN                      /* 자원요청내용 */
+	      , ZONE_ID                          /* 존ID */
+	      , NET_ID                           /* 망ID */
+	      , CLSTR_COMP_ID                    /* 클러스터구성ID */
+	      , PM_COMP_ID                       /* 물리서버구성ID */
+	      , PM_ID                            /* 물리서버ID */
+	      , CLSTR_NM                         /* 클러스터명 */
+	      , PM_NM                            /* 물리서버명 */
+	      , UUID                             /* UUID */
+	      , RSRC_REQ_TY_CD                   /* 자원요청유형코드 */
+	      , RSRC_POOL_ID                     /* 매니저ID */
+	      , CLSTR_ID                         /* 클러스터ID */
+	      , COMPT_DTTM                       /* 완료일시 */
+	      , REG_DTTM                         /* 등록일시 */
+	      , NET_CL_CD                        /* 망구분코드 */
+	      , PM_SEQ      	                 /* 물리서버SEQ */
+	      , CLSTR_SEQ                        /* 클러스터SEQ */
+	) VALUES (
+     	    #{rsrcReqNo}                     /* 자원요청번호 */
+	      , #{rsrcReqSeq}                    /* 자원요청일련번호 */
+	      , #{rsrcReqPrcssStatCd}            /* 자원요청진행상태코드 */
+	      , #{procssInstSeq}                 /* 프로세스인스턴스SEQ */
+	      , #{exeDttm}                       /* 실행일시 */
+	      , #{rsrcReqCn}                     /* 자원요청내용 */
+	      , #{zoneId}                        /* 존ID */
+	      , #{netId}                         /* 망ID */
+	      , #{clstrCompId}                   /* 클러스터구성ID */
+	      , #{pmCompId}                      /* 물리서버구성ID */
+	      , #{pmId}                          /* 물리서버ID */
+	      , #{clstrNm}                       /* 클러스터명 */
+	      , #{pmNm}                          /* 물리서버명 */
+	      , #{uuid}                          /* UUID */
+	      , #{rsrcReqTyCd}                   /* 자원요청유형코드 */
+	      , #{rsrcPoolId}                    /* 매니저ID */
+	      , #{clstrId}                       /* 클러스터ID */
+	      , #{comptDttm}                     /* 완료일시 */
+	      , Now()                            /* 등록일시 */
+	      , #{netClCd}                       /* 망구분코드 */
+	      , #{pmSeq}      	                 /* 물리서버SEQ */
+	      , #{clstrSeq}                      /* 클러스터SEQ */
+	)
+	</insert>
+
+	<!-- 자원요청상세_물리자원 수정 -->
+	<update id="updateRrRsrcReqDtlPRsrc">
+	UPDATE RR_RSRC_REQ_DTL_P_RSRC
+	<trim prefix="SET" prefixOverrides=",">
+		<if test="rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd != '' ">
+			, RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}            /* 자원요청진행상태코드 */
+		</if>
+		<if test="procssInstSeq != null ">
+			, PROCSS_INST_SEQ        = #{procssInstSeq}                 /* 프로세스인스턴스SEQ */
+		</if>
+		<if test="exeDttm != null ">
+			, EXE_DTTM               = #{exeDttm}                       /* 실행일시 */
+		</if>
+		<if test="rsrcReqCn != null and rsrcReqCn != '' ">
+			, RSRC_REQ_CN            = #{rsrcReqCn}                     /* 자원요청내용 */
+		</if>
+		<if test="zoneId != null and zoneId != '' ">
+			, ZONE_ID                = #{zoneId}                        /* 존ID */
+		</if>
+		<if test="netId != null and netId != '' ">
+			, NET_ID                 = #{netId}                         /* 망ID */
+		</if>
+		<if test="clstrCompId != null and clstrCompId != '' ">
+			, CLSTR_COMP_ID          = #{clstrCompId}                   /* 클러스터구성ID */
+		</if>
+		<if test="pmCompId != null and pmCompId != '' ">
+			, PM_COMP_ID             = #{pmCompId}                      /* 물리서버구성ID */
+		</if>
+		<if test="pmId != null and pmId != '' ">
+			, PM_ID                  = #{pmId}                          /* 물리서버ID */
+		</if>
+		<if test="clstrNm != null and clstrNm != '' ">
+			, CLSTR_NM               = #{clstrNm}                       /* 클러스터명 */
+		</if>
+		<if test="pmNm != null and pmNm != '' ">
+			, PM_NM                  = #{pmNm}                          /* 물리서버명 */
+		</if>
+		<if test="uuid != null and uuid != '' ">
+			, UUID                   = #{uuid}                          /* UUID */
+		</if>
+		<if test="rsrcReqTyCd != null and rsrcReqTyCd != '' ">
+			, RSRC_REQ_TY_CD         = #{rsrcReqTyCd}                   /* 자원요청유형코드 */
+		</if>
+		<if test="rsrcPoolId != null and rsrcPoolId != '' ">
+			, RSRC_POOL_ID           = #{rsrcPoolId}                    /* 매니저ID */
+		</if>
+		<if test="clstrId != null and clstrId != '' ">
+		   , CLSTR_ID               = #{clstrId}                       /* 클러스터ID */
+		</if>
+		<if test="comptDttm != null ">
+			, COMPT_DTTM             = #{comptDttm}                     /* 완료일시 */
+		</if>
+		<if test="netClCd != null and netClCd != '' ">
+		  , NET_CL_CD              = #{netClCd}                       /* 망구분코드 */
+		</if>
+		<if test="pmSeq != null">
+			, PM_SEQ                 = #{pmSeq}      	                 /* 물리서버SEQ */
+		</if>
+		<if test="clstrSeq != null ">
+			, CLSTR_SEQ              = #{clstrSeq}                      /* 클러스터SEQ */
+		</if>
+	</trim>
+     WHERE RSRC_REQ_NO            = #{rsrcReqNo}                     /* 자원요청번호 */
+       AND RSRC_REQ_SEQ           = #{rsrcReqSeq}                    /* 자원요청일련번호 */
+	</update>
+
+	<!-- 자원요청상세_물리자원 자원요청진행상태코드 수정 -->
+	<update id="updateRsrcReqPrcssStatCd">
+	/* ncis.sql.cmn.rrRsrcReqDtlPRsrc.updateRsrcReqPrcssStatCd */
+	UPDATE RR_RSRC_REQ_DTL_P_RSRC
+	   SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+	     , COMPT_DTTM             = Now()                  /* 완료일시 */
+     WHERE RSRC_REQ_NO IN (
+                            SELECT RSRC_REQ_NO
+                              FROM RR_RSRC_REQ
+                             WHERE TICKT_NO       = #{ticktNo}      /* 티켓번호 */
+	                           AND RSRC_REQ_TY_CD = #{rsrcReqTyCd}  /* 자원요청유형코드 */
+                           )
+	</update>
+
+
+	<!-- 자원요청 상세_물리자원 상태 진행상태 및 실행 반려 시간 수정  -->
+	<update id="updateRsrcReqPhyRsrcPrcssStatCd">
+	/* ncis.sql.cmn.rrRsrcReqDtlPRsrc.updateRsrcReqPhyRsrcPrcssStatCd */
+	UPDATE 	RR_RSRC_REQ_DTL_P_RSRC
+	   SET	RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+
+		<choose>
+			<when test="rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '02'">
+				, EXE_DTTM  = Now()						/* 실행시간 */
+				, PROCSS_INST_SEQ = #{procssInstSeq}
+				, ZONE_ID = #{zoneId}	   /* 존ID */
+			  , NET_CL_CD = #{netClCd}	  /* 망그분코드 */
+			  , RSRC_POOL_ID = #{rsrcPoolId}	  /* 자원풀ID */
+			  <if test="dataCntrSeq != null">
+			  , DATA_CNTR_SEQ = #{dataCntrSeq}  /* 데이터센터SEQ */
+			  </if>
+			</when>
+			<when test="rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '03'">
+				, COMPT_DTTM =  now() /* 완료일시 */
+			</when>
+			<when test="rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '04'">
+				, RJCT_TY_CD = #{rjctTyCd}				/* 반려유형코드 */
+				,	RJCT_REASN = #{rjctReasn}			/* 반려사유 */
+				,	RJCT_DTTM = Now()					/* 반려시간 */
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+		<if test="pmId != null and !pmId.isEmpty()">
+		   	, PM_ID  = #{pmId}						/* 물리자원 ID */
+		</if>
+		<if test="clstrId != null and !clstrId.isEmpty()">
+			, CLSTR_ID  = #{clstrId}				/* 클러스터  ID */
+		</if>
+
+	WHERE RSRC_REQ_NO = #{rsrcReqNo}				/* 자원요청번호 */
+	</update>
+
+	<!-- 자원요청상세_물리자원 실행정보 초기화 -->
+	<update id="updateRrRsrcReqDtlPRsrcInitExeInfo">
+	/* ncis.sql.cmn.rrRsrcReqDtlPRsrc.updateRrRsrcReqDtlPRsrcInitExeInfo */
+		UPDATE RR_RSRC_REQ_DTL_P_RSRC
+		SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		,PROCSS_INST_SEQ = null
+		,EXE_DTTM =  null
+		,UUID = null
+		, PM_ID = null
+		, CLSTR_ID = null
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}   /* 자원요청번호 */
+		AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+
+	<!-- 자원요청상세_물리자원 삭제 -->
+	<delete id="deleteRrRsrcReqDtlPRsrc">
+	DELETE FROM RR_RSRC_REQ_DTL_P_RSRC
+     WHERE RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+       AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</delete>
+
+
+
+</mapper>

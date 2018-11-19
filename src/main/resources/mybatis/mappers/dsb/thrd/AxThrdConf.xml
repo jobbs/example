@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.thrd.axThrdConf">
+
+
+
+	<select id="selectAxThrdConfList" parameterType="ncis.dsb.thrd.thrdConf.vo.AxThrdConfSearchVo" resultType="ncis.dsb.thrd.thrdConf.vo.AxThrdConfVo">
+		/*ncis.sql.dsb.thrd.axThrdConf.selectAxThrdConfList*/
+
+
+			SELECT A.PATH
+					, A.SERVC_NM
+					, A.SERVC_SEQ
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CONT_CNT END) SERVER_STAT_CONT_CNT
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CMPR_STDR END) SERVER_STAT_CMPR_STDR
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='1' THEN B.CONF_CONT_CNT END) WARNING_STAT_CONT_CNT
+					, MAX(CASE WHEN B.IDX_ITM_ID='1' THEN B.CONF_CMPR_STDR END) WARNING_STAT_CMPR_STDR
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END ) MAJOR_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END ) MAJOR_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_MEM_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END)  MAJOR_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END)  MAJOR_MEM_USE_RT_CONT_CNT
+
+					, C.USER_NM
+					, C.CNT USER_CNT
+					, D.GRD_NM
+			FROM
+			 (SELECT DISTINCT D.INSTITUTION_NM||'>' || BB.JOB_NM PATH,
+					 E.SERVC_NM,
+					 E.SERVC_SEQ
+			  FROM
+			  	<if test='!allJobAuth'>
+			  		CM_JOB_USER A,
+			  	</if>
+
+			  		RX_SERVC_AREA B INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID
+			  		                INNER JOIN CM_INSTITUTION D ON B.INSTITUTION_ID = D.INSTITUTION_ID
+			  		                INNER JOIN RX_SERVC E ON B.SERVC_AREA_SEQ = E.SERVC_AREA_SEQ
+			  WHERE 1=1
+			  <if test='!allJobAuth'>
+			  	AND  A.USER_ID = #{searchUserId}
+			  	AND  A.JOB_ID = B.JOB_ID
+			  </if>
+
+			  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND B.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='jobId !=null and !"".equals(jobId)'>
+			  	AND B.JOB_ID =#{jobId}
+			  </if>
+			  <if test='servcSeq !=null and !"".equals(servcSeq)'>
+			  	AND E.SERVC_SEQ =#{servcSeq}::INTEGER
+			  </if>
+
+			  	AND B.DEL_YN = 'N'
+			  	AND BB.USE_YN='Y'
+				AND D.USE_YN = 'Y'
+				AND UPPER(E.DEL_YN) = 'N'
+				AND E.SERVC_TY_CD IN ('01','02')
+			   ) A LEFT JOIN  ST_TRGT_SRVR_THRES_CONF B ON (B.THRES_TRGT_SRVR_SEQ = A.SERVC_SEQ AND TRGT_SRVR_CL_CD ='03')
+			 LEFT JOIN
+			(   SELECT THRES_TRGT_SRVR_SEQ, USER_NM, CNT
+			FROM (
+			SELECT COUNT(1) OVER(PARTITION BY X.DSPTH_CONF_ID) CNT , USER_NM, THRES_TRGT_SRVR_SEQ, ROW_NUMBER() OVER(PARTITION BY THRES_TRGT_SRVR_SEQ ORDER BY USER_NM) SEQ
+			FROM ST_DSPTH_CONF X, ST_EVNT_DSPTH_CHARGER Y,  CM_USR Z
+			WHERE X.TRGT_SRVR_CL_CD ='03'
+			AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+			AND Y.DSPTH_TRGT_ID = Z.USER_ID
+			ORDER BY THRES_TRGT_SRVR_SEQ, USER_NM
+			) A
+			WHERE SEQ =1
+			) C ON A.SERVC_SEQ = C.THRES_TRGT_SRVR_SEQ
+			LEFT JOIN (
+				SELECT THRES_TRGT_SRVR_SEQ, TRIM(COALESCE(NM1,'')||' ' ||COALESCE(NM2,'')||' ' ||COALESCE(NM3,'')) GRD_NM
+				FROM (
+				SELECT THRES_TRGT_SRVR_SEQ,
+					MAX(CASE WHEN DSPTH_GRD_CD = '04' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM1,
+					MAX(CASE WHEN DSPTH_GRD_CD = '02' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM2,
+					MAX(CASE WHEN DSPTH_GRD_CD = '03' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM3
+				FROM ST_DSPTH_CONF X, ST_DSPTH_GRD Y
+				WHERE X.TRGT_SRVR_CL_CD ='03'
+				AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+				GROUP BY THRES_TRGT_SRVR_SEQ
+				) A
+			) D ON A.SERVC_SEQ = D.THRES_TRGT_SRVR_SEQ
+			GROUP BY A.PATH, A.SERVC_NM,A.SERVC_SEQ, C.USER_NM, C.CNT, D.GRD_NM
+			ORDER BY 2
+	</select>
+	<select id="selectAxThrdConfListCount" parameterType="ncis.dsb.thrd.thrdConf.vo.AxThrdConfSearchVo" resultType="int">
+		/* ncis.sql.dsb.thrd.axThrdConf.selectAxThrdConfListCount */
+		SELECT COUNT(DISTINCT(A.PATH, A.SERVC_NM, A.SERVC_SEQ)) cnt
+			FROM
+			 (SELECT DISTINCT D.INSTITUTION_NM||'>' || E.SERVC_NM PATH,
+					 E.SERVC_NM,
+					 E.SERVC_SEQ
+			  FROM
+			  	<if test='!allJobAuth'>
+			  		CM_JOB_USER A,
+			  	</if>
+
+			  		RX_SERVC_AREA B INNER JOIN CM_INSTITUTION D ON B.INSTITUTION_ID = D.INSTITUTION_ID
+			  		                INNER JOIN RX_SERVC E ON B.SERVC_AREA_SEQ = E.SERVC_AREA_SEQ
+			  WHERE 1=1
+			  <if test='!allJobAuth'>
+			  	AND  A.USER_ID = #{searchUserId}
+			  	AND  A.JOB_ID = B.JOB_ID
+			  </if>
+
+			  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND B.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='jobId !=null and !"".equals(jobId)'>
+			  	AND B.JOB_ID =#{jobId}
+			  </if>
+			  <if test='servcSeq !=null and !"".equals(servcSeq)'>
+			  	AND E.SERVC_SEQ =#{servcSeq}::INTEGER
+			  </if>
+
+			  	AND B.DEL_YN = 'N'
+				AND D.USE_YN = 'Y'
+				AND UPPER(E.DEL_YN) = 'N'
+				AND E.SERVC_TY_CD IN ('01','02')
+
+			 ) A LEFT JOIN  ST_TRGT_SRVR_THRES_CONF B ON (B.THRES_TRGT_SRVR_SEQ = A.SERVC_SEQ AND TRGT_SRVR_CL_CD ='03')
+	</select>
+
+
+</mapper>

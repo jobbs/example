@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siCompCommon">
+
+	<resultMap id="resultSiCompCommon" type="ncis.cmn.entity.SiCompCommon">
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="mngRegionClNm"     column="MNG_REGION_CL_NM"/>  <!-- 관리리전구분명 -->
+        <result property="assetsId"     column="ASSETS_ID"/>  <!-- 자산ID -->
+        <result property="compRsrcNm"     column="COMP_RSRC_NM"/>  <!-- 구성자원명 -->
+        <result property="modlNm"     column="MODL_NM"/>  <!-- 모델명 -->
+        <result property="mnfctCo"     column="MNFCT_CO"/>  <!-- 제조사 -->
+        <result property="useDept"     column="USE_DEPT"/>  <!-- 사용부서명 -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="oprStat"     column="OPR_STAT"/>  <!-- 운영상태 -->
+        <result property="slaRegJob"     column="SLA_REG_JOB"/>  <!-- SLA등록업무 -->
+        <result property="haYn"     column="HA_YN"/>  <!-- 이중화(HA)여부 -->
+        <result property="singlCompYn"     column="SINGL_COMP_YN"/>  <!-- 단일구성여부 -->
+        <result property="drEqpYn"     column="DR_EQP_YN"/>  <!-- DR장비여부 -->
+        <result property="upperCompId"     column="UPPER_COMP_ID"/>  <!-- 상위구성ID -->
+        <result property="rmk"     column="RMK"/>  <!-- 비고 -->
+        <result property="hstNm"     column="HST_NM"/>  <!-- 호스트명 -->
+        <result property="modlCd"     column="MODL_CD"/>  <!-- 모델코드 -->
+        <result property="mngRegionClCd"     column="MNG_REGION_CL_CD"/>  <!-- 관리리전구분코드 -->
+        <result property="compSrvrClCd"     column="COMP_SRVR_CL_CD"/>  <!-- 구성서버구분코드 -->
+        <result property="instlLocaId"     column="INSTL_LOCA_ID"/>  <!-- 설치위치ID -->
+        <result property="instlRegionId"     column="INSTL_REGION_ID"/>  <!-- 설치리전ID -->
+        <result property="mngRegionId"     column="MNG_REGION_ID"/>  <!-- 관리리전ID -->
+        <result property="jobId"     column="JOB_ID"/>  <!-- 업무ID -->
+        <result property="regionNm"     column="REGION_NM"/>  <!-- 리전명 -->
+        <result property="instlRegionNm"     column="INSTL_REGION_NM"/>  <!-- 설치리전명 -->
+        <result property="instlFloorNm"     column="INSTL_FLOOR_NM"/>  <!-- 설치층명 -->
+        <result property="instlAreaNm"     column="INSTL_AREA_NM"/>  <!-- 설치영역명 -->
+        <result property="instlXCrdnt"     column="INSTL_X_CRDNT"/>  <!-- 설치X좌표 -->
+        <result property="instlYCrdnt"     column="INSTL_Y_CRDNT"/>  <!-- 설치Y좌표 -->
+        <result property="srvrClCd"     column="SRVR_CL_CD"/>  <!-- 서버분류코드 -->
+	</resultMap>
+
+	<!-- 구성정보_공통 등록 -->
+	<insert id="insertSiCompCommon">
+	INSERT INTO SI_COMP_COMMON (
+	             COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , MNG_REGION_CL_NM  /* 관리리전구분명 */
+	           , ASSETS_ID  /* 자산ID */
+	           , COMP_RSRC_NM  /* 구성자원명 */
+	           , MODL_NM  /* 모델명 */
+	           , MNFCT_CO  /* 제조사 */
+	           , USE_DEPT  /* 사용부서명 */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , OPR_STAT  /* 운영상태 */
+	           , SLA_REG_JOB  /* SLA등록업무 */
+	           , HA_YN  /* 이중화(HA)여부 */
+	           , SINGL_COMP_YN  /* 단일구성여부 */
+	           , DR_EQP_YN  /* DR장비여부 */
+	           , UPPER_COMP_ID  /* 상위구성ID */
+	           , RMK  /* 비고 */
+	           , HST_NM  /* 호스트명 */
+	           , MODL_CD  /* 모델코드 */
+	           , MNG_REGION_CL_CD  /* 관리리전구분코드 */
+	           , COMP_SRVR_CL_CD  /* 구성서버구분코드 */
+	           , INSTL_LOCA_ID  /* 설치위치ID */
+	           , INSTL_REGION_ID  /* 설치리전ID */
+	           , MNG_REGION_ID  /* 관리리전ID */
+	           , JOB_ID  /* 업무ID */
+	           , REGION_NM  /* 리전명 */
+	           , INSTL_REGION_NM  /* 설치리전명 */
+	           , INSTL_FLOOR_NM  /* 설치층명 */
+	           , INSTL_AREA_NM  /* 설치영역명 */
+	           , INSTL_X_CRDNT  /* 설치X좌표 */
+	           , INSTL_Y_CRDNT  /* 설치Y좌표 */
+	           , SRVR_CL_CD  /* 서버분류코드 */
+	) VALUES (
+	           #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{mngRegionClNm}  /* 관리리전구분명 */
+	         , #{assetsId}  /* 자산ID */
+	         , #{compRsrcNm}  /* 구성자원명 */
+	         , #{modlNm}  /* 모델명 */
+	         , #{mnfctCo}  /* 제조사 */
+	         , #{useDept}  /* 사용부서명 */
+	         , #{institutionId}  /* 기관ID */
+	         , #{oprStat}  /* 운영상태 */
+	         , #{slaRegJob}  /* SLA등록업무 */
+	         , #{haYn}  /* 이중화(HA)여부 */
+	         , #{singlCompYn}  /* 단일구성여부 */
+	         , #{drEqpYn}  /* DR장비여부 */
+	         , #{upperCompId}  /* 상위구성ID */
+	         , #{rmk}  /* 비고 */
+	         , #{hstNm}  /* 호스트명 */
+	         , #{modlCd}  /* 모델코드 */
+	         , #{mngRegionClCd}  /* 관리리전구분코드 */
+	         , #{compSrvrClCd}  /* 구성서버구분코드 */
+	         , #{instlLocaId}  /* 설치위치ID */
+	         , #{instlRegionId}  /* 설치리전ID */
+	         , #{mngRegionId}  /* 관리리전ID */
+	         , #{jobId}  /* 업무ID */
+	         , #{regionNm}  /* 리전명 */
+	         , #{instlRegionNm}  /* 설치리전명 */
+	         , #{instlFloorNm}  /* 설치층명 */
+	         , #{instlAreaNm}  /* 설치영역명 */
+	         , #{instlXCrdnt}  /* 설치X좌표 */
+	         , #{instlYCrdnt}  /* 설치Y좌표 */
+	         , #{srvrClCd}  /* 서버분류코드 */
+	)
+	</insert>
+
+	<!-- 구성정보_공통 수정 -->
+	<update id="updateSiCompCommon">
+	UPDATE SI_COMP_COMMON
+	         SET COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , MNG_REGION_CL_NM = #{mngRegionClNm}  /* 관리리전구분명 */
+	           , ASSETS_ID = #{assetsId}  /* 자산ID */
+	           , COMP_RSRC_NM = #{compRsrcNm}  /* 구성자원명 */
+	           , MODL_NM = #{modlNm}  /* 모델명 */
+	           , MNFCT_CO = #{mnfctCo}  /* 제조사 */
+	           , USE_DEPT = #{useDept}  /* 사용부서명 */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , OPR_STAT = #{oprStat}  /* 운영상태 */
+	           , SLA_REG_JOB = #{slaRegJob}  /* SLA등록업무 */
+	           , HA_YN = #{haYn}  /* 이중화(HA)여부 */
+	           , SINGL_COMP_YN = #{singlCompYn}  /* 단일구성여부 */
+	           , DR_EQP_YN = #{drEqpYn}  /* DR장비여부 */
+	           , UPPER_COMP_ID = #{upperCompId}  /* 상위구성ID */
+	           , RMK = #{rmk}  /* 비고 */
+	           , HST_NM = #{hstNm}  /* 호스트명 */
+	           , MODL_CD = #{modlCd}  /* 모델코드 */
+	           , MNG_REGION_CL_CD = #{mngRegionClCd}  /* 관리리전구분코드 */
+	           , COMP_SRVR_CL_CD = #{compSrvrClCd}  /* 구성서버구분코드 */
+	           , INSTL_LOCA_ID = #{instlLocaId}  /* 설치위치ID */
+	           , INSTL_REGION_ID = #{instlRegionId}  /* 설치리전ID */
+	           , MNG_REGION_ID = #{mngRegionId}  /* 관리리전ID */
+	           , JOB_ID = #{jobId}  /* 업무ID */
+	           , REGION_NM = #{regionNm}  /* 리전명 */
+	           , INSTL_REGION_NM = #{instlRegionNm}  /* 설치리전명 */
+	           , INSTL_FLOOR_NM = #{instlFloorNm}  /* 설치층명 */
+	           , INSTL_AREA_NM = #{instlAreaNm}  /* 설치영역명 */
+	           , INSTL_X_CRDNT = #{instlXCrdnt}  /* 설치X좌표 */
+	           , INSTL_Y_CRDNT = #{instlYCrdnt}  /* 설치Y좌표 */
+	           , SRVR_CL_CD = #{srvrClCd}  /* 서버분류코드 */
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 구성정보_공통 삭제 -->
+	<delete id="deleteSiCompCommon">
+	DELETE FROM SI_COMP_COMMON
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

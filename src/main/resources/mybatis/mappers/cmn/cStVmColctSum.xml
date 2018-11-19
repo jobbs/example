@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stVmColctSum">
+
+	<resultMap id="resultStVmColctSum" type="ncis.cmn.entity.StVmColctSum">
+        <result property="colctDt"     column="COLCT_DT"/>  <!-- 수집일자 -->
+        <result property="colctHour"     column="COLCT_HOUR"/>  <!-- 수집시간 -->
+        <result property="colctMi"     column="COLCT_MI"/>  <!-- 수집분 -->
+        <result property="vmId"     column="VM_ID"/>  <!-- 가상서버ID -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="jobId"     column="JOB_ID"/>  <!-- 업무ID -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 리전ID -->
+        <result property="zoneId"     column="ZONE_ID"/>  <!-- 존ID -->
+        <result property="netId"     column="NET_ID"/>  <!-- 망ID -->
+        <result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+        <result property="colctCycle"     column="COLCT_CYCLE"/>  <!-- 수집주기 -->
+        <result property="lastSrvrStatCd"     column="LAST_SRVR_STAT_CD"/>  <!-- 최종서버상태코드 -->
+        <result property="lastVcoreQty"     column="LAST_VCORE_QTY"/>  <!-- 최종vCore수 -->
+        <result property="sumVcoreQty"     column="SUM_VCORE_QTY"/>  <!-- 합계vCore수 -->
+        <result property="avgVcoreQty"     column="AVG_VCORE_QTY"/>  <!-- 평균vCore수 -->
+        <result property="sumCpuUseRt"     column="SUM_CPU_USE_RT"/>  <!-- 합계CPU사용율 -->
+        <result property="avgCpuUseRt"     column="AVG_CPU_USE_RT"/>  <!-- 평균CPU사용율 -->
+        <result property="maxCpuUseRt"     column="MAX_CPU_USE_RT"/>  <!-- 최대CPU사용율 -->
+        <result property="minCpuUseRt"     column="MIN_CPU_USE_RT"/>  <!-- 최빈CPU사용율 -->
+        <result property="lastMemSumCapa"     column="LAST_MEM_SUM_CAPA"/>  <!-- 최종메모리총용량 -->
+        <result property="sumMemSumCapa"     column="SUM_MEM_SUM_CAPA"/>  <!-- 합계메모리총용량 -->
+        <result property="avgMemSumCapa"     column="AVG_MEM_SUM_CAPA"/>  <!-- 평균메모리총용량 -->
+        <result property="sumMemUseCapa"     column="SUM_MEM_USE_CAPA"/>  <!-- 합계메모리사용량 -->
+        <result property="maxMemUseCapa"     column="MAX_MEM_USE_CAPA"/>  <!-- 최대메모리사용량 -->
+        <result property="minMemUseCapa"     column="MIN_MEM_USE_CAPA"/>  <!-- 최소메모리사용량 -->
+        <result property="avgMemUseCapa"     column="AVG_MEM_USE_CAPA"/>  <!-- 평균메모리사용량 -->
+        <result property="avgMemUseRt"     column="AVG_MEM_USE_RT"/>  <!-- 평균메모리사용율 -->
+        <result property="maxMemUseRt"     column="MAX_MEM_USE_RT"/>  <!-- 최대메모리사용율 -->
+        <result property="minMemUseRt"     column="MIN_MEM_USE_RT"/>  <!-- 최빈메모리사용율 -->
+        <result property="lastStrgSumCapa"     column="LAST_STRG_SUM_CAPA"/>  <!-- 최종스토리지총용량 -->
+        <result property="sumStrgSumCapa"     column="SUM_STRG_SUM_CAPA"/>  <!-- 합계스토리지총용량 -->
+        <result property="avgStrgSumCapa"     column="AVG_STRG_SUM_CAPA"/>  <!-- 평균스토리지총용량 -->
+        <result property="sumStrgUseCapa"     column="SUM_STRG_USE_CAPA"/>  <!-- 합계스토리지사용량 -->
+        <result property="avgStrgUseCapa"     column="AVG_STRG_USE_CAPA"/>  <!-- 평균스토리지사용량 -->
+        <result property="maxStrgUseCapa"     column="MAX_STRG_USE_CAPA"/>  <!-- 최대스토리지사용량 -->
+        <result property="minStrgUseCapa"     column="MIN_STRG_USE_CAPA"/>  <!-- 최소스토리지사용율 -->
+        <result property="avgStrgUseRt"     column="AVG_STRG_USE_RT"/>  <!-- 평균스토리지사용율 -->
+        <result property="maxStrgUseRt"     column="MAX_STRG_USE_RT"/>  <!-- 최대스토리지사용율 -->
+        <result property="sumInTrfic"     column="SUM_IN_TRFIC"/>  <!-- 합계IN_트래픽 -->
+        <result property="avgInTrfic"     column="AVG_IN_TRFIC"/>  <!-- 평균IN_트래픽 -->
+        <result property="maxInTrfic"     column="MAX_IN_TRFIC"/>  <!-- 최대IN_트래픽 -->
+        <result property="minInTrfic"     column="MIN_IN_TRFIC"/>  <!-- 최소IN_트래픽 -->
+        <result property="sumOutTrfic"     column="SUM_OUT_TRFIC"/>  <!-- 합계OUT_트래픽 -->
+        <result property="avgOutTrfic"     column="AVG_OUT_TRFIC"/>  <!-- 평균OUT_트래픽 -->
+        <result property="maxOutTrfic"     column="MAX_OUT_TRFIC"/>  <!-- 최대OUT_트래픽 -->
+        <result property="minOutTrfic"     column="MIN_OUT_TRFIC"/>  <!-- 최소OUT_트래픽 -->
+        <result property="colctCnt"     column="COLCT_CNT"/>  <!-- 수집건수 -->
+        <result property="rc1hCpuUseRtAvg"     column="RC_1H_CPU_USE_RT_AVG"/>  <!-- 최근1시간CPU사용율평균 -->
+        <result property="rc1hMemUseRtAvg"     column="RC_1H_MEM_USE_RT_AVG"/>  <!-- 최근1시간메모리사용율평균 -->
+        <result property="rc1hStrgUseRtAvg"     column="RC_1H_STRG_USE_RT_AVG"/>  <!-- 최근1시간스토리지사용율평균 -->
+        <result property="sumPnt"     column="SUM_PNT"/>  <!-- 합계포인트 -->
+        <result property="minStrgUseRt"     column="MIN_STRG_USE_RT"/>  <!-- 최빈스토리지사용율 -->
+	</resultMap>
+
+	<!-- 가상서버_수집집계 등록 -->
+	<insert id="insertStVmColctSum">
+	INSERT INTO ST_VM_COLCT_SUM (
+	             COLCT_DT  /* 수집일자 */
+	           , COLCT_HOUR  /* 수집시간 */
+	           , COLCT_MI  /* 수집분 */
+	           , VM_ID  /* 가상서버ID */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , JOB_ID  /* 업무ID */
+	           , REGION_ID  /* 리전ID */
+	           , ZONE_ID  /* 존ID */
+	           , NET_ID  /* 망ID */
+	           , RSRC_POOL_ID  /* 자원풀ID */
+	           , COLCT_CYCLE  /* 수집주기 */
+	           , LAST_SRVR_STAT_CD  /* 최종서버상태코드 */
+	           , LAST_VCORE_QTY  /* 최종vCore수 */
+	           , SUM_VCORE_QTY  /* 합계vCore수 */
+	           , AVG_VCORE_QTY  /* 평균vCore수 */
+	           , SUM_CPU_USE_RT  /* 합계CPU사용율 */
+	           , AVG_CPU_USE_RT  /* 평균CPU사용율 */
+	           , MAX_CPU_USE_RT  /* 최대CPU사용율 */
+	           , MIN_CPU_USE_RT  /* 최빈CPU사용율 */
+	           , LAST_MEM_SUM_CAPA  /* 최종메모리총용량 */
+	           , SUM_MEM_SUM_CAPA  /* 합계메모리총용량 */
+	           , AVG_MEM_SUM_CAPA  /* 평균메모리총용량 */
+	           , SUM_MEM_USE_CAPA  /* 합계메모리사용량 */
+	           , MAX_MEM_USE_CAPA  /* 최대메모리사용량 */
+	           , MIN_MEM_USE_CAPA  /* 최소메모리사용량 */
+	           , AVG_MEM_USE_CAPA  /* 평균메모리사용량 */
+	           , AVG_MEM_USE_RT  /* 평균메모리사용율 */
+	           , MAX_MEM_USE_RT  /* 최대메모리사용율 */
+	           , MIN_MEM_USE_RT  /* 최빈메모리사용율 */
+	           , LAST_STRG_SUM_CAPA  /* 최종스토리지총용량 */
+	           , SUM_STRG_SUM_CAPA  /* 합계스토리지총용량 */
+	           , AVG_STRG_SUM_CAPA  /* 평균스토리지총용량 */
+	           , SUM_STRG_USE_CAPA  /* 합계스토리지사용량 */
+	           , AVG_STRG_USE_CAPA  /* 평균스토리지사용량 */
+	           , MAX_STRG_USE_CAPA  /* 최대스토리지사용량 */
+	           , MIN_STRG_USE_CAPA  /* 최소스토리지사용율 */
+	           , AVG_STRG_USE_RT  /* 평균스토리지사용율 */
+	           , MAX_STRG_USE_RT  /* 최대스토리지사용율 */
+	           , SUM_IN_TRFIC  /* 합계IN_트래픽 */
+	           , AVG_IN_TRFIC  /* 평균IN_트래픽 */
+	           , MAX_IN_TRFIC  /* 최대IN_트래픽 */
+	           , MIN_IN_TRFIC  /* 최소IN_트래픽 */
+	           , SUM_OUT_TRFIC  /* 합계OUT_트래픽 */
+	           , AVG_OUT_TRFIC  /* 평균OUT_트래픽 */
+	           , MAX_OUT_TRFIC  /* 최대OUT_트래픽 */
+	           , MIN_OUT_TRFIC  /* 최소OUT_트래픽 */
+	           , COLCT_CNT  /* 수집건수 */
+	           , RC_1H_CPU_USE_RT_AVG  /* 최근1시간CPU사용율평균 */
+	           , RC_1H_MEM_USE_RT_AVG  /* 최근1시간메모리사용율평균 */
+	           , RC_1H_STRG_USE_RT_AVG  /* 최근1시간스토리지사용율평균 */
+	           , SUM_PNT  /* 합계포인트 */
+	           , MIN_STRG_USE_RT  /* 최빈스토리지사용율 */
+	) VALUES (
+	           #{colctDt}  /* 수집일자 */
+	         , #{colctHour}  /* 수집시간 */
+	         , #{colctMi}  /* 수집분 */
+	         , #{vmId}  /* 가상서버ID */
+	         , #{institutionId}  /* 기관ID */
+	         , #{jobId}  /* 업무ID */
+	         , #{regionId}  /* 리전ID */
+	         , #{zoneId}  /* 존ID */
+	         , #{netId}  /* 망ID */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	         , #{colctCycle}  /* 수집주기 */
+	         , #{lastSrvrStatCd}  /* 최종서버상태코드 */
+	         , #{lastVcoreQty}  /* 최종vCore수 */
+	         , #{sumVcoreQty}  /* 합계vCore수 */
+	         , #{avgVcoreQty}  /* 평균vCore수 */
+	         , #{sumCpuUseRt}  /* 합계CPU사용율 */
+	         , #{avgCpuUseRt}  /* 평균CPU사용율 */
+	         , #{maxCpuUseRt}  /* 최대CPU사용율 */
+	         , #{minCpuUseRt}  /* 최빈CPU사용율 */
+	         , #{lastMemSumCapa}  /* 최종메모리총용량 */
+	         , #{sumMemSumCapa}  /* 합계메모리총용량 */
+	         , #{avgMemSumCapa}  /* 평균메모리총용량 */
+	         , #{sumMemUseCapa}  /* 합계메모리사용량 */
+	         , #{maxMemUseCapa}  /* 최대메모리사용량 */
+	         , #{minMemUseCapa}  /* 최소메모리사용량 */
+	         , #{avgMemUseCapa}  /* 평균메모리사용량 */
+	         , #{avgMemUseRt}  /* 평균메모리사용율 */
+	         , #{maxMemUseRt}  /* 최대메모리사용율 */
+	         , #{minMemUseRt}  /* 최빈메모리사용율 */
+	         , #{lastStrgSumCapa}  /* 최종스토리지총용량 */
+	         , #{sumStrgSumCapa}  /* 합계스토리지총용량 */
+	         , #{avgStrgSumCapa}  /* 평균스토리지총용량 */
+	         , #{sumStrgUseCapa}  /* 합계스토리지사용량 */
+	         , #{avgStrgUseCapa}  /* 평균스토리지사용량 */
+	         , #{maxStrgUseCapa}  /* 최대스토리지사용량 */
+	         , #{minStrgUseCapa}  /* 최소스토리지사용율 */
+	         , #{avgStrgUseRt}  /* 평균스토리지사용율 */
+	         , #{maxStrgUseRt}  /* 최대스토리지사용율 */
+	         , #{sumInTrfic}  /* 합계IN_트래픽 */
+	         , #{avgInTrfic}  /* 평균IN_트래픽 */
+	         , #{maxInTrfic}  /* 최대IN_트래픽 */
+	         , #{minInTrfic}  /* 최소IN_트래픽 */
+	         , #{sumOutTrfic}  /* 합계OUT_트래픽 */
+	         , #{avgOutTrfic}  /* 평균OUT_트래픽 */
+	         , #{maxOutTrfic}  /* 최대OUT_트래픽 */
+	         , #{minOutTrfic}  /* 최소OUT_트래픽 */
+	         , #{colctCnt}  /* 수집건수 */
+	         , #{rc1hCpuUseRtAvg}  /* 최근1시간CPU사용율평균 */
+	         , #{rc1hMemUseRtAvg}  /* 최근1시간메모리사용율평균 */
+	         , #{rc1hStrgUseRtAvg}  /* 최근1시간스토리지사용율평균 */
+	         , #{sumPnt}  /* 합계포인트 */
+	         , #{minStrgUseRt}  /* 최빈스토리지사용율 */
+	)
+	</insert>
+
+	<!-- 가상서버_수집집계 수정 -->
+	<update id="updateStVmColctSum">
+	UPDATE ST_VM_COLCT_SUM
+	         SET COLCT_DT = #{colctDt}  /* 수집일자 */
+	           , COLCT_HOUR = #{colctHour}  /* 수집시간 */
+	           , COLCT_MI = #{colctMi}  /* 수집분 */
+	           , VM_ID = #{vmId}  /* 가상서버ID */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , JOB_ID = #{jobId}  /* 업무ID */
+	           , REGION_ID = #{regionId}  /* 리전ID */
+	           , ZONE_ID = #{zoneId}  /* 존ID */
+	           , NET_ID = #{netId}  /* 망ID */
+	           , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+	           , COLCT_CYCLE = #{colctCycle}  /* 수집주기 */
+	           , LAST_SRVR_STAT_CD = #{lastSrvrStatCd}  /* 최종서버상태코드 */
+	           , LAST_VCORE_QTY = #{lastVcoreQty}  /* 최종vCore수 */
+	           , SUM_VCORE_QTY = #{sumVcoreQty}  /* 합계vCore수 */
+	           , AVG_VCORE_QTY = #{avgVcoreQty}  /* 평균vCore수 */
+	           , SUM_CPU_USE_RT = #{sumCpuUseRt}  /* 합계CPU사용율 */
+	           , AVG_CPU_USE_RT = #{avgCpuUseRt}  /* 평균CPU사용율 */
+	           , MAX_CPU_USE_RT = #{maxCpuUseRt}  /* 최대CPU사용율 */
+	           , MIN_CPU_USE_RT = #{minCpuUseRt}  /* 최빈CPU사용율 */
+	           , LAST_MEM_SUM_CAPA = #{lastMemSumCapa}  /* 최종메모리총용량 */
+	           , SUM_MEM_SUM_CAPA = #{sumMemSumCapa}  /* 합계메모리총용량 */
+	           , AVG_MEM_SUM_CAPA = #{avgMemSumCapa}  /* 평균메모리총용량 */
+	           , SUM_MEM_USE_CAPA = #{sumMemUseCapa}  /* 합계메모리사용량 */
+	           , MAX_MEM_USE_CAPA = #{maxMemUseCapa}  /* 최대메모리사용량 */
+	           , MIN_MEM_USE_CAPA = #{minMemUseCapa}  /* 최소메모리사용량 */
+	           , AVG_MEM_USE_CAPA = #{avgMemUseCapa}  /* 평균메모리사용량 */
+	           , AVG_MEM_USE_RT = #{avgMemUseRt}  /* 평균메모리사용율 */
+	           , MAX_MEM_USE_RT = #{maxMemUseRt}  /* 최대메모리사용율 */
+	           , MIN_MEM_USE_RT = #{minMemUseRt}  /* 최빈메모리사용율 */
+	           , LAST_STRG_SUM_CAPA = #{lastStrgSumCapa}  /* 최종스토리지총용량 */
+	           , SUM_STRG_SUM_CAPA = #{sumStrgSumCapa}  /* 합계스토리지총용량 */
+	           , AVG_STRG_SUM_CAPA = #{avgStrgSumCapa}  /* 평균스토리지총용량 */
+	           , SUM_STRG_USE_CAPA = #{sumStrgUseCapa}  /* 합계스토리지사용량 */
+	           , AVG_STRG_USE_CAPA = #{avgStrgUseCapa}  /* 평균스토리지사용량 */
+	           , MAX_STRG_USE_CAPA = #{maxStrgUseCapa}  /* 최대스토리지사용량 */
+	           , MIN_STRG_USE_CAPA = #{minStrgUseCapa}  /* 최소스토리지사용율 */
+	           , AVG_STRG_USE_RT = #{avgStrgUseRt}  /* 평균스토리지사용율 */
+	           , MAX_STRG_USE_RT = #{maxStrgUseRt}  /* 최대스토리지사용율 */
+	           , SUM_IN_TRFIC = #{sumInTrfic}  /* 합계IN_트래픽 */
+	           , AVG_IN_TRFIC = #{avgInTrfic}  /* 평균IN_트래픽 */
+	           , MAX_IN_TRFIC = #{maxInTrfic}  /* 최대IN_트래픽 */
+	           , MIN_IN_TRFIC = #{minInTrfic}  /* 최소IN_트래픽 */
+	           , SUM_OUT_TRFIC = #{sumOutTrfic}  /* 합계OUT_트래픽 */
+	           , AVG_OUT_TRFIC = #{avgOutTrfic}  /* 평균OUT_트래픽 */
+	           , MAX_OUT_TRFIC = #{maxOutTrfic}  /* 최대OUT_트래픽 */
+	           , MIN_OUT_TRFIC = #{minOutTrfic}  /* 최소OUT_트래픽 */
+	           , COLCT_CNT = #{colctCnt}  /* 수집건수 */
+	           , RC_1H_CPU_USE_RT_AVG = #{rc1hCpuUseRtAvg}  /* 최근1시간CPU사용율평균 */
+	           , RC_1H_MEM_USE_RT_AVG = #{rc1hMemUseRtAvg}  /* 최근1시간메모리사용율평균 */
+	           , RC_1H_STRG_USE_RT_AVG = #{rc1hStrgUseRtAvg}  /* 최근1시간스토리지사용율평균 */
+	           , SUM_PNT = #{sumPnt}  /* 합계포인트 */
+	           , MIN_STRG_USE_RT = #{minStrgUseRt}  /* 최빈스토리지사용율 */
+         WHERE COLCT_DT = #{colctDt}  /* 수집일자 */
+           AND COLCT_HOUR = #{colctHour}  /* 수집시간 */
+           AND COLCT_MI = #{colctMi}  /* 수집분 */
+           AND VM_ID = #{vmId}  /* 가상서버ID */
+
+	</update>
+
+	<!-- 가상서버_수집집계 삭제 -->
+	<delete id="deleteStVmColctSum">
+	DELETE FROM ST_VM_COLCT_SUM
+         WHERE COLCT_DT = #{colctDt}  /* 수집일자 */
+           AND COLCT_HOUR = #{colctHour}  /* 수집시간 */
+           AND COLCT_MI = #{colctMi}  /* 수집분 */
+           AND VM_ID = #{vmId}  /* 가상서버ID */
+
+	</delete>
+
+</mapper>

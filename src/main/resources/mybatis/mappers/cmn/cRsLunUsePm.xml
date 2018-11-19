@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsLunUsePm">
+
+	<resultMap id="resultRsLunUsePm" type="ncis.cmn.entity.RsLunUsePm">
+        <result property="lunId"     column="LUN_ID"/>  <!-- LUN_ID -->
+        <result property="pmId"     column="PM_ID"/>  <!-- 물리서버ID -->
+	</resultMap>
+
+	<!-- LUN사용물리서버 등록 -->
+	<insert id="insertRsLunUsePm">
+	INSERT INTO RS_LUN_USE_PM (
+	             LUN_ID  /* LUN_ID */
+	           , PM_ID  /* 물리서버ID */
+	) VALUES (
+	           #{lunId}  /* LUN_ID */
+	         , #{pmId}  /* 물리서버ID */
+	)
+	</insert>
+
+	<!-- LUN사용물리서버 수정 -->
+	<update id="updateRsLunUsePm">
+	UPDATE RS_LUN_USE_PM
+	         SET LUN_ID = #{lunId}  /* LUN_ID */
+	           , PM_ID = #{pmId}  /* 물리서버ID */
+         WHERE LUN_ID = #{lunId}  /* LUN_ID */
+           AND PM_ID = #{pmId}  /* 물리서버ID */
+
+	</update>
+
+	<!-- LUN사용물리서버 삭제 -->
+	<delete id="deleteRsLunUsePm">
+	DELETE FROM RS_LUN_USE_PM
+         WHERE LUN_ID = #{lunId}  /* LUN_ID */
+           AND PM_ID = #{pmId}  /* 물리서버ID */
+
+	</delete>
+
+</mapper>

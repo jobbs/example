@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaPackg">
+
+	<resultMap id="resultOaPackg" type="ncis.cmn.entity.OaPackg">
+	    <result property="packgId"     column="PACKG_SEQ"/>  <!-- 패키지SEQ -->
+        <result property="packgNm"     column="PACKG_NM"/>  <!-- 패키지명 -->
+        <result property="usePrpos"     column="USE_PRPOS"/>  <!-- 사용용도 -->
+        <result property="sysKndCd"     column="SYS_KND_CD"/>  <!-- 시스템종류코드 -->
+        <result property="supplyCo"     column="SUPPLY_CO"/>  <!-- 제공회사 -->
+        <result property="licnse"     column="LICNSE"/>  <!-- 라이선스 -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 리전ID -->
+        <result property="netClCd"     column="NET_CL_CD"/>  <!-- 망구분코드 -->
+	</resultMap>
+
+	<!-- 패키지 등록 -->
+	<insert id="insertOaPackg">
+	INSERT INTO OA_PACKG (
+	             PACKG_SEQ  /* 패키지SEQ */
+	           , PACKG_NM  /* 패키지명 */
+	           , USE_PRPOS  /* 사용용도 */
+	           , SYS_KND_CD  /* 시스템종류코드 */
+	           , SUPPLY_CO  /* 제공회사 */
+	           , LICNSE  /* 라이선스 */
+	           , REGION_ID  /* 리전ID */
+	           , NET_CL_CD  /* 망구분코드 */
+	) VALUES (
+	           #{packgId}  /* 패키지SEQ */
+	         , #{packgNm}  /* 패키지명 */
+	         , #{usePrpos}  /* 사용용도 */
+	         , #{sysKndCd}  /* 시스템종류코드 */
+	         , #{supplyCo}  /* 제공회사 */
+	         , #{licnse}  /* 라이선스 */
+	         , #{regionId}  /* 리전ID */
+	         , #{netClCd}  /* 망구분코드 */
+	)
+	</insert>
+
+	<!-- 패키지 수정 -->
+	<update id="updateOaPackg">
+	UPDATE OA_PACKG
+	         SET PACKG_SEQ = #{packgId}  /* 패키지SEQ */
+	           , PACKG_NM = #{packgNm}  /* 패키지명 */
+	           , USE_PRPOS = #{usePrpos}  /* 사용용도 */
+	           , SYS_KND_CD = #{sysKndCd}  /* 시스템종류코드 */
+	           , SUPPLY_CO = #{supplyCo}  /* 제공회사 */
+	           , LICNSE = #{licnse}  /* 라이선스 */
+	           , REGION_ID = #{regionId}  /* 리전ID */
+	           , NET_CL_CD = #{netClCd}  /* 망구분코드 */
+         WHERE PACKG_SEQ = #{packgId}  /* 패키지SEQ */
+
+	</update>
+
+	<!-- 패키지 삭제 -->
+	<delete id="deleteOaPackg">
+	DELETE FROM OA_PACKG
+         WHERE PACKG_SEQ = #{packgId}  /* 패키지SEQ */
+
+	</delete>
+
+</mapper>

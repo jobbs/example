@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.instt">
+
+	<resultMap type="ncis.cpt.sys.instt.vo.InsttVo" id="resultInsttVo" extends="ncis.sql.cmn.cmInstitution.resultCmInstitution">
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchInttId != null and !searchInttId.isEmpty()">
+			AND INSTITUTION_ID LIKE '%' || #{searchInttId} || '%'
+		</if>
+
+		<if test="searchUseYn != null and !searchUseYn.isEmpty()">
+			AND USE_YN LIKE '%' || #{searchUseYn} || '%'
+		</if>
+
+		<if test="searchInttNm != null and !searchInttNm.isEmpty()">
+			AND INSTITUTION_NM LIKE '%' || #{searchInttNm} || '%'
+		</if>
+	</sql>
+
+	<select id="selectInsttTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.instt.selectInsttTotCnt */
+		SELECT COUNT(*) FROM CM_INSTITUTION
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+
+	<sql id="selectListSql">
+		SELECT
+			INSTITUTION_ID
+			,INSTITUTION_NM
+			,USE_YN
+		FROM CM_INSTITUTION
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY USE_YN DESC, INSTITUTION_NM
+	</sql>
+
+	<select id="selectInsttList" resultMap="resultInsttVo">
+		/* ncis.sql.cpt.instt.selectInsttList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectListSql"/>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectInsttListXlsDwnl" resultMap="resultInsttVo">
+		/* ncis.sql.cpt.instt.selectInsttList */
+		<include refid="selectListSql"/>
+	</select>
+
+	<select id="selectInstt" resultMap="resultInsttVo">
+		/* ncis.sql.cpt.instt.selectInstt */
+		SELECT
+			INSTITUTION_ID
+			,INSTITUTION_NM
+			,USE_YN
+		FROM CM_INSTITUTION
+		<where>
+			INSTITUTION_ID = #{institutionId}
+		</where>
+	</select>
+
+	<select id="selectInsttId" resultType="String">
+		/* ncis.sql.cpt.instt.selectInsttId */
+		SELECT INSTITUTION_ID
+		  FROM CM_INSTITUTION
+		 WHERE INSTITUTION_NM = #{searchInttNm}
+	</select>
+	
+	<select id="selectInsttByOnnaraTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.instt.selectInsttByOnnaraTotCnt */
+		SELECT
+			COUNT(Y.INSTITUTION_NM)
+		FROM
+		(
+			SELECT DISTINCT
+				X.INSTITUTION_ID,
+				X.INSTITUTION_NM, 
+				X.USE_YN
+			FROM
+			(
+				/* 가상서버- 서비스 */ 
+				SELECT
+					E.INSTITUTION_ID, 
+					E.INSTITUTION_NM,
+					E.USE_YN
+				FROM RC_VM B
+					INNER JOIN RC_VM_JOB D ON D.VM_SEQ = B.VM_SEQ
+					INNER JOIN CM_JOB C ON C.JOB_ID =D.JOB_ID and c.use_yn = 'Y'
+					INNER JOIN CM_INSTITUTION E ON E.INSTITUTION_ID = C.INSTITUTION_ID and E.use_yn = 'Y'
+					LEFT JOIN RC_PM CC ON B.PM_SEQ = CC.PM_SEQ AND B.VM_CL_CD = CC.PM_CL_CD
+					INNER JOIN RC_CLSTR DD ON DD.CLSTR_SEQ =B.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL EE ON EE.RSRC_POOL_ID = DD.RSRC_POOL_ID
+					INNER JOIN RC_NET FF ON FF.NET_ID = EE.NET_ID
+					INNER JOIN RC_ZONE HH ON HH.ZONE_ID = EE.ZONE_ID
+					INNER JOIN RC_REGION II ON II.REGION_ID = EE.REGION_ID
+				WHERE 1=1
+					AND B.DEL_YN='N'
+					AND (CC.PM_SEQ ISNULL OR UPPER(CC.DEL_YN) = 'N')
+					AND B.VM_CL_CD = '01'
+					AND EE.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' )
+					AND EE.RSRC_POOL_CL_CD = '01'
+					AND C.INSTITUTION_ID IN (
+					SELECT 
+						CM_INSTITUTION.INSTITUTION_ID
+						FROM RC_VM
+						LEFT JOIN RC_VM_JOB ON RC_VM_JOB.VM_SEQ = RC_VM.VM_SEQ
+						LEFT JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+						LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+			
+						LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+						INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+						INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+						INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+						INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+						
+						WHERE 1=1
+							AND RC_ZONE.ZONE_ID IN ('03')
+							AND RC_VM.DEL_YN = 'N'
+							AND RC_PM.DEL_YN = 'N'
+							AND RC_RSRC_POOL.DEL_YN = 'N'
+							AND CM_INSTITUTION.USE_YN = 'Y'
+							AND CM_INSTITUTION.INSTITUTION_ID IS NOT NULL
+						GROUP BY CM_INSTITUTION.INSTITUTION_ID
+					)
+					
+					UNION ALL 
+	
+					/* 자동확장- 서비스 */ 
+					SELECT
+						C.INSTITUTION_ID,
+						C.INSTITUTION_NM,
+						C.USE_YN
+					FROM RX_SERVC_AREA B 
+					INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID and bb.use_yn = 'Y' 
+					INNER JOIN CM_INSTITUTION C ON B.INSTITUTION_ID = C.INSTITUTION_ID and c.use_yn = 'Y' 
+					LEFT JOIN RX_SERVC D ON B.SERVC_AREA_SEQ = D.SERVC_AREA_SEQ and d.del_yn = 'N' 
+					WHERE 1=1 
+					AND B.DEL_YN='N' 
+					AND C.INSTITUTION_ID IN ( SELECT CM_INSTITUTION.INSTITUTION_ID FROM RX_SERVC_AREA INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RX_SERVC_AREA.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID LEFT JOIN RX_SERVC ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_SERVC.SERVC_AREA_SEQ LEFT JOIN RC_RSRC_POOL ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID LEFT JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID LEFT JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID WHERE 1=1 AND RC_ZONE.ZONE_ID IN ('03') AND RC_RSRC_POOL.DEL_YN = 'N' AND RX_SERVC.DEL_YN = 'N' AND RX_SERVC_AREA.DEL_YN = 'N' AND RX_SERVC.SERVC_TY_CD IN ('01','02') AND CM_INSTITUTION.USE_YN = 'Y' AND CM_INSTITUTION.INSTITUTION_ID IS NOT NULL GROUP BY CM_INSTITUTION.INSTITUTION_ID )
+					AND D.SERVC_TY_CD IN ('01','02')
+			) X
+			WHERE 1=1
+			<if test="searchInttId != null and !searchInttId.isEmpty()">
+				AND X.INSTITUTION_ID LIKE '%' || #{searchInttId} || '%'
+			</if>
+	
+			<if test="searchUseYn != null and !searchUseYn.isEmpty()">
+				AND X.USE_YN LIKE '%' || #{searchUseYn} || '%'
+			</if>
+	
+			<if test="searchInttNm != null and !searchInttNm.isEmpty()">
+				AND X.INSTITUTION_NM LIKE '%' || #{searchInttNm} || '%'
+			</if>
+		) Y
+	</select>
+	
+	<select id="selectInsttListByOnnara" resultMap="resultInsttVo">
+		/* ncis.sql.cpt.instt.selectInsttByOnnara */
+		SELECT DISTINCT
+			X.INSTITUTION_ID,
+			X.INSTITUTION_NM, 
+			X.USE_YN
+		FROM
+		(
+			/* 가상서버- 서비스 */ 
+			SELECT
+				E.INSTITUTION_ID, 
+				E.INSTITUTION_NM,
+				E.USE_YN
+			FROM RC_VM B
+				INNER JOIN RC_VM_JOB D ON D.VM_SEQ = B.VM_SEQ
+				INNER JOIN CM_JOB C ON C.JOB_ID =D.JOB_ID and c.use_yn = 'Y'
+				INNER JOIN CM_INSTITUTION E ON E.INSTITUTION_ID = C.INSTITUTION_ID and E.use_yn = 'Y'
+				LEFT JOIN RC_PM CC ON B.PM_SEQ = CC.PM_SEQ AND B.VM_CL_CD = CC.PM_CL_CD
+				INNER JOIN RC_CLSTR DD ON DD.CLSTR_SEQ =B.CLSTR_SEQ
+				INNER JOIN RC_RSRC_POOL EE ON EE.RSRC_POOL_ID = DD.RSRC_POOL_ID
+				INNER JOIN RC_NET FF ON FF.NET_ID = EE.NET_ID
+				INNER JOIN RC_ZONE HH ON HH.ZONE_ID = EE.ZONE_ID
+				INNER JOIN RC_REGION II ON II.REGION_ID = EE.REGION_ID
+			WHERE 1=1
+				AND B.DEL_YN='N'
+				AND (CC.PM_SEQ ISNULL OR UPPER(CC.DEL_YN) = 'N')
+				AND B.VM_CL_CD = '01'
+				AND EE.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' )
+				AND EE.RSRC_POOL_CL_CD = '01'
+				AND C.INSTITUTION_ID IN (
+				SELECT 
+					CM_INSTITUTION.INSTITUTION_ID
+					FROM RC_VM
+					LEFT JOIN RC_VM_JOB ON RC_VM_JOB.VM_SEQ = RC_VM.VM_SEQ
+					LEFT JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+					LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+		
+					LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+					INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+					
+					WHERE 1=1
+						AND RC_ZONE.ZONE_ID IN ('03')
+						AND RC_VM.DEL_YN = 'N'
+						AND RC_PM.DEL_YN = 'N'
+						AND RC_RSRC_POOL.DEL_YN = 'N'
+						AND CM_INSTITUTION.USE_YN = 'Y'
+						AND CM_INSTITUTION.INSTITUTION_ID IS NOT NULL
+					GROUP BY CM_INSTITUTION.INSTITUTION_ID
+				)
+				
+				UNION ALL 
+
+				/* 자동확장- 서비스 */ 
+				SELECT
+					C.INSTITUTION_ID,
+					C.INSTITUTION_NM,
+					C.USE_YN
+				FROM RX_SERVC_AREA B 
+				INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID and bb.use_yn = 'Y' 
+				INNER JOIN CM_INSTITUTION C ON B.INSTITUTION_ID = C.INSTITUTION_ID and c.use_yn = 'Y' 
+				LEFT JOIN RX_SERVC D ON B.SERVC_AREA_SEQ = D.SERVC_AREA_SEQ and d.del_yn = 'N' 
+				WHERE 1=1 
+				AND B.DEL_YN='N' 
+				AND C.INSTITUTION_ID IN ( SELECT CM_INSTITUTION.INSTITUTION_ID FROM RX_SERVC_AREA INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RX_SERVC_AREA.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID LEFT JOIN RX_SERVC ON RX_SERVC_AREA.SERVC_AREA_SEQ = RX_SERVC.SERVC_AREA_SEQ LEFT JOIN RC_RSRC_POOL ON RX_SERVC_AREA.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID LEFT JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID LEFT JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID WHERE 1=1 AND RC_ZONE.ZONE_ID IN ('03') AND RC_RSRC_POOL.DEL_YN = 'N' AND RX_SERVC.DEL_YN = 'N' AND RX_SERVC_AREA.DEL_YN = 'N' AND RX_SERVC.SERVC_TY_CD IN ('01','02') AND CM_INSTITUTION.USE_YN = 'Y' AND CM_INSTITUTION.INSTITUTION_ID IS NOT NULL GROUP BY CM_INSTITUTION.INSTITUTION_ID )
+				AND D.SERVC_TY_CD IN ('01','02')
+		) X
+		WHERE 1=1
+		<if test="searchInttId != null and !searchInttId.isEmpty()">
+			AND X.INSTITUTION_ID LIKE '%' || #{searchInttId} || '%'
+		</if>
+
+		<if test="searchUseYn != null and !searchUseYn.isEmpty()">
+			AND X.USE_YN LIKE '%' || #{searchUseYn} || '%'
+		</if>
+
+		<if test="searchInttNm != null and !searchInttNm.isEmpty()">
+			AND X.INSTITUTION_NM LIKE '%' || #{searchInttNm} || '%'
+		</if>		
+		ORDER BY X.USE_YN DESC, X.INSTITUTION_NM
+	</select>
+
+</mapper>

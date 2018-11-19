@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmusr">
+
+	<resultMap type="ncis.cmn.entity.CmUsr" id="resultCmUsr">
+		<result property="userId"    		column="USER_ID"/>  <!-- 사용자ID -->
+		<result property="passwd"     		column="PASSWD"/>  <!-- 비밀번호 -->
+		<result property="userNm"     		column="USER_NM"/>  <!-- 이름 -->
+		<result property="userClCd"     	column="USER_CL_CD"/>  <!-- 사용자구분코드 -->
+		<result property="userClNm"     	column="USER_CL_NM"/>  <!-- 사용자구분명 -->
+		<result property="institutionId"    column="INSTITUTION_ID"/>  <!-- 기관ID -->
+		<result property="institutionNm"    column="INSTITUTION_NM"/>  <!-- 기관명 -->
+		<result property="orgnztId"     	column="ORGNZT_ID"/>  <!-- 조직ID -->
+		<result property="orgnztNm"     	column="ORGNZT_NM"/>  <!-- 조직명 -->
+		<result property="mngRegionId"     	column="MNG_REGION_ID"/>  <!-- 관리리전ID -->
+		<result property="ofcpsId"     		column="OFCPS_ID"/>  <!-- 직위ID -->
+		<result property="ofcpsNm"     		column="OFCPS_NM"/>  <!-- 직위명 -->
+		<result property="sysAuthrTyId"     column="SYS_AUTHR_TY_ID"/>  <!-- 시스템권한유형ID -->
+		<result property="telno"     		column="TELNO"/>  <!-- 전화 -->
+		<result property="lxtnNo"     		column="LXTN_NO"/>  <!-- 내선번호 -->
+		<result property="faxNo"     		column="FAX_NO"/>  <!-- 팩스번호 -->
+		<result property="ownhomTelNo"     	column="OWNHOM_TEL_NO"/>  <!-- 자택전화번호 -->
+		<result property="mobile"     		column="MOBILE"/>  <!-- 핸드폰 -->
+		<result property="email"     		column="EMAIL"/>  <!-- 이메일 -->
+		<result property="userStat"     	column="USER_STAT"/>  <!-- 회원상태 -->
+		<result property="absnceYn"     	column="ABSNCE_YN"/>  <!-- 부재여부 -->
+		<result property="absnceId"     	column="ABSNCE_ID"/>  <!-- 부재사용자ID -->
+		<result property="absnceBeginDt"    column="ABSNCE_BEGIN_DT"/>  <!-- 부재시작일자 -->
+		<result property="absnceEndDt"     	column="ABSNCE_END_DT"/>  <!-- 부재종료일자 -->
+		<result property="rcntLoginDttm"    column="RCNT_LOGIN_DTTM"/>  <!-- 최근로그인일시 -->
+		<result property="crtfctKey"     	column="CRTFCT_KEY"/>  <!-- 인증서키값 -->
+		<result property="unityConnectTyCd" column="UNITY_CONNECT_TY_CD"/>  <!-- 통합접속구분코드 -->
+		<result property="regDttm"     		column="REG_DTTM"/>  <!-- 가입일자 -->
+		<result property="updtDttm"     	column="UPDT_DTTM"/>  <!-- 수정일자 -->
+		<result property="updtUserId"     	column="UPDT_USER_ID"/>  <!-- 수정자 -->
+		<result property="sysInptYn"     	column="SYS_INPT_YN"/>  <!-- 수정자 -->
+	</resultMap>
+
+
+	<update id="updateUserDn">
+		UPDATE CM_USR SET CRTFCT_KEY = #{crtfctKey }
+		WHERE USER_ID = #{userId }
+	</update>
+
+
+	<insert id="insertCmUsrRole">
+		/* ncis.sql.cmn.cmusr.insertCmUsrRole */
+		WITH UPSERT AS (
+			SELECT
+				#{roleCd}::text AS ROLE_CD, #{userId}::text AS USER_ID
+		)
+		INSERT INTO CM_USR_ROLE ( ROLE_CD, USER_ID )
+		SELECT UPSERT.ROLE_CD, UPSERT.USER_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_USR_ROLE RU
+				WHERE RU.ROLE_CD = UPSERT.ROLE_CD
+					AND RU.USER_ID = UPSERT.USER_ID
+			)
+	</insert>
+
+	<delete id="deleteCmUsrRole">
+		/* ncis.sql.cmn.cmusr.deleteCmUsrRole */
+		DELETE FROM CM_USR_ROLE
+		WHERE
+			USER_ID = #{userId }
+			<if test="roleCd != null and !roleCd.isEmpty()">
+			AND ROLE_CD = #{roleCd }
+			</if>
+	</delete>
+
+	<delete id="deleteUsrAllRole">
+		/* ncis.sql.cmn.cmusr.deleteUsrAllRole */
+		DELETE FROM CM_USR_ROLE
+		WHERE
+			USER_ID = #{userId }
+	</delete>
+
+	<insert id="insertCmUsrJob">
+		/* ncis.sql.cmn.cmusr.insertCmUsrJob */
+		WITH UPSERT AS (
+			SELECT
+				#{jobId}::text AS JOB_ID, #{userId}::text AS USER_ID
+		)
+		INSERT INTO CM_JOB_USER ( JOB_ID, USER_ID )
+		SELECT UPSERT.JOB_ID, UPSERT.USER_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_JOB_USER JU
+				WHERE JU.JOB_ID = UPSERT.JOB_ID
+					AND JU.USER_ID = UPSERT.USER_ID
+			)
+	</insert>
+
+	<delete id="deleteCmJobUser">
+		/* ncis.sql.cmn.cmusr.deleteCmJobUser */
+		DELETE FROM CM_JOB_USER
+		WHERE
+			USER_ID = #{userId }
+			AND JOB_ID = #{jobId }
+	</delete>
+
+	<delete id="deleteUserAllJob">
+		/* ncis.sql.cmn.cmusr.deleteUserAllJob */
+		DELETE FROM CM_JOB_USER
+		WHERE
+			USER_ID = #{userId }
+	</delete>
+
+	<insert id="insertCmRsrcPoolUser">
+		/* ncis.sql.cmn.cmusr.insertCmRsrcPoolUser */
+		WITH UPSERT AS (
+			SELECT
+				#{rsrcPoolId}::text AS RSRC_POOL_ID, #{userId}::text AS USER_ID, #{regionId}::text AS REGION_ID
+		)
+		INSERT INTO CM_RSRC_POOL_USER ( RSRC_POOL_ID, USER_ID, REGION_ID )
+		SELECT UPSERT.RSRC_POOL_ID, UPSERT.USER_ID, UPSERT.REGION_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_RSRC_POOL_USER PU
+				WHERE PU.RSRC_POOL_ID = UPSERT.RSRC_POOL_ID
+					AND PU.USER_ID = UPSERT.USER_ID
+			)
+	</insert>
+
+	<delete id="deleteUserPool">
+		/* ncis.sql.cmn.cmusr.deleteUserPool */
+		DELETE FROM CM_RSRC_POOL_USER
+		WHERE
+			USER_ID = #{userId }
+			AND RSRC_POOL_ID = #{rsrcPoolId }
+	</delete>
+
+	<delete id="deleteUserAllPool">
+		/* ncis.sql.cmn.cmusr.deleteUserAllPool */
+		DELETE FROM CM_RSRC_POOL_USER
+		WHERE
+			USER_ID = #{userId }
+	</delete>
+
+	<insert id="insertCmUsr">
+		/* ncis.sql.cmn.cmusr.insertCmUsr */
+		INSERT INTO CM_USR (
+	           USER_ID  /* 사용자ID */
+	           , PASSWD  /* 비밀번호 */
+	           , USER_NM  /* 이름 */
+	           , USER_CL_CD  /* 사용자구분코드 */
+	           , USER_CL_NM  /* 사용자구분명 */
+	           , MNG_REGION_ID /* 관리센터 */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , INSTITUTION_NM  /* 기관명 */
+	           , ORGNZT_NM  /* 조직명 */
+	           , OFCPS_NM  /* 직위명 */
+	           , TELNO  /* 전화 */
+	           , LXTN_NO  /* 내선번호 */
+	           , MOBILE  /* 핸드폰번호 */
+	           , EMAIL  /* 이메일 */
+	           , REG_DTTM  /* 가입일자 */
+	           , SYS_INPT_YN /* 시스템입력여부 */
+	           , USER_STAT  /* 회원 상태 */
+		) VALUES (
+	         #{userId}  /* 사용자ID */
+	         , #{passwd}  /* 비밀번호 */
+	         , #{userNm}  /* 이름 */
+	         , #{userClCd}  /* 이름 */
+	         , #{userClNm}  /* 이름 */
+	         , #{mngRegionId}  /* 이름 */
+	         , #{institutionId}  /* 기관ID */
+	         , #{institutionNm}  /* 기관명 */
+	         , #{orgnztNm}  /* 조직명 */
+	         , #{ofcpsNm}  /* 직위명 */
+	         , #{telno}  /* 전화 */
+	         , #{lxtnNo}  /* 내선번호 */
+	         , #{mobile}  /* 핸드폰번호 */
+	         , #{email}  /* 이메일 */
+	         , now()  /* 가입일자 */
+	         , 'Y'
+	         , 'A'
+	)
+	</insert>
+
+	<update id="updateCmUsr">
+		/* ncis.sql.cmn.cmusr.updateCmUsr */
+		UPDATE CM_USR
+	         SET
+	           USER_NM = #{userNm}  /* 이름 */
+	           , USER_CL_CD = #{userClCd} /* 사용자구분코드 */
+	           , USER_CL_NM = #{userClNm} /* 사용자구분명 */
+	           , MNG_REGION_ID = #{mngRegionId} /* 관리센터 */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , INSTITUTION_NM = #{institutionNm}  /* 기관명 */
+	           , ORGNZT_NM = #{orgnztNm}  /* 조직명 */
+	           , OFCPS_NM = #{ofcpsNm}  /* 직위명 */
+	           , TELNO = #{telno}  /* 전화 */
+	           , LXTN_NO = #{lxtnNo}  /* 내선번호 */
+	           , MOBILE = #{mobile}  /* 핸드폰번호 */
+	           , EMAIL = #{email}  /* 이메일 */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = now()  /* 수정일자 */
+
+               <if test="passwd != null and !passwd.isEmpty()">
+               , PASSWD = #{passwd}  /* 비밀번호 */
+               </if>
+	WHERE USER_ID = #{userId }
+	</update>
+
+	<delete id="deleteCmUsr">
+		/* ncis.sql.cmn.cmusr.deleteCmUsr */
+		DELETE FROM CM_USR
+		WHERE USER_ID = #{userId}
+	</delete>
+
+	<insert id="insertCmUsrInstt">
+		/* ncis.sql.cmn.cmusr.insertCmUsrInstt */
+		WITH UPSERT AS (
+			SELECT
+				#{institutionId}::text AS INSTITUTION_ID, #{userId}::text AS USER_ID
+		)
+		INSERT INTO CM_USR_INSTITUTION ( INSTITUTION_ID, USER_ID )
+		SELECT UPSERT.INSTITUTION_ID, UPSERT.USER_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_USR_INSTITUTION UI
+				WHERE UI.INSTITUTION_ID = UPSERT.INSTITUTION_ID
+					AND UI.USER_ID = UPSERT.USER_ID
+			)
+	</insert>
+
+	<delete id="deleteCmUsrInstt">
+		/* ncis.sql.cmn.cmusr.deleteCmUsrInstt */
+		DELETE FROM CM_USR_INSTITUTION
+		WHERE
+			USER_ID = #{userId }
+			AND INSTITUTION_ID = #{institutionId }
+	</delete>
+
+	<delete id="deleteUserAllInstt">
+		/* ncis.sql.cmn.cmusr.deleteUserAllInstt */
+		DELETE FROM CM_USR_INSTITUTION
+		WHERE
+			USER_ID = #{userId }
+	</delete>
+
+	<insert id= "insertCmJobByInstt">
+		/* ncis.sql.cmn.cmusr.insertCmJobByInstt */
+		WITH UPSERT AS(
+			SELECT
+				JOB_ID, #{userId}::text AS USER_ID
+			FROM CM_JOB
+			WHERE CM_JOB.INSTITUTION_ID = #{institutionId}
+		)
+		INSERT INTO CM_JOB_USER(JOB_ID, USER_ID)
+		SELECT UPSERT.JOB_ID, UPSERT.USER_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS(
+				SELECT
+				FROM CM_JOB_USER JU
+				WHERE JU.JOB_ID = UPSERT.JOB_ID
+					AND JU.USER_ID = UPSERT.USER_ID
+			)
+	</insert>
+
+	<delete id="deleteCmJobByInstt">
+		/* ncis.sql.cmn.cmusr.deleteCmJobByInstt */
+		DELETE FROM CM_JOB_USER
+		WHERE
+		USER_ID = #{userId}
+		AND JOB_ID IN (SELECT JOB_ID
+								FROM CM_JOB
+								WHERE INSTITUTION_ID = #{institutionId})
+	</delete>
+</mapper>

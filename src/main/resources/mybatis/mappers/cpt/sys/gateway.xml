@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.gateway">
+
+	<resultMap type="ncis.cpt.sys.gateway.vo.GatewayVo" id="resultGatewayVo" extends="ncis.sql.cmn.cmGateway.resultCmGateway">
+		<result property="regionNm" column="REGION_NM" />  <!-- 센터명 -->
+		<result property="regUserNm" column="REG_USER_NM" />  <!-- 등록자명 -->
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchName != null and !searchName.isEmpty()">
+			AND GATEWAY_NM LIKE '%' || #{searchName} || '%'
+		</if>
+
+		<if test="searchHOST != null and !searchHOST.isEmpty()">
+			AND GATEWAY_HOST LIKE '%' || #{searchHOST} || '%'
+		</if>
+
+		<if test="searchregionId != null and !searchregionId.isEmpty()">
+			AND REGION_ID LIKE '%' || #{searchregionId} || '%'
+		</if>
+
+	</sql>
+
+	<select id="selectGatewayTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.gateway.selectGatewayTotCnt */
+		SELECT COUNT(*) FROM CM_GATEWAY
+		<where>
+			<include refid="search" />
+		</where>
+	</select>
+
+	<select id="selectGatewayList" resultMap="resultGatewayVo">
+		/* ncis.sql.cpt.gateway.selectGatewayList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			GATEWAY_SEQ
+			,GATEWAY_NM
+			,GATEWAY_HOST
+			,GATEWAY_TOKEN
+			,REG_USER_ID
+			,(SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = CM_GATEWAY.REG_USER_ID) REG_USER_NM
+			,REG_DTTM
+			,UPDT_USER_ID
+			,UPDT_DTTM
+			,REGION_ID
+			,(SELECT REGION_NM FROM RC_REGION R WHERE R.REGION_ID = CM_GATEWAY.REGION_ID) REGION_NM
+		FROM CM_GATEWAY
+		<where>
+			<include refid="search" />
+		</where>
+		ORDER BY GATEWAY_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectGateway" resultMap="resultGatewayVo">
+		/* ncis.sql.cpt.gateway.selectGateway */
+		SELECT
+			GATEWAY_SEQ
+			,GATEWAY_NM
+			,GATEWAY_HOST
+			,GATEWAY_TOKEN
+			,REG_USER_ID
+			,(SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = CM_GATEWAY.REG_USER_ID) REG_USER_NM
+			,REG_DTTM
+			,UPDT_USER_ID
+			,UPDT_DTTM
+			,REGION_ID
+			,(SELECT REGION_NM FROM RC_REGION R WHERE R.REGION_ID = CM_GATEWAY.REGION_ID) REGION_NM
+		FROM CM_GATEWAY
+		WHERE GATEWAY_SEQ = #{value}
+		ORDER BY GATEWAY_SEQ DESC
+	</select>
+
+	<select id="selectRegionCnt" resultType="Integer">
+		/* ncis.sql.cpt.gateway.selectRegionCnt */
+		SELECT COUNT(REGION_ID)
+		FROM CM_GATEWAY
+		<where>
+			REGION_ID = #{regionId}
+			<if test="gatewaySeq != null">
+				AND GATEWAY_SEQ != ${gatewaySeq}
+			</if>
+		</where>
+	</select>
+
+</mapper>

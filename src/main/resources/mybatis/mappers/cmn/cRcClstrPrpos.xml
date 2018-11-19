@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcClstrPrpos">
+
+	<resultMap id="resultRcClstrPrpos" type="ncis.cmn.entity.RcClstrPrpos">
+        <result property="clstrSeq"   column="CLSTR_SEQ"/>   <!-- 클러스터SEQ -->
+        <result property="prposClCd"  column="PRPOS_CL_CD"/> <!-- 용도구분코드 -->
+	</resultMap>
+
+	<!-- 클러스터용도 등록 -->
+	<insert id="insertRcClstrPrpos">
+		/* ncis.sql.cmn.rcClstrPrpos.insertRcClstrPrpos */
+		INSERT INTO
+		RC_CLSTR_PRPOS(
+	    	CLSTR_SEQ     /* 클러스터SEQ */
+			, PRPOS_CL_CD /* 용도구분코드 */
+		)
+		VALUES(
+			#{clstrSeq}    /* 클러스터SEQ */
+			, #{prposClCd} /* 용도구분코드 */
+		)
+	</insert>
+
+	<!-- 클러스터용도 삭제 -->
+	<delete id="deleteRcClstrPrpos">
+		/* ncis.sql.cmn.rcClstrPrpos.deleteRcClstrPrpos */
+		DELETE
+			FROM RC_CLSTR_PRPOS
+	    WHERE
+	    	CLSTR_SEQ       = #{clstrSeq}  /* 클러스터SEQ */
+			AND PRPOS_CL_CD = #{prposClCd} /* 용도구분코드 */
+
+	</delete>
+
+</mapper>

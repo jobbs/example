@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq">
+
+	<!--  자원요청 목록 resultMap -->
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqMngVo" id="resultRsrcReqMngdVo">
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rsrcReqPrcssStatCd" column="RSRC_REQ_PRCSS_STAT_CD"/>
+		<result property="rsrcReqPrcssStatNm" column="RSRC_REQ_PRCSS_STAT_NM"/>
+		<result property="sbjct" column="SBJCT"/>
+		<result property="ticktNo" column="TICKT_NO"/>
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rsrcReqTyCd" column="RSRC_REQ_TY_CD"/>
+		<result property="rsrcReqTyNm" column="RSRC_REQ_TY_NM"/>
+		<result property="reqInstitutionId" column="REQ_INSTITUTION_ID"/>
+		<result property="reqInstitutionNm" column="REQ_INSTITUTION_NM"/>
+		<result property="rsrcReqUsrId" column="RSRC_REQ_USER_ID"/>
+		<result property="rsrcReqUsrNm" column="RSRC_REQ_USER_NM"/>
+		<result property="rsrcReqDttm" column="RSRC_REQ_DTTM"/>
+		<result property="exeUserId" column="EXE_USER_ID"/>
+		<result property="exeUserNm" column="EXE_USER_NM"/>
+		<result property="comptDttm" column="COMPT_DTTM"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="haVmNm" column="HA_VM_NM"/>
+		<result property="haGrpCd" column="HA_GRP_CD"/>
+		<result property="haCompYn" column="HA_COMP_YN"/>
+		<result property="testYn" column="TEST_YN"/>
+		<result property="rsrcReqClCd" column="RSRC_REQ_CL_CD"/>
+		<result property="rsrcReqClNm" column="RSRC_REQ_CL_NM"/>
+		<result property="rsrcReqMobile" column="RSRC_REQ_MOBILE"/>
+		<result property="rsrcReqEmail" column="RSRC_REQ_EMAIL"/>
+		<result property="savAtchFileNm" column="SAV_ATCH_FILE_NM"/>
+		<result property="oriAtchFileNm" column="ORI_ATCH_FILE_NM"/>
+		<result property="atchFilePath" column="ATCH_FILE_PATH"/>
+		<result property="atchFileSize" column="ATCH_FILE_SIZE"/>
+		<result property="regUserNm" column="REG_USER_NM"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+		<result property="regionNm" column="REGION_NM"/>
+		</resultMap>
+
+	<!--  조회 권한 수정 - 시스템관리자 전부 조회(searchUserId : null) , 운영자(OPRADM:센터 별 조회), 담당자(요청사용자 ID로 조회), 일반사용자(요청사용자 ID로 조회)  -->
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					/* 운영자 권한  수정*/
+					AND TBL1.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+				</when>
+				<otherwise>
+					/* 담당자 권한 수정*/
+					AND TBL1.RSRC_REQ_USER_ID = #{searchUserId}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<!-- 상태조회  -->
+		<if test="mainYn != null and (mainYn eq 'Y'.toString())">
+			AND RSRC_REQ_PRCSS_STAT_CD IN ('01','02')
+		</if>
+
+		<if test="rsrcReqPrcssStatCd != null and !rsrcReqPrcssStatCd.isEmpty()">
+			AND RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		</if>
+
+		<!-- 요청유형 -->
+		<if test="rsrcReqTyCd != null and !rsrcReqTyCd.isEmpty()">
+			AND RSRC_REQ_TY_CD = #{rsrcReqTyCd}
+		</if>
+
+		<!-- 제목  -->
+		<if test="sbjct != null and !sbjct.isEmpty()">
+			AND SBJCT LIKE '%' || #{sbjct} || '%'
+		</if>
+
+		<!--  센터  -->
+		<if test="searchRegion != null and !searchRegion.isEmpty()">
+			AND REGION_ID = #{searchRegion}
+		</if>
+
+		<!-- 티켓번호 -->
+		<if test="ticktNo != null and !ticktNo.isEmpty()">
+			AND TICKT_NO LIKE '%' || #{ticktNo} || '%'
+		</if>
+
+		<!-- 요청번호 -->
+		<if test="rsrcReqNo != null and !rsrcReqNo.isEmpty()">
+			AND RSRC_REQ_NO LIKE '%' || #{rsrcReqNo} || '%'
+		</if>
+
+		<!-- 요청일자 -->
+		<if test="rsrcReqDtStrt != null and !rsrcReqDtStrt.isEmpty()">
+			<![CDATA[
+				AND RSRC_REQ_DTTM >= TO_DATE(#{rsrcReqDtStrt}, 'YYYY-MM-DD')
+			]]>
+		</if>
+
+		<if test="rsrcReqDtEnd != null and !rsrcReqDtEnd.isEmpty()">
+			<![CDATA[
+				AND RSRC_REQ_DTTM <= TO_TIMESTAMP(#{rsrcReqDtEnd}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+			]]>
+		</if>
+
+		<!-- 요청자 -->
+		<if test="rsrcReqUsrNm != null and !rsrcReqUsrNm.isEmpty()">
+			AND RSRC_REQ_USER_NM  LIKE '%' || #{rsrcReqUsrNm} || '%'
+		</if>
+
+		<!-- 실행자 -->
+		<if test="exeUserNm != null and !exeUserNm.isEmpty()">
+			AND EXE_USER_NM LIKE '%' || #{exeUserNm} || '%'
+		</if>
+
+		<!-- 실행자 -->
+		<if test="reqInstitutionId != null and !reqInstitutionId.isEmpty()">
+			AND REQ_INSTITUTION_ID = #{reqInstitutionId}
+		</if>
+
+		<!-- HA여부 -->
+		<if test="haCompYn != null and !haCompYn.isEmpty()">
+			AND HA_COMP_YN = #{haCompYn}
+		</if>
+
+		<!-- 자원요청구분-->
+	        <if test="rsrcReqClCd != null and !rsrcReqClCd.isEmpty()">
+	            AND RSRC_REQ_CL_CD = #{rsrcReqClCd}
+	        </if>
+		</sql>
+
+	<!--  자원요청 목록 총 건수 조회 -->
+	<select id="selectRsrcReqTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqTotCnt */
+		SELECT COUNT(*)
+      FROM
+      (
+       	SELECT
+       		RSRC_REQ_NO
+					,RSRC_REQ_USER_ID
+					,RSRC_REQ_DTTM
+					,RSRC_REQ_PRCSS_STAT_CD
+					,REQ_INSTITUTION_ID
+					,REQ_DEPT_ID
+					,SBJCT
+					,TICKT_NO
+					,TBL1.REGION_ID
+					,TEST_YN
+					,LINK_YN
+					,HA_COMP_YN
+					,DISPLAY_YN
+					,COMPT_DTTM
+					,REG_USER_ID
+					,RSRC_REQ_TY_CD
+					,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+				  ,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+       		,EXE_USER_ID
+       		,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+			,RSRC_REQ_CL_CD
+			FROM RR_RSRC_REQ TBL1
+			INNER JOIN CM_USR RSRC_REQ_USER
+			ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+			WHERE TBL1.DISPLAY_YN ='Y'
+			AND DEL_YN = 'N'
+			<include refid="validateAuth"/>
+      ) TBL_MAIN
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<!--  자원요청 목록 조회 -->
+	<select id="selectRsrcReqList" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RSRC_REQ_NO
+			,RSRC_REQ_USER_ID
+			,TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+			,RSRC_REQ_PRCSS_STAT_CD
+			,REQ_INSTITUTION_ID
+			,REQ_DEPT_ID
+			,SBJCT
+			,TICKT_NO
+			,REGION_ID
+			,TEST_YN
+			,LINK_YN
+			,TO_CHAR(COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+			,REG_USER_ID
+			,RSRC_REQ_TY_CD
+			,EXE_USER_ID
+			,RSRC_REQ_USER_NM
+			,CASE WHEN  FN_INSTITUTION_NAME(REQ_INSTITUTION_ID) IS NOT NULL THEN FN_INSTITUTION_NAME(REQ_INSTITUTION_ID)
+				ELSE REQ_INSTITUTION_NM
+		     END AS REQ_INSTITUTION_NM		/* 요청기관명  */
+			,REGION_ID
+			,RSRC_REQ_TY_NM
+			,RSRC_REQ_PRCSS_STAT_NM
+			,EXE_USER_NM
+			,RSRC_REQ_CL_CD
+		    ,RSRC_REQ_CL_NM
+	    FROM
+	    (
+		   	SELECT
+			   	RSRC_REQ_NO
+				,RSRC_REQ_USER_ID
+				,RSRC_REQ_DTTM
+				,RSRC_REQ_PRCSS_STAT_CD
+				,REQ_INSTITUTION_ID
+				,REQ_DEPT_ID
+				,SBJCT
+				,TICKT_NO
+				,TBL1.REGION_ID
+				,TEST_YN
+				,LINK_YN
+				,HA_COMP_YN
+				,DISPLAY_YN
+				,COMPT_DTTM
+				,REG_USER_ID
+				,RSRC_REQ_TY_CD
+				,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+				,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+				,EXE_USER_ID
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+				,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+				,RSRC_REQ_USER.MOBILE AS RSRC_REQ_MOBILE
+				,RSRC_REQ_USER.EMAIL AS RSRC_REQ_EMAIL
+				,RSRC_REQ_CL_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '151' AND CD = COALESCE(TBL1.RSRC_REQ_CL_CD,'01')) AS RSRC_REQ_CL_NM
+			FROM RR_RSRC_REQ TBL1
+			INNER JOIN CM_USR RSRC_REQ_USER
+			ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+			WHERE TBL1.DISPLAY_YN ='Y'
+			AND DEL_YN = 'N'
+			<!--
+			SELECT
+				ARRAY_TO_STRING(ARRAY_AGG(ARRAY_RSRC_REQ_NO),', ') ARRAY_RSRC_REQ_NO
+				,MAX(TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS')) RSRC_REQ_DTTM
+				,MAX(RSRC_REQ_PRCSS_STAT_CD) RSRC_REQ_PRCSS_STAT_CD
+				,MAX(SBJCT) SBJpT
+				,MAX(RSRC_REQ_NO) RSRC_REQ_NO
+				,MAX(TICKT_NO) TICKT_NO
+				,MAX(REGION_ID) REGION_ID
+				,MAX(LINK_YN) LINK_YN
+				,TO_CHAR(MAX(COMPT_DTTM), 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+				,MAX(RSRC_REQ_TY_CD) RSRC_REQ_TY_CD
+				,MAX(RSRC_REQ_USER_NM) RSRC_REQ_USER_NM
+				,CASE WHEN  FN_INSTITUTION_NAME(MAX(REQ_INSTITUTION_ID)) IS NOT NULL THEN FN_INSTITUTION_NAME(MAX(REQ_INSTITUTION_ID))
+					ELSE MAX(REQ_INSTITUTION_NM)
+					END AS REQ_INSTITUTION_NM
+				,MAX(RSRC_REQ_TY_NM) RSRC_REQ_TY_NM
+				,MAX(RSRC_REQ_PRCSS_STAT_NM) RSRC_REQ_PRCSS_STAT_NM
+				,MAX(EXE_USER_NM) EXE_USER_NM
+				,MAX(HA_COMP_YN) HA_COMP_YN
+				,MAX(RSRC_REQ_USER_ID) RSRC_REQ_USER_ID
+	    FROM
+	    (
+			SELECT
+				TBL1.RSRC_REQ_NO
+				,TBL1.RSRC_REQ_USER_ID
+				,TBL1.RSRC_REQ_DTTM
+				,TBL1.RSRC_REQ_PRCSS_STAT_CD
+				,TBL1.REQ_INSTITUTION_ID
+				,TBL1.REQ_DEPT_ID
+				,TBL1.SBJCT
+				,TBL1.TICKT_NO
+				,TBL1.REGION_ID
+				,TBL1.TEST_YN
+				,TBL1.LINK_YN
+				,TBL1.COMPT_DTTM
+				,TBL1.REG_USER_ID
+				,TBL1.RSRC_REQ_TY_CD
+				,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+				,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+				,TBL1.EXE_USER_ID
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+				,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+				, RSRC_REQ_USER.MOBILE AS RSRC_REQ_MOBILE
+				, RSRC_REQ_USER.EMAIL AS RSRC_REQ_EMAIL
+				, COALESCE(TBL2.RSRC_REQ_NO, TBL1.RSRC_REQ_NO) ARRAY_RSRC_REQ_NO
+				, COALESCE(TBL2.HA_VM_NM, TBL1.RSRC_REQ_NO) HA_VM_NM
+				, COALESCE(TBL2.HA_GRP_CD, TBL1.RSRC_REQ_NO) HA_GRP_CD
+				, COALESCE(TBL2.HA_COMP_YN, 'N') HA_COMP_YN
+				FROM RR_RSRC_REQ TBL1
+				INNER JOIN CM_USR RSRC_REQ_USER
+				ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+				LEFT OUTER JOIN RR_HA_COMP TBL2
+				ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+				WHERE 1=1
+				-->
+			<include refid="validateAuth"/>
+      ) TBL_MAIN
+			<where>
+				<include refid="search"/>
+			</where>
+			<!-- GROUP BY TICKT_NO, HA_VM_NM, HA_GRP_CD -->
+			ORDER BY RSRC_REQ_DTTM DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<!--  자원요청 목록 엑셀다운로드 조회 -->
+	<select id="selectRsrcReqExcelList" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqExcelList */
+		SELECT
+				RSRC_REQ_NO
+				,RSRC_REQ_USER_ID
+				,TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+				,RSRC_REQ_PRCSS_STAT_CD
+				,REQ_INSTITUTION_ID
+				,REQ_DEPT_ID
+				,SBJCT
+				,TICKT_NO
+				,REGION_ID
+				,TEST_YN
+				,LINK_YN
+				,TO_CHAR(COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+				,REG_USER_ID
+				,RSRC_REQ_TY_CD
+				,EXE_USER_ID
+				,RSRC_REQ_USER_NM
+				,REQ_INSTITUTION_NM
+				,REGION_ID
+				,RSRC_REQ_TY_NM
+				,RSRC_REQ_PRCSS_STAT_NM
+				,EXE_USER_NM
+				,RSRC_REQ_CL_CD
+				,RSRC_REQ_CL_NM
+      FROM
+      (
+       	SELECT
+       		RSRC_REQ_NO
+					,RSRC_REQ_USER_ID
+					,RSRC_REQ_DTTM
+					,RSRC_REQ_PRCSS_STAT_CD
+					,REQ_INSTITUTION_ID
+					,REQ_DEPT_ID
+					,SBJCT
+					,TICKT_NO
+					,TBL1.REGION_ID
+					,TEST_YN
+					,LINK_YN
+					,HA_COMP_YN
+					,DISPLAY_YN
+					,COMPT_DTTM
+					,REG_USER_ID
+					,RSRC_REQ_TY_CD
+					,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+				  ,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+       		,EXE_USER_ID
+       		,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+       		,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+			,RSRC_REQ_CL_CD
+            ,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '151' AND CD = TBL1.RSRC_REQ_CL_CD) AS RSRC_REQ_CL_NM
+		FROM RR_RSRC_REQ TBL1
+		INNER JOIN CM_USR RSRC_REQ_USER
+		ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+		WHERE TBL1.DISPLAY_YN ='Y'
+		AND DEL_YN = 'N'
+		<include refid="validateAuth"/>
+      ) TBL_MAIN
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY RSRC_REQ_DTTM DESC
+	</select>
+
+
+	<!--  포틀릿 자원요청 목록 조회 -->
+	<select id="selectRsrcReqPortletList" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqPortletList */
+			SELECT
+		    RSRC_REQ_NO
+				,RSRC_REQ_USER_ID
+				,TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD') RSRC_REQ_DTTM
+				,TO_CHAR(COMPT_DTTM, 'YYYY-MM-DD') COMPT_DTTM
+				,RSRC_REQ_PRCSS_STAT_CD
+				,REQ_INSTITUTION_ID
+				,REQ_DEPT_ID
+				,SBJCT
+				,TICKT_NO
+				,TBL1.REGION_ID
+				,TEST_YN
+				,LINK_YN
+				,COMPT_DTTM
+				,REG_USER_ID
+				,RSRC_REQ_TY_CD
+				,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+			  ,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+		    ,EXE_USER_ID
+		    ,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+					FROM RR_RSRC_REQ TBL1
+					INNER JOIN CM_USR RSRC_REQ_USER
+				ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+				WHERE TBL1.DISPLAY_YN ='Y'
+				AND DEL_YN = 'N'
+				<include refid="validateAuth"/>
+				<if test="rsrcReqPrcssStatCd != null and !rsrcReqPrcssStatCd.isEmpty()">
+				AND RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+				</if>
+			ORDER BY RSRC_REQ_DTTM DESC
+			LIMIT 10
+	</select>
+
+	<!-- 자원요청  조회 -->
+	<select id="selectRsrcReq" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReq */
+		SELECT
+		   	RSRC_REQ_NO
+			,RSRC_REQ_USER_ID
+			,TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+			,RSRC_REQ_PRCSS_STAT_CD
+			,REQ_INSTITUTION_ID
+			,REQ_DEPT_ID
+			,SBJCT
+			,TICKT_NO
+			,TBL1.REGION_ID
+			,TEST_YN
+			,LINK_YN
+			,HA_COMP_YN
+			,DISPLAY_YN
+			,TO_CHAR(COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+			,REG_USER_ID
+			,RSRC_REQ_TY_CD
+			,RSRC_REQ_USER.USER_NM AS RSRC_REQ_USER_NM
+			,RSRC_REQ_USER.INSTITUTION_NM REQ_INSTITUTION_NM
+			,EXE_USER_ID
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+			,RSRC_REQ_USER.MOBILE AS RSRC_REQ_MOBILE
+			,RSRC_REQ_USER.EMAIL AS RSRC_REQ_EMAIL
+			,RSRC_REQ_CL_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '151' AND CD = TBL1.RSRC_REQ_CL_CD) AS RSRC_REQ_CL_NM
+			, REQ_CN
+			, SAV_ATCH_FILE_NM
+			, ORI_ATCH_FILE_NM
+			, ATCH_FILE_PATH
+			, ATCH_FILE_SIZE
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.REG_USER_ID) AS REG_USER_NM
+			,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = TBL1.REGION_ID ) AS REGION_NM
+			,REG_USER_ID
+		FROM RR_RSRC_REQ TBL1
+		INNER JOIN CM_USR RSRC_REQ_USER
+		ON  RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}
+	</select>
+
+	<select id="selectRsrcReqFileInfo" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRsrcReqFileInfo */
+		SELECT
+			SAV_ATCH_FILE_NM
+			, ORI_ATCH_FILE_NM
+			, ATCH_FILE_PATH
+		FROM RR_RSRC_REQ TBL1
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}
+	</select>
+
+	<select id="selectRegionList" resultMap="resultRsrcReqMngdVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.selectRegionList */
+		SELECT
+			CM_RSRC_POOL_USER.REGION_ID
+			,RC_REGION.REGION_NM
+		FROM CM_RSRC_POOL_USER
+		INNER JOIN RC_REGION RC_REGION
+		ON CM_RSRC_POOL_USER.REGION_ID = RC_REGION.REGION_ID
+ 		WHERE USER_ID= #{regUserId}
+ 		GROUP BY CM_RSRC_POOL_USER.REGION_ID, RC_REGION.REGION_NM
+	</select>
+
+</mapper>

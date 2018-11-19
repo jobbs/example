@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.procssjoblist">
+	<resultMap type="ncis.cpt.opr.catalg.vo.UnitJobRelateVo" id="resultUnitJobRelateVo" extends="ncis.sql.cpt.opr.catalg.resultUnitJobRelateVo"></resultMap>
+	<resultMap type="ncis.cpt.opr.catalg.vo.UnitJobVo" id="resultUnitJobVo" extends="ncis.sql.cpt.opr.catalg.resultUnitJobVo"></resultMap>
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.UnitJobProcssVo" id="resultUnitJobProcssVo">
+		<result property="procssSeq" column="PROCSS_SEQ"/> 				<!--프로세스ID -->
+		<result property="uJobId" column="U_JOB_ID"/> 					<!--단위업무ID -->
+		<result property="uJobSeq" column="U_JOB_SEQ"/> 				<!--단위업무일련번호 -->
+		<result property="uJobNm" column="U_JOB_NM"/> 					<!--단위업무명 -->
+		<result property="uJobDc" column="U_JOB_DC"/> 					<!--단위업무설명 -->
+		<result property="uJobTyCd" column="U_JOB_TY_CD"/> 				<!--단위업무유형코드 -->
+		<result property="intfcUrl" column="INTFC_URL"/>				<!--인터페이스URL -->
+		<result property="intfcParamtr" column="INTFC_PARAMTR"/>	 	<!--인터페이스파라미터 -->
+		<result property="intfcFnctTyCd" column="INTFC_FNCT_TY_CD"/> 	<!--인터페이스기능유형코드 -->
+		<result property="strtDttm" column="STRT_DTTM"/>				<!--시작 일시 -->
+		<result property="endDttm" column="END_DTTM"/> 					<!--종료일시 -->
+		<result property="statCd" column="STAT_CD"/> 					<!--상태코드 -->
+		<result property="statNm" column="STAT_NM"/> 					<!-- 상태명-->
+		<result property="dc" column="DC"/> 							<!-- 비교 -->
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/> 	<!-- 프로세스ㅡ 인스턴스 SEQ -->
+		<result property="lowProcssSeq" column="LOW_PROCSS_SEQ"/> 	<!-- 하위 프로세스 -->
+		<result property="strtUJobId" column="STRT_U_JOB_ID"/> 	<!-- 시작 잡업 ID -->
+		<result property="endUJobId" column="END_U_JOB_ID"/> 	<!-- 종료작업 ID-->
+		<result property="endUJobCndVarId" column="END_U_JOB_CND_VAR_ID"/> 	<!-- 종료 작업 변수명-->
+		<result property="endUJobCndVarVl" column="END_U_JOB_CND_VAR_VL"/> 	<!-- 종료작업 변수 값 -->
+		<result property="procssJobInstSeq" column="PROCSS_JOB_INST_SEQ"/> 	<!-- 오류시 재처리 횟수 -->
+		<result property="reProcssCnt" column="RE_PROCSS_CNT"/> 	<!-- 오류시 재처리 횟수 -->
+		<result property="errCn" column="ERR_CN"/> 	<!-- 오류 메시지 -->
+		<result property="upperProcssInstSeq" column="UPPER_PROCSS_INST_SEQ"/>
+		<result property="procssNm" column="PROCSS_NM"/>
+		<result property="procssDc" column="PRCSS_DC"/>
+		<result property="rmk" column="RMK"/>						<!-- 강제완료 사유 -->
+		<result property="forceComptYn" column="FORCE_COMPT_YN"/>	<!-- 강제완료 여부 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.ProcssInstVo" id="resultProcssInstVo">
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/>
+		<result property="procssSeq" column="PROCSS_SEQ"/>
+		<result property="strtDttm" column="STRT_DTTM"/>
+		<result property="endDttm" column="END_DTTM"/>
+		<result property="upperProcssInstSeq" column="UPPER_PROCSS_INST_SEQ"/>
+		<result property="statCd" column="STAT_CD"/>
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rmk" column="RMK"/>
+		<result property="forceComptYn" column="FORCE_COMPT_YN"/>
+		<result property="title" column="TITLE"/>
+	</resultMap>
+
+	<!-- 프로세스 인턴스 테이블 조회  -->
+	<select id="selectProcssInst" resultMap="resultProcssInstVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.procssjoblist.selectProcssInst */
+	SELECT	PROCSS_INST_SEQ  		/* 프로세스인스턴스SEQ */
+         	, PROCSS_SEQ  			/* 프로세스SEQ */
+         	, STRT_DTTM  			/* 시작일시 */
+         	, END_DTTM  			/* 종료일시 */
+         	, UPPER_PROCSS_INST_SEQ /* 상위프로세스인스턴스SEQ */
+         	, STAT_CD  				/* 상태코드 */
+         	, RSRC_REQ_NO 			/* 자원요청번호 */
+         	, RMK					/* 비고 */
+         	, FORCE_COMPT_YN 		/* 강제 완료 여부 */
+         	, (SELECT VAR_VL FROM RR_PROCSS_VAR_LIST WHERE VAR_NM = 'title' AND PROCSS_INST_SEQ = #{procssInstSeq}) AS TITLE /* 요청명 */
+	  FROM 	RR_PROCSS_INST
+	 WHERE 	PROCSS_INST_SEQ = #{procssInstSeq}
+	</select>
+
+	<!-- 다음 경로 검사  -->
+	<select id="selectUnitJobValidate" resultMap="resultUnitJobProcssVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.procssjoblist.selectUnitJobValidate */
+		SELECT  DISTINCT A.PROCSS_SEQ, A.U_JOB_ID, A.U_JOB_SEQ, A.U_JOB_NM, A.U_JOB_DC, A.U_JOB_TY_CD, A.INTFC_URL
+				, A.INTFC_PARAMTR, A.LOW_PROCSS_SEQ,B.STRT_U_JOB_ID
+				,B.END_U_JOB_ID,B.END_U_JOB_CND_VAR_ID,B.END_U_JOB_CND_VAR_VL,B.REG_USER_ID,B.UPDT_USER_ID
+				,B.UPDT_DTTM,B.PROCSS_SEQ
+	 	 FROM 	RR_UNIT_JOB  A
+   INNER JOIN	RR_UNIT_JOB_RELATE B
+		   ON 	A.PROCSS_SEQ = B.PROCSS_SEQ AND A.U_JOB_ID = B.END_U_JOB_ID AND B.STRT_U_JOB_ID= #{strtUJobId}
+   INNER JOIN	(	SELECT DISTINCT X.PROCSS_INST_SEQ, X.PROCSS_SEQ
+							, Y.VAR_SEQ, Y.VAR_NM, Y.VAR_TY_CD, Y.VAR_VL, Y.VAL_VL_CL_CD
+					  FROM RR_PROCSS_INST X
+				INNER JOIN RR_PROCSS_VAR_LIST Y ON X.PROCSS_INST_SEQ =  Y.PROCSS_INST_SEQ
+					  WHERE X.PROCSS_SEQ =  #{procssSeq}
+					  AND   X.PROCSS_INST_SEQ = #{procssInstSeq}
+					   ) C
+		    ON  B.END_U_JOB_CND_VAR_ID  = C.VAR_NM
+		   AND B.END_U_JOB_CND_VAR_VL = C.VAR_VL
+		   AND A.PROCSS_SEQ = C.PROCSS_SEQ
+		  AND  A.U_JOB_ID = #{endUJobId}
+	</select>
+
+	<!-- 단위 업무 목록 조회  -->
+	<select id="selectUnitJobList" resultMap="resultUnitJobVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.procssjoblist.selectUnitJobList */
+	SELECT	PROCSS_SEQ
+			, U_JOB_ID
+			, U_JOB_SEQ
+			, U_JOB_NM
+			, U_JOB_DC
+			, U_JOB_TY_CD
+			, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD='130' AND GRP_CD='037' AND CD = A.U_JOB_TY_CD) U_JOB_TY_NM
+			, INTFC_URL
+			, INTFC_PARAMTR
+			, LOW_PROCSS_SEQ
+	  FROM	RR_UNIT_JOB A
+	 WHERE	1=1
+	 <if test="procssSeq !=null ">
+	   AND	PROCSS_SEQ = #{procssSeq}
+	 </if>
+	 <if test="uJobId !=null and uJobId != '' ">
+	   AND	U_JOB_ID = #{uJobId}
+	 </if>
+	  <if test="lowProcssSeq !=null">
+	   AND	LOW_PROCSS_SEQ = #{lowProcssSeq}
+	 </if>
+	 ORDER BY U_JOB_SEQ ASC
+	</select>
+
+
+	<!-- 단위 업무과  프로세스 업무  정보 조회-->
+	<select id="selectUnitProcssJobInfo" resultMap="resultUnitJobProcssVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.procssjoblist.selectUnitProcssJobInfo */
+		SELECT	A.PROCSS_SEQ
+				, A.U_JOB_ID
+				, A.U_JOB_SEQ
+				, A.U_JOB_NM
+				, A.U_JOB_DC
+				, A.U_JOB_TY_CD
+				, A.INTFC_URL
+				, A.INTFC_PARAMTR
+				, A.LOW_PROCSS_SEQ
+				, B.PROCSS_INST_SEQ
+				, B.UPPER_PROCSS_INST_SEQ
+				, C.PROCSS_JOB_INST_SEQ
+				, TO_CHAR( C.STRT_DTTM, 'YYYY-MM-DD HH24:MI:SS') STRT_DTTM
+				, TO_CHAR( C.END_DTTM, 'YYYY-MM-DD HH24:MI:SS') END_DTTM
+				, C.STAT_CD
+				, (SELECT CD_NM FROM CM_CODE WHERE GRP_CD='062' AND PARENT_CD='138' AND CD = C.STAT_CD)  AS STAT_NM
+				, C.REG_USER_ID
+				, C.DC
+				, C.RE_PROCSS_CNT
+				, C.ERR_CN
+				, RR_PROCSS.PROCSS_NM
+				, RR_PROCSS.PRCSS_DC
+				, B.RMK
+				, B.FORCE_COMPT_YN
+		  FROM	RR_UNIT_JOB A
+     LEFT JOIN 	RR_PROCSS_INST B ON A.PROCSS_SEQ = B.PROCSS_SEQ
+	 LEFT JOIN 	RR_PROCSS_JOB_LIST C ON B.PROCSS_INST_SEQ = C.PROCSS_INST_SEQ AND A.U_JOB_ID = C.U_JOB_ID
+	 LEFT JOIN	RR_PROCSS  ON A.PROCSS_SEQ = RR_PROCSS.PROCSS_SEQ
+		 WHERE 	A.PROCSS_SEQ = #{procssSeq}
+  		   AND	A.U_JOB_ID =#{uJobId}
+  		   <if test =" procssInstSeq != null">
+  		   AND  B.PROCSS_INST_SEQ = #{procssInstSeq}
+  		   </if>
+  		   <if test="upperProcssInstSeq != null">
+  		     AND  B.UPPER_PROCSS_INST_SEQ = #{upperProcssInstSeq}
+  		   </if>
+	</select>
+
+	<!-- 다음 단위 업무 관계 목록 조회  -->
+	<select id="selectNextUnitJobRelateList" resultMap="resultUnitJobRelateVo">
+		/* ncis.sql.cpt.opr.req.rsrcreq.procssjoblist.selectNextUnitJobRelateList */
+		SELECT 	A.U_JOB_RELATE_SEQ
+			, A.U_JOB_RELATE_NM
+			, A.U_JOB_RELATE_TY_CD
+			, (SELECT CD_NM FROM CM_CODE WHERE GRP_CD='037' AND PARENT_CD='130' AND CD = A.U_JOB_RELATE_TY_CD)  U_JOB_RELATE_TY_NM
+			, A.REG_DTTM
+			, A.DC
+			, A.END_U_JOB_CND_VAR_ID
+			, A.END_U_JOB_CND_VAR_VL
+			, A.REG_USER_ID
+			, A.UPDT_USER_ID
+			, A.UPDT_DTTM
+			, A.PROCSS_SEQ
+			, A.STRT_U_JOB_ID
+			, A.END_U_JOB_ID
+		FROM RR_UNIT_JOB_RELATE A
+		WHERE A.PROCSS_SEQ = #{procssSeq}
+		AND    A.STRT_U_JOB_ID = #{uJobId}
+	</select>
+
+</mapper>

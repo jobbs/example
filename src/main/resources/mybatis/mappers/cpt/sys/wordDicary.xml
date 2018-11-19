@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.worddicary">
+
+	<resultMap type="ncis.cpt.worddicary.vo.WordDicaryVo" id="resultWordDicaryVo" extends="ncis.sql.cmn.worddicary.resultWordDicary">
+	</resultMap>
+
+
+	<sql id="search">
+		AND DICARY_DIV = #{searchDiv}
+
+		<if test="searchKr != null and !searchKr.isEmpty()">
+		AND WORD_KR LIKE '%' || #{searchKr} || '%'
+		</if>
+
+		<if test="searchEn != null and !searchEn.isEmpty()">
+		AND WORD_EN LIKE '%' || #{searchEn} || '%'
+		</if>
+
+		<if test="searchAbrv != null and !searchAbrv.isEmpty()">
+		AND WORD_ABRV LIKE '%' || #{searchAbrv} || '%'
+		</if>
+
+		<if test="searchProhibitYn != null and !searchProhibitYn.isEmpty()">
+		AND PROHIBIT_YN = #{searchProhibitYn}
+		</if>
+
+		<if test="searchText != null and !searchText.isEmpty()">
+			<choose>
+				<when test="searchColumn == 'WORD_KR'">
+					AND WORD_KR LIKE '%' || #{searchText} || '%'
+				</when>
+				<otherwise>
+					AND WORD_EN LIKE '%' || #{searchText} || '%'
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectWordDicaryTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.worddicary.selectWordDicaryTotCnt */
+		SELECT COUNT(*) FROM WORD_DICARY
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectWordDicaryList" resultMap="resultWordDicaryVo">
+	/* ncis.sql.cpt.worddicary.selectWordDicaryList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT  WORD_SEQ
+				,WORD_KR
+				,WORD_EN
+				,WORD_ABRV
+				,WORD_DC
+				,PROHIBIT_YN
+				,DICARY_DIV
+				,REG_DATE
+				,REG_ID
+				,MOD_DATE
+				,MOD_ID
+		FROM WORD_DICARY
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY WORD_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectWordDicary" resultMap="resultWordDicaryVo">
+	/* ncis.sql.cpt.worddicary.selectWordDicary */
+		SELECT WORD_SEQ
+			,WORD_KR
+			,WORD_EN
+			,WORD_ABRV
+			,WORD_DC
+			,PROHIBIT_YN
+			,DICARY_DIV
+			,REG_DATE
+			,REG_ID
+			,MOD_DATE
+			,MOD_ID
+		FROM WORD_DICARY
+		WHERE WORD_SEQ = #{value}
+	</select>
+
+</mapper>

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrClstrPrposReqList">
+
+	<resultMap id="resultRrClstrPrposReqList" type="ncis.cmn.entity.RrClstrPrposReqList">
+        <result property="rsrcReqNo"    column="RSRC_REQ_NO"/>            <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"   column="RSRC_REQ_SEQ"/>           <!-- 자원요청일련번호 -->
+        <result property="prposClCd"    column="PRPOS_CL_CD"/>            <!-- 용도구분코드 -->
+	</resultMap>
+
+	<!-- 자원요청클러스터용도 등록 -->
+	<insert id="insertRrClstrPrposReqList">
+	INSERT INTO RR_CLSTR_PRPOS_REQ_LIST (
+	        RSRC_REQ_NO              /* 자원요청번호 */
+	      , RSRC_REQ_SEQ             /* 자원요청일련번호 */
+	      , PRPOS_CL_CD              /* 용도구분코드 */
+	) VALUES (
+     	    #{rsrcReqNo}             /* 자원요청번호 */
+	      , #{rsrcReqSeq}            /* 자원요청일련번호 */
+	      , #{prposClCd}             /* 용도구분코드 */
+	)
+	</insert>
+
+	<!-- 자원요청클러스터용도 수정 -->
+	<update id="updateRrClstrPrposReqList">
+	UPDATE RR_CLSTR_PRPOS_REQ_LIST
+       SET RSRC_REQ_NO  = #{rsrcReqNo}             /* 자원요청번호 */
+	     , RSRC_REQ_SEQ = #{rsrcReqSeq}            /* 자원요청일련번호 */
+	     , PRPOS_CL_CD  = #{prposClCd}             /* 용도구분코드 */
+     WHERE RSRC_REQ_NO  = #{rsrcReqNo}             /* 자원요청번호 */
+       AND RSRC_REQ_SEQ = #{rsrcReqSeq}            /* 자원요청일련번호 */
+       AND PRPOS_CL_CD  = #{prposClCd}             /* 용도구분코드 */
+
+	</update>
+
+	<!-- 자원요청클러스터용도 삭제 -->
+	<delete id="deleteRrClstrPrposReqList">
+	DELETE FROM RR_CLSTR_PRPOS_REQ_LIST
+     WHERE RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+       AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+       AND PRPOS_CL_CD  = #{prposClCd}   /* 용도구분코드 */
+
+	</delete>
+
+</mapper>

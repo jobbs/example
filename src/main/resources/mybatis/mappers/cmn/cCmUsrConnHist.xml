@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmUsrConnHist">
+
+	<resultMap id="resultCmUsrConnHist" type="ncis.cmn.entity.CmUsrConnHist">
+	    <result property="connHistSeq"     column="CONN_HIST_SEQ"/>  <!-- 접속이력SEQ -->
+        <result property="userId"     column="USER_ID"/>  <!-- 사용자ID -->
+        <result property="userNm"     column="USER_NM"/>  <!-- 회원명 -->
+        <result property="connDt"     column="CONN_DT"/>  <!-- 접속일시 -->
+        <result property="connIp"     column="CONN_IP"/>  <!-- 접속IP -->
+	</resultMap>
+
+	<!-- 사용자접속이력 등록 -->
+	<insert id="insertCmUsrConnHist">
+	/* ncis.sql.cmn.cmUsrConnHist.insertCmUsrConnHist */
+	INSERT INTO CM_USR_CONN_HIST (
+	           USER_ID  /* 사용자ID */
+	           , USER_NM  /* 회원명 */
+	           , CONN_DT  /* 접속일시 */
+	           , CONN_IP  /* 접속IP */
+	) VALUES (
+	         #{userId}  /* 사용자ID */
+	         , #{userNm}  /* 회원명 */
+	         , now()  /* 접속일시 */
+	         , #{connIp}  /* 접속IP */
+	)
+	</insert>
+
+</mapper>

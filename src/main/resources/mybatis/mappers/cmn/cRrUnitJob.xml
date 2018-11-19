@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrUnitJob">
+
+	<resultMap id="resultRrUnitJob" type="ncis.cmn.entity.RrUnitJob">
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+        <result property="uJobId"     column="U_JOB_ID"/>  <!-- 단위업무ID -->
+        <result property="uJobSeq"     column="U_JOB_SEQ"/>  <!-- 단위업무일련번호 -->
+        <result property="uJobNm"     column="U_JOB_NM"/>  <!-- 단위업무명 -->
+        <result property="uJobDc"     column="U_JOB_DC"/>  <!-- 단위업무설명 -->
+        <result property="uJobTyCd"     column="U_JOB_TY_CD"/>  <!-- 단위업무유형코드 -->
+        <result property="intfcUrl"     column="INTFC_URL"/>  <!-- 인터페이스URL -->
+        <result property="intfcParamtr"     column="INTFC_PARAMTR"/>  <!-- 인터페이스파라미터 -->
+	</resultMap>
+
+	<!-- 단위업무 등록 -->
+	<insert id="insertRrUnitJob">
+	INSERT INTO RR_UNIT_JOB (
+	             PROCSS_SEQ  /* 프로세스ID */
+	           , U_JOB_ID  /* 단위업무ID */
+	           , U_JOB_SEQ  /* 단위업무일련번호 */
+	           , U_JOB_NM  /* 단위업무명 */
+	           , U_JOB_DC  /* 단위업무설명 */
+	           , U_JOB_TY_CD  /* 단위업무유형코드 */
+	           , INTFC_URL  /* 인터페이스URL */
+	           , INTFC_PARAMTR  /* 인터페이스파라미터 */
+	) VALUES (
+	           #{procssSeq}  /* 프로세스ID */
+	         , #{uJobId}  /* 단위업무ID */
+	         , #{uJobSeq}  /* 단위업무일련번호 */
+	         , #{uJobNm}  /* 단위업무명 */
+	         , #{uJobDc}  /* 단위업무설명 */
+	         , #{uJobTyCd}  /* 단위업무유형코드 */
+	         , #{intfcUrl}  /* 인터페이스URL */
+	         , #{intfcParamtr}  /* 인터페이스파라미터 */
+	)
+	</insert>
+
+	<!-- 단위업무 수정 -->
+	<update id="updateRrUnitJob">
+	UPDATE RR_UNIT_JOB
+	         SET PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+	           , U_JOB_ID = #{uJobId}  /* 단위업무ID */
+	           , U_JOB_SEQ = #{uJobSeq}  /* 단위업무일련번호 */
+	           , U_JOB_NM = #{uJobNm}  /* 단위업무명 */
+	           , U_JOB_DC = #{uJobDc}  /* 단위업무설명 */
+	           , U_JOB_TY_CD = #{uJobTyCd}  /* 단위업무유형코드 */
+	           , INTFC_URL = #{intfcUrl}  /* 인터페이스URL */
+	           , INTFC_PARAMTR = #{intfcParamtr}  /* 인터페이스파라미터 */
+         WHERE PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+           AND U_JOB_ID = #{uJobId}  /* 단위업무ID */
+
+	</update>
+
+	<!-- 단위업무 삭제 -->
+	<delete id="deleteRrUnitJob">
+	DELETE FROM RR_UNIT_JOB
+         WHERE PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+           AND U_JOB_ID = #{uJobId}  /* 단위업무ID */
+
+	</delete>
+
+</mapper>

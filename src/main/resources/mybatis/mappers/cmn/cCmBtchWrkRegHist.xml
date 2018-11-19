@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmBtchWrkRegHist">
+
+	<resultMap id="resultCmBtchWrkRegHist" type="ncis.cmn.entity.CmBtchWrkRegHist">
+        <result property="btchWrkId"     column="BTCH_WRK_ID"/>  <!-- 배치작업SEQ -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="btchWrkNm"     column="BTCH_WRK_NM"/>  <!-- 배치작업명 -->
+        <result property="cycle"     column="CYCLE"/>  <!-- 주기 -->
+        <result property="time"     column="TIME"/>  <!-- 시점 -->
+        <result property="stat"     column="STAT"/>  <!-- 상태 -->
+        <result property="validStrtDt"     column="VALID_STRT_DT"/>  <!-- 유효시작일자 -->
+        <result property="validEndDt"     column="VALID_END_DT"/>  <!-- 유효종료일자 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록사용자ID -->
+	</resultMap>
+
+	<!-- 배치작업등록이력 등록 -->
+	<insert id="insertCmBtchWrkRegHist">
+	/* ncis.sql.cmn.cmBtchWrkRegHist.insertCmBtchWrkRegHist */
+	INSERT INTO CM_BTCH_WRK_REG_HIST (
+	             BTCH_WRK_ID  /* 배치작업SEQ */
+	           , REG_DTTM  /* 등록일시 */
+	           , BTCH_WRK_NM  /* 배치작업명 */
+	           , CYCLE  /* 주기 */
+	           , TIME  /* 시점 */
+	           , STAT  /* 상태 */
+	           , VALID_STRT_DT  /* 유효시작일자 */
+	           , VALID_END_DT  /* 유효종료일자 */
+	           , REG_USER_ID  /* 등록사용자ID */
+	) VALUES (
+	           #{btchWrkId}  /* 배치작업SEQ */
+	         , now()  /* 등록일시 */
+	         , #{btchWrkNm}  /* 배치작업명 */
+	         , #{cycle}  /* 주기 */
+	         , now()  /* 시점 */
+	         , #{stat}  /* 상태 */
+	         , #{validStrtDt}  /* 유효시작일자 */
+	         , #{validEndDt}  /* 유효종료일자 */
+	         , #{regUserId}  /* 등록사용자ID */
+	)
+	</insert>
+
+	<!-- 배치작업등록이력 수정 -->
+	<update id="updateCmBtchWrkRegHist">
+	/* ncis.sql.cmn.cmBtchWrkRegHist.updateCmBtchWrkRegHist */
+	UPDATE CM_BTCH_WRK_REG_HIST
+	         SET BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , BTCH_WRK_NM = #{btchWrkNm}  /* 배치작업명 */
+	           , CYCLE = #{cycle}  /* 주기 */
+	           , TIME = now()  /* 시점 */
+	           , STAT = #{stat}  /* 상태 */
+	           , VALID_STRT_DT = #{validStrtDt}  /* 유효시작일자 */
+	           , VALID_END_DT = #{validEndDt}  /* 유효종료일자 */
+	           , REG_USER_ID = #{regUserId}  /* 등록사용자ID */
+         WHERE BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+           AND REG_DTTM = #{regDttm}  /* 등록일시 */
+
+	</update>
+
+	<!-- 배치작업등록이력 삭제 -->
+	<delete id="deleteCmBtchWrkRegHist">
+	/* ncis.sql.cmn.cmBtchWrkRegHist.deleteCmBtchWrkRegHist */
+	DELETE FROM CM_BTCH_WRK_REG_HIST
+         WHERE BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+           AND REG_DTTM = #{regDttm}  /* 등록일시 */
+
+	</delete>
+
+</mapper>

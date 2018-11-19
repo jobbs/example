@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrVmWrkHist">
+
+	<resultMap id="resultRrVmWrkHist" type="ncis.cmn.entity.RrVmWrkHist">
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버ID -->
+        <result property="wrkDt"     column="WRK_DT"/>  <!-- 작업일시 -->
+        <result property="vmReqTyCd"     column="VM_REQ_TY_CD"/>  <!-- 가상서버요청유형코드 -->
+        <result property="wrkId"     column="WRK_ID"/>  <!-- 작업자ID -->
+        <result property="chBefCpuQty"     column="CH_BEF_CPU_QTY"/>  <!-- 변경전CPU(vCore) -->
+        <result property="chAftCpuQty"     column="CH_AFT_CPU_QTY"/>  <!-- 변경후CPU(vCore) -->
+        <result property="chBefMemAsgnCapa"     column="CH_BEF_MEM_ASGN_CAPA"/>  <!-- 변경전메모리할당량(MB) -->
+        <result property="chAftMemAsgnCapa"     column="CH_AFT_MEM_ASGN_CAPA"/>  <!-- 변경후메모리할당량(MB) -->
+        <result property="chBefStrgAsgnCapa"     column="CH_BEF_STRG_ASGN_CAPA"/>  <!-- 변경전스토리지할당량(GB) -->
+        <result property="chAftStrgAsgnCapa"     column="CH_AFT_STRG_ASGN_CAPA"/>  <!-- 변경후스토리지할당량(GB) -->
+        <result property="rsrcReqNo"     column="RSRC_REQ_NO"/>  <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"     column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+        <result property="lgcyPSrvrId"     column="LGCY_P_SRVR_ID"/>  <!-- 기존물리서버ID -->
+        <result property="chngPSrvrId"     column="CHNG_P_SRVR_ID"/>  <!-- 변경후물리서버ID -->
+        <result property="snapshtNm"     column="SNAPSHT_NM"/>  <!-- 스냅샷명 -->
+        <result property="dskNo"     column="DSK_NO"/>  <!-- 디스크번호 -->
+        <result property="snapshtHstryClCd"     column="SNAPSHT_HSTRY_CL_CD"/>  <!-- 스냅샷이력구분코드 -->
+        <result property="lgcyCompId"     column="LGCY_COMP_ID"/>  <!-- 기존구성ID -->
+        <result property="chngCompId"     column="CHNG_COMP_ID"/>  <!-- 변경구성ID -->
+	</resultMap>
+
+	<!-- 가상서버작업이력 등록 -->
+	<insert id="insertRrVmWrkHist">
+	INSERT INTO RR_VM_WRK_HIST (
+	             VM_SEQ  /* 가상서버SEQ */
+	           , WRK_DT  /* 작업일시 */
+	           , VM_REQ_TY_CD  /* 가상서버요청유형코드 */
+	           , WRK_ID  /* 작업자ID */
+	           , CH_BEF_CPU_QTY  /* 변경전CPU(vCore) */
+	           , CH_AFT_CPU_QTY  /* 변경후CPU(vCore) */
+	           , CH_BEF_MEM_ASGN_CAPA  /* 변경전메모리할당량(MB) */
+	           , CH_AFT_MEM_ASGN_CAPA  /* 변경후메모리할당량(MB) */
+	           , CH_BEF_STRG_ASGN_CAPA  /* 변경전스토리지할당량(GB) */
+	           , CH_AFT_STRG_ASGN_CAPA  /* 변경후스토리지할당량(GB) */
+	           , RSRC_REQ_NO  /* 자원요청번호 */
+	           , RSRC_REQ_SEQ  /* 자원요청일련번호 */
+	           , LGCY_P_SRVR_ID  /* 기존물리서버ID */
+	           , CHNG_P_SRVR_ID  /* 변경후물리서버ID */
+	           , SNAPSHT_NM  /* 스냅샷명 */
+	           , DSK_NO  /* 디스크번호 */
+	           , SNAPSHT_HSTRY_CL_CD  /* 스냅샷이력구분코드 */
+	           , LGCY_COMP_ID  /* 기존구성ID */
+	           , CHNG_COMP_ID  /* 변경구성ID */
+	) VALUES (
+	           #{vmSeq}  /* 가상서버SEQ */
+	         , now()  /* 작업일시 */
+	         , #{vmReqTyCd}  /* 가상서버요청유형코드 */
+	         , #{wrkId}  /* 작업자ID */
+	         , #{chBefCpuQty}  /* 변경전CPU(vCore) */
+	         , #{chAftCpuQty}  /* 변경후CPU(vCore) */
+	         , #{chBefMemAsgnCapa}  /* 변경전메모리할당량(MB) */
+	         , #{chAftMemAsgnCapa}  /* 변경후메모리할당량(MB) */
+	         , #{chBefStrgAsgnCapa}  /* 변경전스토리지할당량(GB) */
+	         , #{chAftStrgAsgnCapa}  /* 변경후스토리지할당량(GB) */
+	         , #{rsrcReqNo}  /* 자원요청번호 */
+	         , #{rsrcReqSeq}  /* 자원요청일련번호 */
+	         , #{lgcyPSrvrId}  /* 기존물리서버ID */
+	         , #{chngPSrvrId}  /* 변경후물리서버ID */
+	         , #{snapshtNm}  /* 스냅샷명 */
+	         , #{dskNo}  /* 디스크번호 */
+	         , #{snapshtHstryClCd}  /* 스냅샷이력구분코드 */
+	         , #{lgcyCompId}  /* 기존구성ID */
+	         , #{chngCompId}  /* 변경구성ID */
+	)
+	</insert>
+
+	<!-- 가상서버작업이력 수정 -->
+	<update id="updateRrVmWrkHist">
+	UPDATE RR_VM_WRK_HIST
+	         SET VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	           , WRK_DT = now()  /* 작업일시 */
+	           , VM_REQ_TY_CD = #{vmReqTyCd}  /* 가상서버요청유형코드 */
+	           , WRK_ID = #{wrkId}  /* 작업자ID */
+	           , CH_BEF_CPU_QTY = #{chBefCpuQty}  /* 변경전CPU(vCore) */
+	           , CH_AFT_CPU_QTY = #{chAftCpuQty}  /* 변경후CPU(vCore) */
+	           , CH_BEF_MEM_ASGN_CAPA = #{chBefMemAsgnCapa}  /* 변경전메모리할당량(MB) */
+	           , CH_AFT_MEM_ASGN_CAPA = #{chAftMemAsgnCapa}  /* 변경후메모리할당량(MB) */
+	           , CH_BEF_STRG_ASGN_CAPA = #{chBefStrgAsgnCapa}  /* 변경전스토리지할당량(GB) */
+	           , CH_AFT_STRG_ASGN_CAPA = #{chAftStrgAsgnCapa}  /* 변경후스토리지할당량(GB) */
+	           , RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+	           , RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	           , LGCY_P_SRVR_ID = #{lgcyPSrvrId}  /* 기존물리서버ID */
+	           , CHNG_P_SRVR_ID = #{chngPSrvrId}  /* 변경후물리서버ID */
+	           , SNAPSHT_NM = #{snapshtNm}  /* 스냅샷명 */
+	           , DSK_NO = #{dskNo}  /* 디스크번호 */
+	           , SNAPSHT_HSTRY_CL_CD = #{snapshtHstryClCd}  /* 스냅샷이력구분코드 */
+	           , LGCY_COMP_ID = #{lgcyCompId}  /* 기존구성ID */
+	           , CHNG_COMP_ID = #{chngCompId}  /* 변경구성ID */
+         WHERE VM_ID = #{vmId}  /* 가상서버ID */
+           AND WRK_DT = #{wrkDt}  /* 작업일시 */
+
+	</update>
+
+	<!-- 가상서버작업이력 삭제 -->
+	<delete id="deleteRrVmWrkHist">
+	DELETE FROM RR_VM_WRK_HIST
+         WHERE VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+           AND WRK_DT = #{wrkDt}  /* 작업일시 */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.btchwrk">
+
+<resultMap type="ncis.cpt.sys.btch.vo.BtchWrkVo" id="resultBtchWrkVo" extends="ncis.sql.cmn.cmBtchWrk.resultCmBtchWrk">
+	<result property="regUserNm" column="REG_USER_NM" />
+	<result property="cycleNm" column="CYCLE_NM" />
+</resultMap>
+
+<sql id="search">
+	<if test="searchBtchWrkNm != null and !searchBtchWrkNm.isEmpty()">
+		AND BTCH_WRK_NM LIKE '%' || #{searchBtchWrkNm} || '%'
+	</if>
+
+	<if test="searchBtchWrkId != null and !searchBtchWrkId.isEmpty()">
+		AND BTCH_WRK_ID LIKE '%' || #{searchBtchWrkId} || '%'
+	</if>
+
+	<if test="searchStat != null and !searchStat.isEmpty()">
+			AND STAT = #{searchStat}
+	</if>
+
+	<if test="searchJobStatus != null and !searchJobStatus.isEmpty()">
+		<choose>
+			<when test="searchJobStatus eq ('S'.toString())">
+				AND LAST_STAT IN ('STARTING', 'STARTED')
+			</when>
+			<otherwise>
+				AND ( LAST_STAT NOT IN ('STARTING', 'STARTED', 'ABANDONED') OR LAST_STAT IS NULL )
+			</otherwise>
+		</choose>
+	</if>
+
+	<if test="searchJobStatusLast != null and !searchJobStatusLast.isEmpty()">
+		AND LAST_STAT = #{searchJobStatusLast }
+	</if>
+	<if test="searchCycle != null and !searchCycle.isEmpty()">
+		AND CYCLE = #{searchCycle }
+	</if>
+
+</sql>
+
+<select id="selectBtchWrkTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.btchwrk.selectBtchWrkTotCnt */
+	SELECT COUNT(*)
+	FROM CM_BTCH_WRK
+	<where>
+		<include refid="search" />
+	</where>
+</select>
+
+<select id="selectBtchWrkList" resultMap="resultBtchWrkVo">
+	/* ncis.sql.cpt.btchwrk.selectBtchWrkList */
+	<include refid="ncis.cmn.queryForPagingHeader" />
+	SELECT BTCH_WRK_SEQ
+		, BTCH_WRK_NM
+		, BTCH_WRK_ID
+		, (SELECT CD_NM FROM CM_CODE C WHERE C.CD = CYCLE AND C.GRP_CD = '060') AS CYCLE_NM
+		, CYCLE
+		, CYCLE_DIRECT_WRITE
+		, EXE_TIME_MONTH
+		, EXE_TIME_DAY
+		, EXE_TIME_HOUR
+		, EXE_TIME_MINUTE
+		, TIME_TYPE
+		, STAT
+		, BTCH_WRK_FILE_NM
+		, EXE_RSRV_DTTM
+		, STOP_RSRV_DTTM
+		, EXE_OPTN
+		, DC
+	    , LAST_STAT
+	    , STRT_DTTM
+		, REG_USER_ID
+		, (SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = REG_USER_ID) REG_USER_NM
+		, REG_DT
+	FROM CM_BTCH_WRK
+	<where>
+		<include refid="search"/>
+	</where>
+	ORDER BY STAT DESC, BTCH_WRK_SEQ DESC
+	<include refid="ncis.cmn.queryForPagingFooter" />
+</select>
+
+<select id="selectBtchWrkAllList" resultMap="resultBtchWrkVo">
+	/* ncis.sql.cpt.btchwrk.selectBtchWrkAllList */
+	SELECT BTCH_WRK_SEQ
+		, BTCH_WRK_NM
+		, BTCH_WRK_ID
+		, CYCLE
+		, CYCLE_DIRECT_WRITE
+		, EXE_TIME_MONTH
+		, EXE_TIME_DAY
+		, EXE_TIME_HOUR
+		, EXE_TIME_MINUTE
+		, TIME_TYPE
+		, STAT
+		, BTCH_WRK_FILE_NM
+		, EXE_OPTN
+		, DC
+		, LAST_STAT
+	    , STRT_DTTM
+		, REG_USER_ID
+		, REG_DT
+	FROM CM_BTCH_WRK
+	WHERE STAT = 'Y'
+</select>
+
+<select id="selectBtchWrk" resultMap="resultBtchWrkVo">
+	/* ncis.sql.cpt.btchwrk.selectBtchWrk */
+	SELECT BTCH_WRK_SEQ
+		, BTCH_WRK_NM
+		, BTCH_WRK_ID
+		, (SELECT CD_NM FROM CM_CODE C WHERE C.CD = CYCLE AND C.GRP_CD = '060') AS CYCLE_NM
+		, CYCLE
+		, CYCLE_DIRECT_WRITE
+		, EXE_TIME_MONTH
+		, EXE_TIME_DAY
+		, EXE_TIME_HOUR
+		, EXE_TIME_MINUTE
+		, TIME_TYPE
+		, STAT
+		, BTCH_WRK_FILE_NM
+		, EXE_RSRV_DTTM
+		, STOP_RSRV_DTTM
+		, EXE_OPTN
+		, DC
+	    , LAST_STAT
+	    , STRT_DTTM
+	    , END_DTTM /* 2017-11-20 adding */
+		, REG_USER_ID
+		, (SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = REG_USER_ID) REG_USER_NM
+		, REG_DT
+	FROM
+		CM_BTCH_WRK
+	WHERE
+		BTCH_WRK_SEQ = #{value }
+</select>
+
+<select id="selectBtchWrkListXlsDwnl" resultMap="resultBtchWrkVo">
+/* NCIS.SQL.CPT.BTCHWRK.SELECTBTCHWRKLISTXLSDWNL */
+SELECT BTCH_WRK_SEQ
+		, BTCH_WRK_NM
+		, BTCH_WRK_ID
+		, (SELECT CD_NM FROM CM_CODE C WHERE C.CD = CYCLE AND C.GRP_CD = '060') AS CYCLE_NM
+		, CYCLE
+		, CYCLE_DIRECT_WRITE
+		, EXE_TIME_MONTH
+		, EXE_TIME_DAY
+		, EXE_TIME_HOUR
+		, EXE_TIME_MINUTE
+		, TIME_TYPE
+		, STAT
+		, BTCH_WRK_FILE_NM
+		, EXE_RSRV_DTTM
+		, STOP_RSRV_DTTM
+		, EXE_OPTN
+		, DC
+	    , LAST_STAT
+	    , STRT_DTTM
+		, (SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = REG_USER_ID) REG_USER_NM
+		, REG_DT
+	FROM CM_BTCH_WRK
+	<where>
+		<include refid="search"/>
+	</where>
+	ORDER BY BTCH_WRK_SEQ DESC
+</select>
+
+<select id="selectBtchWrkIdCnt" resultType="Integer">
+	/* ncis.sql.cpt.btchwrk.selectBtchWrkIdCnt */
+	SELECT COUNT(BTCH_WRK_ID)
+		FROM CM_BTCH_WRK
+		<where>
+			BTCH_WRK_ID = #{btchWrkId}
+			<if test="btchwrkSeq != null">
+				AND BTCH_WRK_SEQ != ${btchWrkSeq}
+			</if>
+		</where>
+</select>
+
+
+</mapper>

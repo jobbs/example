@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stYrCludNwUseInstitution">
+
+
+	<insert id="insertStYrCludNwUseInstitution" parameterType="ncis.cmn.entity.StYrCludNwUseInstitution">
+	/*ncis.sql.cmn.stYrCludNwUseInstitution.insertStYrCludNwUseInstitution*/
+		INSERT INTO ST_YR_CLUD_NW_USE_INSTITUTION
+		(
+			STDR_YR,
+			INSTITUTION_ID,
+			JOB_QTY
+		)
+		VALUES
+		(
+			#{stdrYr},
+			#{institutionId},
+			#{jobQty}
+		)
+	</insert>
+
+
+	<delete id="deleteStYrCludNwUseInstitution"  parameterType="ncis.cmn.entity.StYrCludNwUseInstitution">
+	/*ncis.sql.cmn.stYrCludNwUseInstitution.deleteStYrCludNwUseInstitution*/
+		DELETE FROM ST_YR_CLUD_NW_USE_INSTITUTION
+		WHERE STDR_YR =#{stdrYr}
+	</delete>
+
+</mapper>

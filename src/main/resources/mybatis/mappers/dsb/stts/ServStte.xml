@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.servstte">
+
+	<resultMap type="ncis.dsb.stts.servstte.vo.CntServStteVo" id="resultCntServStteVo">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="institutionCnt" column="INSTITUTION_CNT"/>
+		<result property="jobCnt" column="JOB_CNT"/>
+		<result property="vmCnt" column="VM_CNT"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.servstte.vo.PmStteVo" id="resultPmStteVo">
+		<result property="regionId" column="region_id"/>
+		<result property="cdNm" column="cd_nm"/>
+		<result property="pmCnt" column="pm_cnt"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.servstte.vo.VmStteVo" id="resultVmStteVo">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="vmCnt" column="VM_CNT"/>
+		<result property="virRt" column="VIR_RT"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.servstte.vo.VrlzStteVo" id="resultVrlzStteVo">
+		<result property="cdNm" column="CD_NM"/>
+		<result property="pmCnt" column="PM_CNT"/>
+		<result property="virRt" column="VIR_RT"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.servstte.vo.CloudJobVo" id="resultCloudJobVo">
+		<result property="stdrYr" column="stdr_yr"/>
+		<result property="cnt" column="cnt"/>
+		<result property="goalJobQty" column="goal_job_qty"/>
+		<result property="rsltJobQty" column="rslt_job_qty"/>
+	</resultMap>
+
+
+
+	<select id="selectCntServStteList" resultMap="resultCntServStteVo">
+
+		/*ncis.sql.dsb.stts.servstte.selectCntServStteList*/
+		select  COALESCE(b.REGION_NM,'소계') REGION_NM,
+	            COALESCE(sum(INSTITUTION_CNT),0) INSTITUTION_CNT,
+	            COALESCE(sum(JOB_CNT),0) JOB_CNT,
+	            COALESCE(sum(VM_CNT),0) VM_CNT
+	        from
+				  (select   a.REGION_NM,
+				            a.region_id,
+							max(aa.INSTITUTION_CNT) INSTITUTION_CNT,
+							max(aa.JOB_CNT) JOB_CNT,
+							count(RC_VM.vm_seq) VM_CNT
+					    FROM
+							  RC_VM
+							        INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+									INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+
+									LEFT JOIN (select d.region_id,
+												  COUNT(DISTINCT CM_INSTITUTION.INSTITUTION_ID) AS INSTITUTION_CNT,
+												  count(distinct b.job_id) JOB_CNT
+											     from RC_VM a inner join RC_VM_JOB b ON b.VM_SEQ = a.VM_SEQ
+												  INNER JOIN RC_CLSTR c ON c.CLSTR_SEQ = a.CLSTR_SEQ
+												  inner join RC_RSRC_POOL d on c.RSRC_POOL_ID = d.RSRC_POOL_ID
+												  LEFT JOIN CM_JOB ON CM_JOB.JOB_ID = b.JOB_ID AND CM_JOB.USE_YN = 'Y'
+												  LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = a.INSTITUTION_ID AND CM_INSTITUTION.USE_YN = 'Y'
+											  WHERE
+												a.DEL_YN = 'N'
+												AND a.VM_CL_CD = '01'
+												AND c.DEL_YN = 'N'
+												AND d.DEL_YN = 'N'
+												AND d.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' AND VAR_VL1 = 'COM')
+												AND d.RSRC_POOL_CL_CD = '01'
+											   group by  d.region_id
+										 ) aa  on aa.region_id = RC_RSRC_POOL.region_id
+
+									left join rc_region a on RC_RSRC_POOL.region_id = a.region_id
+
+								WHERE
+									RC_VM.DEL_YN = 'N'
+									AND RC_VM.VM_CL_CD = '01'
+									AND RC_CLSTR.DEL_YN = 'N'
+									AND RC_RSRC_POOL.DEL_YN = 'N'
+									AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' AND VAR_VL1 = 'COM')
+									AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+						  group by a.region_nm,
+						           a.region_id
+
+			       ) a right join rc_region b on a.region_id = b.region_id
+			       where b.region_id != 'DG'
+       group by rollup(b.region_nm)
+
+
+	</select>
+
+
+	<select id="selectPmStteList" resultMap="resultPmStteVo">
+
+		/*ncis.sql.dsb.stts.servstte.selectPmStteList*/
+		SELECT  RC_RSRC_POOL.region_id,
+                case when a.cd='01' then 'RHEV'
+                     when a.cd='02' then 'VMWare'
+                     when a.cd='03' then 'HPVM'
+                     when a.cd='04' then 'IBMVM'
+                end cd_nm,
+			    COUNT(RC_PM.*) AS pm_cnt
+
+		FROM
+			RC_PM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			left join CM_CODE a on a.cd = RC_RSRC_POOL.VRLZ_SW_TY_CD
+
+		WHERE
+			RC_PM.DEL_YN = 'N'
+			AND RC_PM.PM_CL_CD = '01'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+
+			and a.GRP_CD = '001' AND a.PARENT_CD ='100' AND a.USE_YN = 'Y' AND a.VAR_VL1 = 'COM'
+	      group by 	RC_RSRC_POOL.region_id,
+	                a.cd_nm,
+	                a.cd
+	     order by region_id,
+	               a.cd
+	</select>
+
+
+	<select id="selectVmStteList" resultMap="resultVmStteVo">
+
+		/*ncis.sql.dsb.stts.servstte.selectVmStteList*/
+		select COALESCE(c.REGION_NM,'계') REGION_NM,
+		       sum(a.VM_CNT) VM_CNT,
+		       sum(round(a.VM_CNT/b.pm_cnt::numeric*100,2)) VIR_RT
+		   from
+		         (SELECT  RC_RSRC_POOL.region_id,
+				      COUNT(RC_VM.*) AS VM_CNT
+				FROM
+					RC_VM
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+
+				WHERE
+					RC_VM.DEL_YN = 'N'
+					AND RC_VM.VM_CL_CD = '01'
+					AND RC_CLSTR.DEL_YN = 'N'
+					AND RC_RSRC_POOL.DEL_YN = 'N'
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' AND VAR_VL1 = 'COM')
+					AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+				group by RC_RSRC_POOL.region_id
+			  )a inner join
+			  (SELECT  RC_RSRC_POOL.region_id,
+					   COUNT(RC_PM.*) AS pm_cnt
+
+				FROM
+					RC_PM
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					left join CM_CODE a on a.cd = RC_RSRC_POOL.VRLZ_SW_TY_CD
+
+				WHERE
+					RC_PM.DEL_YN = 'N'
+					AND RC_PM.PM_CL_CD = '01'
+					AND RC_CLSTR.DEL_YN = 'N'
+					AND RC_RSRC_POOL.DEL_YN = 'N'
+
+					and a.GRP_CD = '001' AND a.PARENT_CD ='100' AND a.USE_YN = 'Y' AND a.VAR_VL1 = 'COM'
+			      group by 	RC_RSRC_POOL.region_id
+			    )b on a.region_id = b.region_id
+			    left join rc_region c on c.region_id = a.region_id
+			 group by rollup(c.region_nm)
+	</select>
+
+	<select id="selectVrlzStteList" resultMap="resultVrlzStteVo">
+
+		/*ncis.sql.dsb.stts.servstte.selectVrlzStteList*/
+		select case when b.cd='01' then 'RHEV'
+				    when b.cd='02' then 'VMWare'
+				    when b.cd='03' then 'HPVM'
+				    when b.cd='04' then 'IBMVM'
+               end cd_nm,
+		       b.pm_cnt pm_cnt,
+		       COALESCE(round(a.VM_CNT/b.pm_cnt::numeric*100,2),0) vir_rt
+		   from
+		         (SELECT     a.cd_nm,
+			             a.cd,
+				      COUNT(RC_VM.*) AS VM_CNT
+
+				FROM
+					RC_VM
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					left join CM_CODE a on a.cd = RC_RSRC_POOL.VRLZ_SW_TY_CD
+
+				WHERE
+					RC_VM.DEL_YN = 'N'
+					AND RC_VM.VM_CL_CD = '01'
+					AND RC_CLSTR.DEL_YN = 'N'
+					AND RC_RSRC_POOL.DEL_YN = 'N'
+					and a.GRP_CD = '001' AND a.PARENT_CD ='100' AND a.USE_YN = 'Y' AND a.VAR_VL1 = 'COM'
+					AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+				group by a.cd_nm,
+			                a.cd
+			  )a right join
+			  (SELECT
+		                   a.cd_nm,
+		                   a.cd,
+				   COUNT(RC_PM.*) AS pm_cnt
+
+				FROM
+					RC_PM
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					left join CM_CODE a on a.cd = RC_RSRC_POOL.VRLZ_SW_TY_CD
+
+				WHERE
+					RC_PM.DEL_YN = 'N'
+					AND RC_PM.PM_CL_CD = '01'
+					AND RC_CLSTR.DEL_YN = 'N'
+					AND RC_RSRC_POOL.DEL_YN = 'N'
+					and a.GRP_CD = '001' AND a.PARENT_CD ='100' AND a.USE_YN = 'Y' AND a.VAR_VL1 = 'COM'
+			      group by 	a.cd_nm,
+			                a.cd
+			      order by a.cd
+			    )b on a.cd = b.cd
+		       order by a.cd
+
+	</select>
+	<select id="selectCloudJobList" resultMap="resultCloudJobVo">
+	  select substr(a.stdr_yr,3,2) stdr_yr,
+             count(*) over() cnt,
+             sum(a.goal_job_qty) goal_job_qty,
+             sum(a.rslt_job_qty) rslt_job_qty
+
+        from st_clud_swtch_goal_rslt a
+
+     group by a.stdr_yr
+     order by stdr_yr
+
+	</select>
+</mapper>

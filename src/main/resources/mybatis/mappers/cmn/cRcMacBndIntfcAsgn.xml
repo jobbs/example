@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcMacBndIntfcAsgn">
+
+	<resultMap id="resultRcMacBndIntfcAsgn" type="ncis.cmn.entity.RcMacBndIntfcAsgn">
+        <result property="macSeq"     		column="MAC_SEQ"/>  <!-- MAC_SEQ -->
+        <result property="macBndSeq"     	column="MAC_BND_SEQ"/>  <!-- MAC대역SEQ -->
+        <result property="netwkIntfcSeq"	column="NETWK_INTFC_SEQ"/>  <!-- 네트워크인터페이스SEQ -->
+        <result property="macAddr"     		column="MAC_ADDR"/>  <!-- MAC주소 -->
+        <result property="asgnYn"     		column="ASGN_YN"/>  <!-- 할당여부 -->
+        <result property="asgnDt"     		column="ASGN_DT"/>  <!-- 할당일자 -->
+	</resultMap>
+
+	<sql id="setAsgnDt">
+		<if test="asgnDt != null and !asgnDt.isEmpty()">
+			,A3.ASGN_Dt = #{asgnDt}
+		</if>
+	</sql>
+
+	<insert id="insertRcMacBndIntfcAsgn">
+		<selectKey order="BEFORE" keyProperty="macSeq" resultType="integer">
+			SELECT nextval('rc_mac_bnd_intfc_asgn_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rcMacBndIntfcAsgn.insertRcMacBndIntfcAsgn */
+		INSERT INTO RC_MAC_BND_INTFC_ASGN (
+		             MAC_SEQ  /* MAC_SEQ */
+		           , MAC_BND_SEQ  /* MAC대역SEQ */
+		           , NETWK_INTFC_SEQ  /* 네트워크인터페이스SEQ */
+		           , MAC_ADDR  /* MAC주소 */
+		           , ASGN_YN  /* 할당여부 */
+		           , ASGN_DT  /* 할당일자 */
+		) VALUES (
+		           #{macSeq}  /* MAC_SEQ */
+		         , #{macBndSeq}  /* MAC대역SEQ */
+		         , #{netwkIntfcSeq}  /* 네트워크인터페이스SEQ */
+		         , #{macAddr}  /* MAC주소 */
+		         , #{asgnYn}  /* 할당여부 */
+		         , #{asgnDt}  /* 할당일자 */
+		)
+	</insert>
+
+	<update id="updateRcMacBndIntfcAsgn">
+		/* ncis.sql.cmn.rcMacBndIntfcAsgn.updateRcMacBndIntfcAsgn */
+		UPDATE RC_MAC_BND_INTFC_ASGN
+        SET NETWK_INTFC_SEQ = #{netwkIntfcSeq}	/* 네트워크인터페이스SEQ */
+        	,ASGN_YN = #{asgnYn}  /* 할당여부 */
+        	,ASGN_DT = #{asgnDt}  /* 할당일자 */
+        WHERE MAC_SEQ = #{macSeq}  /* MAC_SEQ */
+	</update>
+
+	<delete id="deleteRcMacBndIntfcAsgn">
+		/* ncis.sql.cmn.rcMacBndIntfcAsgn.deleteRcMacBndIntfcAsgn */
+		DELETE FROM RC_MAC_BND_INTFC_ASGN
+		WHERE MAC_SEQ = #{macBndSeq}  /* MAC_SEQ */
+	</delete>
+
+</mapper>

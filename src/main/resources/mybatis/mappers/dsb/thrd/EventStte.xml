@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.thrd.evntStte">
+
+
+
+	<select id="selectEvntStteListCnt" parameterType="ncis.dsb.thrd.evnt.vo.EvntStteSearchVo" resultType="integer">
+		/* ncis.sql.dsb.thrd.evntStte.selectEvntStteListCnt */
+		SELECT SUM(CNT) CNT
+		FROM (
+			SELECT COUNT(1) CNT
+			FROM ST_EVNT A, RC_RSRC_POOL B ,RC_CLSTR C ,RC_VM E, CM_INSTITUTION F, CM_JOB G,
+				<if test='!allJobAuth'>
+				CM_JOB_USER H,
+				</if>
+				RC_VM_JOB I
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"01".equals(trgtCd)'>
+				AND E.VM_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"02".equals(trgtCd) or "04".equals(trgtCd)'>
+				AND 1=2
+			</if>
+			<if test='"03".equals(trgtCd)'>
+				AND( G. JOB_NM LIKE '%'||#{trgtNm}||'%' OR F.INSTITUTION_NM LIKE '%'||#{trgtNm}||'%')
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			AND C.CLSTR_SEQ = E.CLSTR_SEQ
+			AND  E.VM_SEQ = A.THRES_TRGT_SRVR_SEQ
+			AND TRGT_SRVR_CL_CD ='01'
+			AND E.INSTITUTION_ID = F.INSTITUTION_ID
+			AND I.JOB_ID = G.JOB_ID
+			<if test='!allJobAuth'>
+				AND I.JOB_ID = H.JOB_ID
+				AND H.USER_ID = #{userId}
+			</if>
+			AND I.VM_SEQ = E.VM_SEQ
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+			UNION ALL
+			SELECT COUNT(1) CNT
+			FROM ST_EVNT A, RC_RSRC_POOL B ,RC_CLSTR C ,RC_PM D
+				<if test="!allRsrcPoolAuth">
+					, CM_RSRC_POOL_USER F
+				</if>
+
+
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"01".equals(trgtCd) or "03".equals(trgtCd) or "04".equals(trgtCd)'>
+				AND 1=2
+			</if>
+			<if test='"02".equals(trgtCd)'>
+				AND D.PM_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			<if test="!allRsrcPoolAuth">
+				AND B.RSRC_POOL_ID = F.RSRC_POOL_ID
+				AND F.USER_ID =#{userId}
+			</if>
+			 AND C.CLSTR_SEQ = D.CLSTR_SEQ
+			 AND  D.PM_SEQ = A.THRES_TRGT_SRVR_SEQ
+			AND TRGT_SRVR_CL_CD ='02' /*물리서버*/
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+		UNION ALL
+		SELECT COUNT(1) CNT
+			FROM ST_EVNT A INNER JOIN RX_SERVC E ON A.THRES_TRGT_SRVR_SEQ = E.SERVC_SEQ
+						   LEFT JOIN RX_SERVC_AREA C ON E.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+						   INNER JOIN RC_RSRC_POOL B ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+				<if test='!allJobAuth'>
+				INNER JOIN CM_JOB_USER H ON C.JOB_ID = H.JOB_ID
+				</if>
+
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"04".equals(trgtCd)'>
+				AND E.SERVC_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"01".equals(trgtCd) or "02".equals(trgtCd) or "03".equals(trgtCd)'>
+				AND 1=2
+			</if>
+
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+
+			AND TRGT_SRVR_CL_CD ='03'
+			<if test='!allJobAuth'>
+				AND H.USER_ID = #{userId}
+			</if>
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+		) A
+	</select>
+	<select id="selectEvntStteList" parameterType="ncis.dsb.thrd.evnt.vo.EvntStteSearchVo" resultType="ncis.dsb.thrd.evnt.vo.EvntStteVo">
+		/* ncis.sql.dsb.thrd.evntStte.selectEvntStteList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+			SELECT *
+			FROM (
+			SELECT
+				EVNT_SEQ,
+				THRES_GRD_ID ,
+				FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+				TO_CHAR(OCCR_DTTM,'YYYY-MM-DD HH24:MI:SS') OCCR_DTTM,
+				F.INSTITUTION_NM,
+				G.JOB_NM,
+				CASE
+					WHEN TRGT_SRVR_CL_CD='01' THEN (SELECT X.VM_NM FROM RC_VM X WHERE X.VM_SEQ =A.THRES_TRGT_SRVR_SEQ)
+					ELSE (SELECT X.PM_NM FROM RC_PM X WHERE X.PM_SEQ =A.THRES_TRGT_SRVR_SEQ)
+				END TRGT_NM
+				,
+				TRGT_PATH,
+				SPLIT_PART(TRGT_PATH,'>',1) REGION_NM,
+				SPLIT_PART(TRGT_PATH,'>',2) ZONE_NM,
+				SPLIT_PART(TRGT_PATH,'>',3) NET_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) RSRC_POOL_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) CLSTR_NM,
+				EVNT_CN,
+				CONFRM_USER_ID,
+				(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.CONFRM_USER_ID) USER_NM,
+				TO_CHAR(CONFRM_DTTM,'YYYY-MM-DD HH24:MI:SS') CONFRM_DT,
+				(SELECT   COALESCE(MAX(A),'')||COALESCE(MAX(B),'')||CHR(13)||COALESCE(MAX(C),'')
+				FROM (
+					SELECT CASE
+						WHEN IDX_ITM_ID='0' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'DOWN('|| CONF_CONT_CNT||')'
+						END A,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='02' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'CRITICAL'||CONF_CMPR_STDR||THRES_CONF_VL
+						END B,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='03' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'MAJOR'||CONF_CMPR_STDR||THRES_CONF_VL
+						END C
+					FROM ST_TRGT_SRVR_THRES_CONF X
+					WHERE X.THRES_TRGT_SRVR_SEQ =A.THRES_TRGT_SRVR_SEQ
+					AND X.IDX_ITM_ID=A.IDX_ITM_ID
+				) A) THRES_NM,
+				NOW_VL
+			FROM 	ST_EVNT A,
+					RC_RSRC_POOL B ,
+					RC_CLSTR C ,
+
+					RC_VM E,
+					CM_INSTITUTION F,
+					CM_JOB G,
+					<if test='!allJobAuth'>
+						CM_JOB_USER H,
+					</if>
+
+					RC_VM_JOB I
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"01".equals(trgtCd)'>
+				AND E.VM_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"02".equals(trgtCd)  or "04".equals(trgtCd)'>
+				AND 1=2
+			</if>
+			<if test='"03".equals(trgtCd)'>
+				AND( G. JOB_NM LIKE '%'||#{trgtNm}||'%' OR F.INSTITUTION_NM LIKE '%'||#{trgtNm}||'%')
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			 AND C.CLSTR_SEQ = E.CLSTR_SEQ
+			 AND  E.VM_SEQ = A.THRES_TRGT_SRVR_SEQ
+			AND TRGT_SRVR_CL_CD ='01'
+			AND E.INSTITUTION_ID = F.INSTITUTION_ID
+			AND I.JOB_ID = G.JOB_ID
+			<if test='!allJobAuth'>
+				AND I.JOB_ID = H.JOB_ID
+				AND H.USER_ID = #{userId}
+			</if>
+			AND E.VM_SEQ = I.VM_SEQ
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+			UNION ALL
+			SELECT
+				EVNT_SEQ,
+				THRES_GRD_ID ,
+				FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+				TO_CHAR(OCCR_DTTM,'YYYY-MM-DD HH24:MI:SS') OCCR_DTTM,
+				'',
+				'',
+				CASE
+					WHEN TRGT_SRVR_CL_CD='01' THEN (SELECT X.VM_NM FROM RC_VM X WHERE X.VM_SEQ =A.THRES_TRGT_SRVR_SEQ)
+					ELSE (SELECT X.PM_NM FROM RC_PM X WHERE X.PM_SEQ =A.THRES_TRGT_SRVR_SEQ)
+				END TRGT_NM
+				,
+				TRGT_PATH,
+				SPLIT_PART(TRGT_PATH,'>',1) REGION_NM,
+				SPLIT_PART(TRGT_PATH,'>',2) ZONE_NM,
+				SPLIT_PART(TRGT_PATH,'>',3) NET_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) RSRC_POOL_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) CLSTR_NM,
+				EVNT_CN,
+				CONFRM_USER_ID,
+				(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.CONFRM_USER_ID) USER_NM,
+				TO_CHAR(CONFRM_DTTM,'YYYY-MM-DD HH24:MI:SS') CONFRM_DT,
+				(SELECT   COALESCE(MAX(A),'')||COALESCE(MAX(B),'')||CHR(13)||COALESCE(MAX(C),'')
+				FROM (
+					SELECT CASE
+						WHEN IDX_ITM_ID='0' AND CONF_CMPR_STDR>'' THEN 'DOWN('|| CONF_CONT_CNT||')'
+						END A,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='02' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'CRITICAL'||CONF_CMPR_STDR||THRES_CONF_VL
+						END B,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='03' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'MAJOR'||CONF_CMPR_STDR||THRES_CONF_VL
+						END C
+					FROM ST_TRGT_SRVR_THRES_CONF X
+					WHERE X.THRES_TRGT_SRVR_SEQ =A.THRES_TRGT_SRVR_SEQ
+					AND X.IDX_ITM_ID=A.IDX_ITM_ID
+				) A) THRES_NM,
+				A.NOW_VL
+			FROM ST_EVNT A, RC_RSRC_POOL B ,RC_CLSTR C ,RC_PM D
+				<if test='!allRsrcPoolAuth'>
+					, CM_RSRC_POOL_USER E
+				</if>
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"01".equals(trgtCd) or "03".equals(trgtCd) or "04".equals(trgtCd)'>
+				AND 1=2
+			</if>
+			<if test='"02".equals(trgtCd)'>
+				AND D.PM_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			<if test='!allRsrcPoolAuth'>
+				AND B.RSRC_POOL_ID = E.RSRC_POOL_ID
+				AND E.USER_ID =#{userId}
+			</if>
+			 AND C.CLSTR_SEQ = D.CLSTR_SEQ
+			 AND  D.PM_SEQ = A.THRES_TRGT_SRVR_SEQ
+			AND TRGT_SRVR_CL_CD ='02' /*물리서버*/
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+
+		UNION ALL
+		SELECT
+				EVNT_SEQ,
+				THRES_GRD_ID ,
+				FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+				TO_CHAR(OCCR_DTTM,'YYYY-MM-DD HH24:MI:SS') OCCR_DTTM,
+				D.INSTITUTION_NM,
+				F.JOB_NM,
+				E.SERVC_NM TRGT_NM
+				,
+				TRGT_PATH,
+				SPLIT_PART(TRGT_PATH,'>',1) REGION_NM,
+				SPLIT_PART(TRGT_PATH,'>',2) ZONE_NM,
+				SPLIT_PART(TRGT_PATH,'>',3) NET_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) RSRC_POOL_NM,
+				SPLIT_PART(TRGT_PATH,'>',4) CLSTR_NM,
+				EVNT_CN,
+				CONFRM_USER_ID,
+				(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.CONFRM_USER_ID) USER_NM,
+				TO_CHAR(CONFRM_DTTM,'YYYY-MM-DD HH24:MI:SS') CONFRM_DT,
+				(SELECT   COALESCE(MAX(A),'')||COALESCE(MAX(B),'')||CHR(13)||COALESCE(MAX(C),'')
+				FROM (
+					SELECT CASE
+						WHEN IDX_ITM_ID='0' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'Scaled('|| CONF_CONT_CNT||')'
+						END A,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='02' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'CRITICAL'||CONF_CMPR_STDR||THRES_CONF_VL
+						END B,
+						CASE
+						WHEN IDX_ITM_ID<![CDATA[<>]]>'0' AND THRES_GRD_ID ='03' AND CONF_CMPR_STDR<![CDATA[>]]>'' THEN 'MAJOR'||CONF_CMPR_STDR||THRES_CONF_VL
+						END C
+					FROM ST_TRGT_SRVR_THRES_CONF X
+					WHERE X.THRES_TRGT_SRVR_SEQ =A.THRES_TRGT_SRVR_SEQ
+					AND X.IDX_ITM_ID=A.IDX_ITM_ID
+				) A) THRES_NM,
+				NOW_VL
+			FROM ST_EVNT A INNER JOIN RX_SERVC E ON A.THRES_TRGT_SRVR_SEQ = E.SERVC_SEQ
+						   LEFT JOIN RX_SERVC_AREA C ON E.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+						   INNER JOIN RC_RSRC_POOL B ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+						   LEFT JOIN CM_INSTITUTION D ON C.INSTITUTION_ID = D.INSTITUTION_ID
+						   LEFT JOIN CM_JOB F ON C.JOB_ID = F.JOB_ID
+				<if test='!allJobAuth'>
+				INNER JOIN CM_JOB_USER H ON C.JOB_ID = H.JOB_ID
+				</if>
+
+			WHERE 1=1
+			<if test='thresGrdId!=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID =#{thresGrdId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND EVNT_CN LIKE '%'||#{cn}||'%'
+			</if>
+			<if test='"04".equals(trgtCd)'>
+				AND E.SERVC_NM LIKE '%'||#{trgtNm}||'%'
+			</if>
+			<if test='"01".equals(trgtCd) or "02".equals(trgtCd) or "03".equals(trgtCd)'>
+				AND 1=2
+			</if>
+
+			<if test='"01".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND OCCR_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt !=null and !"".equals( strtDt )'>
+					AND OCCR_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt !=null and !"".equals( endDt )'>
+					AND OCCR_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+
+			AND TRGT_SRVR_CL_CD ='03'
+			<if test='!allJobAuth'>
+				AND H.USER_ID = #{userId}
+			</if>
+
+			<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+		) A
+		ORDER BY EVNT_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectEvntNtceHistList" parameterType="ncis.dsb.thrd.evnt.vo.EvntNtceHistSearchVo" resultType="ncis.dsb.thrd.evnt.vo.EvntNtceHistVo">
+		/* ncis.sql.dsb.thrd.evntStte.selectEvntNtceHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT *
+		FROM (
+			SELECT 	EVNT_DSPTH_SEQ,
+				TRGT_SRVR_CL_CD,
+				FN_CODE_NAME('030',TRGT_SRVR_CL_CD) TRGT_SRVR_CL_NM,
+				THRES_TRGT_SRVR_SEQ,
+				IDX_ITM_ID,
+				THRES_GRD_ID,
+				FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+				 TO_CHAR(DSPTH_DTTM,'YYYY-MM-DD HH24:MI:SS') DSPTH_DTTM,
+				DSPTH_TRGT_ID,
+				(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.DSPTH_TRGT_ID) USER_NM,
+				DSPTH_TY_CD,
+				FN_CODE_NAME('029',DSPTH_TY_CD) DSPTH_TY_NM,
+				TRGT_SRVR_NM,
+				DSPTH_STAT_CD,
+				FN_CODE_NAME('028',DSPTH_STAT_CD) DSPTH_STAT_NM,
+				PATH,
+				SPLIT_PART(PATH,'>',1)	REGION_NM,
+				SPLIT_PART(PATH,'>',2) ZONE_NM,
+				SPLIT_PART(PATH,'>',3) NET_NM,
+				SPLIT_PART(PATH,'>',4) RSRC_POOL_NM,
+				SPLIT_PART(PATH,'>',5) CLSTR_NM,
+				CN
+			FROM ST_EVNT_DSPTH_HIST A
+				, RC_RSRC_POOL B
+				, RC_CLSTR C
+				, RC_PM D
+				 <if test='!allRsrcPoolAuth'>
+				 , CM_RSRC_POOL_USER E
+				 </if>
+			WHERE 1=1
+			AND A.TRGT_SRVR_CL_CD='02'
+			<if test='"01".equals(trgtSrvrClCd) or "03".equals(trgtSrvrClCd)'>
+				AND 1=2
+			</if>
+			AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+
+			AND C.CLSTR_SEQ = D.CLSTR_SEQ
+		 	AND 	A.THRES_TRGT_SRVR_SEQ=D.PM_SEQ
+		 	<if test='!allRsrcPoolAuth'>
+		 		AND E.USER_ID = #{userId}
+		 		AND B.RSRC_POOL_ID = E.RSRC_POOL_ID
+		 	</if>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND CN LIKE '%' || #{cn} || '%'
+			</if>
+			<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID = #{thresGrdId}
+			</if>
+			<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+				AND DSPTH_STAT_CD = #{dspthStatCd}
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt!=null and !"".equals(strtDt)'>
+					AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt!=null and !"".equals(endDt)'>
+					AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			UNION ALL
+			SELECT 	EVNT_DSPTH_SEQ,
+					TRGT_SRVR_CL_CD,
+					FN_CODE_NAME('030',TRGT_SRVR_CL_CD) TRGT_SRVR_CL_NM,
+					THRES_TRGT_SRVR_SEQ,
+					IDX_ITM_ID,
+					THRES_GRD_ID,
+					FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+					TO_CHAR(DSPTH_DTTM,'YYYY-MM-DD HH24:MI:SS') DSPTH_DTTM,
+				  	DSPTH_TRGT_ID,
+				  	(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.DSPTH_TRGT_ID) USER_NM,
+				  	DSPTH_TY_CD,
+				 	FN_CODE_NAME('029',DSPTH_TY_CD) DSPTH_TY_NM,
+				  	TRGT_SRVR_NM, DSPTH_STAT_CD,
+				  	FN_CODE_NAME('028',DSPTH_STAT_CD) DSPTH_STAT_NM,
+				  	PATH,
+				  	SPLIT_PART(PATH,'>',1)	REGION_NM,
+					SPLIT_PART(PATH,'>',2) ZONE_NM,
+					SPLIT_PART(PATH,'>',3) NET_NM,
+					SPLIT_PART(PATH,'>',4) RSRC_POOL_NM,
+					SPLIT_PART(PATH,'>',5) CLSTR_NM,
+				  	CN
+			FROM ST_EVNT_DSPTH_HIST A,
+				 RC_RSRC_POOL B ,
+				 RC_CLSTR C ,
+				 RC_VM E,
+				 <if test='!allJobAuth'>
+				 	CM_JOB_USER F,
+				 </if>
+				 RC_VM_JOB G
+			WHERE 1=1
+			AND 	A.TRGT_SRVR_CL_CD='01'
+			<if test='"02".equals(trgtSrvrClCd) or "03".equals(trgtSrvrClCd)'>
+				AND 1=2
+			</if>
+			AND 	B.RSRC_POOL_ID = C.RSRC_POOL_ID
+			AND 	C.CLSTR_SEQ = E.CLSTR_SEQ
+			AND 	A.THRES_TRGT_SRVR_SEQ=E.VM_SEQ
+			AND  	E.VM_SEQ = G.VM_SEQ
+			<if test='!allJobAuth'>
+				AND		G.JOB_ID = F.JOB_ID
+				AND 	F.USER_ID =#{userId}
+			</if>
+			 <if test='regionId !=null and !"".equals(regionId)'>
+				AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND CN LIKE '%' || #{cn} || '%'
+			</if>
+			<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID = #{thresGrdId}
+			</if>
+			<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+				AND DSPTH_STAT_CD = #{dspthStatCd}
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt!=null and !"".equals(strtDt)'>
+					AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt!=null and !"".equals(endDt)'>
+					AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+
+			UNION ALL
+			SELECT 	EVNT_DSPTH_SEQ,
+					TRGT_SRVR_CL_CD,
+					FN_CODE_NAME('030',TRGT_SRVR_CL_CD) TRGT_SRVR_CL_NM,
+					THRES_TRGT_SRVR_SEQ,
+					IDX_ITM_ID,
+					THRES_GRD_ID,
+					FN_CODE_NAME('027',THRES_GRD_ID) THRES_GRD_NM,
+					TO_CHAR(DSPTH_DTTM,'YYYY-MM-DD HH24:MI:SS') DSPTH_DTTM,
+				  	DSPTH_TRGT_ID,
+				  	(SELECT USER_NM FROM CM_USR WHERE USER_ID = A.DSPTH_TRGT_ID) USER_NM,
+				  	DSPTH_TY_CD,
+				 	FN_CODE_NAME('029',DSPTH_TY_CD) DSPTH_TY_NM,
+				  	TRGT_SRVR_NM, DSPTH_STAT_CD,
+				  	FN_CODE_NAME('028',DSPTH_STAT_CD) DSPTH_STAT_NM,
+				  	PATH,
+				  	SPLIT_PART(PATH,'>',1)	REGION_NM,
+					SPLIT_PART(PATH,'>',2) ZONE_NM,
+					SPLIT_PART(PATH,'>',3) NET_NM,
+					SPLIT_PART(PATH,'>',4) RSRC_POOL_NM,
+					SPLIT_PART(PATH,'>',5) CLSTR_NM,
+				  	CN
+			FROM ST_EVNT_DSPTH_HIST A INNER JOIN RX_SERVC E ON A.THRES_TRGT_SRVR_SEQ = E.SERVC_SEQ
+			                          LEFT JOIN RX_SERVC_AREA C ON E.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+			                          INNER JOIN RC_RSRC_POOL B ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+
+				 <if test='!allJobAuth'>
+				 	INNER JOIN	CM_JOB_USER F ON C.JOB_ID = F.JOB_ID
+				 </if>
+			WHERE 1=1
+			AND 	A.TRGT_SRVR_CL_CD='03'
+			<if test='"01".equals(trgtSrvrClCd) or "02".equals(trgtSrvrClCd)'>
+				AND 1=2
+			</if>
+
+			<if test='!allJobAuth'>
+				AND 	F.USER_ID =#{userId}
+			</if>
+			 <if test='regionId !=null and !"".equals(regionId)'>
+				AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND CN LIKE '%' || #{cn} || '%'
+			</if>
+			<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID = #{thresGrdId}
+			</if>
+			<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+				AND DSPTH_STAT_CD = #{dspthStatCd}
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt!=null and !"".equals(strtDt)'>
+					AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt!=null and !"".equals(endDt)'>
+					AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			) A
+		ORDER BY DSPTH_DTTM DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+	<select id="selectEvntNtceHistListCnt" parameterType="ncis.dsb.thrd.evnt.vo.EvntNtceHistSearchVo" resultType="integer">
+		/* ncis.sql.dsb.thrd.evntStte.selectEvntNtceHistListCnt */
+		SELECT SUM(CNT) CNT
+		FROM (
+			SELECT 	COUNT(1) CNT
+			FROM ST_EVNT_DSPTH_HIST A, RC_RSRC_POOL B ,RC_CLSTR C ,RC_PM D
+			<if test='!allRsrcPoolAuth'>
+				, CM_RSRC_POOL_USER E
+			</if>
+		WHERE 1=1
+		AND A.TRGT_SRVR_CL_CD='02'
+		<if test='"01".equals(trgtSrvrClCd) or "03".equals(trgtSrvrClCd)'>
+				AND 1=2
+		</if>
+		AND A.THRES_TRGT_SRVR_SEQ=D.PM_SEQ
+		AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+		AND C.CLSTR_SEQ = D.CLSTR_SEQ
+		<if test='!allRsrcPoolAuth'>
+			AND B.RSRC_POOL_ID = E.RSRC_POOL_ID
+			AND E.USER_ID = #{userId}
+		</if>
+		<if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+		<if test='cn!=null and !"".equals(cn)'>
+			AND CN LIKE '%' || #{cn} || '%'
+		</if>
+		<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+			AND THRES_GRD_ID = #{thresGrdId}
+		</if>
+		<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+			AND DSPTH_STAT_CD = #{dspthStatCd}
+		</if>
+		<if test='"01".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+		</if>
+		<if test='"02".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+		</if>
+		<if test='"03".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+		</if>
+		<if test='"04".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+		</if>
+		<if test='"05".equals(searchTrmCd)'>
+			<if test='strtDt!=null and !"".equals(strtDt)'>
+				AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+			</if>
+			<if test='endDt!=null and !"".equals(endDt)'>
+				AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+			</if>
+		</if>
+		UNION ALL
+		SELECT 	COUNT(1) CNT
+		FROM ST_EVNT_DSPTH_HIST A, RC_RSRC_POOL B ,RC_CLSTR C , RC_VM E,
+				<if test='!allJobAuth'>
+					CM_JOB_USER F,
+				</if>
+				RC_VM_JOB G
+		WHERE 1=1
+		AND A.TRGT_SRVR_CL_CD='01'
+		<if test='"02".equals(trgtSrvrClCd) or "03".equals(trgtSrvrClCd)'>
+				AND 1=2
+		</if>
+		AND B.RSRC_POOL_ID = C.RSRC_POOL_ID
+		AND C.CLSTR_SEQ = E.CLSTR_SEQ
+		AND A.THRES_TRGT_SRVR_SEQ=E.VM_SEQ
+		<if test='!allJobAuth'>
+			AND F.JOB_ID = G.JOB_ID
+			AND F.USER_ID = #{userId}
+		</if>
+		AND G.VM_SEQ = E.VM_SEQ
+
+		 <if test='regionId !=null and !"".equals(regionId)'>
+			AND B.REGION_ID =#{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND B.ZONE_ID=#{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND B.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+		<if test='cn!=null and !"".equals(cn)'>
+			AND CN LIKE '%' || #{cn} || '%'
+		</if>
+		<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+			AND THRES_GRD_ID = #{thresGrdId}
+		</if>
+		<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+			AND DSPTH_STAT_CD = #{dspthStatCd}
+		</if>
+		<if test='"01".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+		</if>
+		<if test='"02".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+		</if>
+		<if test='"03".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+		</if>
+		<if test='"04".equals(searchTrmCd)'>
+			AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+		</if>
+		<if test='"05".equals(searchTrmCd)'>
+			<if test='strtDt!=null and !"".equals(strtDt)'>
+				AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+			</if>
+			<if test='endDt!=null and !"".equals(endDt)'>
+				AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+			</if>
+		</if>
+		UNION ALL
+			SELECT 	COUNT(1) CNT
+			FROM ST_EVNT_DSPTH_HIST A INNER JOIN RX_SERVC E ON A.THRES_TRGT_SRVR_SEQ = E.SERVC_SEQ
+			                          LEFT JOIN RX_SERVC_AREA C ON E.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+			                          INNER JOIN RC_RSRC_POOL B ON B.RSRC_POOL_ID = C.RSRC_POOL_ID
+
+				 <if test='!allJobAuth'>
+				 	INNER JOIN CM_JOB_USER F ON C.JOB_ID = F.JOB_ID
+				 </if>
+			WHERE 1=1
+			AND 	A.TRGT_SRVR_CL_CD='03'
+			<if test='"01".equals(trgtSrvrClCd) or "02".equals(trgtSrvrClCd)'>
+				AND 1=2
+			</if>
+
+			<if test='!allJobAuth'>
+				AND 	F.USER_ID =#{userId}
+			</if>
+			 <if test='regionId !=null and !"".equals(regionId)'>
+				AND B.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND B.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND B.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND B.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+			<if test='cn!=null and !"".equals(cn)'>
+				AND CN LIKE '%' || #{cn} || '%'
+			</if>
+			<if test='thresGrdId !=null and !"".equals(thresGrdId)'>
+				AND THRES_GRD_ID = #{thresGrdId}
+			</if>
+			<if test='dspthStatCd !=null and !"".equals(dspthStatCd)'>
+				AND DSPTH_STAT_CD = #{dspthStatCd}
+			</if>
+			<if test='"01".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'1HOURS'::INTERVAL)
+			</if>
+			<if test='"02".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::TIMESTAMP-'24HOURS'::INTERVAL)
+			</if>
+			<if test='"03".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'7DAYS'::INTERVAL)
+			</if>
+			<if test='"04".equals(searchTrmCd)'>
+				AND DSPTH_DTTM >=( NOW()::DATE-'1 MONTH'::INTERVAL)
+			</if>
+			<if test='"05".equals(searchTrmCd)'>
+				<if test='strtDt!=null and !"".equals(strtDt)'>
+					AND DSPTH_DTTM <![CDATA[ >= ]]>( #{strtDt}::TIMESTAMP)
+				</if>
+				<if test='endDt!=null and !"".equals(endDt)'>
+					AND DSPTH_DTTM <![CDATA[ <= ]]> (#{endDt}::DATE)+1
+				</if>
+			</if>
+			) A
+	</select>
+
+</mapper>

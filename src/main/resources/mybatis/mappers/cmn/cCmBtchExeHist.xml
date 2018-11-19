@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmBtchExeHist">
+
+	<resultMap id="resultCmBtchExeHist" type="ncis.cmn.entity.CmBtchExeHist">
+        <result property="btchWrkId"     column="BTCH_WRK_ID"/>  <!-- 배치작업SEQ -->
+        <result property="btchExeDttm"     column="BTCH_EXE_DTTM"/>  <!-- 배치실행일시 -->
+        <result property="btchWrkNm"     column="BTCH_WRK_NM"/>  <!-- 배치작업명 -->
+        <result property="btchExeEndDttm"     column="BTCH_EXE_END_DTTM"/>  <!-- 배치실행완료일시 -->
+        <result property="cycle"     column="CYCLE"/>  <!-- 주기 -->
+        <result property="colctStatCd"     column="COLCT_STAT_CD"/>  <!-- 수집상태코드 -->
+        <result property="wrkRsltCn"     column="WRK_RSLT_CN"/>  <!-- 작업결과내용 -->
+	</resultMap>
+
+	<!-- 배치작업실행이력 등록 -->
+	<insert id="insertCmBtchExeHist">
+	/* ncis.sql.cmn.cmBtchExeHist.insertCmBtchExeHist */
+	INSERT INTO CM_BTCH_EXE_HIST (
+	             BTCH_WRK_ID  /* 배치작업SEQ */
+	           , BTCH_EXE_DTTM  /* 배치실행일시 */
+	           , BTCH_WRK_NM  /* 배치작업명 */
+	           , BTCH_EXE_END_DTTM  /* 배치실행완료일시 */
+	           , CYCLE  /* 주기 */
+	           , COLCT_STAT_CD  /* 수집상태코드 */
+	           , WRK_RSLT_CN  /* 작업결과내용 */
+	) VALUES (
+	           #{btchWrkId}  /* 배치작업SEQ */
+	         , now()  /* 배치실행일시 */
+	         , #{btchWrkNm}  /* 배치작업명 */
+	         , now()  /* 배치실행완료일시 */
+	         , #{cycle}  /* 주기 */
+	         , #{colctStatCd}  /* 수집상태코드 */
+	         , #{wrkRsltCn}  /* 작업결과내용 */
+	)
+	</insert>
+
+	<!-- 배치작업실행이력 수정 -->
+	<update id="updateCmBtchExeHist">
+	/* ncis.sql.cmn.cmBtchExeHist.updateCmBtchExeHist */
+	UPDATE CM_BTCH_EXE_HIST
+	         SET BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+	           , BTCH_EXE_DTTM = now()  /* 배치실행일시 */
+	           , BTCH_WRK_NM = #{btchWrkNm}  /* 배치작업명 */
+	           , BTCH_EXE_END_DTTM = now()  /* 배치실행완료일시 */
+	           , CYCLE = #{cycle}  /* 주기 */
+	           , COLCT_STAT_CD = #{colctStatCd}  /* 수집상태코드 */
+	           , WRK_RSLT_CN = #{wrkRsltCn}  /* 작업결과내용 */
+         WHERE BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+           AND BTCH_EXE_DTTM = #{btchExeDttm}  /* 배치실행일시 */
+
+	</update>
+
+	<!-- 배치작업실행이력 삭제 -->
+	<delete id="deleteCmBtchExeHist">
+	/* ncis.sql.cmn.cmBtchExeHist.deleteCmBtchExeHist */
+	DELETE FROM CM_BTCH_EXE_HIST
+         WHERE BTCH_WRK_ID = #{btchWrkId}  /* 배치작업SEQ */
+           AND BTCH_EXE_DTTM = #{btchExeDttm}  /* 배치실행일시 */
+
+	</delete>
+
+</mapper>

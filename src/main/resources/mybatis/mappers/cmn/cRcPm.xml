@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcPm">
+
+	<resultMap id="resultRcPm" type="ncis.cmn.entity.RcPm">
+        <result property="pmSeq"     column="PM_SEQ"/>  <!-- 물리서버SEQ -->
+        <result property="pmId"     column="PM_ID"/>  <!-- 물리서버ID -->
+        <result property="pmNm"     column="PM_NM"/>  <!-- 물리서버명 -->
+        <result property="statCd"     column="STAT_CD"/>  <!-- 상태코드 -->
+        <result property="rprsntIpAddr"     column="RPRSNT_IP_ADDR"/>  <!-- 대표IP주소 -->
+        <result property="cpuUseRt"     column="CPU_USE_RT"/>  <!-- CPU사용율 -->
+        <result property="cpuCoreQty"     column="CPU_CORE_QTY"/>  <!-- 물리CPU(코어) -->
+        <result property="memCapa"     column="MEM_CAPA"/>  <!-- 총메모리용량(MB) -->
+        <result property="memUseRt"     column="MEM_USE_RT"/>  <!-- 메모리사용율 -->
+        <result property="uuid"     column="UUID"/>  <!-- UUID -->
+        <result property="pmCompId"     column="PM_COMP_ID"/>  <!-- 물리서버구성ID -->
+        <result property="clstrSeq"     column="CLSTR_SEQ"/>  <!-- 클러스터SEQ -->
+        <result property="pmClCd"     column="PM_CL_CD"/>  <!-- 물리서버구분코드 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="delUserId"     column="DEL_USER_ID"/>  <!-- 삭제자ID -->
+        <result property="delDttm"     column="DEL_DTTM"/>  <!-- 삭제일시 -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="netwkIn"     column="NETWK_IN"/>  <!-- 네트워크_IN(KB/Sec) -->
+        <result property="netwkOut"     column="NETWK_OUT"/>  <!-- 네트워크_OUT(KB/Sec) -->
+        <result property="rmk"           column="RMK"/>            <!-- 비고 -->
+        <result property="delYn"           column="DEL_YN"/>            <!-- 삭제여부 -->
+	</resultMap>
+
+	<!-- 물리서버 등록 -->
+	<insert id="insertRcPm">
+	INSERT INTO RC_PM (
+	             PM_SEQ  /* 물리서버SEQ */
+	           , PM_ID  /* 물리서버ID */
+	           , PM_NM  /* 물리서버명 */
+	           , STAT_CD  /* 상태코드 */
+	           , RPRSNT_IP_ADDR  /* 대표IP주소 */
+	           , CPU_USE_RT  /* CPU사용율 */
+	           , CPU_CORE_QTY  /* 물리CPU(코어) */
+	           , MEM_CAPA  /* 총메모리용량(MB) */
+	           , MEM_USE_RT  /* 메모리사용율 */
+	           , UUID  /* UUID */
+	           , PM_COMP_ID  /* 물리서버구성ID */
+	           , CLSTR_SEQ  /* 클러스터SEQ */
+	           , PM_CL_CD  /* 물리서버구분코드 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , REG_DTTM  /* 등록일시 */
+	           , DEL_USER_ID  /* 삭제자ID */
+	           , DEL_DTTM  /* 삭제일시 */
+	           , UPDT_USER_ID  /* 수정자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , NETWK_IN  /* 네트워크_IN(KB/Sec) */
+	           , NETWK_OUT  /* 네트워크_OUT(KB/Sec) */
+	           , RMK  /* 비고 */
+	) VALUES (
+	           #{pmSeq}  /* 물리서버SEQ */
+	         , #{pmId}  /* 물리서버ID */
+	         , #{pmNm}  /* 물리서버명 */
+	         , #{statCd}  /* 상태코드 */
+	         , #{rprsntIpAddr}  /* 대표IP주소 */
+	         , #{cpuUseRt}  /* CPU사용율 */
+	         , #{cpuCoreQty}  /* 물리CPU(코어) */
+	         , #{memCapa}  /* 총메모리용량(MB) */
+	         , #{memUseRt}  /* 메모리사용율 */
+	         , #{uuid}  /* UUID */
+	         , #{pmCompId}  /* 물리서버구성ID */
+	         , #{clstrSeq}  /* 클러스터SEQ */
+	         , #{pmClCd}  /* 물리서버구분코드 */
+	         , #{regUserId}  /* 등록자ID */
+	         , now()  /* 등록일시 */
+	         , #{delUserId}  /* 삭제자ID */
+	         , now()  /* 삭제일시 */
+	         , #{updtUserId}  /* 수정자ID */
+	         , now()  /* 수정일시 */
+	         , #{netwkIn}  /* 네트워크_IN(KB/Sec) */
+	         , #{netwkOut}  /* 네트워크_OUT(KB/Sec) */
+	         , #{rmk}  /* 비고 */
+	)
+	</insert>
+
+	<!-- 물리서버 수정 -->
+	<update id="updateRcPm">
+	UPDATE RC_PM
+	         SET PM_SEQ = #{pmSeq}  /* 물리서버SEQ */
+	           , PM_ID = #{pmId}  /* 물리서버ID */
+	           , PM_NM = #{pmNm}  /* 물리서버명 */
+	           , STAT_CD = #{statCd}  /* 상태코드 */
+	           , RPRSNT_IP_ADDR = #{rprsntIpAddr}  /* 대표IP주소 */
+	           , CPU_USE_RT = #{cpuUseRt}  /* CPU사용율 */
+	           , CPU_CORE_QTY = #{cpuCoreQty}  /* 물리CPU(코어) */
+	           , MEM_CAPA = #{memCapa}  /* 총메모리용량(MB) */
+	           , MEM_USE_RT = #{memUseRt}  /* 메모리사용율 */
+	           , UUID = #{uuid}  /* UUID */
+	           , PM_COMP_ID = #{pmCompId}  /* 물리서버구성ID */
+	           , CLSTR_SEQ = #{clstrSeq}  /* 클러스터SEQ */
+	           , PM_CL_CD = #{pmClCd}  /* 물리서버구분코드 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+	           , DEL_DTTM = now()  /* 삭제일시 */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , NETWK_IN = #{netwkIn}  /* 네트워크_IN(KB/Sec) */
+	           , NETWK_OUT = #{netwkOut}  /* 네트워크_OUT(KB/Sec) */
+	           , RMK = #{rmk}  /* 비고 */
+         WHERE PM_SEQ = #{pmSeq}  /* 물리서버SEQ */
+
+	</update>
+
+	<!-- 물리서버 삭제 -->
+	<delete id="deleteRcPm">
+	DELETE FROM RC_PM
+         WHERE PM_SEQ = #{pmSeq}  /* 물리서버SEQ */
+
+	</delete>
+
+	<!-- 물리서버구성ID 및 비고 수정 -->
+	<update id="updateRcPmCompId">
+	UPDATE RC_PM
+			SET PM_COMP_ID = #{pmCompId},
+				RMK = #{rmk},
+				UPDT_DTTM = now()
+	 WHERE PM_SEQ = #{pmSeq}
+	</update>
+
+	<!-- 물리서버구성ID 및 비고 수정 -->
+	<update id="updateRcPmStat">
+	/* ncis.sql.cmn.rcPm.updateRcPmStat */
+		UPDATE RC_PM
+ 	  	   SET STAT_CD = #{statCd},
+				UPDT_DTTM = now()
+	 	 WHERE PM_SEQ = #{pmSeq}
+	</update>
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.clstrPrpos">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.ClstrPrposVo" id="resultClstrPrposVo" extends="ncis.sql.cmn.rcClstrPrpos.resultRcClstrPrpos">
+		<result property="prposClCdNm" column="PRPOS_CL_CD_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchClstrSeq != null and searchClstrSeq != ""'>
+		AND RC_CLSTR_PRPOS.CLSTR_SEQ = #{searchClstrSeq}
+		</if>
+		<if test='searchPrposClCd != null and searchPrposClCd != ""'>
+		AND RC_CLSTR_PRPOS.PRPOS_CL_CD = #{searchPrposClCd}
+		</if>
+	</sql>
+
+	<select id="selectClstrPrposList" resultMap="resultClstrPrposVo">
+		/* ncis.sql.cpt.rsrc.com.clstrPrpos.selectClstrPrposList */
+		SELECT
+			CLSTR_SEQ
+			, PRPOS_CL_CD
+			, FN_CODE_NAME('002', PRPOS_CL_CD) AS PRPOS_CL_CD_NM
+		FROM
+			RC_CLSTR_PRPOS
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY
+			RC_CLSTR_PRPOS.CLSTR_SEQ DESC
+	</select>
+
+</mapper>

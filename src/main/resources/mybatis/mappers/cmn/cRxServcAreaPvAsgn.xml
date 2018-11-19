@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcAreaPvAsgn">
+	<!-- PV 등록 -->
+	<insert id="insertRxServcAreaPvAsgn" parameterType="ncis.cmn.entity.RxServcAreaPvAsgn">
+
+		/* ncis.sql.cmn.rxPv.insertRxServcAreaPvAsgn */
+		INSERT INTO RX_SERVC_AREA_PV_ASGN(
+			SERVC_AREA_SEQ  /* 서비스영역SEQ */
+			, RSRC_POOL_ID  /* 자원풀ID */
+			, PV_ID  /* PV_ID */
+			)
+        VALUES (
+			#{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{rsrcPoolId}  /* 자원풀ID */
+			, #{pvId}  /* PV_ID */
+        )
+	</insert>
+
+	<!-- PV 삭제 -->
+	<delete id="deleteRxServcAreaPvAsgn">
+		/* ncis.sql.cmn.rxServcAreaPvAsgn.deleteRxServcAreaPvAsgn */
+		DELETE FROM RX_SERVC_AREA_PV_ASGN
+        WHERE PV_ID = #{pvId}
+        AND RSRC_POOL_ID = #{rsrcPoolId}
+        AND SERVC_AREA_SEQ = #{servcAreaSeq}
+	</delete>
+
+</mapper>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaPackgAlrm">
+
+	<resultMap id="resultOaPackgAlrm" type="ncis.cmn.entity.OaPackgAlrm">
+        <result property="patchAlrmSeq"     column="PATCH_ALRM_SEQ"/>  <!-- 패치알림Seq -->
+        <result property="patchAlrmNm"     column="PATCH_ALRM_NM"/>  <!-- 패치알림명 -->
+        <result property="patchAlrmTyCd"     column="PATCH_ALRM_TY_CD"/>  <!-- 패치알림유형코드 -->
+        <result property="patchAlrmDttm"     column="PATCH_ALRM_DTTM"/>  <!-- 패치알림일시 -->
+        <result property="patchAlrmReasn"     column="PATCH_ALRM_REASN"/>  <!-- 패치알림사유 -->
+        <result property="patchAlrmMethod"     column="PATCH_ALRM_METHOD"/>  <!-- 패치알림방식 -->
+        <result property="patchAlrmDspthId"     column="PATCH_ALRM_DSPTH_ID"/>  <!-- 패치알림통보자ID -->
+        <result property="patchAlrmCn"     column="PATCH_ALRM_CN"/>  <!-- 패치알림내용 -->
+	</resultMap>
+
+	<!-- 패치알림 등록 -->
+	<insert id="insertOaPackgAlrm">
+		<selectKey order="BEFORE" keyProperty="patchAlrmSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('oa_packg_alrm_sq01')
+		</selectKey>
+		INSERT INTO OA_PACKG_ALRM (
+		             PATCH_ALRM_SEQ  /* 패치알림ID */
+		           , PATCH_ALRM_NM  /* 패치알림명 */
+		           , PATCH_ALRM_TY_CD  /* 패치알림유형코드 */
+		           , PATCH_ALRM_DTTM  /* 패치알림일시 */
+		           , PATCH_ALRM_DSPTH_ID  /* 패치알림통보자ID */
+		           , PATCH_ALRM_CN  /* 패치알림내용 */
+		) VALUES (
+		           #{patchAlrmSeq}  /* 패치알림ID */
+		         , #{patchAlrmNm}  /* 패치알림명 */
+		         , #{patchAlrmTyCd}  /* 패치알림유형코드 */
+		         , now()  /* 패치알림일시 */
+		         , #{patchAlrmDspthId}  /* 패치알림통보자ID */
+		         , #{patchAlrmCn}  /* 패치알림내용 */
+		)
+	</insert>
+
+	<!-- 패치알림 수정 -->
+	<update id="updateOaPackgAlrm">
+	UPDATE OA_PACKG_ALRM
+	         SET PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+	           , PATCH_ALRM_NM = #{patchAlrmNm}  /* 패치알림명 */
+	           , PATCH_ALRM_TY_CD = #{patchAlrmTyCd}  /* 패치알림유형코드 */
+	           , PATCH_ALRM_DTTM = now()  /* 패치알림일시 */
+	           , PATCH_ALRM_DSPTH_ID = #{patchAlrmDspthId}  /* 패치알림통보자ID */
+	           , PATCH_ALRM_CN = #{patchAlrmCn}  /* 패치알림내용 */
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+
+	</update>
+
+	<!-- 패치알림 삭제 -->
+	<delete id="deleteOaPackgAlrm">
+	DELETE FROM OA_PACKG_ALRM
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+
+	</delete>
+
+</mapper>

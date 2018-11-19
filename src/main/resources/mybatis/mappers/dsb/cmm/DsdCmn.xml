@@ -1,0 +1,3294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.cmm">
+
+	<resultMap type="ncis.dsb.cmn.vo.PmResSttsVo" id="resultPmResSttsVo">
+		<result property="lastCpuCorQty" column="LAST_CPU_COR_QTY"/>
+		<result property="lastMemSumCapa" column="LAST_MEM_SUM_CAPA"/>
+		<result property="lastStrgSumCapa" column="LAST_STRG_SUM_CAPA"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.PodResSttsVo" id="resultPodResSttsVo">
+		<result property="podCpuCorQty" 	column="POD_CPU_COR_QTY"/>
+		<result property="podMemAsgnCapa" 	column="POD_MEM_ASGN_CAPA"/>
+		<result property="podStrgAsgnCapa" 	column="POD_STRG_ASGN_CAPA"/>
+		<result property="ndCpuCoreQty" 		column="ND_CPU_CORE_QTY"/>
+		<result property="ndMemAsgnCapa" 	column="ND_MEM_ASGN_CAPA"/>
+		<result property="institutionCnt" 	column="INSTITUTION_CNT"/>
+		<result property="jobCnt" 			column="JOB_CNT"/>
+		<result property="podCnt" 			column="POD_CNT"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.RtVo" id="resultRt10Vo">
+		<result property="mi" column="MI"/>
+		<result property="rt" column="RT"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.NetTrficVo" id="resultNetTrfic10Vo">
+		<result property="mi" column="mi"/>
+		<result property="avgInTrfic" column="AVG_IN_TRFIC"/>
+		<result property="avgOutTrfic" column="AVG_OUT_TRFIC"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.cmn.vo.ManagerSttsVo" id="resultManagerKndSttsVo">
+		<result property="mngCd" column="MNG_CD"/>
+		<result property="mngNm" column="MNG_NM"/>
+		<result property="mngCnt" column="MNG_CNT"/>
+	</resultMap>
+
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultPmTree">
+		<id property="key" column="REGION_ID" javaType="String"/>
+		<result property="title" column="REGION_NM"/>
+		<result property="parentKey" column="PARENT_ID" javaType="String"/>
+		<result property="gubun" column="GUBUN" javaType="String"/>
+	</resultMap>
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultVmTree">
+		<id property="key" column="INSTITUTION_ID" javaType="String"/>
+		<result property="title" column="INSTITUTION_NM"/>
+		<result property="parentKey" column="PARENT_KEY" javaType="String"/>
+		<result property="gubun" column="GUBUN" javaType="String"/>
+	</resultMap>
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultAxTree">
+		<id property="key" column="INSTITUTION_ID" javaType="String"/>
+		<result property="title" column="INSTITUTION_NM"/>
+		<result property="parentKey" column="PARENT_KEY" javaType="String"/>
+		<result property="gubun" column="GUBUN" javaType="String"/>
+	</resultMap>
+
+
+    <resultMap type="ncis.dsb.cmn.vo.VmInfoVo" id="resultVmInfoVo">
+		<result property="stat" column="STAT"/>
+		<result property="suzip" column="SUZIP"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="jobsNm" column="JOBS_NM"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="strg" column="STRG"/>
+		<result property="vcore" column="VCORE"/>
+		<result property="mem" column="MEM"/>
+		<result property="reg" column="REG"/>
+		<result property="hstNm" column="HST_NM"/>
+		<result property="ip" column="IP"/>
+		<result property="statCd" column="STAT_CD"/>
+	</resultMap>
+	<resultMap type="ncis.dsb.cmn.vo.PodInfoVo" id="resultPodInfoVo">
+		<result property="institutionNm"	column="INSTITUTION_NM"/>
+		<result property="jobNm" 			column="JOB_NM"/>
+		<result property="servcNm" 			column="SERVC_NM"/>
+		<result property="statNm" 			column="STAT_NM"/>
+		<result property="podId" 			column="POD_ID"/>
+		<result property="podNm" 			column="POD_NM"/>
+		<result property="cpuCorQty" 		column="CPU_COR_QTY"/>
+		<result property="cpuUseRt" 		column="CPU_USE_RT"/>
+		<result property="memAsgnCapa" 		column="MEM_ASGN_CAPA"/>
+		<result property="memUseRt" 		column="MEM_USE_RT"/>
+		<result property="zoneNm" 			column="ZONE_NM"/>
+		<result property="strgAsgnCapa" 	column="STRG_ASGN_CAPA"/>
+		<result property="reg" 				column="REG"/>
+		<result property="atmsclNodeNm" 	column="ATMSCL_NODE_NM"/>
+		<result property="podIpAddr" 		column="POD_IP_ADDR"/>
+	</resultMap>
+
+
+	<sql id="search">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND a.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND a.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND a.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND a.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND a.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND a.PM_SEQ=#{pmSeq}
+			 </if>
+	</sql>
+
+	<sql id="searchByOnnara">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND a.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND a.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND a.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND a.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND a.PM_SEQ=#{pmSeq}
+			 </if>
+			 	AND a.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+	</sql>
+
+	<sql id="searchPod">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND B.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND a.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND a.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND a.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+			 	AND a.ATMSCL_NODE_ID = #{atmsclNodeId}
+			 </if>
+
+	</sql>
+
+	<sql id="searchPodByOnnara">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND B.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND a.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND a.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+			 	AND a.ATMSCL_NODE_ID = #{atmsclNodeId}
+			 </if>
+				AND a.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+	</sql>
+
+	<sql id="searchSub">
+			<if test='regionId !=null and !"".equals(regionId)'>
+			 	AND q.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND q.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND q.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND q.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND q.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND q.PM_SEQ=#{pmSeq}
+			 </if>
+	</sql>
+
+    <sql id="searchVm">
+    	  <if test='regionId !=null and !"".equals(regionId)'>
+			AND ii.REGION_ID =#{regionId}
+		  </if>
+		  <if test='zoneId !=null and !"".equals(zoneId)'>
+		    AND hh.ZONE_ID =#{zoneId}
+		  </if>
+		  <if test='netId !=null and !"".equals( netId )'>
+			 AND ff.NET_ID = #{netId}
+		  </if>
+		  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 AND ee.RSRC_POOL_ID=#{rsrcPoolId}
+		  </if>
+		  <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			AND dd.CLSTR_SEQ = #{clstrSeq}
+		  </if>
+		  <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			AND cc.PM_SEQ=#{pmSeq}
+		  </if>
+		  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+				 AND bb.vm_seq=#{vmSeq}
+		  </if>
+
+		  <if test='vrlzSwTyCd != null and !"".equals( vrlzSwTyCd )'>
+			<!-- 부분일치 -->
+		    AND ee.vrlz_sw_ty_cd IN (#{vrlzSwTyCd})
+		  </if>
+
+         <if test='vmCompId != null and !"".equals( vmCompId )'>
+		  <!-- 부분일치 -->
+		   AND bb.vm_comp_id like '%' ||#{vmCompId}|| '%'
+		 </if>
+		<if test='strtDt != null and !"".equals( strtDt )'>
+		   <if test='endDt != null and !"".equals( endDt )'>
+			 and bb.reg_dttm between (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		   </if>
+		</if>
+
+		<if test='pmCompId != null and !"".equals( pmCompId )'>
+		  <!-- 부분일치 -->
+		  AND cc.pm_comp_id like '%' ||#{pmCompId}|| '%'
+		 </if>
+
+		 <if test='vmNm != null and !"".equals( vmNm )'>
+		   <!-- 부분일치 -->
+		  AND bb.vm_nm like '%' ||#{vmNm}|| '%'
+		</if>
+
+        <if test='institutionId !=null and !"".equals( institutionId )'>
+			     AND JOB.institution_id = #{institutionId}
+	    </if>
+
+		<if test='institutionNm != null and !"".equals( institutionNm )'>
+		<!-- 부분일치 -->
+		  AND jj.institution_nm like '%' ||#{institutionNm}|| '%'
+		</if>
+        <if test='jobId !=null and !"".equals(jobId)'>
+				AND VMJOB.JOB_ID IN (#{jobId})
+		</if>
+
+		<if test='jobNm != null and jobNm != ""'>
+		 <!-- 부분일치 -->
+		 AND JOB.JOB_NM LIKE '%'||#{jobNm}||'%'
+	   </if>
+
+
+
+	   AND UPPER(ee.DEL_YN) = 'N'
+	   AND UPPER(dd.DEL_YN) = 'N'
+	   AND (cc.PM_SEQ ISNULL OR UPPER(cc.DEL_YN) = 'N')
+	   AND UPPER(bb.DEL_YN) = 'N'
+	   AND UPPER(dd.USE_YN) = 'Y'
+	   AND bb.VM_CL_CD = '01'
+	   AND ee.VRLZ_SW_TY_CD IN (SELECT CD
+									FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y'
+								      )
+	   AND ee.RSRC_POOL_CL_CD = '01'
+    </sql>
+
+    <sql id="searchVmByOnnara">
+    	  <if test='regionId !=null and !"".equals(regionId)'>
+			AND ii.REGION_ID =#{regionId}
+		  </if>
+		  <if test='zoneId !=null and !"".equals(zoneId)'>
+		    AND hh.ZONE_ID =#{zoneId}
+		  </if>
+		  <if test='netId !=null and !"".equals( netId )'>
+			 AND ff.NET_ID = #{netId}
+		  </if>
+		  <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			AND dd.CLSTR_SEQ = #{clstrSeq}
+		  </if>
+		  <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			AND cc.PM_SEQ=#{pmSeq}
+		  </if>
+		  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+				 AND bb.vm_seq=#{vmSeq}
+		  </if>
+
+		  <if test='vrlzSwTyCd != null and !"".equals( vrlzSwTyCd )'>
+			<!-- 부분일치 -->
+		    AND ee.vrlz_sw_ty_cd IN (#{vrlzSwTyCd})
+		  </if>
+
+         <if test='vmCompId != null and !"".equals( vmCompId )'>
+		  <!-- 부분일치 -->
+		   AND bb.vm_comp_id like '%' ||#{vmCompId}|| '%'
+		 </if>
+		<if test='strtDt != null and !"".equals( strtDt )'>
+		   <if test='endDt != null and !"".equals( endDt )'>
+			 and bb.reg_dttm between (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		   </if>
+		</if>
+
+		<if test='pmCompId != null and !"".equals( pmCompId )'>
+		  <!-- 부분일치 -->
+		  AND cc.pm_comp_id like '%' ||#{pmCompId}|| '%'
+		 </if>
+
+		 <if test='vmNm != null and !"".equals( vmNm )'>
+		   <!-- 부분일치 -->
+		  AND bb.vm_nm like '%' ||#{vmNm}|| '%'
+		</if>
+
+        <if test='institutionId !=null and !"".equals( institutionId )'>
+			    AND bb.institution_id = #{institutionId}
+	    </if>
+
+		<if test='institutionNm != null and !"".equals( institutionNm )'>
+		<!-- 부분일치 -->
+		  AND jj.institution_nm like '%' ||#{institutionNm}|| '%'
+		</if>
+        <if test='jobId !=null and !"".equals(jobId)'>
+			AND VMJOB.JOB_ID IN (#{jobId})
+		</if>
+
+		<if test='jobNm != null and jobNm != ""'>
+		 <!-- 부분일치 -->
+		 	AND JOB.JOB_NM LIKE '%'||#{jobNm}||'%'
+	   </if>
+	   <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 AND ee.RSRC_POOL_ID=#{rsrcPoolId}
+		  </if>
+
+	   AND UPPER(ee.DEL_YN) = 'N'
+	   AND UPPER(dd.DEL_YN) = 'N'
+	   AND (cc.PM_SEQ ISNULL OR UPPER(cc.DEL_YN) = 'N')
+	   AND UPPER(bb.DEL_YN) = 'N'
+	   AND UPPER(dd.USE_YN) = 'Y'
+	   AND bb.VM_CL_CD = '01'
+	   AND ee.VRLZ_SW_TY_CD IN (SELECT CD
+									FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y'
+								      )
+	   AND ee.RSRC_POOL_CL_CD = '01'
+    </sql>
+
+    <sql id="searchVmIncByOnnara">
+    	  <if test='regionId !=null and !"".equals(regionId)'>
+			AND ii.REGION_ID =#{regionId}
+		  </if>
+		  <if test='zoneId !=null and !"".equals(zoneId)'>
+		    AND hh.ZONE_ID =#{zoneId}
+		  </if>
+		  <if test='netId !=null and !"".equals( netId )'>
+			 AND ff.NET_ID = #{netId}
+		  </if>
+		  <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			AND dd.CLSTR_SEQ = #{clstrSeq}
+		  </if>
+		  <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			AND cc.PM_SEQ=#{pmSeq}
+		  </if>
+		  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+				 AND bb.vm_seq=#{vmSeq}
+		  </if>
+
+		  <if test='vrlzSwTyCd != null and !"".equals( vrlzSwTyCd )'>
+			<!-- 부분일치 -->
+		    AND ee.vrlz_sw_ty_cd IN (#{vrlzSwTyCd})
+		  </if>
+
+         <if test='vmCompId != null and !"".equals( vmCompId )'>
+		  <!-- 부분일치 -->
+		   AND bb.vm_comp_id like '%' ||#{vmCompId}|| '%'
+		 </if>
+		<if test='strtDt != null and !"".equals( strtDt )'>
+		   <if test='endDt != null and !"".equals( endDt )'>
+			 and bb.reg_dttm between (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		   </if>
+		</if>
+
+		<if test='pmCompId != null and !"".equals( pmCompId )'>
+		  <!-- 부분일치 -->
+		  AND cc.pm_comp_id like '%' ||#{pmCompId}|| '%'
+		 </if>
+
+		 <if test='vmNm != null and !"".equals( vmNm )'>
+		   <!-- 부분일치 -->
+		  AND bb.vm_nm like '%' ||#{vmNm}|| '%'
+		</if>
+
+        <if test='institutionId !=null and !"".equals( institutionId )'>
+			    AND bb.institution_id = #{institutionId}
+	    </if>
+
+		<if test='institutionNm != null and !"".equals( institutionNm )'>
+		<!-- 부분일치 -->
+		  AND jj.institution_nm like '%' ||#{institutionNm}|| '%'
+		</if>
+        <if test='jobId !=null and !"".equals(jobId)'>
+			AND VMJOB.JOB_ID IN (#{jobId})
+		</if>
+
+		<if test='jobNm != null and jobNm != ""'>
+		 <!-- 부분일치 -->
+		 	AND JOB.JOB_NM LIKE '%'||#{jobNm}||'%'
+	   </if>
+
+	   AND UPPER(ee.DEL_YN) = 'N'
+	   AND UPPER(dd.DEL_YN) = 'N'
+	   AND (cc.PM_SEQ ISNULL OR UPPER(cc.DEL_YN) = 'N')
+	   AND UPPER(bb.DEL_YN) = 'N'
+	   AND UPPER(dd.USE_YN) = 'Y'
+	   AND bb.VM_CL_CD = '01'
+	   AND ee.VRLZ_SW_TY_CD IN (SELECT CD
+									FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y'
+								      )
+	   AND ee.RSRC_POOL_CL_CD = '01'
+	   AND ee.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+    </sql>
+
+  <select id="selectRcPmResInfo" resultMap="resultPmResSttsVo">
+		/*ncis.sql.dsb.cmm.selectRcPmResInfo*/
+		   select COALESCE(SUM(CPU_CORE_QTY),0) LAST_CPU_COR_QTY,
+		          COALESCE(SUM(MEM_CAPA),0) LAST_MEM_SUM_CAPA,
+		          COALESCE(SUM(STRG_ASGN_CAPA),0) LAST_STRG_SUM_CAPA
+		      from RC_PM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+			         LEFT JOIN (SELECT PM_SEQ,
+			                           SUM(STRG_ASGN_CAPA) STRG_ASGN_CAPA
+			                       FROM RC_VM
+			                     GROUP BY PM_SEQ
+			                   ) A ON RC_PM.PM_SEQ = A.PM_SEQ
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_PM.PM_SEQ=#{pmSeq}
+			 </if>
+
+  </select>
+
+  <select id="selectPodResInfo" resultMap="resultPodResSttsVo">
+		/*ncis.sql.dsb.cmm.selectPodResInfo*/
+		   SELECT COALESCE(ROUND(SUM(A.POD_CPU_COR_QTY),2),0) POD_CPU_COR_QTY,
+			      COALESCE(ROUND(SUM(A.POD_MEM_ASGN_CAPA),2),0) POD_MEM_ASGN_CAPA,
+			      COALESCE(SUM(A.POD_STRG_ASGN_CAPA),0) POD_STRG_ASGN_CAPA,
+			      COALESCE(ROUND(SUM(A.ND_CPU_CORE_QTY),2),0) ND_CPU_CORE_QTY,
+			      COALESCE(ROUND(SUM(A.ND_MEM_ASGN_CAPA),2),0) ND_MEM_ASGN_CAPA,
+			      COUNT(DISTINCT AREA.INSTITUTION_ID) INSTITUTION_CNT,
+			      COUNT(DISTINCT AREA.JOB_ID) JOB_CNT,
+			      COALESCE(SUM(A.POD_CNT),0) POD_CNT
+			FROM
+             (
+	             SELECT POD.SERVC_SEQ,
+						SRVC.SERVC_AREA_SEQ,
+						POD.RSRC_POOL_ID,
+						ND.ATMSCL_NODE_ID,
+	                    SUM(POD.POD_CNT) POD_CNT,
+						SUM(POD.CPU_COR_QTY) POD_CPU_COR_QTY,
+						SUM(POD.MEM_ASGN_CAPA) POD_MEM_ASGN_CAPA,
+						MAX(POD.STRG_ASGN_CAPA) POD_STRG_ASGN_CAPA,
+						SUM(ND.CPU_COR_QTY) ND_CPU_CORE_QTY,
+						SUM(ND.MEM_ASGN_CAPA) ND_MEM_ASGN_CAPA
+
+				   FROM (SELECT SERVC_SEQ,
+								RSRC_POOL_ID,
+								ATMSCL_NODE_ID,
+								COUNT(SERVC_SEQ||POD_ID) POD_CNT,
+								SUM(CPU_COR_QTY) CPU_COR_QTY,
+								SUM(MEM_ASGN_CAPA) MEM_ASGN_CAPA,
+								MAX(STRG_ASGN_CAPA) STRG_ASGN_CAPA
+
+						FROM RX_SERVC_POD
+						WHERE 1=1
+							AND UPPER(DEL_YN) = 'N'
+							AND POD_TY_CD IN ('01','02')
+						GROUP BY	SERVC_SEQ,
+							 		RSRC_POOL_ID,
+							 		ATMSCL_NODE_ID
+						) POD LEFT JOIN RX_SERVC SRVC ON POD.SERVC_SEQ = SRVC.SERVC_SEQ
+							  INNER JOIN RX_NODE ND ON POD.ATMSCL_NODE_ID = ND.ATMSCL_NODE_ID
+							  INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						      INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+							  INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+							  INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+
+
+
+			    WHERE 1=1
+	                  AND UPPER(POOL.DEL_YN) = 'N'
+	       			  AND UPPER(SRVC.DEL_YN) = 'N'
+	       			  AND POOL.RSRC_POOL_CL_CD = '05'
+
+		             <if test='regionId !=null and !"".equals(regionId)'>
+					 	AND RGN.REGION_ID =#{regionId}
+					 </if>
+					 <if test='zoneId !=null and !"".equals(zoneId)'>
+					 	AND ZONE.ZONE_ID =#{zoneId}
+					 </if>
+					 <if test='netId !=null and !"".equals( netId )'>
+					 	AND NET.NET_ID = #{netId}
+					 </if>
+					 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+					 	AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+					 </if>
+					 <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+					 	AND ND.ATMSCL_NODE_ID = #{atmsclNodeId}
+					 </if>
+
+					  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+						AND SRVC.SERVC_SEQ=#{vmSeq}
+					  </if>
+
+				GROUP BY ND.ATMSCL_NODE_ID,
+						 POD.RSRC_POOL_ID,
+				         POD.SERVC_SEQ,
+	       		         SRVC.SERVC_AREA_SEQ
+	       	)A LEFT JOIN RX_SERVC_AREA AREA ON A.SERVC_AREA_SEQ = AREA.SERVC_AREA_SEQ
+	       	<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						INNER JOIN CM_RSRC_POOL_USER POOL_USER ON A.RSRC_POOL_ID = POOL_USER.RSRC_POOL_ID
+					</when>
+					<otherwise>
+						INNER JOIN CM_JOB_USER CM_USER ON AREA.JOB_ID = CM_USER.JOB_ID
+					</otherwise>
+				 </choose>
+			</if>
+
+	       	WHERE  1=1
+	       	<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						AND POOL_USER.USER_ID = #{searchUserId}
+					</when>
+					<otherwise>
+						AND CM_USER.USER_ID = #{searchUserId}
+					</otherwise>
+				</choose>
+			</if>
+
+	       			<if test='institutionId !=null and !"".equals( institutionId )'>
+					AND AREA.INSTITUTION_ID = #{institutionId}
+				  </if>
+				  <if test='jobId !=null and !"".equals( jobId )'>
+					AND AREA.JOB_ID = #{jobId}
+				  </if>
+  </select>
+
+
+	<select id="selectUseGovDeptCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseGovDeptCnt*/
+
+	 SELECT COALESCE(count(distinct RC_VM.institution_id),0) CNT
+	  	  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+	</select>
+
+
+	<select id="selectUseJobCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCnt*/
+		SELECT COALESCE(count(distinct RC_VM_JOB.JOB_ID),0) CNT
+
+		  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+
+	</select>
+
+
+	<select id="selectRcVcoreCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectRcVcoreCnt*/
+
+	       select COALESCE(SUM(CPU_VCORE_QTY),0) LAST_VCORE_QTY
+
+		      from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND RC_ZONE.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+
+	</select>
+
+	<select id="selectCpuUseRt10" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10*/
+			SELECT A.MI,
+                   ROUND(AVG(rt),1) RT
+               FROM
+			     (
+	              SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_CPU_USE_RT) RT
+			      FROM ST_PM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+			      WHERE 1=1
+			      AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			      AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+					     <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+						<include refid="search"/>
+				GROUP BY  A.COLCT_HOUR,A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_CPU_USE_RT)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				   	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPod"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectMemUseRt10" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10*/
+           SELECT A.MI,
+                  ROUND(AVG(RT),1) RT
+               FROM
+			     (
+                  SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_MEM_USE_RT) RT
+			         FROM ST_PM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+					<include refid="search"/>
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_MEM_USE_RT)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				   	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPod"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			 ) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectNetTrfic10" resultMap="resultNetTrfic10Vo">
+	/*ncis.sql.dsb.cmm.selectNetTrfic10*/
+	          SELECT A.MI,
+                     ROUND(AVG(AVG_IN_TRFIC/1024/1024),2) AVG_IN_TRFIC,
+                     ROUND(AVG(AVG_OUT_TRFIC/1024/1024),2) AVG_OUT_TRFIC
+                  FROM
+			     (
+		          SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+		                 AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+		                 AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+			         FROM ST_VM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					    </if>
+
+					<include refid="search"/>
+				GROUP BY  A.COLCT_HOUR ,A.COLCT_MI
+
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_IN_TRFIC),
+				       AVG(AVG_OUT_TRFIC)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				  	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPod"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+
+	<select id="selectManagerKndStts" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndStts*/
+		 SELECT C.CD MNG_CD,
+	            C.CD_NM MNG_NM,
+	            COALESCE(S.CNT, 0) MNG_CNT
+	      FROM CM_CODE C
+		     LEFT JOIN
+					 ( SELECT RC_RSRC_POOL.VRLZ_SW_TY_CD,
+							  COUNT(1) CNT
+					      from RC_PM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+						         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+						         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+						         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+						         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+						         <if test="!allRsrcPoolAuth">
+						         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						         </if>
+
+					    WHERE 1=1
+
+				             <if test='regionId !=null and !"".equals(regionId)'>
+							 	AND RC_REGION.REGION_ID =#{regionId}
+							 </if>
+							 <if test='zoneId !=null and !"".equals(zoneId)'>
+							 	AND RC_ZONE.ZONE_ID =#{zoneId}
+							 </if>
+							 <if test='netId !=null and !"".equals( netId )'>
+							 	AND RC_NET.NET_ID = #{netId}
+							 </if>
+							 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+							 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+							 </if>
+							 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+							 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+							 </if>
+							 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+							 	AND RC_PM.PM_SEQ=#{pmSeq}
+							 </if>
+
+                        GROUP BY RC_RSRC_POOL.VRLZ_SW_TY_CD
+                         UNION ALL
+						SELECT POOL.VRLZ_SW_TY_CD,
+						       COUNT(1) CNT
+						  FROM RX_NODE NODE INNER JOIN RC_RSRC_POOL POOL ON NODE.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						                    INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+							      			INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+					                        INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+					             <if test="!allRsrcPoolAuth">
+						       	  INNER JOIN CM_RSRC_POOL_USER ON POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						         </if>
+
+						 WHERE 1=1
+							  <if test='regionId !=null and !"".equals(regionId)'>
+								AND RGN.REGION_ID =#{regionId}
+							  </if>
+							  <if test='zoneId !=null and !"".equals(zoneId)'>
+							    AND ZONE.ZONE_ID =#{zoneId}
+							  </if>
+							  <if test='netId !=null and !"".equals( netId )'>
+								 AND NET.NET_ID = #{netId}
+							  </if>
+							  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+								 AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+							  </if>
+							  <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+								AND NODE.ATMSCL_NODE_ID = #{atmsclNodeId}
+							  </if>
+
+						       AND UPPER(POOL.DEL_YN) = 'N'
+		 				       AND POOL.RSRC_POOL_CL_CD = '05'
+
+						 GROUP BY POOL.VRLZ_SW_TY_CD
+
+			         ) S ON C.CD = S.VRLZ_SW_TY_CD
+	     WHERE C.GRP_CD = '001' AND C.PARENT_CD = '100' AND C.USE_YN = 'Y'
+	</select>
+
+
+
+    <select id="selectVmList" resultMap="resultVmInfoVo">
+      /*ncis.sql.dsb.cmm.selectVmList*/
+      <include refid="ncis.cmn.queryForPagingHeader" />
+      SELECT QQ.CD_NM STAT
+           , QQ.CD STAT_CD
+           , CASE WHEN QQ.VM_SEQ2 IS NULL THEN '미수집'
+                  ELSE '완료'
+             END SUZIP
+           , QQ.INSTITUTION_NM
+        /*   , QQ.JOBS_NM */
+           , (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+                FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+               INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+              WHERE 1=1
+                AND CM_INSTITUTION.USE_YN = 'Y'
+                AND CM_JOB.USE_YN = 'Y'
+                AND RC_VM_JOB.VM_SEQ = QQ.VM_SEQ
+              GROUP BY RC_VM_JOB.VM_SEQ ) JOBS_NM
+           , QQ.ZONE_NM
+           , QQ.VM_NM VM_NM
+           , QQ.VM_COMP_ID VM_COMP_ID
+           , COALESCE(QQ.STRG_ASGN_CAPA,0) STRG
+           , COALESCE(QQ.CPU_VCORE_QTY,0) VCORE
+           , COALESCE(QQ.MEM_ASGN_CAPA,0) MEM
+           , QQ.REG_DTTM::DATE::CHARACTER VARYING REG
+           , QQ.HST_NM HST_NM
+           , QQ.RPRSNT_IP_ADDR IP
+        FROM (SELECT BB.*,
+                     EE.ZONE_ID,
+                     JJ.INSTITUTION_NM,
+                     HH.ZONE_NM,
+                   /*  KK.JOBS_NM, */
+                     STAT_GRP_CD.CD_NM, /*STAT_CD.CD_NM*/
+                     STAT_GRP_CD.CD
+                   , (SELECT MAX(VM_SEQ) VM_SEQ
+                        FROM ST_VM_COLCT_SUM_10MI
+                       WHERE 1=1
+                         AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','YYYYMMDD')
+                         AND COLCT_HOUR >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','HH24')
+                         AND COLCT_MI::INTEGER >= (TO_CHAR(NOW()-INTERVAL '20 MINUTE','MI')::INTEGER/10+1)*10
+                         AND ST_VM_COLCT_SUM_10MI.VM_SEQ = BB.VM_SEQ
+                       GROUP BY VM_SEQ
+                     ) VM_SEQ2
+                FROM RC_VM BB
+                LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+               INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+               INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+               INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+               INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+               INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+               LEFT JOIN RC_VM_JOB VMJOB ON VMJOB.VM_SEQ = BB.VM_SEQ
+	       		LEFT JOIN CM_JOB JOB ON JOB.JOB_ID = VMJOB.JOB_ID AND JOB.USE_YN = 'Y'
+                LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = JOB.INSTITUTION_ID and jj.USE_YN = 'Y'
+                LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+                LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+                LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+                LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+                LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+                LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+                 <if test="!sysAdm">
+                   <choose>
+                     <when test = "oprAdm">
+                INNER JOIN (SELECT CM_RSRC_POOL_USER.USER_ID
+                                 , CM_RSRC_POOL_USER.RSRC_POOL_ID
+                              FROM CM_RSRC_POOL_USER
+                             WHERE CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+                            ) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+                      </when>
+                      <otherwise>
+                 INNER JOIN (SELECT DISTINCT RC_VM_JOB.VM_SEQ
+                               FROM CM_JOB_USER
+                              INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+                              WHERE CM_JOB_USER.USER_ID = #{searchUserId}
+                             ) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+                     </otherwise>
+                   </choose>
+                 </if>
+                WHERE 1=1
+               <include refid="searchVm"/>
+             ) QQ
+       ORDER BY (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+               qq.INSTITUTION_NM ASC NULLS LAST,
+               JOBS_NM ASC NULLS LAST,
+               qq.VM_NM ASC NULLS LAST
+      <include refid="ncis.cmn.queryForPagingFooter" />
+    </select>
+
+	<select id="selectPodList" resultMap="resultPodInfoVo">
+	/*ncis.sql.dsb.cmm.selectPodList*/
+
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		  SELECT INST.INSTITUTION_NM,
+				 JOB.JOB_NM,
+				 SRVC.SERVC_NM,
+				 STAT.CD_NM STAT_NM,
+				 POD.POD_ID,
+				 POD.POD_NM,
+				 COALESCE(ROUND(POD.CPU_COR_QTY,2),0) CPU_COR_QTY,
+				 COALESCE(ROUND(POD.CPU_USE_RT,2),0) CPU_USE_RT,
+				 COALESCE(ROUND(POD.MEM_ASGN_CAPA,2),0) MEM_ASGN_CAPA,
+				 COALESCE(ROUND(POD.MEM_USE_RT,2),0) MEM_USE_RT,
+				 COALESCE(POD.STRG_ASGN_CAPA,0) STRG_ASGN_CAPA,
+				 POD.CRE_DTTM::date::character varying REG,
+				 ZONE.ZONE_NM,
+				 ND.ATMSCL_NODE_NM,
+				 POD.POD_IP_ADDR
+
+			    FROM RX_SERVC_POD POD LEFT JOIN RX_SERVC SRVC ON POD.SERVC_SEQ = SRVC.SERVC_SEQ
+				                      LEFT JOIN RX_SERVC_AREA SRVCA ON SRVC.SERVC_AREA_SEQ = SRVCA.SERVC_AREA_SEQ
+				                      INNER JOIN RX_NODE ND ON POD.ATMSCL_NODE_ID = ND.ATMSCL_NODE_ID
+				                      INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+				                      INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+									  INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+				                      INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+				                      LEFT JOIN CM_INSTITUTION INST ON INST.INSTITUTION_ID =SRVCA.INSTITUTION_ID and INST.USE_YN = 'Y'
+				                      LEFT JOIN CM_CODE STAT ON STAT.CD = POD.STAT_CD AND STAT.PARENT_GRP_CD = '102'
+				                      LEFT JOIN CM_JOB JOB ON JOB.JOB_ID = SRVCA.JOB_ID AND JOB.USE_YN='Y'
+							           <if test="!sysAdm">
+							             <choose>
+							              	<when test = "oprAdm">
+							              		INNER JOIN CM_RSRC_POOL_USER POOL_USER ON POOL.RSRC_POOL_ID = POOL_USER.RSRC_POOL_ID
+						    		    	</when>
+						    		       	<otherwise>
+					       	                    INNER JOIN CM_JOB_USER CM_USER ON SRVCA.JOB_ID = CM_USER.JOB_ID
+					       	             	</otherwise>
+			                              </choose>
+			                             </if>
+
+			  WHERE 1=1
+			  		<if test="!sysAdm">
+					   <choose>
+					      	<when test = "oprAdm">
+					       	AND	POOL_USER.USER_ID = #{searchUserId}
+					    	</when>
+					       	<otherwise>
+					        AND CM_USER.USER_ID = #{searchUserId}
+					       	</otherwise>
+			            </choose>
+			          </if>
+
+						  <if test='regionId !=null and !"".equals(regionId)'>
+							AND RGN.REGION_ID =#{regionId}
+						  </if>
+						  <if test='zoneId !=null and !"".equals(zoneId)'>
+						    AND ZONE.ZONE_ID =#{zoneId}
+						  </if>
+						  <if test='netId !=null and !"".equals( netId )'>
+							 AND NET.NET_ID = #{netId}
+						  </if>
+						  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+							 AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+						  </if>
+						  <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+							AND ND.ATMSCL_NODE_ID = #{atmsclNodeId}
+						  </if>
+						  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+							AND SRVC.SERVC_SEQ=#{vmSeq}
+						  </if>
+
+				         <if test='podId != null and !"".equals( podId )'>
+						  <!-- 부분일치 -->
+						   AND POD.POD_ID like '%' ||#{podId}|| '%'
+						 </if>
+						<if test='strtDtPod != null and !"".equals( strtDtPod )'>
+						   <if test='endDtPod != null and !"".equals( endDtPod )'>
+							 AND POD.CRE_DTTM between (#{strtDtPod}||' 00:00:00')::TIMESTAMP AND (#{endDtPod}||' 23:59:59')::TIMESTAMP
+						   </if>
+						</if>
+
+						 <if test='podNm != null and !"".equals( podNm )'>
+						   <!-- 부분일치 -->
+						  AND POD.POD_NM like '%' ||#{podNm}|| '%'
+						</if>
+
+				        <if test='institutionId !=null and !"".equals( institutionId )'>
+						 	AND SRVCA.INSTITUTION_ID = #{institutionId}
+					    </if>
+
+					    <if test='jobId !=null and !"".equals( jobId )'>
+							AND SRVCA.JOB_ID = #{jobId}
+					    </if>
+
+						<if test='institutionNmPod != null and !"".equals( institutionNmPod )'>
+						<!-- 부분일치 -->
+						  AND INST.INSTITUTION_NM like '%' ||#{institutionNmPod}|| '%'
+						</if>
+						<if test='servcNm != null and !"".equals( servcNm )'>
+						<!-- 부분일치 -->
+						  AND SRVC.SERVC_NM like '%' ||#{servcNm}|| '%'
+						</if>
+
+					   AND UPPER(POOL.DEL_YN) = 'N'
+	  				   AND UPPER(SRVC.DEL_YN) = 'N'
+          			   AND UPPER(POD.DEL_YN) = 'N'
+	 				   AND POOL.RSRC_POOL_CL_CD = '05'
+					   AND POD.POD_TY_CD IN ('01','02')
+
+
+        ORDER BY (CASE WHEN STAT.CD = '01' THEN COALESCE(ROUND(POD.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN STAT.CD = '01' THEN COALESCE(ROUND(POD.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+			     INST.INSTITUTION_NM ASC NULLS LAST,
+			     JOB.JOB_NM ASC NULLS LAST,
+			     SRVC.SERVC_NM ASC NULLS LAST
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmTotCnt" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVmTotCnt*/
+		SELECT COUNT(*)
+		   FROM
+		        (SELECT BB.*,
+		                EE.ZONE_ID,
+		                JJ.INSTITUTION_NM,
+		                HH.ZONE_NM,
+		                KK.JOBS_NM,
+		                STAT_CD.CD_NM
+
+	                  FROM RC_VM BB LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+									 INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+									 INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+									 INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+									 INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+									 INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+									 LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = bb.INSTITUTION_ID and jj.USE_YN = 'Y'
+									 LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+									 LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+									 LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+									 LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+									 LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+									 LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+
+									 left join (SELECT
+										               RC_VM_JOB.VM_SEQ,
+										               ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+										           FROM
+										               RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+										                         INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+										         where 1=1
+										               AND CM_INSTITUTION.USE_YN = 'Y'
+                                                       AND CM_JOB.USE_YN = 'Y'
+
+										         GROUP BY RC_VM_JOB.VM_SEQ
+                                                ) kk on kk.vm_seq = bb.vm_seq
+
+
+
+
+				           <if test="!sysAdm">
+				             <choose>
+				              <when test = "oprAdm">
+			 	  				INNER JOIN (
+										SELECT
+											CM_RSRC_POOL_USER.USER_ID
+											, CM_RSRC_POOL_USER.RSRC_POOL_ID
+										FROM
+											CM_RSRC_POOL_USER
+										WHERE
+											CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+									) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+			    		       </when>
+			    		       <otherwise>
+		       	                     INNER JOIN (
+												SELECT
+													DISTINCT
+													RC_VM_JOB.VM_SEQ
+												FROM
+													CM_JOB_USER
+													INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+												WHERE
+													CM_JOB_USER.USER_ID = #{searchUserId}
+											) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+		       	                 </otherwise>
+                             </choose>
+                             </if>
+                          where 1=1
+
+                             <include refid="searchVm"/>
+
+
+				     ) tt
+
+
+	</select>
+
+
+
+   <sql id="searchInc">
+		      <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND a.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND a.VM_SEQ =#{vmSeq}
+			  </if>
+	</sql>
+	<sql id="searchSubInc">
+		      <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND q.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND q.VM_SEQ =#{vmSeq}
+			  </if>
+	</sql>
+
+
+
+	<select id="selectUseGovDeptCntInc" resultType="Integer">
+
+	  /*ncis.sql.dsb.cmm.selectUseGovDeptCntInc*/
+
+		SELECT COALESCE(COUNT(DISTINCT RC_VM.INSTITUTION_ID),0) CNT
+		       FROM RC_VM LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ AND RC_VM.DEL_YN = 'N'
+		       			  INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			  INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	  INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			              INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			              INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+		       	  <if test='!allJobAuth' >
+		       	     INNER JOIN CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+		       	  </if>
+
+		     where 1=1
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	AND RC_VM_JOB.JOB_ID =#{jobId}
+                  </if>
+				  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND RC_VM.INSTITUTION_ID =#{institutionId}
+			  	  </if>
+			  	  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  		AND RC_VM.VM_SEQ =#{vmSeq}
+			  	  </if>
+
+	</select>
+
+
+	<select id="selectUseJobCntInc" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCntInc*/
+
+		SELECT COALESCE(COUNT(DISTINCT RC_VM_JOB.JOB_ID),0) CNT
+	         FROM RC_VM LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ AND RC_VM.DEL_YN = 'N'
+	         			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			            INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+	              <if test='!allJobAuth' >
+		       	     inner join CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+		       	  </if>
+
+	       where  1=1
+
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	and RC_VM_JOB.JOB_ID =#{jobId}
+                  </if>
+				  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND RC_VM.INSTITUTION_ID =#{institutionId}
+			  	  </if>
+			  	  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  		AND RC_VM.VM_SEQ =#{vmSeq}
+			  	  </if>
+	</select>
+
+
+
+	<select id="selectVcoreVmCntInc" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreVmCntInc*/
+
+		SELECT COALESCE(SUM(CPU_VCORE_QTY),0) LAST_VCORE_QTY
+			 from RC_VM INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			 			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			            INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+			 <if test="!allJobAuth">
+			      INNER JOIN CM_JOB_USER ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID AND CM_JOB_USER.USER_ID=#{searchUserId}
+			 </if>
+		where 1=1
+              AND RC_VM.DEL_YN = 'N'
+
+            <if test='institutionId !=null and !"".equals(institutionId)'>
+				AND  RC_VM.INSTITUTION_ID =#{institutionId}
+		    </if>
+			<if test='jobId !=null and !"".equals(jobId)'>
+				and RC_VM_JOB.JOB_ID =#{jobId}
+			</if>
+			<if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND RC_VM.VM_SEQ =#{vmSeq}
+			</if>
+
+	</select>
+
+
+
+
+
+	<select id="selectCpuUseRt10Inc" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10Inc*/
+	      SELECT A.MI,
+	             ROUND(AVG(RT),1) RT
+
+	         FROM
+                  (SELECT  A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			               AVG(AVG_CPU_USE_RT) RT
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				                FROM ST_VM_JOB_1DD
+		                      WHERE 1=1
+				       	            AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										     FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B ON AA.JOB_ID = B.JOB_ID
+				       	  </if>
+
+			      WHERE 1=1
+			             AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			             AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+
+
+						 <if test="!allJobAuth">
+						    AND  B.USER_ID = #{searchUserId}
+						 </if>
+
+						 <if test='jobId !=null and !"".equals(jobId)'>
+							AND AA.JOB_ID =#{jobId}
+						 </if>
+
+
+				   	<include refid="searchInc"/>
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_CPU_USE_RT)
+
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 and C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+	<select id="selectMemUseRt10Inc" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10Inc*/
+         SELECT A.MI,
+	            ROUND(AVG(A.RT),1) RT
+	         FROM
+                 (SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_MEM_USE_RT) RT
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				               FROM ST_VM_JOB_1DD
+		                              WHERE 1=1
+				       	               AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										    FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+						 <if test='jobId !=null and !"".equals(jobId)'>
+									AND AA.JOB_ID =#{jobId}
+						  </if>
+
+				       <include refid="searchInc"/>
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(A.AVG_MEM_USE_RT)
+
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 AND C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectNetTrfic10Inc" resultMap="resultNetTrfic10Vo">
+	/*ncis.sql.dsb.cmm.selectNetTrfic10Inc*/
+      SELECT A.MI,
+             ROUND(AVG(AVG_IN_TRFIC/1024/1024),2) AVG_IN_TRFIC,
+             ROUND(AVG(AVG_OUT_TRFIC/1024/1024),2) AVG_OUT_TRFIC
+         FROM
+		    (SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+                         AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+		                 AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				               FROM ST_VM_JOB_1DD
+		                              WHERE 1=1
+				       	               AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										    FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+
+						  <if test='jobId !=null and !"".equals(jobId)'>
+								AND AA.JOB_ID =#{jobId}
+						  </if>
+
+				 <include refid="searchInc"/>
+			    GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+			UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_IN_TRFIC),
+				       AVG(AVG_OUT_TRFIC)
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    inner join CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 AND C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+
+	<select id="selectManagerKndSttsInc" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndSttsInc*/
+
+		SELECT C.CD MNG_CD,
+	           C.CD_NM MNG_NM,
+	           COALESCE(S.CNT, 0) MNG_CNT
+	      FROM CM_CODE C
+		     LEFT JOIN (SELECT RC_RSRC_POOL.VRLZ_SW_TY_CD,
+		     				   COUNT(1) CNT
+				            FROM RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+						               INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+						               LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+						                <if test='!allJobAuth' >
+						                     inner join CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+						                </if>
+					   WHERE 1=1
+					          <if test='institutionId !=null and !"".equals(institutionId)'>
+								 AND  RC_VM.INSTITUTION_ID =#{institutionId}
+						      </if>
+							  <if test='jobId !=null and !"".equals(jobId)'>
+								 and RC_VM_JOB.JOB_ID =#{jobId}
+							  </if>
+							  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+							   	 AND RC_VM.VM_SEQ =#{vmSeq}
+							  </if>
+					     GROUP BY RC_RSRC_POOL.vrlz_sw_ty_cd
+					     UNION ALL
+							SELECT POOL.vrlz_sw_ty_cd,
+							       COUNT(1) CNT
+							  FROM RX_SERVC_POD POD INNER JOIN RX_SERVC SERVC ON POD.SERVC_SEQ = SERVC.SERVC_SEQ
+				                            		INNER JOIN RX_SERVC_AREA AREA ON AREA.SERVC_AREA_SEQ = SERVC.SERVC_AREA_SEQ
+							                        INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						                <if test='!allJobAuth' >
+						                     inner join CM_JOB_USER on CM_JOB_USER.job_id = AREA.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+						                </if>
+
+							 WHERE 1=1
+						  	  <if test='institutionId !=null and !"".equals(institutionId)'>
+								 AND AREA.INSTITUTION_ID =#{institutionId}
+						      </if>
+							  <if test='jobId !=null and !"".equals(jobId)'>
+								 and AREA.JOB_ID =#{jobId}
+							  </if>
+							  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+							   	 AND POD.SERVC_SEQ =#{vmSeq}
+							  </if>
+							     AND UPPER(POOL.DEL_YN) = 'N'
+		          			     AND UPPER(POD.DEL_YN) = 'N'
+			 				     AND POOL.RSRC_POOL_CL_CD = '05'
+								 AND POD.POD_TY_CD IN ('01','02')
+
+							 GROUP BY POOL.vrlz_sw_ty_cd
+		               ) S ON C.CD = S.VRLZ_SW_TY_CD
+	     WHERE C.GRP_CD = '001' AND C.PARENT_CD = '100' AND C.USE_YN = 'Y'
+
+	</select>
+
+
+
+	<select id="selectRegionToPmTree" parameterType="java.util.Map" resultMap="resultPmTree">
+		/* ncis.sql.dsb.cmm.selectRegionToPmTree */
+		SELECT 'NIRS' REGION_ID,'NIRS' REGION_NM, '' PATH,0 DEPTH, 'root' GUBUN, NULL PARENT_ID
+		UNION ALL
+		SELECT DISTINCT B.REGION_ID , B.REGION_NM , B.REGION_ID PATH, 1 DEPTH,'REGION' GUBUN, 'NIRS' PARENT_ID
+		 FROM
+		 	<if test='!role'>
+		 	CM_RSRC_POOL_USER A,
+		 	</if>
+		 	RC_REGION B, RC_RSRC_POOL C
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		UNION ALL
+		SELECT DISTINCT  B.REGION_ID||','||D.ZONE_ID, D.ZONE_NM,B.REGION_ID||','|| D.ZONE_ID PATH, 2 DEPTH, 'ZONE', B.REGION_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  B.REGION_ID=#{parentId}
+		</if>
+		UNION ALL
+		 SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID, F.NET_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID PATH, 3 DEPTH,'NET' ,  C.REGION_ID||','||C.ZONE_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+		RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_NET F
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = F.NET_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  D.ZONE_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, C.RSRC_POOL_NM,B.REGION_ID||','|| D.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, 4 DEPTH,'RSRC_POOL', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		<if test="parentId != null">
+		AND  E.NET_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ, F.CLSTR_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ, 5 DEPTH,'CLSTR', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		AND F.USE_YN = 'Y'
+    	AND F.DEL_YN='N'
+		<if test="parentId != null">
+		AND  C.RSRC_POOL_ID=#{parentId}
+		</if>
+		<if test="pmTree != null and !pmTree.isEmpty()">
+			UNION ALL
+			SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.ATMSCL_NODE_ID, F.ATMSCL_NODE_ID,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.ATMSCL_NODE_ID, 5 DEPTH,'CLSTR', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID
+			FROM
+			<if test='!role'>
+				CM_RSRC_POOL_USER A,
+			</if>
+				RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RX_NODE F
+			WHERE 1=1
+			<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			</if>
+			AND B.REGION_ID = C.REGION_ID
+			AND C.ZONE_ID = D.ZONE_ID
+			AND E.ZONE_ID = D.ZONE_ID
+			AND E.NET_ID = C.NET_ID
+			AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			AND C.RSRC_POOL_CL_CD = '05'
+			AND C.DEL_YN='N'
+			<if test="parentId != null">
+			AND  C.RSRC_POOL_ID=#{parentId}
+			</if>
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ||','||G.PM_SEQ, G.PM_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ||','||G.PM_SEQ, 6 DEPTH,'PM',C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND G.CLSTR_SEQ = F.CLSTR_SEQ
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND G.DEL_YN='N'
+    	AND C.DEL_YN='N'
+    	AND F.USE_YN = 'Y'
+    	AND F.DEL_YN='N'
+		<if test="parentId != null">
+		AND F.CLSTR_ID=#{parentId}
+		</if>
+		ORDER BY 3,4
+	</select>
+
+    <select id="selectInstitutionToVmTree" parameterType="java.util.Map" resultMap="resultVmTree">
+    /* ncis.sql.dsb.cmm.selectInstitutionToVmTree */
+    SELECT INSTITUTION_ID,
+           CASE WHEN GUBUN = 'JOB' THEN
+                  CASE WHEN (TITLE = LAG(TITLE) OVER (ORDER BY GUBUN , ORDERNM)) OR (TITLE = LEAD(TITLE)OVER (ORDER BY GUBUN , ORDERNM)) THEN TITLE||'('||JOB_ID||')'
+                       ELSE TITLE
+                       END
+               ELSE TITLE
+               END INSTITUTION_NM,
+           PARENT_KEY,
+           GUBUN,
+           ORDERNM
+      FROM (
+    SELECT DISTINCT
+           CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_ID WHEN gubun = 'JOB' THEN INSTITUTION_ID||','||JOB_ID ELSE INSTITUTION_ID||','||JOB_ID ||','||VM_SEQ END INSTITUTION_ID
+         , CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_NM WHEN gubun = 'JOB' THEN JOB_NM ELSE VM_NM END TITLE
+         , CASE WHEN gubun = 'INSTITUTION' THEN NULL::varchar WHEN gubun = 'JOB' THEN INSTITUTION_ID ELSE INSTITUTION_ID||','||JOB_ID END PARENT_KEY
+         , CASE WHEN gubun = 'INSTITUTION' THEN GUBUN WHEN gubun = 'JOB' THEN GUBUN ELSE GBN END GUBUN
+         , CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_NM WHEN gubun = 'JOB' THEN INSTITUTION_NM||','||JOB_NM ELSE INSTITUTION_NM||INSTITUTION_ID||','||JOB_NM||','||VM_NM END ORDERNM
+         , CASE WHEN gubun = 'INSTITUTION' THEN NULL::VARCHAR WHEN gubun = 'JOB' THEN JOB_ID ELSE JOB_ID END JOB_ID
+      FROM (
+    /* 가상서버 - 서비스 */
+    SELECT C.INSTITUTION_ID, C.JOB_ID, B.VM_SEQ, B.VM_NM, null parent_key, E.INSTITUTION_NM, C.JOB_NM, 'VM'::VARCHAR GBN
+      FROM RC_VM B
+     INNER JOIN RC_VM_JOB D ON D.VM_SEQ = B.VM_SEQ
+     INNER JOIN CM_JOB C ON C.JOB_ID =D.JOB_ID and c.use_yn = 'Y'
+     INNER JOIN CM_INSTITUTION E ON E.INSTITUTION_ID = C.INSTITUTION_ID and E.use_yn = 'Y'
+      LEFT JOIN RC_PM CC ON B.PM_SEQ = CC.PM_SEQ AND B.VM_CL_CD = CC.PM_CL_CD and cc.del_yn = 'N'
+     INNER JOIN RC_CLSTR DD ON DD.CLSTR_SEQ =B.CLSTR_SEQ and dd.del_yn = 'N'
+     INNER JOIN RC_RSRC_POOL EE ON EE.RSRC_POOL_ID = DD.RSRC_POOL_ID and ee.del_yn = 'N'
+     INNER JOIN RC_NET FF ON FF.NET_ID = EE.NET_ID
+     INNER JOIN RC_ZONE HH ON HH.ZONE_ID = EE.ZONE_ID
+     INNER JOIN RC_REGION II ON II.REGION_ID = EE.REGION_ID
+    <if test='!role'>
+     inner join CM_JOB_USER X ON X.USER_ID = #{userId} and X.JOB_ID = D.JOB_ID /* ADDING */
+    </if>
+     WHERE 1=1
+       AND B.DEL_YN='N'
+       AND (CC.PM_SEQ ISNULL OR UPPER(CC.DEL_YN) = 'N')
+       AND B.VM_CL_CD = '01'
+       AND EE.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' )
+       AND EE.RSRC_POOL_CL_CD = '01'
+       /*AND B.STAT_CD='02' 다운*/
+    <if test="vmTree != null and !vmTree.isEmpty()">
+     UNION ALL
+    /* 자동확장- 서비스 */
+    SELECT BB.INSTITUTION_ID, BB.JOB_ID, D.SERVC_SEQ, D.SERVC_NM, null parent_key, C.INSTITUTION_NM, BB.JOB_NM, 'WX' GBN
+      FROM RX_SERVC_AREA B
+     INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID and bb.use_yn = 'Y'
+     INNER JOIN CM_INSTITUTION C ON B.INSTITUTION_ID = C.INSTITUTION_ID and c.use_yn = 'Y'
+      LEFT JOIN RX_SERVC D ON B.SERVC_AREA_SEQ = D.SERVC_AREA_SEQ and d.del_yn = 'N'
+    <if test='!role'>
+     inner join CM_JOB_USER X ON X.USER_ID = #{userId} AND X.JOB_ID = B.JOB_ID /* ADDING */
+    </if>
+     WHERE 1=1
+       AND B.DEL_YN='N'
+       AND D.SERVC_TY_CD IN ('01','02')
+    </if>
+           ) SUB,
+           (
+           SELECT 'INSTITUTION' gubun
+            UNION ALL
+           SELECT 'JOB' gubun
+            UNION ALL
+           SELECT 'VM' gubun
+           ) Y
+           ) X
+     ORDER BY GUBUN , ORDERNM
+    </select>
+
+	<select id="selectInstitutionToAxTree" parameterType="java.util.Map" resultMap="resultAxTree">
+		/* ncis.sql.dsb.cmm.selectInstitutionToAxTree */
+	SELECT  INSTITUTION_ID,
+	        CASE WHEN GUBUN = 'RX' THEN
+				CASE WHEN (TITLE = LAG(TITLE)OVER (ORDER BY GUBUN , ORDERNM COLLATE "C")) OR (TITLE = LEAD(TITLE)OVER (ORDER BY GUBUN , ORDERNM COLLATE "C")) THEN TITLE||'('||SERVC_SEQ||')'
+			    	 ELSE TITLE
+		        END
+		     	ELSE TITLE
+			END INSTITUTION_NM,
+	        PARENT_KEY,
+	        GUBUN,
+	        ORDERNM
+
+	  FROM
+		(SELECT   DISTINCT C.INSTITUTION_ID , C.INSTITUTION_NM TITLE, NULL PARENT_KEY,'INSTITUTION' GUBUN , C.INSTITUTION_NM ORDERNM, NULL SERVC_SEQ
+		FROM
+		<if test='!role'>
+			CM_JOB_USER A,
+		</if>
+			RX_SERVC_AREA B, CM_INSTITUTION C
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.JOB_ID = B.JOB_ID
+		</if>
+		AND B.INSTITUTION_ID = C.INSTITUTION_ID
+		AND C.INSTITUTION_NM IS NOT NULL
+		AND B.DEL_YN='N'
+		AND C.USE_YN='Y'
+		AND EXISTS (SELECT 1
+		             FROM RX_SERVC SERVC
+		            WHERE SERVC.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+		           )
+		UNION ALL
+		SELECT DISTINCT B.INSTITUTION_ID||','||B.JOB_ID, B.JOB_NM , B.INSTITUTION_ID,'JOB' ,C.INSTITUTION_NM||','||b.job_nm, B.JOB_ID
+		FROM
+			<if test='!role'>
+			CM_JOB_USER A,
+			</if>
+			RX_SERVC_AREA AA, CM_JOB B, CM_INSTITUTION C
+		WHERE 1=1
+				<if test='!role'>
+					AND A.USER_ID = #{userId}
+					AND A.JOB_ID = AA.JOB_ID
+				</if>
+				AND AA.INSTITUTION_ID = B.INSTITUTION_ID
+				AND AA.JOB_ID = B.JOB_ID
+				AND B.INSTITUTION_ID = C.INSTITUTION_ID
+				AND AA.DEL_YN='N'
+				AND B.USE_YN='Y'
+				AND C.USE_YN='Y'
+				AND EXISTS (SELECT 1
+						      FROM RX_SERVC SERVC
+						    WHERE SERVC.SERVC_AREA_SEQ = AA.SERVC_AREA_SEQ
+						   )
+		UNION ALL
+		SELECT BB.INSTITUTION_ID||','||BB.JOB_ID||','||D.SERVC_SEQ, D.SERVC_NM , BB.INSTITUTION_ID||','||BB.JOB_ID,'RX' ,C.INSTITUTION_NM||','||BB.JOB_NM||','||D.SERVC_NM, D.SERVC_SEQ::TEXT
+		FROM
+		<if test='!role'>
+			CM_JOB_USER A,
+		</if>
+			RX_SERVC_AREA B INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID
+			                INNER JOIN CM_INSTITUTION C ON B.INSTITUTION_ID = C.INSTITUTION_ID
+			                INNER JOIN RX_SERVC D ON B.SERVC_AREA_SEQ = D.SERVC_AREA_SEQ
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.JOB_ID = B.JOB_ID
+		</if>
+		    AND B.DEL_YN='N'
+		    AND BB.USE_YN='Y'
+			AND C.USE_YN='Y'
+			AND D.DEL_YN='N'
+			AND D.SERVC_TY_CD IN ('01','02')
+
+ 	  ) A
+		ORDER BY GUBUN , orderNm COLLATE "C"
+	</select>
+
+	<!-- 2017.10.31 온나라 전용 test sql -->
+	<select id="selectRegionToPmTreeByOnnara" parameterType="java.util.Map" resultMap="resultPmTree">
+		/* ncis.sql.dsb.cmm.selectRegionToPmTreeByOnnara */
+		SELECT 'NIRS' REGION_ID,'NIRS' REGION_NM, '' PATH,0 DEPTH, 'root' GUBUN, NULL PARENT_ID
+		UNION ALL
+		SELECT DISTINCT B.REGION_ID , B.REGION_NM , B.REGION_ID PATH, 1 DEPTH,'REGION' GUBUN, 'NIRS' PARENT_ID
+		 FROM
+		 	<if test='!role'>
+		 	CM_RSRC_POOL_USER A,
+		 	</if>
+		 	RC_REGION B, RC_RSRC_POOL C, RC_ZONE D
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		UNION ALL
+		SELECT DISTINCT  B.REGION_ID||','||D.ZONE_ID, D.ZONE_NM,B.REGION_ID||','|| D.ZONE_ID PATH, 2 DEPTH, 'ZONE', B.REGION_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		<if test="parentId != null">
+		AND  B.REGION_ID=#{parentId}
+		</if>
+		UNION ALL
+		 SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID, F.NET_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID PATH, 3 DEPTH,'NET' ,  C.REGION_ID||','||C.ZONE_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+		RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_NET F
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = F.NET_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		<if test="parentId != null">
+		AND  D.ZONE_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, C.RSRC_POOL_NM,B.REGION_ID||','|| D.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID, 4 DEPTH,'RSRC_POOL', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		<choose>
+			<when test="pmTree != null and !pmTree.isEmpty()">
+				AND C.RSRC_POOL_CL_CD IN ('01','05')
+			</when>
+			<otherwise>
+				AND C.RSRC_POOL_CL_CD IN ('01')
+			</otherwise>
+		</choose>
+		AND C.DEL_YN='N'
+		AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		<if test="parentId != null">
+		AND  E.NET_ID=#{parentId}
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ, F.CLSTR_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ, 5 DEPTH,'CLSTR', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F
+		WHERE 1=1
+		<if test='!role'>
+		AND A.USER_ID = #{userId}
+		AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND C.DEL_YN='N'
+		AND F.USE_YN = 'Y'
+    	AND F.DEL_YN='N'
+    	AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		<if test="parentId != null">
+		AND  C.RSRC_POOL_ID=#{parentId}
+		</if>
+		<if test="pmTree != null and !pmTree.isEmpty()">
+			UNION ALL
+			SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.ATMSCL_NODE_ID, F.ATMSCL_NODE_ID,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.ATMSCL_NODE_ID, 5 DEPTH,'CLSTR', C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID
+			FROM
+			<if test='!role'>
+				CM_RSRC_POOL_USER A,
+			</if>
+				RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RX_NODE F
+			WHERE 1=1
+			<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			</if>
+			AND B.REGION_ID = C.REGION_ID
+			AND C.ZONE_ID = D.ZONE_ID
+			AND E.ZONE_ID = D.ZONE_ID
+			AND E.NET_ID = C.NET_ID
+			AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			AND C.RSRC_POOL_CL_CD = '05'
+			AND C.DEL_YN='N'
+			AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+			<if test="parentId != null">
+			AND  C.RSRC_POOL_ID=#{parentId}
+			</if>
+		</if>
+		UNION ALL
+		SELECT DISTINCT C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ||','||G.PM_SEQ, G.PM_NM,B.REGION_ID||','|| D.ZONE_ID||','||E.NET_ID||','||C.RSRC_POOL_ID ||','||F.CLSTR_SEQ||','||G.PM_SEQ, 6 DEPTH,'PM',C.REGION_ID||','||C.ZONE_ID||','||C.NET_ID||','||C.RSRC_POOL_ID||','||F.CLSTR_SEQ
+		FROM
+		<if test='!role'>
+			CM_RSRC_POOL_USER A,
+		</if>
+			RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G
+		WHERE 1=1
+		<if test='!role'>
+			AND A.USER_ID = #{userId}
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		</if>
+		AND B.REGION_ID = C.REGION_ID
+		AND C.ZONE_ID = D.ZONE_ID
+		AND E.ZONE_ID = D.ZONE_ID
+		AND E.NET_ID = C.NET_ID
+		AND C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		AND G.CLSTR_SEQ = F.CLSTR_SEQ
+		AND C.RSRC_POOL_CL_CD = '01'
+		AND G.DEL_YN='N'
+    	AND C.DEL_YN='N'
+    	AND F.USE_YN = 'Y'
+    	AND F.DEL_YN='N'
+    	AND C.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		<if test="parentId != null">
+		AND F.CLSTR_ID=#{parentId}
+		</if>
+		ORDER BY 3,4
+	</select>
+
+	<select id="selectInstitutionToVmTreeByOnnara" parameterType="java.util.Map" resultMap="resultVmTree">
+    /* ncis.sql.dsb.cmm.selectInstitutionToVmTreeByOnnara */
+    SELECT INSTITUTION_ID,
+           CASE WHEN GUBUN = 'JOB' THEN
+                  CASE WHEN (TITLE = LAG(TITLE) OVER (ORDER BY GUBUN , ORDERNM)) OR (TITLE = LEAD(TITLE)OVER (ORDER BY GUBUN , ORDERNM)) THEN TITLE||'('||JOB_ID||')'
+                       ELSE TITLE
+                       END
+               ELSE TITLE
+               END INSTITUTION_NM,
+           PARENT_KEY,
+           GUBUN,
+           ORDERNM
+      FROM (
+    SELECT DISTINCT
+           CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_ID WHEN gubun = 'JOB' THEN INSTITUTION_ID||','||JOB_ID ELSE INSTITUTION_ID||','||JOB_ID ||','||VM_SEQ END INSTITUTION_ID
+         , CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_NM WHEN gubun = 'JOB' THEN JOB_NM ELSE VM_NM END TITLE
+         , CASE WHEN gubun = 'INSTITUTION' THEN NULL::varchar WHEN gubun = 'JOB' THEN INSTITUTION_ID ELSE INSTITUTION_ID||','||JOB_ID END PARENT_KEY
+         , CASE WHEN gubun = 'INSTITUTION' THEN GUBUN WHEN gubun = 'JOB' THEN GUBUN ELSE GBN END GUBUN
+         , CASE WHEN gubun = 'INSTITUTION' THEN INSTITUTION_NM WHEN gubun = 'JOB' THEN INSTITUTION_NM||','||JOB_NM ELSE INSTITUTION_NM||INSTITUTION_ID||','||JOB_NM||','||VM_NM END ORDERNM
+         , CASE WHEN gubun = 'INSTITUTION' THEN NULL::VARCHAR WHEN gubun = 'JOB' THEN JOB_ID ELSE JOB_ID END JOB_ID
+      FROM (
+    /* 가상서버 - 서비스 */
+    SELECT  C.INSTITUTION_ID,
+    		C.JOB_ID,
+    		<choose>
+    			<when test="searchGubun != null and !searchGubun.isEmpty()">
+    				B.VM_SEQ||'V' VM_SEQ,
+    			</when>
+    			<otherwise>
+    				B.VM_SEQ VM_SEQ,
+    			</otherwise>
+    		</choose>
+    		B.VM_NM,
+    		null parent_key,
+    		E.INSTITUTION_NM,
+    		C.JOB_NM,
+    		'VM'::VARCHAR GBN
+      FROM RC_VM B
+     INNER JOIN RC_VM_JOB D ON D.VM_SEQ = B.VM_SEQ
+     INNER JOIN CM_JOB C ON C.JOB_ID =D.JOB_ID and c.use_yn = 'Y'
+     INNER JOIN CM_INSTITUTION E ON E.INSTITUTION_ID = C.INSTITUTION_ID and E.use_yn = 'Y'
+     LEFT JOIN RC_PM CC ON B.PM_SEQ = CC.PM_SEQ AND B.VM_CL_CD = CC.PM_CL_CD
+     INNER JOIN RC_CLSTR DD ON DD.CLSTR_SEQ =B.CLSTR_SEQ
+     INNER JOIN RC_RSRC_POOL EE ON EE.RSRC_POOL_ID = DD.RSRC_POOL_ID
+     INNER JOIN RC_NET FF ON FF.NET_ID = EE.NET_ID
+     INNER JOIN RC_ZONE HH ON HH.ZONE_ID = EE.ZONE_ID
+     INNER JOIN RC_REGION II ON II.REGION_ID = EE.REGION_ID
+    <if test='!role'>
+     inner join CM_JOB_USER X ON X.USER_ID = #{userId} and X.JOB_ID = D.JOB_ID /* ADDING */
+    </if>
+     WHERE 1=1
+       AND B.DEL_YN='N'
+       AND (CC.PM_SEQ ISNULL OR UPPER(CC.DEL_YN) = 'N')
+       AND B.VM_CL_CD = '01'
+       AND EE.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y' )
+       AND EE.RSRC_POOL_CL_CD = '01'
+       AND EE.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+    <if test="vmTree != null and !vmTree.isEmpty()">
+     UNION ALL
+    /* 자동확장- 서비스 */
+    SELECT BB.INSTITUTION_ID,
+           BB.JOB_ID,
+           <choose>
+    			<when test="searchGubun != null and !searchGubun.isEmpty()">
+    				D.SERVC_SEQ||'P',
+    			</when>
+    			<otherwise>
+    				D.SERVC_SEQ,
+    			</otherwise>
+    	   </choose>
+           D.SERVC_NM,
+           null parent_key,
+           C.INSTITUTION_NM,
+           BB.JOB_NM,
+           'WX' GBN
+      FROM RX_SERVC_AREA B
+     INNER JOIN CM_JOB BB ON B.INSTITUTION_ID = BB.INSTITUTION_ID AND B.JOB_ID = BB.JOB_ID and bb.use_yn = 'Y'
+     INNER JOIN CM_INSTITUTION C ON B.INSTITUTION_ID = C.INSTITUTION_ID and c.use_yn = 'Y'
+      LEFT JOIN RX_SERVC D ON B.SERVC_AREA_SEQ = D.SERVC_AREA_SEQ and d.del_yn = 'N'
+      LEFT JOIN RC_RSRC_POOL ON B.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+    <if test='!role'>
+     inner join CM_JOB_USER X ON X.USER_ID = #{userId} AND X.JOB_ID = B.JOB_ID /* ADDING */
+    </if>
+     WHERE 1=1
+       AND B.DEL_YN='N'
+       AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+       AND D.SERVC_TY_CD IN ('01','02')
+    </if>
+           ) SUB,
+           (
+           SELECT 'INSTITUTION' gubun
+            UNION ALL
+           SELECT 'JOB' gubun
+            UNION ALL
+           SELECT 'VM' gubun
+           ) Y
+           ) X
+     ORDER BY GUBUN , ORDERNM
+    </select>
+
+    <select id="selectVmListByOnnara" resultMap="resultVmInfoVo">
+      /*ncis.sql.dsb.cmm.selectVmListByOnnara*/
+      <include refid="ncis.cmn.queryForPagingHeader" />
+      SELECT QQ.CD_NM STAT
+           , QQ.CD STAT_CD
+           , CASE WHEN QQ.VM_SEQ2 IS NULL THEN '미수집'
+                  ELSE '완료'
+             END SUZIP
+           , QQ.INSTITUTION_NM
+        /*   , QQ.JOBS_NM */
+           , (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+                FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+               INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+              WHERE 1=1
+                AND CM_INSTITUTION.USE_YN = 'Y'
+                AND CM_JOB.USE_YN = 'Y'
+                AND RC_VM_JOB.VM_SEQ = QQ.VM_SEQ
+              GROUP BY RC_VM_JOB.VM_SEQ ) JOBS_NM
+           , QQ.ZONE_NM
+           , QQ.VM_NM VM_NM
+           , QQ.VM_COMP_ID VM_COMP_ID
+           , COALESCE(QQ.STRG_ASGN_CAPA,0) STRG
+           , COALESCE(QQ.CPU_VCORE_QTY,0) VCORE
+           , COALESCE(QQ.MEM_ASGN_CAPA,0) MEM
+           , QQ.REG_DTTM::DATE::CHARACTER VARYING REG
+           , QQ.HST_NM HST_NM
+           , QQ.RPRSNT_IP_ADDR IP
+        FROM (SELECT BB.*,
+                     EE.ZONE_ID,
+                     JJ.INSTITUTION_NM,
+                     HH.ZONE_NM,
+                   /*  KK.JOBS_NM, */
+                     STAT_GRP_CD.CD_NM, /*STAT_CD.CD_NM*/
+                     STAT_GRP_CD.CD
+                   , (SELECT MAX(VM_SEQ) VM_SEQ
+                        FROM ST_VM_COLCT_SUM_10MI
+                       WHERE 1=1
+                         AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','YYYYMMDD')
+                         AND COLCT_HOUR >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','HH24')
+                         AND COLCT_MI::INTEGER >= (TO_CHAR(NOW()-INTERVAL '20 MINUTE','MI')::INTEGER/10+1)*10
+                         AND ST_VM_COLCT_SUM_10MI.VM_SEQ = BB.VM_SEQ
+                       GROUP BY VM_SEQ
+                     ) VM_SEQ2
+                FROM RC_VM BB
+                LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+               INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+               INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+               INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+               INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+               INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+                LEFT JOIN RC_VM_JOB VMJOB ON VMJOB.VM_SEQ = BB.VM_SEQ
+	       		LEFT JOIN CM_JOB JOB ON JOB.JOB_ID = VMJOB.JOB_ID AND JOB.USE_YN = 'Y'
+                LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = JOB.INSTITUTION_ID and jj.USE_YN = 'Y'
+                LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+                LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+                LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+                LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+                LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+                LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+                 <if test="!sysAdm">
+                   <choose>
+                     <when test = "oprAdm">
+                INNER JOIN (SELECT CM_RSRC_POOL_USER.USER_ID
+                                 , CM_RSRC_POOL_USER.RSRC_POOL_ID
+                              FROM CM_RSRC_POOL_USER
+                             WHERE CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+                            ) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+                      </when>
+                      <otherwise>
+                 INNER JOIN (SELECT DISTINCT RC_VM_JOB.VM_SEQ
+                               FROM CM_JOB_USER
+                              INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+                              WHERE CM_JOB_USER.USER_ID = #{searchUserId}
+                             ) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+                     </otherwise>
+                   </choose>
+                 </if>
+                WHERE 1=1
+               <include refid="searchVmByOnnara"/>
+             ) QQ
+       ORDER BY (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+               qq.INSTITUTION_NM ASC NULLS LAST,
+               JOBS_NM ASC NULLS LAST,
+               qq.VM_NM ASC NULLS LAST
+      <include refid="ncis.cmn.queryForPagingFooter" />
+    </select>
+
+    <select id="selectVmIncListByOnnara" resultMap="resultVmInfoVo">
+      /*ncis.sql.dsb.cmm.selectVmIncListByOnnara*/
+      <include refid="ncis.cmn.queryForPagingHeader" />
+      SELECT QQ.CD_NM STAT
+           , QQ.CD STAT_CD
+           , CASE WHEN QQ.VM_SEQ2 IS NULL THEN '미수집'
+                  ELSE '완료'
+             END SUZIP
+           , QQ.INSTITUTION_NM
+        /*   , QQ.JOBS_NM */
+           , (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+                FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+               INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+              WHERE 1=1
+                AND CM_INSTITUTION.USE_YN = 'Y'
+                AND CM_JOB.USE_YN = 'Y'
+                AND RC_VM_JOB.VM_SEQ = QQ.VM_SEQ
+              GROUP BY RC_VM_JOB.VM_SEQ ) JOBS_NM
+           , QQ.ZONE_NM
+           , QQ.VM_NM VM_NM
+           , QQ.VM_COMP_ID VM_COMP_ID
+           , COALESCE(QQ.STRG_ASGN_CAPA,0) STRG
+           , COALESCE(QQ.CPU_VCORE_QTY,0) VCORE
+           , COALESCE(QQ.MEM_ASGN_CAPA,0) MEM
+           , QQ.REG_DTTM::DATE::CHARACTER VARYING REG
+           , QQ.HST_NM HST_NM
+           , QQ.RPRSNT_IP_ADDR IP
+        FROM (SELECT BB.*,
+                     EE.ZONE_ID,
+                     JJ.INSTITUTION_NM,
+                     HH.ZONE_NM,
+                   /*  KK.JOBS_NM, */
+                     STAT_GRP_CD.CD_NM, /*STAT_CD.CD_NM*/
+                     STAT_GRP_CD.CD
+                   , (SELECT MAX(VM_SEQ) VM_SEQ
+                        FROM ST_VM_COLCT_SUM_10MI
+                       WHERE 1=1
+                         AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','YYYYMMDD')
+                         AND COLCT_HOUR >= TO_CHAR(NOW()-INTERVAL '20 MINUTE','HH24')
+                         AND COLCT_MI::INTEGER >= (TO_CHAR(NOW()-INTERVAL '20 MINUTE','MI')::INTEGER/10+1)*10
+                         AND ST_VM_COLCT_SUM_10MI.VM_SEQ = BB.VM_SEQ
+                       GROUP BY VM_SEQ
+                     ) VM_SEQ2
+                FROM RC_VM BB
+                LEFT JOIN RC_PM cc ON bb.PM_SEQ = cc.PM_SEQ AND bb.VM_CL_CD = cc.PM_CL_CD
+               INNER JOIN RC_CLSTR dd ON dd.CLSTR_SEQ = bb.CLSTR_SEQ
+               INNER JOIN RC_RSRC_POOL ee ON ee.RSRC_POOL_ID = dd.RSRC_POOL_ID
+               INNER JOIN RC_NET ff ON ff.NET_ID = ee.NET_ID
+               INNER JOIN RC_ZONE hh ON hh.ZONE_ID = ee.ZONE_ID
+               INNER JOIN RC_REGION ii ON ii.REGION_ID = ee.REGION_ID
+                LEFT JOIN RC_VM_JOB VMJOB ON VMJOB.VM_SEQ = BB.VM_SEQ
+	       		LEFT JOIN CM_JOB JOB ON JOB.JOB_ID = VMJOB.JOB_ID AND JOB.USE_YN = 'Y'
+                LEFT JOIN CM_INSTITUTION jj ON jj.INSTITUTION_ID = JOB.INSTITUTION_ID and jj.USE_YN = 'Y'
+                LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = bb.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+                LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+                LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = bb.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+                LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = bb.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+                LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = ff.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+                LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = ee.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+                 <if test="!sysAdm">
+                   <choose>
+                     <when test = "oprAdm">
+                INNER JOIN (SELECT CM_RSRC_POOL_USER.USER_ID
+                                 , CM_RSRC_POOL_USER.RSRC_POOL_ID
+                              FROM CM_RSRC_POOL_USER
+                             WHERE CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+                            ) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = ee.RSRC_POOL_ID
+                      </when>
+                      <otherwise>
+                 INNER JOIN (SELECT DISTINCT RC_VM_JOB.VM_SEQ
+                               FROM CM_JOB_USER
+                              INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+                              WHERE CM_JOB_USER.USER_ID = #{searchUserId}
+                             ) JOB_USER ON JOB_USER.VM_SEQ = bb.VM_SEQ
+                     </otherwise>
+                   </choose>
+                 </if>
+                WHERE 1=1
+               <include refid="searchVmIncByOnnara"/>
+             ) QQ
+       ORDER BY (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN qq.STAT_CD = '02' THEN COALESCE(ROUND(qq.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+               qq.INSTITUTION_NM ASC NULLS LAST,
+               JOBS_NM ASC NULLS LAST,
+               qq.VM_NM ASC NULLS LAST
+      <include refid="ncis.cmn.queryForPagingFooter" />
+    </select>
+
+    <select id="selectPodListByOnnara" resultMap="resultPodInfoVo">
+	/*ncis.sql.dsb.cmm.selectPodListByOnnara*/
+
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		  SELECT INST.INSTITUTION_NM,
+				 JOB.JOB_NM,
+				 SRVC.SERVC_NM,
+				 STAT.CD_NM STAT_NM,
+				 POD.POD_ID,
+				 POD.POD_NM,
+				 COALESCE(ROUND(POD.CPU_COR_QTY,2),0) CPU_COR_QTY,
+				 COALESCE(ROUND(POD.CPU_USE_RT,2),0) CPU_USE_RT,
+				 COALESCE(ROUND(POD.MEM_ASGN_CAPA,2),0) MEM_ASGN_CAPA,
+				 COALESCE(ROUND(POD.MEM_USE_RT,2),0) MEM_USE_RT,
+				 COALESCE(POD.STRG_ASGN_CAPA,0) STRG_ASGN_CAPA,
+				 POD.CRE_DTTM::date::character varying REG,
+				 ZONE.ZONE_NM,
+				 ND.ATMSCL_NODE_NM,
+				 POD.POD_IP_ADDR
+
+			    FROM RX_SERVC_POD POD LEFT JOIN RX_SERVC SRVC ON POD.SERVC_SEQ = SRVC.SERVC_SEQ
+				                      LEFT JOIN RX_SERVC_AREA SRVCA ON SRVC.SERVC_AREA_SEQ = SRVCA.SERVC_AREA_SEQ
+				                      INNER JOIN RX_NODE ND ON POD.ATMSCL_NODE_ID = ND.ATMSCL_NODE_ID
+				                      INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+				                      INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+									  INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+				                      INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+				                      LEFT JOIN CM_INSTITUTION INST ON INST.INSTITUTION_ID =SRVCA.INSTITUTION_ID and INST.USE_YN = 'Y'
+				                      LEFT JOIN CM_CODE STAT ON STAT.CD = POD.STAT_CD AND STAT.PARENT_GRP_CD = '102'
+				                      LEFT JOIN CM_JOB JOB ON JOB.JOB_ID = SRVCA.JOB_ID AND JOB.USE_YN='Y'
+							           <if test="!sysAdm">
+							             <choose>
+							              	<when test = "oprAdm">
+							              		INNER JOIN CM_RSRC_POOL_USER POOL_USER ON POOL.RSRC_POOL_ID = POOL_USER.RSRC_POOL_ID
+						    		    	</when>
+						    		       	<otherwise>
+					       	                    INNER JOIN CM_JOB_USER CM_USER ON SRVCA.JOB_ID = CM_USER.JOB_ID
+					       	             	</otherwise>
+			                              </choose>
+			                             </if>
+
+			  WHERE 1=1
+			  		<if test="!sysAdm">
+					   <choose>
+					      	<when test = "oprAdm">
+					       	AND	POOL_USER.USER_ID = #{searchUserId}
+					    	</when>
+					       	<otherwise>
+					        AND CM_USER.USER_ID = #{searchUserId}
+					       	</otherwise>
+			            </choose>
+			          </if>
+
+						  <if test='regionId !=null and !"".equals(regionId)'>
+							AND RGN.REGION_ID =#{regionId}
+						  </if>
+						  <if test='zoneId !=null and !"".equals(zoneId)'>
+						    AND ZONE.ZONE_ID =#{zoneId}
+						  </if>
+						  <if test='netId !=null and !"".equals( netId )'>
+							 AND NET.NET_ID = #{netId}
+						  </if>
+						  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+							 AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+						  </if>
+						  <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+							AND ND.ATMSCL_NODE_ID = #{atmsclNodeId}
+						  </if>
+						  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+							AND SRVC.SERVC_SEQ=#{vmSeq}
+						  </if>
+
+				         <if test='podId != null and !"".equals( podId )'>
+						  <!-- 부분일치 -->
+						   AND POD.POD_ID like '%' ||#{podId}|| '%'
+						 </if>
+						<if test='strtDtPod != null and !"".equals( strtDtPod )'>
+						   <if test='endDtPod != null and !"".equals( endDtPod )'>
+							 AND POD.CRE_DTTM between (#{strtDtPod}||' 00:00:00')::TIMESTAMP AND (#{endDtPod}||' 23:59:59')::TIMESTAMP
+						   </if>
+						</if>
+
+						 <if test='podNm != null and !"".equals( podNm )'>
+						   <!-- 부분일치 -->
+						  AND POD.POD_NM like '%' ||#{podNm}|| '%'
+						</if>
+
+				        <if test='institutionId !=null and !"".equals( institutionId )'>
+						 	AND SRVCA.INSTITUTION_ID = #{institutionId}
+					    </if>
+
+					    <if test='jobId !=null and !"".equals( jobId )'>
+							AND SRVCA.JOB_ID = #{jobId}
+					    </if>
+
+						<if test='institutionNmPod != null and !"".equals( institutionNmPod )'>
+						<!-- 부분일치 -->
+						  AND INST.INSTITUTION_NM like '%' ||#{institutionNmPod}|| '%'
+						</if>
+						<if test='servcNm != null and !"".equals( servcNm )'>
+						<!-- 부분일치 -->
+						  AND SRVC.SERVC_NM like '%' ||#{servcNm}|| '%'
+						</if>
+
+					AND UPPER(POOL.DEL_YN) = 'N'
+					AND UPPER(SRVC.DEL_YN) = 'N'
+					AND UPPER(POD.DEL_YN) = 'N'
+					AND POOL.RSRC_POOL_CL_CD = '05'
+					AND POD.POD_TY_CD IN ('01','02')
+					AND POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+        ORDER BY (CASE WHEN STAT.CD = '01' THEN COALESCE(ROUND(POD.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN STAT.CD = '01' THEN COALESCE(ROUND(POD.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST,
+			     INST.INSTITUTION_NM ASC NULLS LAST,
+			     JOB.JOB_NM ASC NULLS LAST,
+			     SRVC.SERVC_NM ASC NULLS LAST
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectRcPmResInfoByOnnara" resultMap="resultPmResSttsVo">
+		/*ncis.sql.dsb.cmm.selectRcPmResInfoByOnnara*/
+		   select COALESCE(SUM(CPU_CORE_QTY),0) LAST_CPU_COR_QTY,
+		          COALESCE(SUM(MEM_CAPA),0) LAST_MEM_SUM_CAPA,
+		          COALESCE(SUM(STRG_ASGN_CAPA),0) LAST_STRG_SUM_CAPA
+		      from RC_PM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+			         LEFT JOIN (SELECT PM_SEQ,
+			                           SUM(STRG_ASGN_CAPA) STRG_ASGN_CAPA
+			                       FROM RC_VM
+			                     GROUP BY PM_SEQ
+			                   ) A ON RC_PM.PM_SEQ = A.PM_SEQ
+		    WHERE 1=1
+				AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_PM.PM_SEQ=#{pmSeq}
+			 </if>
+
+  </select>
+
+  <select id="selectPodResInfoByOnnara" resultMap="resultPodResSttsVo">
+		/*ncis.sql.dsb.cmm.selectPodResInfoByOnnara*/
+		   SELECT COALESCE(ROUND(SUM(A.POD_CPU_COR_QTY),2),0) POD_CPU_COR_QTY,
+			      COALESCE(ROUND(SUM(A.POD_MEM_ASGN_CAPA),2),0) POD_MEM_ASGN_CAPA,
+			      COALESCE(SUM(A.POD_STRG_ASGN_CAPA),0) POD_STRG_ASGN_CAPA,
+			      COALESCE(ROUND(SUM(A.ND_CPU_CORE_QTY),2),0) ND_CPU_CORE_QTY,
+			      COALESCE(ROUND(SUM(A.ND_MEM_ASGN_CAPA),2),0) ND_MEM_ASGN_CAPA,
+			      COUNT(DISTINCT AREA.INSTITUTION_ID) INSTITUTION_CNT,
+			      COUNT(DISTINCT AREA.JOB_ID) JOB_CNT,
+			      COALESCE(SUM(A.POD_CNT),0) POD_CNT
+			FROM
+             (
+	             SELECT POD.SERVC_SEQ,
+						SRVC.SERVC_AREA_SEQ,
+						POD.RSRC_POOL_ID,
+						ND.ATMSCL_NODE_ID,
+	                    SUM(POD.POD_CNT) POD_CNT,
+						SUM(POD.CPU_COR_QTY) POD_CPU_COR_QTY,
+						SUM(POD.MEM_ASGN_CAPA) POD_MEM_ASGN_CAPA,
+						MAX(POD.STRG_ASGN_CAPA) POD_STRG_ASGN_CAPA,
+						SUM(ND.CPU_COR_QTY) ND_CPU_CORE_QTY,
+						SUM(ND.MEM_ASGN_CAPA) ND_MEM_ASGN_CAPA
+
+				   FROM (SELECT SERVC_SEQ,
+								RSRC_POOL_ID,
+								ATMSCL_NODE_ID,
+								COUNT(SERVC_SEQ||POD_ID) POD_CNT,
+								SUM(CPU_COR_QTY) CPU_COR_QTY,
+								SUM(MEM_ASGN_CAPA) MEM_ASGN_CAPA,
+								MAX(STRG_ASGN_CAPA) STRG_ASGN_CAPA
+
+						FROM RX_SERVC_POD
+						WHERE 1=1
+							AND UPPER(DEL_YN) = 'N'
+							AND POD_TY_CD IN ('01','02')
+						GROUP BY	SERVC_SEQ,
+							 		RSRC_POOL_ID,
+							 		ATMSCL_NODE_ID
+						) POD LEFT JOIN RX_SERVC SRVC ON POD.SERVC_SEQ = SRVC.SERVC_SEQ
+							  INNER JOIN RX_NODE ND ON POD.ATMSCL_NODE_ID = ND.ATMSCL_NODE_ID
+							  INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						      INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+							  INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+							  INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+
+
+
+			    WHERE 1=1
+						AND UPPER(POOL.DEL_YN) = 'N'
+						AND UPPER(SRVC.DEL_YN) = 'N'
+						AND POOL.RSRC_POOL_CL_CD = '05'
+						AND POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+		             <if test='regionId !=null and !"".equals(regionId)'>
+					 	AND RGN.REGION_ID =#{regionId}
+					 </if>
+					 <if test='netId !=null and !"".equals( netId )'>
+					 	AND NET.NET_ID = #{netId}
+					 </if>
+					 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+					 	AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+					 </if>
+					 <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+					 	AND ND.ATMSCL_NODE_ID = #{atmsclNodeId}
+					 </if>
+
+					  <if test='vmSeq !=null and !"".equals( vmSeq )'>
+						AND SRVC.SERVC_SEQ=#{vmSeq}
+					  </if>
+
+				GROUP BY ND.ATMSCL_NODE_ID,
+						 POD.RSRC_POOL_ID,
+				         POD.SERVC_SEQ,
+	       		         SRVC.SERVC_AREA_SEQ
+	       	)A LEFT JOIN RX_SERVC_AREA AREA ON A.SERVC_AREA_SEQ = AREA.SERVC_AREA_SEQ
+	       	<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						INNER JOIN CM_RSRC_POOL_USER POOL_USER ON A.RSRC_POOL_ID = POOL_USER.RSRC_POOL_ID
+					</when>
+					<otherwise>
+						INNER JOIN CM_JOB_USER CM_USER ON AREA.JOB_ID = CM_USER.JOB_ID
+					</otherwise>
+				 </choose>
+			</if>
+
+	       	WHERE  1=1
+	       	<if test="!sysAdm">
+				<choose>
+					<when test = "oprAdm">
+						AND POOL_USER.USER_ID = #{searchUserId}
+					</when>
+					<otherwise>
+						AND CM_USER.USER_ID = #{searchUserId}
+					</otherwise>
+				</choose>
+			</if>
+
+	       			<if test='institutionId !=null and !"".equals( institutionId )'>
+					AND AREA.INSTITUTION_ID = #{institutionId}
+				  </if>
+				  <if test='jobId !=null and !"".equals( jobId )'>
+					AND AREA.JOB_ID = #{jobId}
+				  </if>
+  </select>
+
+  <select id="selectRcVcoreCntByOnnara" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectRcVcoreCntByOnnara*/
+
+	       select COALESCE(SUM(CPU_VCORE_QTY),0) LAST_VCORE_QTY
+
+		      from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+				AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+
+	</select>
+
+	<select id="selectUseGovDeptCntByOnnara" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseGovDeptCntByOnnara*/
+
+	 SELECT COALESCE(count(distinct RC_VM.institution_id),0) CNT
+	  	  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+				AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+	</select>
+
+
+	<select id="selectUseJobCntByOnnara" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCntByOnnara*/
+		SELECT COALESCE(count(distinct RC_VM_JOB.JOB_ID),0) CNT
+
+		  from RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			         INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			         <if test="!allRsrcPoolAuth">
+			         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+			         </if>
+		    WHERE 1=1
+				AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+             <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND RC_REGION.REGION_ID =#{regionId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND RC_NET.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND RC_VM.PM_SEQ=#{pmSeq}
+			 </if>
+	</select>
+
+	<select id="selectCpuUseRt10ByOnnara" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10ByOnnara*/
+			SELECT A.MI,
+                   ROUND(AVG(rt),1) RT
+               FROM
+			     (
+	              SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_CPU_USE_RT) RT
+			      FROM ST_PM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+			      WHERE 1=1
+			      AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			      AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+					     <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+						<include refid="searchByOnnara"/>
+				GROUP BY  A.COLCT_HOUR,A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_CPU_USE_RT)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				   	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPodByOnnara"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectMemUseRt10ByOnnara" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10ByOnnara*/
+           SELECT A.MI,
+                  ROUND(AVG(RT),1) RT
+               FROM
+			     (
+                  SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_MEM_USE_RT) RT
+			         FROM ST_PM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					     </if>
+
+					<include refid="searchByOnnara"/>
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_MEM_USE_RT)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				   	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPodByOnnara"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			 ) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectNetTrfic10ByOnnara" resultMap="resultNetTrfic10Vo">
+	/*ncis.sql.dsb.cmm.selectNetTrfic10ByOnnara*/
+	          SELECT A.MI,
+                     ROUND(AVG(AVG_IN_TRFIC/1024/1024),2) AVG_IN_TRFIC,
+                     ROUND(AVG(AVG_OUT_TRFIC/1024/1024),2) AVG_OUT_TRFIC
+                  FROM
+			     (
+		          SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+		                 AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+		                 AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+			         FROM ST_VM_COLCT_SUM_10MI A
+			         <if test="!allRsrcPoolAuth">
+					 	  , CM_RSRC_POOL_USER C
+					 </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+						<if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+								AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					    </if>
+
+					<include refid="searchByOnnara"/>
+				GROUP BY  A.COLCT_HOUR ,A.COLCT_MI
+
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_IN_TRFIC),
+				       AVG(AVG_OUT_TRFIC)
+				  FROM ST_RX_NODE_SUM_10MI A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				  	 <if test="!allRsrcPoolAuth">
+					 	  INNER JOIN CM_RSRC_POOL_USER C ON  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+					 </if>
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allRsrcPoolAuth">
+							  	AND  C.USER_ID = #{searchUserId}
+					   </if>
+					<include refid="searchPodByOnnara"/>
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+	<select id="selectUseGovDeptCntIncByOnnara" resultType="Integer">
+
+	  /*ncis.sql.dsb.cmm.selectUseGovDeptCntIncByOnnara*/
+
+		SELECT COALESCE(COUNT(DISTINCT RC_VM.INSTITUTION_ID),0) CNT
+		       FROM RC_VM LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ AND RC_VM.DEL_YN = 'N'
+		       			  INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			  INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	  INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			              INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			              INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+		       	  <if test='!allJobAuth' >
+		       	     INNER JOIN CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+		       	  </if>
+
+		     where 1=1
+		     		AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	AND RC_VM_JOB.JOB_ID =#{jobId}
+                  </if>
+				  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND RC_VM.INSTITUTION_ID =#{institutionId}
+			  	  </if>
+			  	  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  		AND RC_VM.VM_SEQ =#{vmSeq}
+			  	  </if>
+
+
+	</select>
+
+	<select id="selectUseJobCntIncByOnnara" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectUseJobCntIncByOnnara*/
+
+		SELECT COALESCE(COUNT(DISTINCT RC_VM_JOB.JOB_ID),0) CNT
+	         FROM RC_VM LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ AND RC_VM.DEL_YN = 'N'
+	         			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			            INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+	              <if test='!allJobAuth' >
+		       	     inner join CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+		       	  </if>
+
+	       where  1=1
+ 					AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+                  <if test='jobId !=null and !"".equals(jobId)'>
+                  	and RC_VM_JOB.JOB_ID =#{jobId}
+                  </if>
+				  <if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND RC_VM.INSTITUTION_ID =#{institutionId}
+			  	  </if>
+			  	  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  		AND RC_VM.VM_SEQ =#{vmSeq}
+			  	  </if>
+	</select>
+
+	<select id="selectVcoreVmCntIncByOnnara" resultType="Integer">
+	/*ncis.sql.dsb.cmm.selectVcoreVmCntIncByOnnara*/
+
+		SELECT COALESCE(SUM(CPU_VCORE_QTY),0) LAST_VCORE_QTY
+			 from RC_VM INNER JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+			 			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+		       			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			         	INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			            INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			            INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+
+			 <if test="!allJobAuth">
+			      INNER JOIN CM_JOB_USER ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID AND CM_JOB_USER.USER_ID=#{searchUserId}
+			 </if>
+		where 1=1
+				AND RC_VM.DEL_YN = 'N'
+				AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+            <if test='institutionId !=null and !"".equals(institutionId)'>
+				AND  RC_VM.INSTITUTION_ID =#{institutionId}
+		    </if>
+			<if test='jobId !=null and !"".equals(jobId)'>
+				and RC_VM_JOB.JOB_ID =#{jobId}
+			</if>
+			<if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  	AND RC_VM.VM_SEQ =#{vmSeq}
+			</if>
+
+	</select>
+
+	<select id="selectManagerKndSttsByOnnara" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndSttsByOnnara*/
+		 SELECT C.CD MNG_CD,
+	            C.CD_NM MNG_NM,
+	            COALESCE(S.CNT, 0) MNG_CNT
+	      FROM CM_CODE C
+		     LEFT JOIN
+					 ( SELECT RC_RSRC_POOL.VRLZ_SW_TY_CD,
+							  COUNT(1) CNT
+					      from RC_PM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ AND RC_PM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+						         INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+						         INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+						         INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+						         INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+						         <if test="!allRsrcPoolAuth">
+						         INNER JOIN CM_RSRC_POOL_USER ON RC_RSRC_POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						         </if>
+
+					    WHERE 1=1
+
+				             <if test='regionId !=null and !"".equals(regionId)'>
+							 	AND RC_REGION.REGION_ID =#{regionId}
+							 </if>
+							 <if test='zoneId !=null and !"".equals(zoneId)'>
+							 	AND RC_ZONE.ZONE_ID =#{zoneId}
+							 </if>
+							 <if test='netId !=null and !"".equals( netId )'>
+							 	AND RC_NET.NET_ID = #{netId}
+							 </if>
+							 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+							 	AND RC_RSRC_POOL.RSRC_POOL_ID=#{rsrcPoolId}
+							 </if>
+							 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+							 	AND RC_CLSTR.CLSTR_SEQ = #{clstrSeq}
+							 </if>
+							 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+							 	AND RC_PM.PM_SEQ=#{pmSeq}
+							 </if>
+							 AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+                        GROUP BY RC_RSRC_POOL.VRLZ_SW_TY_CD
+                         UNION ALL
+						SELECT POOL.VRLZ_SW_TY_CD,
+						       COUNT(1) CNT
+						  FROM RX_NODE NODE INNER JOIN RC_RSRC_POOL POOL ON NODE.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						                    INNER JOIN RC_NET NET ON NET.NET_ID = POOL.NET_ID
+							      			INNER JOIN RC_ZONE ZONE ON ZONE.ZONE_ID = POOL.ZONE_ID
+					                        INNER JOIN RC_REGION RGN ON RGN.REGION_ID = POOL.REGION_ID
+					             <if test="!allRsrcPoolAuth">
+						       	  INNER JOIN CM_RSRC_POOL_USER ON POOL.RSRC_POOL_ID = CM_RSRC_POOL_USER.RSRC_POOL_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						         </if>
+
+						 WHERE 1=1
+							  <if test='regionId !=null and !"".equals(regionId)'>
+								AND RGN.REGION_ID =#{regionId}
+							  </if>
+							  <if test='zoneId !=null and !"".equals(zoneId)'>
+							    AND ZONE.ZONE_ID =#{zoneId}
+							  </if>
+							  <if test='netId !=null and !"".equals( netId )'>
+								 AND NET.NET_ID = #{netId}
+							  </if>
+							  <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+								 AND POOL.RSRC_POOL_ID=#{rsrcPoolId}
+							  </if>
+							  <if test='atmsclNodeId !=null and !"".equals( atmsclNodeId )'>
+								AND NODE.ATMSCL_NODE_ID = #{atmsclNodeId}
+							  </if>
+
+						       AND UPPER(POOL.DEL_YN) = 'N'
+		 				       AND POOL.RSRC_POOL_CL_CD = '05'
+		 				       AND POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+						 GROUP BY POOL.VRLZ_SW_TY_CD
+
+			         ) S ON C.CD = S.VRLZ_SW_TY_CD
+	     WHERE C.GRP_CD = '001' AND C.PARENT_CD = '100' AND C.USE_YN = 'Y'
+	</select>
+
+	<select id="selectCpuUseRt10IncByOnnara" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectCpuUseRt10IncByOnnara*/
+	      SELECT A.MI,
+	             ROUND(AVG(RT),1) RT
+
+	         FROM
+                  (SELECT  A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			               AVG(AVG_CPU_USE_RT) RT
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				                FROM ST_VM_JOB_1DD
+		                      WHERE 1=1
+				       	            AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										     FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B ON AA.JOB_ID = B.JOB_ID
+				       	  </if>
+
+			      WHERE 1=1
+			             AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			             AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+						 <if test="!allJobAuth">
+						    AND  B.USER_ID = #{searchUserId}
+						 </if>
+						 <if test='jobId !=null and !"".equals(jobId)'>
+							AND AA.JOB_ID =#{jobId}
+						 </if>
+						<include refid="searchInc"/>
+							AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_CPU_USE_RT)
+
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 and C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+					    AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+	<select id="selectMemUseRt10IncByOnnara" resultMap="resultRt10Vo">
+	/*ncis.sql.dsb.cmm.selectMemUseRt10IncByOnnara*/
+         SELECT A.MI,
+	            ROUND(AVG(A.RT),1) RT
+	         FROM
+                 (SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+			             AVG(AVG_MEM_USE_RT) RT
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				               FROM ST_VM_JOB_1DD
+		                              WHERE 1=1
+				       	               AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										    FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+						 <if test='jobId !=null and !"".equals(jobId)'>
+							 AND AA.JOB_ID =#{jobId}
+						  </if>
+
+				       <include refid="searchInc"/>
+				       		 AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+				GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+				UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(A.AVG_MEM_USE_RT)
+
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 AND C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+					    AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+	</select>
+
+	<select id="selectNetTrfic10IncByOnnara" resultMap="resultNetTrfic10Vo">
+	/*ncis.sql.dsb.cmm.selectNetTrfic10IncByOnnara*/
+      SELECT A.MI,
+             ROUND(AVG(AVG_IN_TRFIC/1024/1024),2) AVG_IN_TRFIC,
+             ROUND(AVG(AVG_OUT_TRFIC/1024/1024),2) AVG_OUT_TRFIC
+         FROM
+		    (SELECT A.COLCT_HOUR||':'||A.COLCT_MI MI,
+                         AVG(AVG_IN_TRFIC) AVG_IN_TRFIC,
+		                 AVG(AVG_OUT_TRFIC) AVG_OUT_TRFIC
+			         FROM ST_VM_COLCT_SUM_10MI A LEFT JOIN
+				            (SELECT VM_SEQ, JOB_ID
+				               FROM ST_VM_JOB_1DD
+		                              WHERE 1=1
+				       	               AND COLCT_DT =
+				                        (SELECT MAX(Q.COLCT_DT)
+										    FROM ST_VM_JOB_1DD Q
+										   WHERE 1=1
+							             )
+
+			                  )AA ON A.VM_SEQ = AA.VM_SEQ
+
+				       	  <if test="!allJobAuth">
+				       	    INNER JOIN CM_JOB_USER B on aa.job_id = B.job_id
+				       	  </if>
+
+			      WHERE 1=1
+			            AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+			            AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE', 'YYYYMMDDHH24MI')
+
+						 <if test="!allJobAuth">
+						     AND  B.USER_ID = #{searchUserId}
+						 </if>
+
+						  <if test='jobId !=null and !"".equals(jobId)'>
+								AND AA.JOB_ID =#{jobId}
+						  </if>
+
+				 <include refid="searchInc"/>
+						AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+			    GROUP BY  A.COLCT_HOUR, A.COLCT_MI
+			UNION ALL
+				SELECT A.COLCT_HOUR||':'||A.COLCT_MI,
+				       AVG(AVG_IN_TRFIC),
+				       AVG(AVG_OUT_TRFIC)
+				  FROM ST_RX_POD_SUM_10MI A LEFT JOIN RX_SERVC B ON A.SERVC_SEQ = B.SERVC_SEQ
+				                            LEFT JOIN RX_SERVC_AREA C ON C.SERVC_AREA_SEQ = B.SERVC_AREA_SEQ
+				           <if test="!allJobAuth">
+				       	    inner join CM_JOB_USER D on C.job_id = D.job_id
+				       	  </if>
+
+				 WHERE 1=1
+				       AND COLCT_DT >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDD')
+				       AND (COLCT_DT||COLCT_HOUR||COLCT_MI) >= TO_CHAR(NOW()-INTERVAL '1 HOUR 30 MINUTE','YYYYMMDDHH24MI')
+				       <if test="!allJobAuth">
+						     AND  D.USER_ID = #{searchUserId}
+					   </if>
+					   <if test='jobId !=null and !"".equals(jobId)'>
+							 AND C.JOB_ID =#{jobId}
+					   </if>
+
+					    <if test='institutionId !=null and !"".equals(institutionId)'>
+						  	AND C.INSTITUTION_ID =#{institutionId}
+					    </if>
+					    <if test='vmSeq !=null and !"".equals(vmSeq)'>
+						  	AND A.SERVC_SEQ =#{vmSeq}
+					    </if>
+						AND A.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+				 GROUP BY A.COLCT_HOUR, A.COLCT_MI
+			) A
+			  GROUP BY A.MI
+
+	</select>
+
+	<select id="selectManagerKndSttsIncByOnnara" resultMap="resultManagerKndSttsVo">
+	/*ncis.sql.dsb.cmm.selectManagerKndSttsIncByOnnara*/
+
+		SELECT C.CD MNG_CD,
+	           C.CD_NM MNG_NM,
+	           COALESCE(S.CNT, 0) MNG_CNT
+	      FROM CM_CODE C
+		     LEFT JOIN (SELECT RC_RSRC_POOL.VRLZ_SW_TY_CD,
+		     				   COUNT(1) CNT
+				            FROM RC_VM INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ AND RC_VM.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+						               INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+						               LEFT JOIN RC_VM_JOB ON RC_VM.VM_SEQ = RC_VM_JOB.VM_SEQ
+						                <if test='!allJobAuth' >
+						                     inner join CM_JOB_USER on CM_JOB_USER.job_id = RC_VM_JOB.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+						                </if>
+					   WHERE 1=1
+					          <if test='institutionId !=null and !"".equals(institutionId)'>
+								 AND  RC_VM.INSTITUTION_ID =#{institutionId}
+						      </if>
+							  <if test='jobId !=null and !"".equals(jobId)'>
+								 and RC_VM_JOB.JOB_ID =#{jobId}
+							  </if>
+							  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+							   	 AND RC_VM.VM_SEQ =#{vmSeq}
+							  </if>
+							  AND RC_RSRC_POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+					     GROUP BY RC_RSRC_POOL.vrlz_sw_ty_cd
+					     UNION ALL
+							SELECT POOL.vrlz_sw_ty_cd,
+							       COUNT(1) CNT
+							  FROM RX_SERVC_POD POD INNER JOIN RX_SERVC SERVC ON POD.SERVC_SEQ = SERVC.SERVC_SEQ
+				                            		INNER JOIN RX_SERVC_AREA AREA ON AREA.SERVC_AREA_SEQ = SERVC.SERVC_AREA_SEQ
+							                        INNER JOIN RC_RSRC_POOL POOL ON POD.RSRC_POOL_ID = POOL.RSRC_POOL_ID
+						                <if test='!allJobAuth' >
+						                     inner join CM_JOB_USER on CM_JOB_USER.job_id = AREA.job_id AND CM_JOB_USER.USER_ID = #{searchUserId}
+						                </if>
+
+							 WHERE 1=1
+						  	  <if test='institutionId !=null and !"".equals(institutionId)'>
+								 AND AREA.INSTITUTION_ID =#{institutionId}
+						      </if>
+							  <if test='jobId !=null and !"".equals(jobId)'>
+								 and AREA.JOB_ID =#{jobId}
+							  </if>
+							  <if test='vmSeq !=null and !"".equals(vmSeq)'>
+							   	 AND POD.SERVC_SEQ =#{vmSeq}
+							  </if>
+							     AND UPPER(POOL.DEL_YN) = 'N'
+		          			     AND UPPER(POD.DEL_YN) = 'N'
+			 				     AND POOL.RSRC_POOL_CL_CD = '05'
+								 AND POD.POD_TY_CD IN ('01','02')
+								 AND POOL.RSRC_POOL_ID IN ( SELECT CD FROM CM_CODE WHERE PARENT_CD = '318' AND GRP_CD = '117' AND USE_YN = 'Y')
+
+							 GROUP BY POOL.vrlz_sw_ty_cd
+		               ) S ON C.CD = S.VRLZ_SW_TY_CD
+	     WHERE C.GRP_CD = '001' AND C.PARENT_CD = '100' AND C.USE_YN = 'Y'
+
+	</select>
+
+</mapper>

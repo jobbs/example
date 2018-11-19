@@ -1,0 +1,57 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_1.xsd"
+	version="2.1">
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>cf</short-name>
+	<uri>/WEB-INF/tags/cf</uri>
+
+	<tag>
+        <name>escapedXmlOut</name>
+        <tag-class>ncis.cmn.util.tag.EscapedXmlOutTag</tag-class>
+        <body-content>JSP</body-content>
+
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <function>
+		<name>isNewDate</name>
+		<function-class>ncis.cmn.util.DateUtil</function-class>
+		<function-signature>java.lang.Boolean isNewDate(java.util.Date, int)</function-signature>
+	</function>
+
+	<function>
+		<name>ellipsis</name>
+		<function-class>ncis.cmn.util.RequestUtils</function-class>
+		<function-signature>java.lang.String ellipsis(java.lang.String, int)</function-signature>
+	</function>
+
+	 <function>
+		<name>replaceBr</name>
+		<function-class>ncis.cmn.util.RequestUtils</function-class>
+		<function-signature>java.lang.String replaceBr(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>nl2br</name>
+		<function-class>ncis.cmn.util.RequestUtils</function-class>
+		<function-signature>java.lang.String nl2br(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>queryString</name>
+		<function-class>ncis.cmn.util.RequestUtils</function-class>
+		<function-signature>java.lang.String getQueryString(java.util.Map, java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>queryStringMulti</name>
+		<function-class>ncis.cmn.util.RequestUtils</function-class>
+		<function-signature>java.lang.String getQueryString(java.util.Map, java.lang.String, java.lang.String)</function-signature>
+	</function>
+
+</taglib>

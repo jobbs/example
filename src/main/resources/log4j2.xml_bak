@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%c][%M:%L] %m%n" />
+        </Console>
+        <RollingFile name="file" fileName="C:/CloudProject/logs/ncms.log" filePattern="C:/CloudProject/logs/ncms.log.%d{yyyyMMdd}">
+            <PatternLayout pattern="%d %5p [%c][%M:%L] %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="vmRcLog.file" fileName="C:/CloudProject/logs/vmrc.log" filePattern="C:/CloudProject/logs/vmrc.log.%d{yyyyMMdd}">
+            <PatternLayout pattern="%d %5p [%c][%M:%L] %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="jdbc.sqlonly" level="ERROR" additivity="false">
+        	<AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+		<Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="jdbc.audit" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="jdbc.resultset" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="jdbc.resultsettable" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="jdbc.connection" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+
+		<Logger name="ncis.sql" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+
+		<Logger name="org.mybatis.spring" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+
+		<Logger name="springfox.documentation" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="file" />
+		</Logger>
+
+
+        <Logger name="egovframework" level="ERROR" additivity="false">
+            <AppenderRef ref="file" />
+        </Logger>
+		<Logger name="org.springframework" level="INFO" additivity="false">
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="org.springframework.beans" level="WARN" additivity="false">
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="org.springframework.context" level="WARN" additivity="false">
+			<AppenderRef ref="file" />
+		</Logger>
+		<Logger name="vmRcLog" level="DEBUG" additivity="false">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="vmRcLog.file" />
+		</Logger>
+
+		<Root level="DEBUG">
+			<AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Root>
+    </Loggers>
+
+</Configuration>

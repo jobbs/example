@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.userwrkhist">
+
+	<resultMap type="ncis.cmn.entity.CmUserWrkHist" id="resultUserWrkHist">
+		<result property="wrkHistSeq"		column="WRK_HIST_SEQ" />
+		<result property="menuSeq"         	column="MENU_SED" />
+		<result property="menuNm"         	column="MENU_NM" />
+		<result property="wrkInfo"      column="WRK_INFO" />
+		<result property="wrkDc"      column="WRK_DC" />
+		<result property="wrkParam"     column="WRK_PARAM" />
+		<result property="wrkTy"      	column="WRK_TY" />
+		<result property="userId"         	column="USER_ID" />
+		<result property="userNm"       	column="USER_NAME" />
+		<result property="wrkIP"        column="WRK_IP" />
+		<result property="wrkDttm"      column="WRK_DTTM" />
+	</resultMap>
+
+	<insert id="insertUserWrkHist">
+	/* ncis.sql.cmn.userwrkhist.insertUserWrkHist */
+		INSERT INTO CM_USER_WRK_HIST (
+			 MENU_SEQ,
+			 MENU_NM,
+			 WRK_INFO,
+			 WRK_DC,
+			 WRK_PARAM,
+			 WRK_TY,
+			 USER_ID,
+			 USER_NM,
+			 WRK_IP,
+			 WRK_DTTM
+		) VALUES (
+			(SELECT MENU_SEQ FROM CM_MENU WHERE MENU_PATTERN = #{menuPattern}),
+			(SELECT MENU_NM FROM CM_MENU WHERE MENU_PATTERN = #{menuPattern}),
+			#{wrkInfo, javaType=String, jdbcType=VARCHAR},
+			#{wrkDc, javaType=String, jdbcType=VARCHAR},
+			#{wrkParam, javaType=String, jdbcType=VARCHAR},
+			#{wrkTy, javaType=String, jdbcType=VARCHAR},
+			#{userId},
+			#{userNm},
+			#{wrkIP},
+			now()
+		)
+	</insert>
+
+</mapper>

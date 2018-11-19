@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcPort">
+	<!-- 포트 등록 -->
+	<insert id="insertRxServcPort" parameterType="ncis.cmn.entity.RxServcPort">
+
+		/* ncis.sql.cmn.rxServcPort.insertRxServcPort */
+		INSERT INTO RX_SERVC_PORT(
+			SERVC_SEQ  /* 서비스SEQ */
+			, PORT_ID  /* 포트ID */
+			, PORT_NM  /* 포트명 */
+			, PRTCL  /* 프로토콜 */
+			, PORT  /* 포트 */
+			, TARGT_PORT  /* 타겟포트 */
+			, CRE_DTTM  /* 생성일시 */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{portId}  /* 포트ID */
+			, #{portNm}  /* 포트명 */
+			, #{prtcl}  /* 프로토콜 */
+			, #{port}  /* 포트 */
+			, #{targtPort}  /* 타겟포트 */
+			, now()  /* 생성일시 */
+        )
+	</insert>
+
+	<!-- 포트 수정 -->
+	<update id="updateRxServcPort">
+		/* ncis.sql.cmn.rxServcPort.updateRxServcPort */
+		UPDATE RX_SERVC_PORT
+			SET SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+			, PORT_ID = #{portId}  /* 포트ID */
+			, PORT_NM = #{portNm}  /* 포트명 */
+			, PRTCL = #{prtcl}  /* 프로토콜 */
+			, PORT = #{port}  /* 포트 */
+			, TARGT_PORT = #{targtPort}  /* 타겟포트 */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+   		AND PORT_ID = #{portId}  /* 포트ID */
+	</update>
+
+	<!-- 포트 삭제 -->
+	<delete id="deleteRxServcPort">
+		/* ncis.sql.cmn.rxBldConf.deleteRxServcPort */
+		DELETE FROM RX_SERVC_PORT
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+        <if test="portId != null and !portId.isEmpty()">
+   		AND PORT_ID = #{portId}  /* 포트ID */
+   		</if>
+	</delete>
+
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.cludSwtchGoalRslt.insttSwtchStte">
+
+
+
+ <select id="selectInsttSwtchStteList" resultType="ncis.dsb.stts.cludSwtchGoalRslt.vo.InsttSwtchStteVo">
+ 	/*ncis.sql.dsb.stts.cludSwtchGoalRslt.insttSwtchStte.selectInsttSwtchStteList*/
+ 	<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT 	A.INSTITUTION_ID,
+				B.INSTITUTION_NM,
+				A.SWTCH_JOB_QTY,
+				PRIME_SWTCH_EXAM,
+				COUNT(1) OVER() TOT_CNT,
+				RANK()OVER(ORDER BY B.INSTITUTION_NM DESC) RNK
+		FROM ST_INSTT_SWTCH_STTE A, CM_INSTITUTION B
+		WHERE A.INSTITUTION_ID  = B.INSTITUTION_ID
+		ORDER BY B.INSTITUTION_NM
+	<include refid="ncis.cmn.queryForPagingFooter" />
+  </select>
+
+</mapper>
+

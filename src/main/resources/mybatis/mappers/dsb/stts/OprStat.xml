@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.etc.oprStat">
+
+	<sql id="search">
+	<choose>
+		<when test='"DD".equals(searchTrmCd)'>
+			AND COLCT_DT = REPLACE(#{date},'-','')
+		</when>
+		<when test='"DI".equals(searchTrmCd)'>
+			AND COLCT_DT = REPLACE(#{endDt},'-','')
+		</when>
+		<when test='"MM".equals(searchTrmCd)'>
+			AND COLCT_DT >= #{year}||#{searchMmCd}||'01'
+			AND COLCT_DT &lt;= #{year}||#{searchMmCd}||'31'
+		</when>
+		<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+			AND COLCT_DT >= #{year}||'0101'
+			AND COLCT_DT &lt; #{year}||'0401'
+		</when>
+		<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+			AND COLCT_DT >= #{year}||'0401'
+			AND COLCT_DT &lt; #{year}||'0701'
+		</when>
+		<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+			AND COLCT_DT >= #{year}||'0701'
+			AND COLCT_DT &lt; #{year}||'1001'
+		</when>
+		<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+			AND COLCT_DT >= #{year}||'1001'
+			AND COLCT_DT &lt;= #{year}||'1231'
+		</when>
+		<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+			AND COLCT_DT >= #{year}||'0101'
+			AND COLCT_DT &lt;= #{year}||'0630'
+		</when>
+		<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+			AND COLCT_DT >= #{year}||'0701'
+			AND COLCT_DT &lt;= #{year}||'1231'
+		</when>
+		<when test='"YY".equals(searchTrmCd)'>
+	      AND COLCT_YM in (select max(b.colct_ym)
+		                            from st_pm_colct_sum_1mm b
+		                       where b.colct_ym like #{year}||'%'
+					         )
+	     </when>
+	</choose>
+	</sql>
+
+
+	<resultMap type="ncis.dsb.stts.etc.vo.VmStatInfoVo" id="OprStatVm">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="vmConfId" column="vm_comp_id"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="jobNm" column="jobs_nm"/>
+		<result property="vmId" column="vm_id"/>
+		<result property="vmNm" column="vm_nm"/>
+		<result property="zoneNm" column="rsrc_pool_nm"/>
+		<result property="creDt" column="cre_dttm"/>
+		<result property="oprNm" column="OP_institution_nm"/>
+		<result property="oprUserNm" column="OP_charg_USER_NM"/>
+		<result property="oprUser2Nm" column="OP_USER_NM"/>
+		<result property="avgCpuVcorQty" column="AVG_CPU_VCORE_QTY"/>
+		<result property="avgAsgnVcorQty" column="LAST_VCORE_QTY"/>
+		<result property="avgMemCapa" column="AVG_MEM_SUM_CAPA"/>
+		<result property="avgAsgnMemCapa" column="LAST_MEM_SUM_CAPA"/>
+		<result property="avgStrgCapa" column="AVG_STRG_SUM_CAPA"/>
+		<result property="avgAsgnStrgCapa" column="LAST_STRG_SUM_CAPA"/>
+		<result property="buzAsgnVcorQtyRat" column="BUZ_MAX_CPU_USE_RT"/>
+		<result property="buzAsgnMemCapaRat" column="BUZ_MAX_MEM_USE_RT"/>
+		<result property="avgVcorQtyRat" column="AVG_CPU_USE_RT"/>
+		<result property="avgMemCapaRat" column="AVG_MEM_USE_RT"/>
+		<result property="buzAsgnStrgCapaRat" column="BUZ_MAX_STRG_USE_RT"/>
+		<result property="buzAsgnStrgCapa" column="BUZ_MAX_STRG_USE_CAPA"/>
+		<result property="maxAsgnVcorQtyRat" column="MAX_CPU_USE_RT"/>
+		<result property="maxAsgnMemCapaRat" column="MAX_MEM_USE_RT"/>
+		<result property="maxAsgnStrgCapaRat" column="MAX_STRG_USE_RT"/>
+		<result property="maxAsgnStrgCapa" column="MAX_STRG_USE_CAPA"/>
+	</resultMap>
+
+
+
+	<select id="selectOprStatVmList" resultMap="OprStatVm">
+	/* sqlid : ncis.sql.dsb.stts.etc.oprStat.selectOprStatVmList */
+		SELECT RC_REGION.REGION_NM
+			, vm.vm_comp_id , vm.INSTITUTION_NM , vm.jobs_nm , vm.vm_id , vm.vm_nm
+			, 'NIRS>'||RC_REGION.REGION_NM||'>'||RC_ZONE.ZONE_NM||'>'||RC_NET.NET_NM||'>'||RC_RSRC_POOL.RSRC_POOL_NM rsrc_pool_nm
+			, vm.cre_dttm
+			, OP_institution_nm , OP_charg_USER_NM , OP_USER_NM
+			, ROUND( AVG( S.avg_vcore_qty ), 0 ) AVG_CPU_VCORE_QTY, VM.LAST_VCORE_QTY
+			, ROUND(AVG( avg_mem_sum_capa/1024/1024/1024), 0 ) AVG_MEM_SUM_CAPA
+			, ROUND(VM.LAST_MEM_SUM_CAPA/1024/1024/1024, 0 ) LAST_MEM_SUM_CAPA
+			, ROUND( AVG( S.avg_strg_sum_capa /1024/1024/1024), 0 ) AVG_STRG_SUM_CAPA
+			, ROUND ( VM.LAST_STRG_SUM_CAPA /1024/1024/1024 , 0 ) LAST_STRG_SUM_CAPA
+			, ROUND( AVG( S.avg_cpu_use_rt ), 2) AVG_CPU_USE_RT
+			, ROUND( AVG( S.avg_mem_use_rt ), 2) AVG_MEM_USE_RT
+			, ROUND( AVG( S.max_cpu_use_rt ), 2) BUZ_MAX_CPU_USE_RT
+			, ROUND( AVG( S.max_mem_use_rt ), 2) BUZ_MAX_MEM_USE_RT
+			, ROUND(AVG( max_strg_use_rt ), 2 ) BUZ_MAX_STRG_USE_RT
+			, ROUND(AVG( max_strg_use_capa ), 2 ) BUZ_MAX_STRG_USE_CAPA
+			, MAX( CASE WHEN S.max_cpu_use_rt <![CDATA[>]]> 0 AND S.max_cpu_use_rt <![CDATA[<]]> 100 THEN S.max_cpu_use_rt END ) MAX_CPU_USE_RT
+			, MAX( max_mem_use_rt ) MAX_MEM_USE_RT
+			, MAX( max_strg_use_rt ) MAX_STRG_USE_RT
+			, MAX( max_strg_use_capa/1024/1024/1024) MAX_STRG_USE_CAPA
+		FROM 			<choose><when test='"YY".equals(searchTrmCd) '>
+					ST_VM_COLCT_SUM_1MM S ,
+			</when>
+			<otherwise>
+
+			       ST_VM_COLCT_SUM_1DD S ,
+			</otherwise></choose>
+				( SELECT distinct V.CLSTR_SEQ, V.VM_SEQ, V.CRE_DTTM, CM_INSTITUTION.INSTITUTION_NM , JOBS_NM.JOBS_NM , V.VM_COMP_ID ,V.VM_ID, V.VM_NM,
+				  OP1.institution_nm OP_institution_nm, OP1.USER_NM OP_charg_USER_NM, OP2.USER_NM OP_USER_NM,
+				    FIRST_VALUE(LAST_VCORE_QTY) OVER (PARTITION BY ST.VM_SEQ  ORDER BY <choose><when test='"YY".equals(searchTrmCd)'>COLCT_YM</when><otherwise>COLCT_DT</otherwise></choose>  DESC) LAST_VCORE_QTY,
+						FIRST_VALUE(LAST_MEM_SUM_CAPA) OVER (PARTITION BY ST.VM_SEQ  ORDER BY  <choose><when test='"YY".equals(searchTrmCd)'>COLCT_YM</when><otherwise>COLCT_DT</otherwise></choose> DESC) LAST_MEM_SUM_CAPA,
+						FIRST_VALUE(LAST_STRG_SUM_CAPA) OVER (PARTITION BY ST.VM_SEQ  ORDER BY  <choose><when test='"YY".equals(searchTrmCd)'>COLCT_YM</when><otherwise>COLCT_DT</otherwise></choose> DESC) LAST_STRG_SUM_CAPA
+				FROM 			<choose><when test='"YY".equals(searchTrmCd)'>
+					ST_VM_COLCT_SUM_1MM ST ,
+			</when>
+			<otherwise>
+			       ST_VM_COLCT_SUM_1DD ST ,
+			</otherwise></choose> RC_VM V
+				LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = V.INSTITUTION_ID AND CM_INSTITUTION.USE_YN = 'Y'
+				LEFT JOIN (
+							SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+						) AS JOBS_NM ON JOBS_NM.VM_SEQ = V.VM_SEQ
+				LEFT OUTER JOIN
+				( SELECT USER_NM, institution_nm , COMP_ID  FROM  SI_OPR_RELATE_CHARGER A
+				LEFT OUTER JOIN CM_USR B ON A.USER_ID = B.USER_ID WHERE RELATER_CL_CD = '01' ) OP1 ON V.VM_COMP_ID = OP1.COMP_ID
+				LEFT OUTER JOIN
+				( SELECT USER_NM , COMP_ID  FROM  SI_OPR_RELATE_CHARGER A LEFT OUTER JOIN CM_USR B ON A.USER_ID = B.USER_ID
+				WHERE RELATER_CL_CD = '02'  ) OP2 ON V.VM_COMP_ID = OP2.COMP_ID
+				WHERE ST.RSRC_POOL_ID in (
+					<foreach collection="poolList" item="poolId" open="" close="" separator=", "> #{poolId} </foreach> )
+					<include refid="search"/>
+				AND ST.VM_SEQ = V.VM_SEQ
+				AND V.DEL_YN = 'N' ) vm
+					INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = vm.CLSTR_SEQ
+					INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+					INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+					INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		WHERE S.VM_SEQ = VM.VM_SEQ
+		<include refid="search"/>
+		GROUP BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM, RC_NET.NET_NM, RC_RSRC_POOL.RSRC_POOL_NM, vm.vm_comp_id , vm.INSTITUTION_NM , vm.jobs_nm , vm.vm_id , vm.vm_nm, OP_institution_nm , OP_charg_USER_NM , OP_USER_NM, VM.LAST_VCORE_QTY , VM.LAST_MEM_SUM_CAPA , VM.LAST_STRG_SUM_CAPA, VM.VM_SEQ , VM.CRE_DTTM
+		ORDER BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM, RC_NET.NET_NM, RC_RSRC_POOL.RSRC_POOL_NM, vm.INSTITUTION_NM , vm.jobs_nm , vm.vm_nm;
+	</select>
+
+
+	<resultMap type="ncis.dsb.stts.etc.vo.PmStatInfoVo" id="OprStatPm">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="pmCompId" column="pm_comp_id"/>
+		<result property="zoneNm" column="rsrc_pool_nm"/>
+		<result property="clstrNm" column="clstr_nm"/>
+		<result property="avgVcorQty" column="AVG_CPU_CORE_QTY"/>
+		<result property="avgMemCapa" column="AVG_MEM_CAPA"/>
+		<result property="avgAsgnVcorQty" column="AVG_ASGN_VCORE_QTY"/>
+		<result property="avgAsgnMemCapa" column="AVG_ASGN_MEM_CAPA"/>
+		<result property="buzAvgCpuUseRt" column="BUZ_AVG_CPU_USE_RT"/>
+		<result property="buzAvgMemUseRt" column="BUZ_AVG_MEM_USE_RT"/>
+		<result property="avgCpuUseRt" column="AVG_CPU_USE_RT"/>
+		<result property="avgMemUseRt" column="AVG_MEM_USE_RT"/>
+		<result property="maxAvgCpuUseRt" column="MAX_MAX_CPU_USE_RT"/>
+		<result property="maxAvgMemUseRt" column="MAX_MAX_MEM_USE_RT"/>
+	</resultMap>
+
+	<select id="selectOprStatPmList" resultMap="OprStatPm">
+	/* sqlid : ncis.sql.dsb.stts.etc.oprStat.selectOprStatPmList */
+	SELECT
+		RC_REGION.REGION_NM , p.pm_comp_id
+		, 'NIRS>'||RC_REGION.REGION_NM||'>'||RC_ZONE.ZONE_NM||'>'||RC_NET.NET_NM||'>'||RC_RSRC_POOL.RSRC_POOL_NM rsrc_pool_nm
+		, RC_CLSTR.clstr_nm
+		, ROUND( AVG( S.avg_cpu_cor_qty ), 0 ) AVG_CPU_CORE_QTY, ROUND(AVG( S.avg_mem_sum_capa/1024/1024/1024), 0 ) AVG_MEM_CAPA
+		, ROUND( AVG( S.avg_asgn_vcor_qty ), 0 ) AVG_ASGN_VCORE_QTY, ROUND ( AVG( S.avg_asgn_mem_capa /1024/1024/1024 ) , 0 ) AVG_ASGN_MEM_CAPA
+		, ROUND( AVG( S.max_cpu_use_rt  ), 2) BUZ_AVG_CPU_USE_RT
+		, ROUND ( AVG( S.max_mem_use_rt ), 2 ) BUZ_AVG_MEM_USE_RT
+		, ROUND( AVG( S.avg_cpu_use_rt  ), 2) AVG_CPU_USE_RT
+		, ROUND ( AVG( S.avg_mem_use_rt ), 2 ) AVG_MEM_USE_RT
+		, MAX( S.max_cpu_use_rt ) MAX_MAX_CPU_USE_RT
+		, MAX( S.max_mem_use_rt ) MAX_MAX_MEM_USE_RT
+	FROM 			<choose><when test='"YY".equals(searchTrmCd)'>
+			ST_PM_COLCT_SUM_1MM S
+			</when>
+			<otherwise>
+			ST_PM_COLCT_SUM_1DD S
+			</otherwise></choose> , rc_pm p
+				INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = p.CLSTR_SEQ
+				INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+				INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+				INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+				INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+	WHERE S.PM_SEQ = p.PM_SEQ
+			AND S.RSRC_POOL_ID in (
+	    <foreach collection="poolList" item="poolId" open="" close="" separator=", "> #{poolId} </foreach> )
+		<include refid="search"/>
+		AND P.DEL_YN = 'N'
+	GROUP BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM,RC_NET.NET_NM,RC_RSRC_POOL.RSRC_POOL_NM, RC_CLSTR.CLSTR_NM,p.pm_comp_id , p.pm_seq
+	ORDER by RC_REGION.REGION_NM, RC_ZONE.ZONE_NM,RC_NET.NET_NM,RC_RSRC_POOL.RSRC_POOL_NM, RC_CLSTR.CLSTR_NM,p.pm_comp_id;
+	</select>
+
+	<select id="selectOprStatPmMinList" resultMap="OprStatPm">
+	/* sqlid : ncis.sql.dsb.stts.etc.oprStat.selectOprStatPmMinList */
+	SELECT RC_REGION.REGION_NM , p.pm_comp_id ,
+		'NIRS>'||RC_REGION.REGION_NM||'>'||RC_ZONE.ZONE_NM||'>'||RC_NET.NET_NM||'>'||RC_RSRC_POOL.RSRC_POOL_NM rsrcPoolNm,
+		RC_CLSTR.clstr_nm  ,
+		ROUND( AVG( S.avg_cpu_cor_qty ), 0 ) AVG_CPU_CORE_QTY, ROUND(AVG( S.avg_mem_sum_capa/1024/1024/1024), 0 ) AVG_MEM_CAPA,
+		ROUND( AVG( S.avg_asgn_vcor_qty ), 0 ) AVG_ASGN_VCORE_QTY, ROUND ( AVG( S.avg_asgn_mem_capa /1024/1024/1024 ) , 0 ) AVG_ASGN_MEM_CAPA,
+		ROUND( AVG( S.min_cpu_use_rt ), 2) BUZ_AVG_CPU_USE_RT,
+		ROUND( AVG( S.min_mem_use_rt ), 2) BUZ_AVG_MEM_USE_RT,
+		MIN( S.min_cpu_use_rt ) MAX_CPU_USE_RT,
+		MIN( S.min_mem_use_rt ) MAX_MEM_USE_RT
+		FROM
+			<choose><when test='"YY".equals(searchTrmCd)'>
+			ST_PM_COLCT_SUM_1MM S
+			</when>
+			<otherwise>
+			ST_PM_COLCT_SUM_1DD S
+			</otherwise></choose>
+		 	, rc_pm p
+				INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = p.CLSTR_SEQ
+				INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+				INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+				INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+				INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		WHERE S.PM_SEQ = p.PM_SEQ
+		AND S.RSRC_POOL_ID in (
+	     	<foreach collection="poolList" item="poolId" open="" close="" separator=", "> #{poolId} </foreach> )
+		<include refid="search"/>
+		AND P.DEL_YN = 'N'
+		GROUP BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM,RC_NET.NET_NM,RC_RSRC_POOL.RSRC_POOL_NM, RC_CLSTR.CLSTR_NM,p.pm_comp_id , p.pm_seq
+		ORDER BY RC_REGION.REGION_NM, RC_ZONE.ZONE_NM,RC_NET.NET_NM,RC_RSRC_POOL.RSRC_POOL_NM, RC_CLSTR.CLSTR_NM,p.pm_comp_id
+	</select>
+
+
+
+	<resultMap type="ncis.dsb.stts.etc.vo.PoolStatInfoVo" id="OprStatPool">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="virtualType" column="VIRTUAL_TYPE"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="pmCnt" column="PM_CNT"/>
+		<result property="vmCnt" column="VM_CNT"/>
+		<result property="totVcore" column="TOT_VCORE"/>
+		<result property="totMem" column="TOT_MEM"/>
+		<result property="totStrg" column="TOT_STRG_CAPA"/>
+		<result property="asgnVcore" column="ASGN_VCORE"/>
+		<result property="asgnMem" column="ASGN_MEM"/>
+		<result property="asgnStrg" column="ASGN_STRG_CAPA"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+	</resultMap>
+
+
+	<select id="selectOprStatPoolList" resultMap="OprStatPool">
+	/* sqlid : ncis.sql.dsb.stts.etc.oprStat.selectOprStatPoolList */
+	select
+		  RC_REGION.REGION_NM
+		, CASE WHEN vrlz_sw_ty_cd='01' THEN 'RHEV'
+					 WHEN vrlz_sw_ty_cd='02' THEN 'VMware'
+					 WHEN vrlz_sw_ty_cd='03' THEN 'IBM'
+					 WHEN vrlz_sw_ty_cd='04' THEN 'HP'
+					 WHEN vrlz_sw_ty_cd='05' THEN 'OpenStack'
+					 WHEN vrlz_sw_ty_cd='06' THEN 'Docker'
+					 ELSE '' END VIRTUAL_TYPE
+		, RC_NET.NET_NM
+		, COALESCE(SUM( 1 ), 0)  PM_CNT
+		, COALESCE(SUM( S.last_v_srvr_qty ),0) VM_CNT
+		, COALESCE(SUM( S.last_cpu_cor_qty ),0) TOT_VCORE
+		, COALESCE(ROUND(SUM(S.last_mem_sum_capa)/1024/1024/1024,0),0) TOT_MEM
+		, COALESCE(ROUND(SUM( S.last_strg_sum_capa )/1024/1024/1024/1024,0),0) TOT_STRG_CAPA
+		, COALESCE(SUM( S.last_asgn_vcor_qty ), 0 ) ASGN_VCORE
+		, COALESCE(ROUND(SUM( S.last_mem_sum_capa )/1024/1024/1024,0),0) ASGN_MEM
+		, COALESCE(ROUND(SUM( S.last_strg_sum_capa )/1024/1024/1024/1024,0),0) ASGN_STRG_CAPA
+		, RC_RSRC_POOL.RSRC_POOL_NM
+	FROM <choose><when test='"YY".equals(searchTrmCd)'>
+					ST_PM_COLCT_SUM_1MM S
+				</when>
+			    <otherwise>
+			       ST_PM_COLCT_SUM_1DD S
+			     </otherwise></choose>
+				INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = S.RSRC_POOL_ID
+				INNER JOIN RC_NET ON RC_NET.NET_ID = S.NET_ID
+				INNER JOIN RC_REGION ON RC_REGION.REGION_ID = S.REGION_ID
+	WHERE   S.RSRC_POOL_ID in (
+	     <foreach collection="poolList" item="poolId" open="" close="" separator=", "> #{poolId} </foreach> )
+	<include refid="search"/>
+	GROUP BY RC_REGION.REGION_NM , RC_RSRC_POOL.VRLZ_SW_TY_CD , RC_NET.NET_NM , RC_RSRC_POOL.RSRC_POOL_NM
+	ORDER BY RC_REGION.REGION_NM , RC_RSRC_POOL.VRLZ_SW_TY_CD , RC_NET.NET_NM , RC_RSRC_POOL.RSRC_POOL_NM
+	</select>
+
+</mapper>

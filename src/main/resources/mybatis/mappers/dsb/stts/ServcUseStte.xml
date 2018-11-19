@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.serv">
+
+	<resultMap type="ncis.dsb.stts.use.serv.vo.ServcUseStteVo" id="resultServVo">
+		<result property="mm" column="mm"/>
+		<result property="institutionId" column="institution_id"/>
+		<result property="jobId" column="job_id"/>
+		<result property="tot" column="tot"/>
+		<result property="linux" column="linux"/>
+		<result property="win" column="win"/>
+		<result property="hp" column="hp"/>
+		<result property="aix" column="aix"/>
+		<result property="lastVcoreQty" column="last_vcore_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+
+	<resultMap type="ncis.dsb.stts.use.serv.vo.ServcUseStteVo" id="resultServAtmSclVo">
+		<result property="mm" column="MM"/>
+		<result property="institutionId" column="INSTITUTION_ID"/>
+		<result property="jobId" column="JOB_ID"/>
+		<result property="tot" column="TOT"/>
+		<result property="cpuAsgnCapa" column="CPU_ASGN_CAPA"/>
+		<result property="memTotCapa" column="MEM_TOT_CAPA"/>
+		<result property="strgTotCapa" column="STRG_TOT_CAPA"/>
+	</resultMap>
+
+	<sql id="search">
+
+	  </sql>
+
+	<select id="selectServcUseStteList" resultMap="resultServVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+
+		/* ncis.sql.dsb.stts.serv.selectServcUseStteList */
+
+					      <if test="trm != null and !trm.isEmpty()">
+
+
+						 with mm_t as(
+						      select
+                                    <if test="trm == 'mm'">
+							         substr(a.colct_ym,5,2)||'월' mm,
+							        </if>
+							         <if test="trm == 'quarter'">
+							         case when substr(a.colct_ym,5,2) between '01' and '03' then '1분기'
+								        when substr(a.colct_ym,5,2) between '04' and '06' then '2분기'
+								        when substr(a.colct_ym,5,2) between '07' and '09' then '3분기'
+								        when substr(a.colct_ym,5,2) between '10' and '12' then '4분기'
+								     end mm,
+								     </if>
+							         substr(a.colct_ym,5,2) mm_q,
+							         count(distinct a.institution_id) institution_id,
+
+						             max(b.job_id) job_id,
+	                                 count((select qq.os_ty_cd from rc_vm qq where qq.vm_seq = a.vm_seq)) tot,
+	                                 count((select case when qq.os_ty_cd = '01' then 1 end from rc_vm qq where qq.vm_seq = a.vm_seq)) linux,
+	                                 count((select case when qq.os_ty_cd = '04' then 1 end from rc_vm qq where qq.vm_seq = a.vm_seq)) win,
+	                                 count((select case when qq.os_ty_cd = '02' then 1 end from rc_vm qq where qq.vm_seq = a.vm_seq)) hp,
+	                                 count((select case when qq.os_ty_cd = '03' then 1 end from rc_vm qq where qq.vm_seq = a.vm_seq)) aix,
+						           	 sum(a.last_vcore_qty) last_vcore_qty,
+						             sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+							         sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) last_strg_sum_capa
+
+
+						</if>
+
+
+						        from st_vm_colct_sum_1mm a left join
+						             ( select
+							                  aa.ym colct_ym,
+							                  count(distinct qq.job_id) job_id
+							            from st_vm_job_1dd qq inner join st_last_day aa on qq.colct_dt = aa.last_day
+							                where aa.ym between #{year}||'01' and #{year}||'12'
+							           group by aa.ym
+		                              ) b on a.colct_ym = b.colct_ym
+
+				             where
+						         1=1
+
+
+
+						     <if test="region != null and !region.isEmpty()">
+
+						       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+						         	#{item}
+						       		</foreach>
+						     </if>
+
+					         <if test="year != null and !year.isEmpty()">
+					            and a.colct_ym between #{year}||'01' and #{year}||'12'
+
+					         </if>
+
+			         <if test="trm != null and !trm.isEmpty()">
+
+						 <if test="trm == 'mm' or trm == 'quarter' ">
+							    group by substr(a.colct_ym,5,2)
+			                    order by substr(a.colct_ym,5,2) asc
+			                  )
+
+	                         select *
+	                           from mm_t aa
+			             </if>
+
+
+			            <if test="trm == 'quarter'">
+			                where aa.mm_q in
+                                          (select max(qq.mm_q)
+                                              from mm_t qq
+                                            group by   case when qq.mm_q between '01' and '03' then '03'
+													    when qq.mm_q between '04' and '06' then '06'
+													    when qq.mm_q between '07' and '09' then '09'
+													    when qq.mm_q between '10' and '12' then '12'
+						                              end
+					                          )
+
+			              </if>
+
+			    </if>
+
+
+
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectServcUseStteTotCnt" resultType="Integer">
+		 select
+
+					 count(*)
+						  from
+						     (select
+						         a.vm_id,
+						         substr(a.colct_dt,6,2) mm,
+						         count(a.institution_id) institution_id,
+					             count(a.job_id) job_id,
+
+					           	 sum(a.last_vcore_qty) last_vcore_qty,
+					             sum(a.last_mem_sum_capa) last_mem_sum_capa,
+					             sum(a.last_strg_sum_capa) last_strg_sum_capa
+					        from st_vm_colct_sum_1mm a
+
+			             where
+					        1=1
+
+
+
+					    <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+					     </if>
+
+				         <if test="year != null and !year.isEmpty()">
+				            and substr(a.colct_ym,1,4) = #{year}
+
+				         </if>
+			             group by a.vm_id,
+						       substr(a.colct_ym,6,2)
+		               )aa left join rc_vm bb
+		                on aa.vm_id = bb.vm_id
+
+
+	</select>
+
+
+
+	<!-- 클라우드 서비스 이용 현황 목록(자동확장) -->
+	<select id="selectServcUseStteAtmSclList" resultMap="resultServAtmSclVo">
+		/* ncis.sql.dsb.stts.serv.selectServcUseStteAtmSclList */
+
+			WITH MM_T AS(
+				SELECT
+	            <if test="trm == 'mm'">
+		         	SUBSTR(TBL1.COLCT_YM,5,2)||'월' MM,
+		        </if>
+				<if test="trm == 'quarter'">
+					CASE WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '01' AND '03' THEN '1분기'
+					WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '04' AND '06' THEN '2분기'
+					WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '07' AND '09' THEN '3분기'
+					WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '10' AND '12' THEN '4분기'
+					END MM,
+				</if>
+					COUNT(DISTINCT TBL2.INSTITUTION_ID) INSTITUTION_ID,
+					COUNT(DISTINCT TBL2.JOB_ID) JOB_ID,
+					COUNT(DISTINCT TBL1.SERVC_AREA_SEQ) TOT,
+					COALESCE(SUM(ROUND(TBL1.CPU_ASGN_CAPA/1000,2)),0) CPU_ASGN_CAPA,
+					COALESCE(SUM(ROUND(TBL1.MEM_TOT_CAPA/1024/1024/1024,3)),0) MEM_TOT_CAPA,
+					COALESCE(SUM(ROUND(TBL1.STRG_TOT_CAPA/1024/1024/1024,3)),0) STRG_TOT_CAPA
+				FROM ST_RX_SERVC_SUM_1MM TBL1
+				INNER JOIN  RX_SERVC_AREA TBL2
+				ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+				LEFT OUTER JOIN RC_RSRC_POOL TBL3
+				ON TBL3.RSRC_POOL_ID = TBL2.RSRC_POOL_ID
+				WHERE 1=1
+	     		<if test="region != null and !region.isEmpty()">
+		       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+		         	#{item}
+		       		</foreach>
+	     		</if>
+		        <if test="year != null and !year.isEmpty()">
+		           AND TBL1.COLCT_YM BETWEEN #{year}||'01' AND #{year}||'12'
+		        </if>
+			    GROUP BY SUBSTR(TBL1.COLCT_YM,5,2)
+				ORDER BY SUBSTR(TBL1.COLCT_YM,5,2) ASC
+			)
+			SELECT
+				 MM
+				,INSTITUTION_ID
+				,JOB_ID
+				,TOT
+				,CPU_ASGN_CAPA
+				,MEM_TOT_CAPA
+				,STRG_TOT_CAPA
+			FROM MM_T AA
+         	<if test="trm == 'quarter'">
+            WHERE AA.MM_Q IN (SELECT MAX(QQ.MM_Q)
+                              FROM MM_T QQ
+                              GROUP BY CASE WHEN QQ.MM_Q BETWEEN '01' AND '03' THEN '03'
+							           WHEN QQ.MM_Q BETWEEN '04' AND '06' THEN '06'
+							           WHEN QQ.MM_Q BETWEEN '07' AND '09' THEN '09'
+							           WHEN QQ.MM_Q BETWEEN '10' AND '12' THEN '12'
+                                       END)
+	       </if>
+	</select>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcRegion">
+
+	<resultMap type="ncis.cmn.entity.RcRegion" id="resultRcRegion">
+		<result property="regionId" column="REGION_ID"/>
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="regionLocaNm" column="REGION_LOCA_NM"/>
+		<result property="regDttm" column="REG_DTTM"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+
+	</resultMap>
+
+	<insert id="insertRcRegion">
+		/* ncis.sql.cmn.rcRegion.insertRcRegion */
+		INSERT INTO RC_REGION (
+			REGION_ID,
+			REGION_NM,
+			REGION_LOCA_NM,
+			REG_DTTM,
+			REG_USER_ID,
+			UPDT_DTTM,
+			UPDT_USER_ID
+		) VALUES (
+			#{regionId },
+			#{regionNm },
+			#{regionLocaNm },
+			now(),
+			#{regUserId },
+			now(),
+			#{updtUserId }
+		)
+	</insert>
+
+	<update id="updateRcRegion">
+		/* ncis.sql.cmn.rcRegion.updateRcRegion */
+		UPDATE RC_REGION SET
+			REGION_NM      = #{regionNm },
+			REGION_LOCA_NM = #{regionLocaNm },
+			UPDT_DTTM      = now(),
+			UPDT_USER_ID   = #{updtUserId }
+		WHERE
+			REGION_ID = #{regionId }
+	</update>
+
+	<delete id="deleteRcRegion">
+		/* ncis.sql.cmn.rcRegion.deleteRcRegion */
+		DELETE FROM RC_REGION WHERE REGION_ID = #{value }
+	</delete>
+
+</mapper>

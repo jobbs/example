@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.clstr">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.ClstrVo" id="resultClstrVoList" extends="ncis.sql.cmn.rcClstr.resultRcClstr">
+		<result property="regionId"        column="REGION_ID"/>
+	    <result property="regionNm"        column="REGION_NM"/>
+	    <result property="zoneId"          column="ZONE_ID"/>
+	    <result property="zoneNm"          column="ZONE_NM"/>
+	    <result property="netId"           column="NET_ID"/>
+	    <result property="netNm"           column="NET_NM"/>
+		<result property="netClCd"         column="NET_CL_CD"/>
+	    <result property="netClCdNm"       column="NET_CL_CD_NM"/>
+	    <result property="rsrcPoolId"      column="RSRC_POOL_ID"/>
+	    <result property="rsrcPoolNm"      column="RSRC_POOL_NM"/>
+	    <result property="vrlzSwTyCd"      column="VRLZ_SW_TY_CD"/>
+	    <result property="vrlzSwTyCdNm"    column="VRLZ_SW_TY_CD_NM"/>
+	    <result property="ctlTrgtYn"       column="CTL_TRGT_YN"/>
+	    <result property="useYn"           column="USE_YN"/>
+	    <result property="useYnNm"         column="USE_YN_NM"/>
+	    <result property="testYn"          column="TEST_YN"/>
+	    <result property="testYnNm"        column="TEST_YN_NM"/>
+	    <result property="delYn"           column="DEL_YN"/>
+	    <result property="pmCnt"           column="PM_CNT"/>
+	    <result property="vmCnt"           column="VM_CNT"/>
+	    <result property="totCpuCoreQty"   column="TOT_CPU_CORE_QTY"/>
+	    <result property="totCpuVcoreQty"  column="TOT_CPU_VCORE_QTY"/>
+	    <result property="totCpuEnt"       column="TOT_CPU_ENT"/>
+	    <result property="totMemCapa"      column="TOT_MEM_CAPA"/>
+	    <result property="totMemAsgnCapa"  column="TOT_MEM_ASGN_CAPA"/>
+	    <result property="totStrgAsgnCapa" column="TOT_STRG_ASGN_CAPA"/>
+	    <result property="totNetwkIn"      column="TOT_NETWK_IN"/>
+	    <result property="totNetwkOut"     column="TOT_NETWK_OUT"/>
+	    <result property="avgCpuUseRt"     column="AVG_CPU_USE_RT"/>
+	    <result property="avgMemUseRt"     column="AVG_MEM_USE_RT"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.ClstrVo" id="resultClstrVoDetail" extends="resultClstrVoList">
+		<collection property="clstrPrposVoList" column="{searchClstrSeq = CLSTR_SEQ}" select="ncis.sql.cpt.rsrc.com.clstrPrpos.selectClstrPrposList"/>
+	</resultMap>
+
+	<sql id="order">
+		ORDER BY RC_REGION.REGION_NM ASC, RC_ZONE.ZONE_NM ASC, RC_NET.NET_NM ASC, RC_RSRC_POOL.RSRC_POOL_NM ASC, RC_CLSTR.CLSTR_ID ASC NULLS LAST, RC_CLSTR.CLSTR_NM ASC NULLS LAST
+	</sql>
+
+	<sql id="search">
+		<if test='!all'>
+		<!-- 삭제관계없이 모두 조회 -->
+		AND RC_RSRC_POOL.DEL_YN = 'N'
+		AND RC_CLSTR.DEL_YN = 'N'
+		</if>
+		<if test='equalsRegionId != null and equalsRegionId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.REGION_ID = #{equalsRegionId}
+		</if>
+		<if test='equalsZoneId != null and equalsZoneId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.ZONE_ID = #{equalsZoneId}
+		</if>
+		<if test='equalsNetClCd != null and equalsNetClCd != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.NET_CL_CD = #{equalsNetClCd}
+		</if>
+		<if test='equalsRsrcPoolId != null and equalsRsrcPoolId != ""'>
+		<!-- 일치 -->
+		AND RC_CLSTR.RSRC_POOL_ID = #{equalsRsrcPoolId}
+		</if>
+		<if test='equalsUseYn != null and equalsUseYn != ""'>
+		<!-- 일치 -->
+		AND RC_CLSTR.USE_YN = #{equalsUseYn}
+		</if>
+		<if test='containsClstrId != null and containsClstrId != ""'>
+		<!-- 부분일치 -->
+		AND RC_CLSTR.CLSTR_ID LIKE '%' || #{containsClstrId} || '%'
+		</if>
+		<if test='containsClstrNm != null and containsClstrNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_CLSTR.CLSTR_NM LIKE '%' || #{containsClstrNm} || '%'
+		</if>
+		<choose>
+			<when test='existsVrlzSwTyCdList != null'>
+			<!-- 포함 -->
+				<choose>
+					<when test="existsVrlzSwTyCdList.length > 0">
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="existsVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+							#{vrlzSwTyCd}
+						</foreach>
+						)
+					</when>
+					<otherwise>
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y')
+			</otherwise>
+		</choose>
+		<choose>
+			<when test='equalsRsrcPoolClCd != null'>
+			<!-- 일치 -->
+				AND RC_RSRC_POOL.RSRC_POOL_CL_CD = #{equalsRsrcPoolClCd}
+			</when>
+			<otherwise>
+				AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="selectClauseClstr">
+		RC_CLSTR.CLSTR_SEQ
+		, RC_CLSTR.CLSTR_ID
+		, RC_CLSTR.CLSTR_NM
+		, RC_CLSTR.CLSTR_COMP_ID
+		, RC_CLSTR.USE_YN
+		, FN_YN(RC_CLSTR.USE_YN) AS USE_YN_NM
+		, RC_CLSTR.TEST_YN
+		, FN_YN(RC_CLSTR.TEST_YN) AS TEST_YN_NM
+		, RC_CLSTR.DEL_YN
+		, RC_CLSTR.UUID
+		, RC_CLSTR.REG_USER_ID
+		, RC_CLSTR.REG_DTTM
+		, RC_CLSTR.DEL_USER_ID
+		, RC_CLSTR.DEL_DTTM
+		, RC_CLSTR.UPDT_USER_ID
+		, RC_CLSTR.UPDT_DTTM
+		, RC_RSRC_POOL.RSRC_POOL_ID
+		, RC_REGION.REGION_ID
+		, RC_REGION.REGION_NM
+		, RC_ZONE.ZONE_ID
+		, RC_ZONE.ZONE_NM
+		, RC_NET.NET_ID
+		, RC_NET.NET_NM
+		, RC_NET.NET_CL_CD
+		, NET_CL_CD.CD_NM AS NET_CL_CD_NM
+		, RC_RSRC_POOL.RSRC_POOL_NM
+		, RC_RSRC_POOL.VRLZ_SW_TY_CD
+		, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+		, RC_RSRC_POOL.CTL_TRGT_YN
+		, COALESCE(PM.PM_CNT, 0) AS PM_CNT
+		, COALESCE(VM.VM_CNT, 0) AS VM_CNT
+		, COALESCE(VM.AVG_CPU_USE_RT, 0) AS AVG_CPU_USE_RT
+		, COALESCE(VM.TOT_CPU_ENT, 0) AS TOT_CPU_ENT
+		, COALESCE(VM.TOT_CPU_VCORE_QTY, 0) AS TOT_CPU_VCORE_QTY
+		, COALESCE(PM.TOT_CPU_CORE_QTY, 0) AS TOT_CPU_CORE_QTY
+		, COALESCE(VM.AVG_MEM_USE_RT, 0) AS AVG_MEM_USE_RT
+		, COALESCE(VM.TOT_MEM_ASGN_CAPA, 0) AS TOT_MEM_ASGN_CAPA
+		, COALESCE(PM.TOT_MEM_CAPA, 0) AS TOT_MEM_CAPA
+		, COALESCE(VM.TOT_STRG_ASGN_CAPA, 0) AS TOT_STRG_ASGN_CAPA
+		, COALESCE(PM.TOT_NETWK_IN, 0) AS TOT_NETWK_IN
+		, COALESCE(PM.TOT_NETWK_OUT, 0) AS TOT_NETWK_OUT
+		, RC_CLSTR.RMK
+	</sql>
+
+	<sql id="fromClauseClstr">
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		LEFT JOIN (
+			SELECT
+				RC_CLSTR.CLSTR_SEQ
+				, COUNT(RC_PM.*) AS PM_CNT
+				, COALESCE(SUM(RC_PM.CPU_CORE_QTY), 0) AS TOT_CPU_CORE_QTY
+				, COALESCE(SUM(RC_PM.MEM_CAPA), 0) AS TOT_MEM_CAPA
+				, ROUND(COALESCE(SUM(RC_PM.NETWK_IN), 0)::numeric, 1) AS TOT_NETWK_IN
+				, ROUND(COALESCE(SUM(RC_PM.NETWK_OUT), 0)::numeric, 1) AS TOT_NETWK_OUT
+			FROM
+				RC_PM
+				INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_PM.CLSTR_SEQ
+			WHERE
+				RC_PM.DEL_YN = 'N'
+				AND RC_PM.PM_CL_CD = '01'
+				AND RC_CLSTR.DEL_YN = 'N'
+			GROUP BY
+				RC_CLSTR.CLSTR_SEQ
+		) PM ON PM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+		LEFT JOIN (
+			SELECT
+				RC_CLSTR.CLSTR_SEQ
+				, COUNT(RC_VM.*) AS VM_CNT
+				, COALESCE(SUM(RC_VM.CPU_ENT), 0) AS TOT_CPU_ENT
+				, COALESCE(SUM(RC_VM.CPU_VCORE_QTY), 0) AS TOT_CPU_VCORE_QTY
+				, COALESCE(SUM(RC_VM.MEM_ASGN_CAPA), 0) AS TOT_MEM_ASGN_CAPA
+				, COALESCE(SUM(RC_VM.STRG_ASGN_CAPA), 0) AS TOT_STRG_ASGN_CAPA
+				, ROUND(COALESCE(AVG(RC_VM.CPU_USE_RT), 0)::numeric, 1) AVG_CPU_USE_RT
+				, ROUND(COALESCE(AVG(RC_VM.MEM_USE_RT), 0)::numeric, 1) AVG_MEM_USE_RT
+			FROM
+				RC_VM
+				INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			WHERE
+				RC_VM.DEL_YN = 'N'
+				AND RC_VM.VM_CL_CD = '01'
+				AND RC_CLSTR.DEL_YN = 'N'
+			GROUP BY
+				RC_CLSTR.CLSTR_SEQ
+		) VM ON VM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+		LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+		LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+	</sql>
+
+	<select id="selectClstrTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+			<include refid="fromClauseClstrUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="fromClauseClstrUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectClstrListPaging" resultMap="resultClstrVoList">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrListPaging */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			<include refid="selectClauseClstr" />
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+			<include refid="fromClauseClstrUserAuthority" />
+		<where>
+			<include refid="search" />
+		</where>
+		<include refid="order"/>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectClstrList" resultMap="resultClstrVoList">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrList */
+		SELECT
+			<include refid="selectClauseClstr" />
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+			<include refid="fromClauseClstrUserAuthority" />
+		<where>
+			<include refid="search" />
+		</where>
+		<include refid="order"/>
+	</select>
+
+	<select id="selectClstr" resultMap="resultClstrVoDetail">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstr */
+		SELECT
+			<include refid="selectClauseClstr" />
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+		WHERE
+			RC_CLSTR.CLSTR_SEQ = #{value}
+	</select>
+
+	<select id="selectClstrByClstrSearchVo" resultMap="resultClstrVoDetail">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrList */
+		SELECT
+			<include refid="selectClauseClstr" />
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+			<include refid="fromClauseClstrUserAuthority" />
+		<where>
+			<include refid="search" />
+		</where>
+	</select>
+
+	<select id="selectClstrTotCntByClstrSeq" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrTotCntByClstrSeq */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+		WHERE
+			RC_CLSTR.CLSTR_SEQ = #{value}
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_CLSTR.DEL_YN = 'N'
+	</select>
+
+	<select id="selectClstrTotCntByClstrCompId" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.clstr.selectClstrTotCntByClstrCompId */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_CLSTR
+			<include refid="fromClauseClstr" />
+		WHERE
+			RC_CLSTR.CLSTR_COMP_ID = #{value}
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_CLSTR.DEL_YN = 'N'
+	</select>
+
+</mapper>

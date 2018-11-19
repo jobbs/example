@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.zone">
+
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultTree">
+		<id property="key" column="CD" javaType="String"/>
+		<result property="title" column="CD_NM"/>
+		<result property="parentKey" column="PARENT_CD" javaType="String"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.zone.vo.RegionVo" id="resultRegionVo" extends="ncis.sql.cmn.rcRegion.resultRcRegion">
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.zone.vo.ZoneVo" id="resultZoneVo" extends="ncis.sql.cmn.rcZone.resultRcZone">
+		<association property="region" resultMap="resultRegionVo" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.zone.vo.ZoneNetVo" id="resultZoneNetVo" extends="ncis.sql.cmn.rcZoneNetMatrix.resultRcZoneNetMatrix">
+		<association property="zone" resultMap="resultZoneVo" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.zone.vo.NetVo" id="resultNetVo" extends="ncis.sql.cmn.rcNet.resultRcNet">
+		<result property="netClNm" column="NET_CL_NM"/>
+		<association property="zoneNet" resultMap="resultZoneNetVo" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.zone.vo.RsrcPoolVo" id="resultPoolVo" extends="ncis.sql.cmn.rcRsrcPool.resultRcRsrcPool">
+		<result property="vrlzSwTyNm" column="VRLZ_SW_TY_NM"/>
+		<result property="strgCompNm" column="STRG_COMP_NM"/>
+		<association property="net" resultMap="resultNetVo" />
+	</resultMap>
+
+	<select id="selectZoneAndPoolListTree" resultMap="resultTree" parameterType="java.util.HashMap">
+		/* ncis.sql.cpt.zone.selectZoneAndPoolListTree */
+		SELECT
+			KEY,
+			PARENT_KEY,
+			TITLE
+		FROM V_TREE_ZONE_POOL
+		ORDER BY LEVEL, TITLE
+	</select>
+
+	<select id="selectZoneListTree" resultMap="resultTree" parameterType="java.util.HashMap">
+		/* ncis.sql.cpt.zone.selectZoneListTree */
+		SELECT
+			KEY,
+			PARENT_KEY,
+			TITLE
+		FROM V_TREE_ZONE
+		ORDER BY LEVEL, TITLE
+	</select>
+
+	<select id="selectRegion" resultMap="resultRegionVo">
+		/* ncis.sql.cpt.zone.selectRegion */
+		SELECT
+			REGION_ID,
+			REGION_NM,
+			REGION_LOCA_NM
+		FROM
+			RC_REGION
+		WHERE
+			REGION_ID = #{value }
+	</select>
+
+	<select id="selectExistZoneByRegion" resultType="Integer">
+		/* ncis.sql.cpt.zone.selectExistZoneByRegion */
+		SELECT COUNT(*) FROM RC_ZONE WHERE REGION_ID=#{value }
+	</select>
+
+	<select id="selectZone" resultMap="resultZoneVo">
+		/* ncis.sql.cpt.zone.selectZone */
+		SELECT
+			Z.ZONE_ID, Z.REGION_ID, Z.ZONE_NM, R.REGION_NM
+		FROM
+			RC_ZONE Z LEFT JOIN RC_REGION R ON Z.REGION_ID=R.REGION_ID
+		WHERE
+			ZONE_ID = #{value}
+	</select>
+
+	<select id="selectExistNetByZone" resultType="Integer">
+		/* ncis.sql.cpt.zone.selectExistNetByZone */
+		SELECT COUNT(*) FROM RC_ZONE_NET_MATRIX WHERE ZONE_ID=#{value }
+	</select>
+
+	<select id="selectNetListByPool" resultMap="resultNetVo">
+		SELECT
+			M.NET_ID,
+			NET_NM,
+			NET_CL_CD,
+			(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=NET_CL_CD AND GRP_CD='067') AS NET_CL_NM
+		FROM
+			RC_ZONE_NET_MATRIX M
+			LEFT JOIN RC_NET N ON N.NET_ID=M.NET_ID
+		WHERE
+			ZONE_ID = #{zoneId }
+			AND NET_CL_CD = #{netClCd }
+		ORDER BY NET_NM
+	</select>
+
+	<select id="selectNet" resultMap="resultNetVo">
+		/* ncis.sql.cpt.zone.selectNet */
+		SELECT
+			M.NET_ID,
+			NET_NM,
+			NET_CL_CD,
+			(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=NET_CL_CD AND GRP_CD='067') AS NET_CL_NM ,
+			M.ZONE_ID,
+			ZONE_NM,
+			R.REGION_ID,
+			REGION_NM
+		FROM
+			RC_NET N
+			LEFT JOIN RC_ZONE_NET_MATRIX M ON N.NET_ID=M.NET_ID
+			LEFT JOIN RC_ZONE Z ON M.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_REGION R ON Z.REGION_ID=R.REGION_ID
+		WHERE
+			N.NET_ID = #{netId}
+	</select>
+
+	<select id="selectExistPoolByNet" resultType="Integer">
+		/* ncis.sql.cpt.zone.selectExistPoolByNet */
+		SELECT COUNT(*) FROM RC_RSRC_POOL WHERE NET_ID=#{value }
+	</select>
+
+	<select id="selectPool" resultMap="resultPoolVo">
+		/* ncis.sql.cpt.zone.selectPool */
+		SELECT
+			RSRC_POOL_ID,
+			RSRC_POOL_NM,
+			RSRC_POOL_VERSION,
+			VRLZ_SW_TY_CD,
+			(
+				CASE
+					WHEN RSRC_POOL_CL_CD = '01'
+						THEN (SELECT CD_NM FROM CM_CODE C WHERE C.CD=P.VRLZ_SW_TY_CD AND C.GRP_CD='001')
+					WHEN RSRC_POOL_CL_CD = '02'
+						THEN (SELECT CD_NM FROM CM_CODE C WHERE C.CD=P.VRLZ_SW_TY_CD AND C.GRP_CD='065')
+					WHEN RSRC_POOL_CL_CD = '03'
+						THEN (SELECT CD_NM FROM CM_CODE C WHERE C.CD=P.VRLZ_SW_TY_CD AND C.GRP_CD='083')
+					WHEN RSRC_POOL_CL_CD = '04'
+						THEN (SELECT CD_NM FROM CM_CODE C WHERE C.CD=P.VRLZ_SW_TY_CD AND C.GRP_CD='084')
+					WHEN RSRC_POOL_CL_CD = '05'
+						THEN (SELECT CD_NM FROM CM_CODE C WHERE C.CD=P.VRLZ_SW_TY_CD AND C.GRP_CD='097')
+				END
+			) AS VRLZ_SW_TY_NM,
+			STRG_COMP_CD,
+			(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=P.STRG_COMP_CD AND GRP_CD='093') AS STRG_COMP_NM ,
+			UUID,
+			P.REG_DTTM,
+			P.ZONE_ID,
+			P.NET_ID,
+			P.NET_CL_CD,
+			(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD=P.NET_CL_CD AND GRP_CD='067') AS NET_CL_NM ,
+			P.REGION_ID,
+			ZONE_NM,
+			NET_NM,
+			REGION_NM,
+			P.CTL_TRGT_YN
+		FROM
+			RC_RSRC_POOL P
+			LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+			LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+			LEFT JOIN RC_REGION R ON P.REGION_ID=R.REGION_ID
+		WHERE
+			P.RSRC_POOL_ID = #{value}
+			AND P.DEL_YN != 'Y'
+	</select>
+
+
+
+</mapper>

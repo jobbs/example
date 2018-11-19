@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxImg">
+	<!-- 이미지 등록 -->
+	<insert id="insertRxImg" parameterType="ncis.cmn.entity.RxImg">
+		/* ncis.sql.cmn.rxImg.insertRxImg */
+		INSERT INTO RX_IMG(
+	        RSRC_POOL_ID  /* 자원풀ID */
+			, IMG_ID  /* 이미지ID */
+			, IMG_NM  /* 이미지명 */
+			, IMG_UID  /* 이미지UID */
+			, IMG_REPO_ADDR  /* 이미지저장소주소 */
+			, SERVC_AREA_SEQ  /* 서비스영역SEQ */
+			, IMG_VER  /* 이미지버전 */
+			, BAS_IMG_YN  /* 베이스이미지여부 */
+			, IMG_CAPA  /* 이미지용량 */
+			, WRK_PATH_NM  /* 작업경로명 */
+			, IMG_TY_CD  /* 이미지유형코드 */
+			, RMK  /* 비고 */
+			, USE_YN  /* 사용여부 */
+			, CRE_DTTM  /* 생성일시 */
+			, CRE_USER_ID  /* 생성자ID */
+		)
+        VALUES (
+			#{rsrcPoolId}  /* 자원풀ID */
+			, #{imgId}  /* 이미지ID */
+			, #{imgNm}  /* 이미지명 */
+			, #{imgUid}  /* 이미지UID */
+			, #{imgRepoAddr}  /* 이미지저장소주소 */
+			, #{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{imgVer}  /* 이미지버전 */
+			, #{basImgYn}  /* 베이스이미지여부 */
+			, #{imgCapa}  /* 이미지용량 */
+			, #{wrkPathNm}  /* 작업경로명 */
+			, #{imgTyCd}  /* 이미지유형코드 */
+			, #{rmk}  /* 비고 */
+			, #{useYn}  /* 사용여부 */
+			, now()  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+        )
+	</insert>
+
+	<!-- 이미지 수정 -->
+	<update id="updateRxImg">
+		/* ncis.sql.cmn.rxImg.updateRxImg */
+		UPDATE RX_IMG
+			SET RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+			, IMG_NM = #{imgNm}  /* 이미지명 */
+			, IMG_VER = #{imgVer}  /* 이미지버전 */
+			, BAS_IMG_YN = #{basImgYn}  /* 베이스이미지여부 */
+			, IMG_TY_CD = #{imgTyCd}  /* 이미지유형코드 */
+			, RMK = #{rmk}  /* 비고 */
+			, USE_YN = #{useYn}  /* 사용여부 */
+			, UPDT_DTTM = now()  /* 수정일시 */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+		AND IMG_ID = #{imgId}  /* 이미지ID */
+		AND SERVC_AREA_SEQ = #{servcAreaSeq}  /* 서비스영역SEQ */
+	</update>
+
+	<!-- 이미지 삭제 -->
+	<delete id="deleteRxImg">
+		/* ncis.sql.cmn.rxImg.deleteRxImg */
+		DELETE FROM RX_IMG
+		WHERE RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+		<if test="imgId != null and !imgId.isEmpty()">
+		AND IMG_ID = #{imgId}  /* 이미지ID */
+		</if>
+		AND SERVC_AREA_SEQ = #{servcAreaSeq}  /* 서비스영역SEQ */
+	</delete>
+
+</mapper>

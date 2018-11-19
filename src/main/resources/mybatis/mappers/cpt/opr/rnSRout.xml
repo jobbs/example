@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rnSRout">
+
+	<resultMap type="ncis.cpt.opr.ip.vo.SRoutVo" id="resultSRoutVo">
+		<result property="sRoutSeq" column="S_ROUT_SEQ"/>
+		<result property="ipBndAddr" column="IP_BND_ADDR"/>
+		<result property="subnetMask" column="SUBNET_MASK"/>
+		<result property="gtwyNm" column="GTWY_NM"/>
+		<result property="bndSeq" column="BND_SEQ"/>
+	</resultMap>
+
+	<select id="selectSRoutListByBndSeq" resultMap="resultSRoutVo">
+	/* ncis.sql.cpt.rnSRout.selectSRoutListByBndSeq */
+		SELECT
+			S_ROUT_SEQ,
+			IP_BND_ADDR,
+			SUBNET_MASK,
+			GTWY_NM,
+			BND_SEQ
+		FROM
+			RN_S_ROUT
+		WHERE
+			BND_SEQ = #{bndSeq}
+	</select>
+
+</mapper>

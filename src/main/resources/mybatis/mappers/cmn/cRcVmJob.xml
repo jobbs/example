@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcVmJob">
+
+	<resultMap id="resultRcVmJob" type="ncis.cmn.entity.RcVmJob">
+		<result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버 SEQ -->
+        <result property="jobId"     column="JOB_ID"/>  <!-- 업무 ID -->
+	</resultMap>
+
+	<!-- 가상서버 업무 등록 -->
+	<insert id="insertRcVmJob">
+	INSERT INTO RC_VM_JOB (
+	             VM_SEQ  /* 가상서버 SEQ */
+	           , JOB_ID  /* 업무 ID */
+	) VALUES (
+	           #{vmSeq}  /* 가상서버 SEQ */
+	         , #{jobId}  /* 업무 ID */
+	)
+	</insert>
+
+	<!-- 가상서버 업무 삭제 -->
+	<delete id="deleteRcVmJob">
+	DELETE FROM RC_VM_JOB
+         WHERE  VM_SEQ = #{vmSeq}  /* 가상서버 SEQ */
+         	AND JOB_ID = #{jobId}  /* 업무 ID */
+
+	</delete>
+
+</mapper>

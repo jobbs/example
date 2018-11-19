@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siStrgComp">
+
+	<resultMap id="resultSiStrgComp" type="ncis.cmn.entity.SiStrgComp">
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="strgCl"     column="STRG_CL"/>  <!-- 스토리지구분 -->
+        <result property="dskChnnlTyCd"     column="DSK_CHNNL_TY_CD"/>  <!-- 디스크채널유형코드 -->
+        <result property="strgConnMethod"     column="STRG_CONN_METHOD"/>  <!-- 스토리지연결방식 -->
+        <result property="raidCompYn"     column="RAID_COMP_YN"/>  <!-- RAID구성여부 -->
+        <result property="strgAsgnCapa"     column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당용량(GB) -->
+        <result property="strgUsefulCapa"     column="STRG_USEFUL_CAPA"/>  <!-- 스토리지가용용량(GB) -->
+        <result property="reStrtCycleDtNo"     column="RE_STRT_CYCLE_DT_NO"/>  <!-- 재기동주기일수 -->
+        <result property="rcntReStrtDt"     column="RCNT_RE_STRT_DT"/>  <!-- 최근재기동일자 -->
+        <result property="reStrtLttrRcivYn"     column="RE_STRT_LTTR_RCIV_YN"/>  <!-- 재기동문자수신여부 -->
+	</resultMap>
+
+	<!-- 스토리지구성정보 등록 -->
+	<insert id="insertSiStrgComp">
+	INSERT INTO SI_STRG_COMP (
+	             COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , STRG_CL  /* 스토리지구분 */
+	           , DSK_CHNNL_TY_CD  /* 디스크채널유형코드 */
+	           , STRG_CONN_METHOD  /* 스토리지연결방식 */
+	           , RAID_COMP_YN  /* RAID구성여부 */
+	           , STRG_ASGN_CAPA  /* 스토리지할당용량(GB) */
+	           , STRG_USEFUL_CAPA  /* 스토리지가용용량(GB) */
+	           , RE_STRT_CYCLE_DT_NO  /* 재기동주기일수 */
+	           , RCNT_RE_STRT_DT  /* 최근재기동일자 */
+	           , RE_STRT_LTTR_RCIV_YN  /* 재기동문자수신여부 */
+	) VALUES (
+	           #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{strgCl}  /* 스토리지구분 */
+	         , #{dskChnnlTyCd}  /* 디스크채널유형코드 */
+	         , #{strgConnMethod}  /* 스토리지연결방식 */
+	         , #{raidCompYn}  /* RAID구성여부 */
+	         , #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+	         , #{strgUsefulCapa}  /* 스토리지가용용량(GB) */
+	         , #{reStrtCycleDtNo}  /* 재기동주기일수 */
+	         , #{rcntReStrtDt}  /* 최근재기동일자 */
+	         , #{reStrtLttrRcivYn}  /* 재기동문자수신여부 */
+	)
+	</insert>
+
+	<!-- 스토리지구성정보 수정 -->
+	<update id="updateSiStrgComp">
+	UPDATE SI_STRG_COMP
+	         SET COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , STRG_CL = #{strgCl}  /* 스토리지구분 */
+	           , DSK_CHNNL_TY_CD = #{dskChnnlTyCd}  /* 디스크채널유형코드 */
+	           , STRG_CONN_METHOD = #{strgConnMethod}  /* 스토리지연결방식 */
+	           , RAID_COMP_YN = #{raidCompYn}  /* RAID구성여부 */
+	           , STRG_ASGN_CAPA = #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+	           , STRG_USEFUL_CAPA = #{strgUsefulCapa}  /* 스토리지가용용량(GB) */
+	           , RE_STRT_CYCLE_DT_NO = #{reStrtCycleDtNo}  /* 재기동주기일수 */
+	           , RCNT_RE_STRT_DT = #{rcntReStrtDt}  /* 최근재기동일자 */
+	           , RE_STRT_LTTR_RCIV_YN = #{reStrtLttrRcivYn}  /* 재기동문자수신여부 */
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 스토리지구성정보 삭제 -->
+	<delete id="deleteSiStrgComp">
+	DELETE FROM SI_STRG_COMP
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

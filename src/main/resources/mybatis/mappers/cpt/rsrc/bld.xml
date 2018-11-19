@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.atmscl.bldService">
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.BldVo" id="resultBldList">
+        <result property="institutionId" column="INSTITUTION_ID"/>
+        <result property="institutionNm" column="INSTITUTION_NM"/>
+        <result property="jobId" column="JOB_ID"/>
+        <result property="jobNm" column="JOB_NM"/>
+        <result property="regionId" column="REGION_ID"/>
+        <result property="regionNm" column="REGION_NM"/>
+    	<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+        <result property="servcAreaId" column="SERVC_AREA_ID"/>
+		<result property="servcAreaNm" column="SERVC_AREA_NM"/>
+		<result property="servcAreaUid" column="SERVC_AREA_UID"/>
+        <result property="servcAreaClCd" column="SERVC_AREA_CL_CD"/>
+        <result property="servcAreaSeq" column="SERVC_AREA_SEQ"/>
+		<result property="servcNm" column="SERVC_NM"/>
+		<result property="servcId" column="SERVC_ID"/>
+		<result property="servcSeq" column="SERVC_SEQ"/>
+        <result property="bldNm" column="BLD_NM"/>
+        <result property="bldId" column="BLD_ID"/>
+		<result property="creImgId" column="CRE_IMG_ID"/>
+		<result property="creImgNm" column="CRE_IMG_NM"/>
+		<result property="lastBldVer" column="LAST_BLD_VER"/>
+		<result property="bldVer" column="BLD_VER"/>
+        <result property="bldStatCd" column="BLD_STAT_CD"/>
+        <result property="bldStatNm" column="BLD_STAT_NM"/>
+        <result property="creDttm" column="CRE_DTTM"/>
+        <result property="updtDttm" column="UPDT_DTTM"/>
+        <result property="creUserNm" column="CRE_USER_NM"/>
+        <result property="creUserId" column="CRE_USER_ID"/>
+        <result property="updtUserNm" column="UPDT_USER_NM"/>
+        <result property="lastBldDttm" column="LAST_BLD_DTTM"/>
+        <result property="scrtkyId" column="SCRTKY_ID"/>
+        <result property="gitBrnchNm" column="GIT_BRNCH_NM"/>
+        <result property="gitBestPath" column="GIT_BEST_PATH"/>
+        <result property="repoAddr" column="REPO_ADDR"/>
+        <result property="basImgId" column="BAS_IMG_ID"/>
+        <result property="basImgServcAreaId" column="BAS_IMG_SERVC_AREA_ID"/>
+        <result property="repoTyCd" column="REPO_TY_CD"/>
+        <result property="scrtkyId" column="SCRTKY_ID"/>
+        <result property="bldHstryId" column="BLD_HSTRY_ID"/>
+        <result property="ctlTrgtYn" column="CTL_TRGT_YN"/>
+	</resultMap>
+
+	<!--  조회 권한 수정 - 시스템관리자 전부 조회(searchUserId : null) , 운영자(OPRADM:센터 별 조회), 담당자(요청사용자 ID로 조회), 일반사용자(요청사용자 ID로 조회)  -->
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprChr">
+						INNER JOIN CM_JOB_USER
+						ON CM_JOB_USER.JOB_ID = TBL1.JOB_ID
+						AND CM_JOB_USER.USER_ID = #{searchUserId}
+				</when>
+				<when test="oprAdm">
+						INNER JOIN CM_RSRC_POOL_USER CM_RSRC_POOL_USER
+						ON CM_RSRC_POOL_USER.RSRC_POOL_ID = TBL1.RSRC_POOL_ID
+						AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+				</when>
+				<when test="bldAdm">
+						INNER JOIN CM_JOB_USER
+						ON CM_JOB_USER.JOB_ID = TBL1.JOB_ID
+						AND CM_JOB_USER.USER_ID = #{searchUserId}
+				</when>
+
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND TBL6.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND TBL7.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netClCd != null and !netClCd.isEmpty()">
+			AND TBL8.NET_Cl_CD = #{netClCd}
+		</if>
+		<if test="rsrcPoolId != null and !rsrcPoolId.isEmpty()">
+			AND TBL5.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		<if test="institutionNm != null and !institutionNm.isEmpty()">
+			AND TBL4.INSTITUTION_NM LIKE '%' || #{institutionNm} || '%'
+		</if>
+		<if test="jobNm != null and !jobNm.isEmpty()">
+			AND TBL9.JOB_NM LIKE '%' || #{jobNm} || '%'
+		</if>
+		<if test="lastBldVer != null and !lastBldVer.isEmpty()">
+			AND TBL3.LAST_BLD_VER LIKE '%' || #{lastBldVer} || '%'
+		</if>
+		<if test="bldStatCd != null and !bldStatCd.isEmpty()">
+			AND TBL10.BLD_STAT_CD LIKE '%' || #{bldStatCd} || '%'
+		</if>
+		<if test="servcNm != null and !servcNm.isEmpty()">
+			AND TBL2.SERVC_NM LIKE '%' || #{servcNm} || '%'
+		</if>
+		<if test="creImgNm != null and !creImgNm.isEmpty()">
+			AND TBL3.CRE_IMG_NM LIKE '%' || #{creImgNm} || '%'
+		</if>
+	</sql>
+
+    <!--  빌드 목록 총건수 조회 -->
+	<select id="selectBldTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.atmscl.bldService.selectBldTotCnt */
+		SELECT
+			COUNT(*)
+			FROM RX_SERVC_AREA TBL1
+			INNER JOIN RX_SERVC TBL2
+			ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ AND TBL2.DEL_YN = 'N' AND TBL2.SERVC_TY_CD IN('01','02')
+			INNER JOIN RX_BLD_CONF TBL3
+			ON TBL3.SERVC_SEQ = TBL2.SERVC_SEQ
+			LEFT OUTER JOIN CM_INSTITUTION TBL4
+			ON TBL1.INSTITUTION_ID = TBL4.INSTITUTION_ID
+			INNER JOIN RC_RSRC_POOL TBL5
+			ON TBL1.RSRC_POOL_ID = TBL5.RSRC_POOL_ID AND TBL5.DEL_YN = 'N'
+			INNER JOIN RC_REGION TBL6
+			ON TBL6.REGION_ID = TBL5.REGION_ID
+			INNER JOIN RC_ZONE TBL7
+			ON TBL7.ZONE_ID = TBL5.ZONE_ID
+			INNER JOIN RC_NET TBL8
+			ON TBL8.NET_ID = TBL5.NET_ID
+			LEFT OUTER JOIN CM_JOB TBL9
+			ON TBL1.JOB_ID = TBL9.JOB_ID
+			LEFT OUTER JOIN RX_BLD_HSTRY TBL10
+			ON TBL3.SERVC_SEQ = TBL10.SERVC_SEQ AND TBL3.BLD_ID = TBL10.BLD_ID
+			AND TBL3.LAST_BLD_VER = TBL10.BLD_VER
+		<include refid="validateAuth"/>
+		<where>
+		TBL1.DEL_YN = 'N'
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<!--  빌드 목록 조회 -->
+	<select id="selectBldList" resultMap="resultBldList">
+		/* ncis.sql.cpt.rsrc.atmscl.bldService.selectBldList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			TBL4.INSTITUTION_ID
+			,TBL4.INSTITUTION_NM
+			,TBL9.JOB_NM
+			,TBL1.JOB_ID
+			,TBL9.JOB_NM
+			,TBL6.REGION_ID
+			,TBL6.REGION_NM
+			,TBL7.ZONE_NM
+			,TBL8.NET_NM
+			,TBL8.NET_CL_CD
+			,TBL5.RSRC_POOL_ID
+			,TBL5.RSRC_POOL_NM
+			,TBL1.SERVC_AREA_ID
+			,TBL1.SERVC_AREA_NM
+			,TBL1.SERVC_AREA_UID
+			,TBL1.SERVC_AREA_CL_CD
+			,TBL1.SERVC_AREA_SEQ
+			,TBL2.SERVC_SEQ
+			,TBL2.SERVC_NM
+			,TBL3.BLD_NM
+			,TBL3.BLD_ID
+			,TBL3.CRE_IMG_ID
+			,TBL3.CRE_IMG_NM
+			,TBL3.LAST_BLD_VER
+			,TBL10.BLD_HSTRY_ID
+			,TO_CHAR(TBL3.CRE_DTTM, 'YYYY-MM-DD') CRE_DTTM
+			,TBL10.BLD_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '312' AND GRP_CD='111' AND CD = TBL10.BLD_STAT_CD) AS BLD_STAT_NM
+		FROM RX_SERVC_AREA TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ AND TBL2.DEL_YN = 'N'  AND TBL2.SERVC_TY_CD IN('01','02')
+		INNER JOIN RX_BLD_CONF TBL3
+		ON TBL3.SERVC_SEQ = TBL2.SERVC_SEQ
+
+		LEFT OUTER JOIN CM_INSTITUTION TBL4
+		ON TBL1.INSTITUTION_ID = TBL4.INSTITUTION_ID
+		INNER JOIN RC_RSRC_POOL TBL5
+		ON TBL1.RSRC_POOL_ID = TBL5.RSRC_POOL_ID AND TBL5.DEL_YN = 'N'
+		INNER JOIN RC_REGION TBL6
+		ON TBL6.REGION_ID = TBL5.REGION_ID
+		INNER JOIN RC_ZONE TBL7
+		ON TBL7.ZONE_ID = TBL5.ZONE_ID
+		INNER JOIN RC_NET TBL8
+		ON TBL8.NET_ID = TBL5.NET_ID
+		LEFT OUTER JOIN CM_JOB TBL9
+		ON TBL1.JOB_ID = TBL9.JOB_ID
+		LEFT OUTER JOIN RX_BLD_HSTRY TBL10
+		ON TBL3.SERVC_SEQ = TBL10.SERVC_SEQ AND TBL3.BLD_ID = TBL10.BLD_ID
+		AND TBL3.LAST_BLD_VER = TBL10.BLD_VER
+		<include refid="validateAuth"/>
+		<where>
+		TBL1.DEL_YN = 'N'
+			<include refid="search"/>
+		</where>
+		ORDER BY TBL3.CRE_DTTM DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectDetailBld" resultMap="resultBldList">
+	/*ncis.sql.cpt.rsrc.atmscl.bldService.selectDetailBld*/
+	SELECT
+		 	TBL4.INSTITUTION_ID
+		 	,TBL4.INSTITUTION_NM
+		 	,TBL9.JOB_NM
+		 	,TBL1.JOB_ID
+		 	,TBL9.JOB_NM
+		 	,TBL6.REGION_ID
+		 	,TBL6.REGION_NM
+		 	,TBL7.ZONE_NM
+		 	,TBL7.ZONE_ID
+		 	,TBL8.NET_NM
+		 	,TBL8.NET_CL_CD
+		 	,TBL5.RSRC_POOL_ID
+		 	,TBL5.RSRC_POOL_NM
+		 	,TBL1.SERVC_AREA_ID
+		 	,TBL1.SERVC_AREA_NM
+		 	,TBL1.SERVC_AREA_UID
+		 	,TBL1.SERVC_AREA_CL_CD
+		 	,TBL1.SERVC_AREA_SEQ
+		 	,TBL2.SERVC_NM
+		 	,TBL2.SERVC_ID
+		 	,TBL2.SERVC_SEQ
+		 	,TBL3.BLD_NM
+		 	,TBL3.BLD_ID
+		 	,TBL3.CRE_IMG_ID
+		 	,TBL3.CRE_IMG_NM
+		 	,TBL3.LAST_BLD_VER
+		 	,TBL10.BLD_VER
+		 	,TO_CHAR(TBL10.CRE_DTTM, 'YYYY-MM-DD hh24:mi:ss') CRE_DTTM
+		 	,TO_CHAR(TBL10.UPDT_DTTM, 'YYYY-MM-DD hh24:mi:ss') UPDT_DTTM
+		 	,TBL3.LAST_BLD_DTTM
+		 	,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL3.CRE_USER_ID),TBL3.CRE_USER_ID) CRE_USER_NM
+		 	,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL3.UPDT_USER_ID),TBL3.UPDT_USER_ID) UPDT_USER_NM
+		 	,TBL3.GIT_BRNCH_NM
+		 	,TBL3.GIT_BEST_PATH
+		 	,TBL3.REPO_ADDR
+		 	,TBL3.SCRTKY_ID
+		 	,TBL3.BAS_IMG_ID
+			,TBL10.BAS_IMG_SERVC_AREA_ID
+		 	,TBL10.REPO_TY_CD
+		 	,TBL10.SCRTKY_ID
+		 	,TBL10.IMG_TAG
+		 	,TBL10.CRE_USER_ID
+		 	,TBL10.BLD_STAT_CD
+		 	,TBL10.BLD_HSTRY_ID
+		 	,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '312' AND GRP_CD='111' AND CD = TBL10.BLD_STAT_CD) AS BLD_STAT_NM
+	 		,TBL11.IMG_NM AS BAS_IMG_NM
+		 	,TBL11.IMG_VER AS BAS_IMG_VER
+		 	,TBL5.CTL_TRGT_YN
+		 FROM RX_SERVC_AREA TBL1
+
+		 INNER JOIN RX_SERVC TBL2
+		 ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ AND TBL2.DEL_YN = 'N'  AND TBL2.SERVC_TY_CD IN('01','02')
+
+		 INNER JOIN RX_BLD_CONF TBL3
+		 ON TBL3.SERVC_SEQ = TBL2.SERVC_SEQ
+
+		 LEFT OUTER JOIN CM_INSTITUTION TBL4
+		 ON TBL1.INSTITUTION_ID = TBL4.INSTITUTION_ID
+
+		 INNER JOIN RC_RSRC_POOL TBL5
+		 ON TBL1.RSRC_POOL_ID = TBL5.RSRC_POOL_ID
+		 AND TBL5.DEL_YN = 'N'
+
+		 INNER JOIN RC_REGION TBL6
+		 ON TBL6.REGION_ID = TBL5.REGION_ID
+
+		 INNER JOIN RC_ZONE TBL7
+		 ON TBL7.ZONE_ID = TBL5.ZONE_ID
+
+		 INNER JOIN RC_NET TBL8
+		 ON TBL8.NET_ID = TBL5.NET_ID
+
+		 LEFT OUTER JOIN CM_JOB TBL9
+		 ON TBL1.JOB_ID = TBL9.JOB_ID
+
+		 INNER JOIN RX_BLD_HSTRY TBL10
+		 ON TBL3.SERVC_SEQ = TBL10.SERVC_SEQ
+		 AND TBL3.BLD_ID = TBL10.BLD_ID
+
+		 LEFT JOIN RX_IMG TBL11
+		 ON TBL3.BAS_IMG_ID = TBL11.IMG_ID
+		 AND TBL11.RSRC_POOL_ID = TBL1.RSRC_POOL_ID
+
+		 WHERE TBL10.SERVC_SEQ = #{servcSeq}
+		 AND TBL10.BLD_ID = #{bldId}
+		 AND TBL1.DEL_YN = 'N'
+		 AND TBL11.BAS_IMG_YN = 'Y'
+
+		 ORDER BY TBL10.BLD_VER::int DESC
+
+	</select>
+	<select id="selectScrtky" resultMap="resultBldList">
+	/* ncis.sql.cpt.rsrc.atmscl.bldService.selectScrtky */
+	SELECT
+		SCRTKY_ID
+	FROM RX_SCRTKY
+	WHERE SERVC_AREA_SEQ = #{servcAreaSeq}
+	AND CRTFC_MTHD_CL_CD = '01'
+	</select>
+</mapper>

@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxBldHstry">
+	<!-- 빌드이력 등록 -->
+	<insert id="insertRxBldHstry" parameterType="ncis.cmn.entity.RxBldHstry">
+		/* ncis.sql.cmn.rxBldHstry.insertRxBldHstry */
+		INSERT INTO RX_BLD_HSTRY(
+			SERVC_SEQ  /* 서비스SEQ */
+			, BLD_HSTRY_ID  /* 빌드이력ID */
+			, BLD_ID  /* 빌드ID */
+			, BLD_VER  /* 빌드버전 */
+			, RSRC_VER  /* 자원버전 */
+			, BAS_IMG_SERVC_AREA_ID  /* 베이스이미지서비스영역ID */
+			, BAS_IMG_ID  /* 베이스이미지ID */
+			, REPO_TY_CD  /* 저장소유형코드 */
+			, REPO_ADDR  /* 저장소주소 */
+			, GIT_BRNCH_NM  /* GIT브랜치명 */
+			, GIT_BEST_PATH  /* GIT최상위경로 */
+			, CRE_IMG_NM  /* 생성이미지명 */
+			, CRE_IMG_ID  /* 생성이미지ID */
+			, BLD_STAT_CD  /* 빌드상태코드 */
+			, CRE_DTTM  /* 생성일시 */
+			, CRE_USER_ID  /* 생성자ID */
+			, IMG_TAG  /* 이미지태그 */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{bldHstryId}  /* 빌드이력ID */
+			, #{bldId}  /* 빌드ID */
+			, #{bldVer}  /* 빌드버전 */
+			, #{rsrcVer}  /* 자원버전 */
+			, #{basImgServcAreaId}  /* 베이스이미지서비스영역ID */
+			, #{basImgId}  /* 베이스이미지ID */
+			, #{repoTyCd}  /* 저장소유형코드 */
+			, #{repoAddr}  /* 저장소주소 */
+			, #{gitBrnchNm}  /* GIT브랜치명 */
+			, #{gitBestPath}  /* GIT최상위경로 */
+			, #{creImgNm}  /* 생성이미지명 */
+			, #{creImgId}  /* 생성이미지ID */
+			, #{bldStatCd}  /* 빌드상태코드 */
+			, now()  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+			, #{imgTag}  /* 이미지태그 */
+        )
+	</insert>
+
+	<!-- 빌드이력 수정 -->
+	<update id="updateRxBldHstry">
+		/* ncis.sql.cmn.rxBldHstry.updateRxBldHstry */
+		UPDATE RX_BLD_HSTRY
+		   SET
+			  BLD_VER = #{bldVer}  /* 빌드버전 */
+			, RSRC_VER = #{rsrcVer}  /* 자원버전 */
+			, BAS_IMG_SERVC_AREA_ID = #{basImgServcAreaId}  /* 베이스이미지서비스영역ID */
+			, BAS_IMG_ID = #{basImgId}  /* 베이스이미지ID */
+			, REPO_TY_CD = #{repoTyCd}  /* 저장소유형코드 */
+			, REPO_ADDR = #{repoAddr}  /* 저장소주소 */
+			, GIT_BRNCH_NM = #{gitBrnchNm}  /* GIT브랜치명 */
+			, GIT_BEST_PATH = #{gitBestPath}  /* GIT최상위경로 */
+			, CRE_IMG_NM = #{creImgNm}  /* 생성이미지명 */
+			, CRE_IMG_ID = #{creImgId}  /* 생성이미지ID */
+			, BLD_STAT_CD = #{bldStatCd}  /* 빌드상태코드 */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+			, IMG_TAG = #{imgTag}  /* 이미지태그 */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+       	AND BLD_HSTRY_ID = #{bldHstryId}  /* 빌드이력ID */
+	</update>
+
+	<!-- 빌드상태정보  수정 -->
+	<update id="updateRxBldHstryStat">
+		/* ncis.sql.cmn.rxBldHstry.updateRxBldHstryStat */
+		UPDATE RX_BLD_HSTRY
+			SET
+			  BLD_STAT_CD = #{bldStatCd}  /* 빌드상태코드 */
+			, UPDT_DTTM = now()
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+       	AND BLD_HSTRY_ID = #{bldHstryId}  /* 빌드이력ID */
+	</update>
+
+	<!-- 빌드이력 삭제 -->
+	<delete id="deleteRxBldHstry">
+		/* ncis.sql.cmn.rxBldHstry.deleteRxBldHstry */
+		DELETE FROM RX_BLD_HSTRY
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+        <if test="bldHstryId != null and !bldHstryId.isEmpty()">
+			AND BLD_HSTRY_ID = #{bldHstryId}  /* 빌드이력ID */
+		</if>
+	</delete>
+
+	<!-- 빌드이력 동기화 -->
+	<insert id="insertRxBldSync" parameterType="ncis.cmn.entity.RxBldHstry">
+		/* ncis.sql.cmn.rxBldHstry.insertRxBldSync */
+		INSERT INTO RX_BLD_HSTRY(
+			SERVC_SEQ  /* 서비스SEQ */
+			, BLD_HSTRY_ID  /* 빌드이력ID */
+			, BLD_ID  /* 빌드ID */
+			, BLD_VER  /* 빌드버전 */
+			, BAS_IMG_SERVC_AREA_ID  /* 베이스이미지서비스영역ID */
+			, BAS_IMG_ID  /* 베이스이미지ID */
+			, REPO_TY_CD  /* 저장소유형코드 */
+			, REPO_ADDR  /* 저장소주소 */
+			, GIT_BRNCH_NM  /* GIT브랜치명 */
+			, GIT_BEST_PATH  /* GIT최상위경로 */
+			, CRE_IMG_NM  /* 생성이미지명 */
+			, CRE_IMG_ID  /* 생성이미지ID */
+			, BLD_STAT_CD  /* 빌드상태코드 */
+			, CRE_DTTM  /* 생성일시 */
+			, CRE_USER_ID  /* 생성자ID */
+			, IMG_TAG  /* 이미지태그 */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{bldHstryId}  /* 빌드이력ID */
+			, #{bldId}  /* 빌드ID */
+			, #{bldVer}  /* 빌드버전 */
+			, #{basImgServcAreaId}  /* 베이스이미지서비스영역ID */
+			, #{basImgId}  /* 베이스이미지ID */
+			, #{repoTyCd}  /* 저장소유형코드 */
+			, #{repoAddr}  /* 저장소주소 */
+			, #{gitBrnchNm}  /* GIT브랜치명 */
+			, #{gitBestPath}  /* GIT최상위경로 */
+			, #{creImgNm}  /* 생성이미지명 */
+			, #{creImgId}  /* 생성이미지ID */
+			, #{bldStatCd}  /* 빌드상태코드 */
+			, #{bldDttmSync}  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+			, #{imgTag}  /* 이미지태그 */
+        )
+	</insert>
+
+</mapper>

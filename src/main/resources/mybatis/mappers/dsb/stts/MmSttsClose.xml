@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.etc.mmSttsClose">
+
+	<resultMap type="ncis.dsb.stts.etc.vo.MmSttsCloseVo" id="resultMmSttsCloseVo">
+	</resultMap>
+	<resultMap type="ncis.dsb.stts.etc.vo.AxMmSttsCloseVo" id="resultAxMmSttsCloseVo">
+	</resultMap>
+
+	<select id="selectPMMmSttsCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectPMMmSttsCloseTotCnt */
+		SELECT COUNT(*)
+		FROM
+			(
+				SELECT #{closeMonth} COLCT_YM,
+					PM_SEQ,
+					REGION_ID,
+					ZONE_ID,
+					NET_ID,
+					RSRC_POOL_ID,
+					CLSTR_SEQ,
+					AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+					AVG(AVG_CPU_COR_QTY) AVG_CPU_COR_QTY,
+					AVG(AVG_STRG_SUM_CAPA) AVG_STRG_SUM_CAPA,
+					AVG(AVG_STRG_USE_CAPA) AVG_STRG_USE_CAPA,
+					AVG(AVG_MEM_SUM_CAPA) AVG_MEM_SUM_CAPA
+				FROM ST_PM_COLCT_SUM_1DD
+				WHERE
+					COLCT_DT LIKE #{closeMonth} || '%'
+				GROUP BY SUBSTR(COLCT_DT, 1, 6), PM_SEQ, REGION_ID, ZONE_ID, NET_ID, RSRC_POOL_ID, CLSTR_SEQ
+			) thisMonth
+			LEFT OUTER JOIN ST_PM_COLCT_SUM_1MM preMonth
+			ON thisMonth.PM_SEQ = preMonth.PM_SEQ
+				AND #{preMonth} = preMonth.COLCT_YM,
+			RC_REGION region,
+			RC_ZONE zone,
+			RC_NET net,
+			RC_RSRC_POOL pool,
+			RC_CLSTR clstr,
+			RC_PM pm
+		WHERE
+			thisMonth.REGION_ID = region.REGION_ID
+			AND thisMonth.ZONE_ID = zone.ZONE_ID
+			AND thisMonth.NET_ID = net.NET_ID
+			AND thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			AND thisMonth.CLSTR_SEQ = clstr.CLSTR_SEQ
+			AND thisMonth.PM_SEQ = pm.PM_SEQ
+			<if test="searchText != null and !searchText.isEmpty()">
+				AND pm.PM_COMP_ID LIKE '%' || #{searchText} || '%'
+			</if>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND thisMonth.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND thisMonth.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND thisMonth.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND thisMonth.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+	</select>
+
+	<select id="selectPMMmSttsCloseList" resultMap="resultMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectPMMmSttsCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT #{closeMonth} colctDt,
+		       '물리서버' srvrCl,
+		       REGION_NM regionNm,
+		       ZONE_NM zoneNm,
+		       NET_NM netNm,
+		       RSRC_POOL_NM rsrcPoolNm,
+		       CLSTR_NM clstrNm,
+			   thisMonth.PM_SEQ  pmSeq,
+		       pm.PM_COMP_ID pmCompId,
+		       pm.PM_ID pmId,
+		       pm.PM_NM pmNm,
+		       ROUND(thisMonth.AVG_CPU_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND(thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0), 2) || ')'
+		       	avgCpuUseRt,
+		       ROUND(thisMonth.AVG_CPU_COR_QTY, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_CPU_COR_QTY - COALESCE(preMonth.AVG_CPU_COR_QTY, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_CPU_COR_QTY - COALESCE(preMonth.AVG_CPU_COR_QTY, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_CPU_COR_QTY - COALESCE(preMonth.AVG_CPU_COR_QTY, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND(thisMonth.AVG_CPU_COR_QTY - COALESCE(preMonth.AVG_CPU_COR_QTY, 0), 0) || ')'
+		       	avgCpuCorQty,
+		       ROUND(thisMonth.AVG_STRG_SUM_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgStrgSumCapa,
+		       ROUND(thisMonth.AVG_STRG_USE_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgStrgUseCapa,
+		       ROUND(thisMonth.AVG_MEM_SUM_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgMemSumCapa,
+		       	ROUND(thisMonth.AVG_MEM_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0)), 2) || ')'
+		       	avgMemUseRt
+		FROM
+			(
+				SELECT #{closeMonth} COLCT_YM,
+					PM_SEQ,
+					REGION_ID,
+					ZONE_ID,
+					NET_ID,
+					RSRC_POOL_ID,
+					CLSTR_SEQ,
+					AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+					AVG(AVG_CPU_COR_QTY) AVG_CPU_COR_QTY,
+					AVG(AVG_STRG_SUM_CAPA) AVG_STRG_SUM_CAPA,
+					AVG(AVG_STRG_USE_CAPA) AVG_STRG_USE_CAPA,
+					AVG(AVG_MEM_SUM_CAPA) AVG_MEM_SUM_CAPA,
+					AVG(AVG_MEM_USE_RT) AVG_MEM_USE_RT
+				FROM ST_PM_COLCT_SUM_1DD
+				WHERE
+					COLCT_DT BETWEEN #{closeMonth}||'01' AND #{closeMonth}||'31'
+				GROUP BY SUBSTR(COLCT_DT, 1, 6), PM_SEQ, REGION_ID, ZONE_ID, NET_ID, RSRC_POOL_ID, CLSTR_SEQ
+			) thisMonth
+			LEFT OUTER JOIN ST_PM_COLCT_SUM_1MM preMonth
+			ON thisMonth.PM_SEQ = preMonth.PM_SEQ
+				AND #{preMonth} = preMonth.COLCT_YM,
+			RC_REGION region,
+			RC_ZONE zone,
+			RC_NET net,
+			RC_RSRC_POOL pool,
+			RC_CLSTR clstr,
+			RC_PM pm
+		WHERE
+			thisMonth.REGION_ID = region.REGION_ID
+			AND thisMonth.ZONE_ID = zone.ZONE_ID
+			AND thisMonth.NET_ID = net.NET_ID
+			AND thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			AND thisMonth.CLSTR_SEQ = clstr.CLSTR_SEQ
+			AND thisMonth.PM_SEQ = pm.PM_SEQ
+			<if test="searchText != null and !searchText.isEmpty()">
+				AND pm.PM_COMP_ID LIKE '%' || #{searchText} || '%'
+			</if>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND thisMonth.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND thisMonth.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND thisMonth.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND thisMonth.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+		ORDER BY thisMonth.PM_SEQ
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVMMmSttsCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectVMMmSttsCloseTotCnt */
+		SELECT COUNT(*)
+		FROM
+			(
+				SELECT #{closeMonth} COLCT_YM,
+					VM_SEQ,
+					REGION_ID,
+					ZONE_ID,
+					NET_ID,
+					RSRC_POOL_ID,
+					CLSTR_SEQ,
+					AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+					AVG(AVG_VCORE_QTY) AVG_VCORE_QTY,
+					AVG(AVG_STRG_SUM_CAPA) AVG_STRG_SUM_CAPA,
+					AVG(AVG_STRG_USE_CAPA) AVG_STRG_USE_CAPA,
+					AVG(AVG_MEM_SUM_CAPA) AVG_MEM_SUM_CAPA
+				FROM ST_VM_COLCT_SUM_1DD
+				WHERE
+					COLCT_DT LIKE #{closeMonth} || '%'
+				GROUP BY SUBSTR(COLCT_DT, 1, 6), VM_SEQ, REGION_ID, ZONE_ID, NET_ID, RSRC_POOL_ID, CLSTR_SEQ
+			) thisMonth
+			LEFT OUTER JOIN ST_VM_COLCT_SUM_1MM preMonth
+			ON thisMonth.VM_SEQ = preMonth.VM_SEQ
+				AND #{preMonth} = preMonth.COLCT_YM,
+			RC_REGION region,
+			RC_ZONE zone,
+			RC_NET net,
+			RC_RSRC_POOL pool,
+			RC_CLSTR clstr,
+			RC_VM vm
+		WHERE
+			thisMonth.REGION_ID = region.REGION_ID
+			AND thisMonth.ZONE_ID = zone.ZONE_ID
+			AND thisMonth.NET_ID = net.NET_ID
+			AND thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			AND thisMonth.CLSTR_SEQ = clstr.CLSTR_SEQ
+			AND thisMonth.VM_SEQ = vm.VM_SEQ
+			<if test="searchText != null and !searchText.isEmpty()">
+				AND vm.VM_COMP_ID LIKE '%' || #{searchText} || '%'
+			</if>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND thisMonth.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND thisMonth.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND thisMonth.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND thisMonth.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+	</select>
+
+	<select id="selectVMMmSttsCloseList" resultMap="resultMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectVMMmSttsCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT #{closeMonth} colctDt,
+		       '가상서버' srvrCl,
+		       REGION_NM regionNm,
+		       ZONE_NM zoneNm,
+		       NET_NM netNm,
+		       RSRC_POOL_NM rsrcPoolNm,
+		       CLSTR_NM clstrNm,
+			   thisMonth.VM_SEQ  pmSeq,
+		       vm.VM_COMP_ID pmCompId,
+		       vm.VM_ID pmId,
+		       vm.VM_NM pmNm,
+		       ROUND(thisMonth.AVG_CPU_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND(thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0), 2) || ')'
+		       	avgCpuUseRt,
+		       ROUND(thisMonth.AVG_VCORE_QTY, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_VCORE_QTY - COALESCE(preMonth.AVG_VCORE_QTY, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_VCORE_QTY - COALESCE(preMonth.AVG_VCORE_QTY, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_VCORE_QTY - COALESCE(preMonth.AVG_VCORE_QTY, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND(thisMonth.AVG_VCORE_QTY - COALESCE(preMonth.AVG_VCORE_QTY, 0), 0) || ')'
+		       	avgCpuCorQty,
+		       ROUND(thisMonth.AVG_STRG_SUM_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_STRG_SUM_CAPA - COALESCE(preMonth.AVG_STRG_SUM_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgStrgSumCapa,
+		       ROUND(thisMonth.AVG_STRG_USE_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_STRG_USE_CAPA - COALESCE(preMonth.AVG_STRG_USE_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgStrgUseCapa,
+		       ROUND(thisMonth.AVG_MEM_SUM_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_MEM_SUM_CAPA - COALESCE(preMonth.AVG_MEM_SUM_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	avgMemSumCapa,
+		       	ROUND(thisMonth.AVG_MEM_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0)), 2) || ')'
+		       	avgMemUseRt
+		FROM
+			(
+				SELECT #{closeMonth} COLCT_YM,
+					VM_SEQ,
+					REGION_ID,
+					ZONE_ID,
+					NET_ID,
+					RSRC_POOL_ID,
+					CLSTR_SEQ,
+					AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+					AVG(AVG_VCORE_QTY) AVG_VCORE_QTY,
+					AVG(AVG_STRG_SUM_CAPA) AVG_STRG_SUM_CAPA,
+					AVG(AVG_STRG_USE_CAPA) AVG_STRG_USE_CAPA,
+					AVG(AVG_MEM_SUM_CAPA) AVG_MEM_SUM_CAPA,
+					AVG(AVG_MEM_USE_RT) AVG_MEM_USE_RT
+				FROM ST_VM_COLCT_SUM_1DD
+				WHERE
+					COLCT_DT BETWEEN #{closeMonth}||'01' AND #{closeMonth}||'31'
+				GROUP BY SUBSTR(COLCT_DT, 1, 6), VM_SEQ, REGION_ID, ZONE_ID, NET_ID, RSRC_POOL_ID, CLSTR_SEQ
+			) thisMonth
+			LEFT OUTER JOIN ST_VM_COLCT_SUM_1MM preMonth
+			ON thisMonth.VM_SEQ = preMonth.VM_SEQ
+				AND #{preMonth} = preMonth.COLCT_YM,
+			RC_REGION region,
+			RC_ZONE zone,
+			RC_NET net,
+			RC_RSRC_POOL pool,
+			RC_CLSTR clstr,
+			RC_VM vm
+		WHERE
+			thisMonth.REGION_ID = region.REGION_ID
+			AND thisMonth.ZONE_ID = zone.ZONE_ID
+			AND thisMonth.NET_ID = net.NET_ID
+			AND thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			AND thisMonth.CLSTR_SEQ = clstr.CLSTR_SEQ
+			AND thisMonth.VM_SEQ = vm.VM_SEQ
+			<if test="searchText != null and !searchText.isEmpty()">
+				AND vm.VM_COMP_ID LIKE '%' || #{searchText} || '%'
+			</if>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND thisMonth.REGION_ID =#{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND thisMonth.ZONE_ID=#{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND thisMonth.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND thisMonth.RSRC_POOL_ID=#{rsrcPoolId}
+			</if>
+		ORDER BY thisMonth.VM_SEQ
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+<select id="selectAxMmSttsCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectAxMmSttsCloseTotCnt */
+		SELECT COUNT(*)
+		FROM
+			(
+				SELECT COLCT_YM,
+					   SERVC_SEQ,
+                       POD_ID,
+                       REGION_ID,
+                       ZONE_ID,
+                       NET_ID,
+                       RSRC_POOL_ID,
+                       AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+                       MAX(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+                       MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+                       MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+                       AVG(AVG_MEM_USE_RT) AVG_MEM_USE_RT
+				FROM
+				      (SELECT #{closeMonth}::TEXT COLCT_YM,
+				              A.COLCT_DT,
+							  A.SERVC_SEQ,
+							  A.POD_ID,
+							  B.REGION_ID,
+							  A.ZONE_ID,
+							  A.NET_ID,
+							  A.RSRC_POOL_ID,
+							  A.AVG_CPU_USE_RT,
+							  FIRST_VALUE(A.CPU_ASGN_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) CPU_ASGN_CAPA,
+							  FIRST_VALUE(A.STRG_TOT_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) STRG_TOT_CAPA,
+							  FIRST_VALUE(A.MEM_TOT_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) MEM_TOT_CAPA,
+							  A.AVG_MEM_USE_RT
+					      FROM ST_RX_POD_SUM_1DD A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+					     WHERE 1=1
+					           AND A.COLCT_DT BETWEEN #{closeMonth}||'01' AND #{closeMonth}||'31'
+					           <if test="searchText != null and !searchText.isEmpty()">
+									AND A.POD_ID LIKE '%' || #{searchText} || '%'
+								</if>
+								<if test='regionId !=null and !"".equals(regionId)'>
+									AND B.REGION_ID =#{regionId}
+								</if>
+								<if test='zoneId !=null and !"".equals(zoneId)'>
+									AND A.ZONE_ID=#{zoneId}
+								</if>
+								<if test='netId !=null and !"".equals(netId)'>
+									AND A.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+								</if>
+								<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+									AND A.RSRC_POOL_ID=#{rsrcPoolId}
+								</if>
+			           ) A
+
+				GROUP BY COLCT_YM,
+						 SERVC_SEQ,
+						 POD_ID,
+						 REGION_ID,
+						 ZONE_ID,
+						 NET_ID,
+						 RSRC_POOL_ID
+			) thisMonth
+			LEFT JOIN ST_RX_POD_SUM_1MM preMonth ON thisMonth.SERVC_SEQ = preMonth.SERVC_SEQ AND thisMonth.POD_ID = preMonth.POD_ID and preMonth.COLCT_YM = #{preMonth}
+			LEFT JOIN RC_REGION region ON thisMonth.REGION_ID = region.REGION_ID
+			LEFT JOIN RC_ZONE zone ON thisMonth.ZONE_ID = zone.ZONE_ID
+			LEFT JOIN RC_NET net ON thisMonth.NET_ID = net.NET_ID
+			LEFT JOIN RC_RSRC_POOL pool ON thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			LEFT JOIN RX_SERVC servc ON thisMonth.SERVC_SEQ = servc.SERVC_SEQ
+			LEFT JOIN RX_SERVC_POD pod ON thisMonth.SERVC_SEQ = pod.SERVC_SEQ AND thisMonth.POD_ID = pod.POD_ID
+		WHERE 1=1
+	</select>
+
+	<select id="selectAxMmSttsCloseList" resultMap="resultAxMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectAxMmSttsCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT #{closeMonth} colctDt,
+		       '자동확장' srvrCl,
+		       REGION_NM regionNm,
+		       ZONE_NM zoneNm,
+		       NET_NM netNm,
+		       RSRC_POOL_NM rsrcPoolNm,
+		       SERVC_NM servcNm,
+		       thisMonth.SERVC_SEQ  servcSeq,
+		       thisMonth.POD_ID podId,
+		       COALESCE(pod.POD_NM,thisMonth.POD_ID) podNm,
+		       ROUND(thisMonth.AVG_CPU_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND(thisMonth.AVG_CPU_USE_RT - COALESCE(preMonth.AVG_CPU_USE_RT, 0), 2) || ')'
+		       	avgCpuUseRt,
+		       ROUND(thisMonth.CPU_ASGN_CAPA/1000, 2) || '(' ||
+		       		CASE WHEN thisMonth.CPU_ASGN_CAPA - COALESCE(preMonth.CPU_ASGN_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.CPU_ASGN_CAPA - COALESCE(preMonth.CPU_ASGN_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.CPU_ASGN_CAPA - COALESCE(preMonth.CPU_ASGN_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		|| ROUND((thisMonth.CPU_ASGN_CAPA - COALESCE(preMonth.CPU_ASGN_CAPA, 0))/1000, 2) || ')'
+		       	cpuCorQty,
+		       ROUND(thisMonth.STRG_TOT_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.STRG_TOT_CAPA - COALESCE(preMonth.STRG_TOT_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.STRG_TOT_CAPA - COALESCE(preMonth.STRG_TOT_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.STRG_TOT_CAPA - COALESCE(preMonth.STRG_TOT_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.STRG_TOT_CAPA - COALESCE(preMonth.STRG_TOT_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	strgTotCapa,
+		       ROUND(thisMonth.MEM_TOT_CAPA/1024/1024/1024, 0) || '(' ||
+		       		CASE WHEN thisMonth.MEM_TOT_CAPA - COALESCE(preMonth.MEM_TOT_CAPA, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.MEM_TOT_CAPA - COALESCE(preMonth.MEM_TOT_CAPA, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.MEM_TOT_CAPA - COALESCE(preMonth.MEM_TOT_CAPA, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.MEM_TOT_CAPA - COALESCE(preMonth.MEM_TOT_CAPA, 0))/1024/1024/1024, 0) || ')'
+		       	memTotCapa,
+		       	ROUND(thisMonth.AVG_MEM_USE_RT, 2) || '(' ||
+		       		CASE WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) = 0 THEN ' '
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[>]]> 0 THEN '+'
+		       			 WHEN thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0) <![CDATA[<]]> 0 THEN '' END
+		       		||  ROUND((thisMonth.AVG_MEM_USE_RT - COALESCE(preMonth.AVG_MEM_USE_RT, 0)), 2) || ')'
+		       	avgMemUseRt
+		FROM
+			(
+				SELECT COLCT_YM,
+					   SERVC_SEQ,
+                       POD_ID,
+                       REGION_ID,
+                       ZONE_ID,
+                       NET_ID,
+                       RSRC_POOL_ID,
+                       AVG(AVG_CPU_USE_RT) AVG_CPU_USE_RT,
+                       MAX(CPU_ASGN_CAPA) CPU_ASGN_CAPA,
+                       MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+                       MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+                       AVG(AVG_MEM_USE_RT) AVG_MEM_USE_RT
+				FROM
+				      (SELECT #{closeMonth}::TEXT COLCT_YM,
+				              A.COLCT_DT,
+							  A.SERVC_SEQ,
+							  A.POD_ID,
+							  B.REGION_ID,
+							  A.ZONE_ID,
+							  A.NET_ID,
+							  A.RSRC_POOL_ID,
+							  A.AVG_CPU_USE_RT,
+							  FIRST_VALUE(A.CPU_ASGN_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) CPU_ASGN_CAPA,
+							  FIRST_VALUE(A.STRG_TOT_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) STRG_TOT_CAPA,
+							  FIRST_VALUE(A.MEM_TOT_CAPA) OVER(PARTITION BY A.SERVC_SEQ, A.POD_ID  ORDER BY  A.COLCT_DT DESC) MEM_TOT_CAPA,
+							  A.AVG_MEM_USE_RT
+					      FROM ST_RX_POD_SUM_1DD A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+					     WHERE 1=1
+					           AND A.COLCT_DT BETWEEN #{closeMonth}||'01' AND #{closeMonth}||'31'
+					           <if test="searchText != null and !searchText.isEmpty()">
+									AND A.POD_ID LIKE '%' || #{searchText} || '%'
+								</if>
+								<if test='regionId !=null and !"".equals(regionId)'>
+									AND B.REGION_ID =#{regionId}
+								</if>
+								<if test='zoneId !=null and !"".equals(zoneId)'>
+									AND A.ZONE_ID=#{zoneId}
+								</if>
+								<if test='netId !=null and !"".equals(netId)'>
+									AND A.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+								</if>
+								<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+									AND A.RSRC_POOL_ID=#{rsrcPoolId}
+								</if>
+			           ) A
+
+				GROUP BY COLCT_YM,
+						 SERVC_SEQ,
+						 POD_ID,
+						 REGION_ID,
+						 ZONE_ID,
+						 NET_ID,
+						 RSRC_POOL_ID
+			) thisMonth
+			LEFT JOIN ST_RX_POD_SUM_1MM preMonth ON thisMonth.SERVC_SEQ = preMonth.SERVC_SEQ AND thisMonth.POD_ID = preMonth.POD_ID AND preMonth.COLCT_YM = #{preMonth}
+			LEFT JOIN RC_REGION region ON thisMonth.REGION_ID = region.REGION_ID
+			LEFT JOIN RC_ZONE zone ON thisMonth.ZONE_ID = zone.ZONE_ID
+			LEFT JOIN RC_NET net ON thisMonth.NET_ID = net.NET_ID
+			LEFT JOIN RC_RSRC_POOL pool ON thisMonth.RSRC_POOL_ID = pool.RSRC_POOL_ID
+			LEFT JOIN RX_SERVC servc ON thisMonth.SERVC_SEQ = servc.SERVC_SEQ
+			LEFT JOIN RX_SERVC_POD pod ON thisMonth.SERVC_SEQ = pod.SERVC_SEQ AND thisMonth.POD_ID = pod.POD_ID
+		WHERE 1=1
+		ORDER BY regionNm,
+		         zoneNm,
+		         netNm,
+		         rsrcPoolNm,
+		         servcNm,
+		         podNm
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectPmCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectPmCloseTotCnt */
+		SELECT COUNT(*)
+		FROM ST_PM_COLCT_SUM_1DD pmSum left JOIN RC_PM pm
+			ON pmSum.PM_SEQ = pm.PM_SEQ
+		WHERE pmSum.COLCT_DT LIKE #{closeMonth} || '%'
+			AND pmSum.PM_SEQ = #{pmSeq}
+	</select>
+
+	<select id="selectPmCloseList" resultMap="resultMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectPmCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			pmSum.COLCT_DT colctDt,
+			pm.PM_COMP_ID pmId,
+			ROUND(pmSum.AVG_CPU_USE_RT,2) avgCpuUseRt,
+			pmSum.last_cpu_cor_qty lastCpuCorQty,
+			ROUND(pmSum.last_strg_sum_capa/1024/1024/1024,0) lastStrgSumCapa,
+			ROUND(pmSum.AVG_STRG_USE_CAPA/1024/1024/1024,0) avgStrgUseCapa,
+			ROUND(pmSum.last_mem_sum_capa/1024/1024/1024,0) lastMemSumCapa,
+			'Y' colctYN
+		FROM ST_PM_COLCT_SUM_1DD pmSum left JOIN RC_PM pm
+			ON pmSum.PM_SEQ = pm.PM_SEQ
+		WHERE pmSum.COLCT_DT LIKE #{closeMonth} || '%'
+			AND pmSum.PM_SEQ = #{pmSeq}
+		ORDER BY COLCT_DT
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectVmCloseTotCnt */
+		SELECT COUNT(*)
+		FROM ST_VM_COLCT_SUM_1DD vmSum left JOIN RC_VM vm
+			ON vmSum.VM_SEQ = vm.VM_SEQ
+		WHERE vmSum.COLCT_DT LIKE #{closeMonth} || '%'
+			AND vmSum.VM_SEQ = #{pmSeq}
+	</select>
+
+	<select id="selectVmCloseList" resultMap="resultMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectVmCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			vmSum.COLCT_DT colctDt,
+			vm.VM_COMP_ID pmId,
+			ROUND(vmSum.AVG_CPU_USE_RT,2) avgCpuUseRt,
+			vmSum.last_vcore_qty lastCpuCorQty,
+			ROUND(vmSum.last_strg_sum_capa/1024/1024/1024,0) lastStrgSumCapa,
+			ROUND(vmSum.AVG_STRG_USE_CAPA/1024/1024/1024,0) avgStrgUseCapa,
+			ROUND(vmSum.last_mem_sum_capa/1024/1024/1024,0) lastMemSumCapa,
+			'Y' colctYN
+		FROM ST_VM_COLCT_SUM_1DD vmSum left JOIN RC_VM vm
+			ON vmSum.VM_SEQ = vm.VM_SEQ
+		WHERE vmSum.COLCT_DT LIKE #{closeMonth} || '%'
+			AND vmSum.VM_SEQ = #{pmSeq}
+		ORDER BY COLCT_DT
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectAxCloseTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectAxCloseTotCnt */
+		SELECT COUNT(*)
+		 FROM ST_RX_POD_SUM_1DD podSum
+		 	LEFT JOIN RC_RSRC_POOL pool ON podSum.RSRC_POOL_ID = pool.RSRC_POOL_ID
+		 	LEFT JOIN RC_REGION region ON region.REGION_ID = pool.REGION_ID
+			LEFT JOIN RC_ZONE zone ON podSum.ZONE_ID = zone.ZONE_ID
+			LEFT JOIN RC_NET net ON podSum.NET_ID = net.NET_ID
+
+			LEFT JOIN RX_SERVC servc ON podSum.SERVC_SEQ = servc.SERVC_SEQ
+			LEFT JOIN RX_SERVC_POD pod ON podSum.SERVC_SEQ = pod.SERVC_SEQ AND podSum.POD_ID = pod.POD_ID
+
+		WHERE 1=1
+		      AND podSum.COLCT_DT LIKE #{closeMonth} || '%'
+			  AND podSum.SERVC_SEQ = #{servcSeq}
+			  AND podSum.POD_ID = #{podId}
+	</select>
+
+	<select id="selectAxCloseList" resultMap="resultAxMmSttsCloseVo">
+	/* sqlid : ncis.sql.dsb.stts.etc.mmSttsClose.selectAxCloseList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+		    REGION_NM regionNm,
+		    ZONE_NM zoneNm,
+		    NET_NM netNm,
+		    RSRC_POOL_NM rsrcPoolNm,
+		    SERVC_NM servcNm,
+			podSum.COLCT_DT colctDt,
+			podSum.POD_ID podId,
+			ROUND(podSum.AVG_CPU_USE_RT,2) avgCpuUseRt,
+			ROUND(podSum.CPU_ASGN_CAPA/1000,2) cpuCorQty,
+			ROUND(podSum.STRG_TOT_CAPA/1024/1024/1024,0) strgTotCapa,
+			ROUND(podSum.MEM_TOT_CAPA/1024/1024/1024,0) memTotCapa
+
+		  FROM ST_RX_POD_SUM_1DD podSum
+		  	LEFT JOIN RC_RSRC_POOL pool ON podSum.RSRC_POOL_ID = pool.RSRC_POOL_ID
+		 	LEFT JOIN RC_REGION region ON region.REGION_ID = pool.REGION_ID
+			LEFT JOIN RC_ZONE zone ON podSum.ZONE_ID = zone.ZONE_ID
+			LEFT JOIN RC_NET net ON podSum.NET_ID = net.NET_ID
+
+			LEFT JOIN RX_SERVC servc ON podSum.SERVC_SEQ = servc.SERVC_SEQ
+			LEFT JOIN RX_SERVC_POD pod ON podSum.SERVC_SEQ = pod.SERVC_SEQ AND podSum.POD_ID = pod.POD_ID
+
+		WHERE 1=1
+		      AND podSum.COLCT_DT LIKE #{closeMonth} || '%'
+			  AND podSum.SERVC_SEQ = #{servcSeq}
+			  AND podSum.POD_ID = #{podId}
+		ORDER BY COLCT_DT
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+</mapper>

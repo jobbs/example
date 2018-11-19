@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaAtchFile">
+
+	<resultMap id="resultOaAtchFile" type="ncis.cmn.entity.OaAtchFile">
+	    <result property="atchFileSeq"     column="ATCH_FILE_SEQ"/>  <!-- 첨부파일SEQ -->
+        <result property="atchFileNm"     column="ATCH_FILE_NM"/>  <!-- 첨부파일명 -->
+        <result property="atchFileTyCd"     column="ATCH_FILE_TY_CD"/>  <!-- 첨부파일유형코드 -->
+        <result property="path"     column="PATH"/>  <!-- 경로 -->
+        <result property="fileSize"     column="FILE_SIZE"/>  <!-- 파일크기 -->
+        <result property="atchFileCn"     column="ATCH_FILE_CN"/>  <!-- 첨부파일내용 -->
+        <result property="distrbSeq"     column="DISTRB_SEQ"/>  <!-- 배포SEQ -->
+	</resultMap>
+
+	<!-- 첨부파일 등록 -->
+	<insert id="insertOaAtchFile">
+		<selectKey order="BEFORE" keyProperty="atchFileSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('oa_atch_file_sq01')
+		</selectKey>
+		INSERT INTO OA_ATCH_FILE (
+		             ATCH_FILE_SEQ  /* 첨부파일SEQ */
+		           , ATCH_FILE_NM  /* 첨부파일명 */
+		           , PATH  /* 경로 */
+		           , FILE_SIZE  /* 파일크기 */
+		           , DISTRB_SEQ  /* 배포SEQ */
+		) VALUES (
+		           #{atchFileSeq}  /* 첨부파일SEQ */
+		         , #{atchFileNm}  /* 첨부파일명 */
+		         , #{path}  /* 경로 */
+		         , #{fileSize}  /* 파일크기 */
+		         , #{distrbSeq}  /* 배포SEQ */
+		)
+	</insert>
+
+	<!-- 첨부파일 수정 -->
+	<update id="updateOaAtchFile">
+	UPDATE OA_ATCH_FILE
+	         SET ATCH_FILE_ID = #{atchFileId}  /* 첨부파일ID */
+	           , ATCH_FILE_NM = #{atchFileNm}  /* 첨부파일명 */
+	           , ATCH_FILE_TY_CD = #{atchFileTyCd}  /* 첨부파일유형코드 */
+	           , PATH = #{path}  /* 경로 */
+	           , FILE_SIZE = #{fileSize}  /* 파일크기 */
+	           , ATCH_FILE_CN = #{atchFileCn}  /* 첨부파일내용 */
+	           , DISTRB_ID = #{distrbId}  /* 배포ID */
+         WHERE ATCH_FILE_ID = #{atchFileId}  /* 첨부파일ID */
+
+	</update>
+
+	<!-- 첨부파일 삭제 -->
+	<delete id="deleteOaAtchFile">
+	DELETE FROM OA_ATCH_FILE
+         WHERE ATCH_FILE_ID = #{atchFileId}  /* 첨부파일ID */
+
+	</delete>
+
+</mapper>

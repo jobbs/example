@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.menu">
+
+	<resultMap type="ncis.cmn.entity.CmMenu" id="resultMenu">
+		<result property="menuSeq"          column="MENU_SEQ"/>
+		<result property="parentSeq"        column="PARENT_SEQ"/>
+		<result property="menuNm"        	column="MENU_NM"/>
+		<result property="menuPattern"      column="MENU_PATTERN"/>
+		<result property="menuFile"         column="MENU_FILE"/>
+		<result property="menuDesc"         column="MENU_DESC"/>
+		<result property="menuLevel"       	column="MENU_LEVEL"/>
+		<result property="popupYn"         	column="POPUP_YN"/>
+		<result property="useYn"           	column="USE_YN"/>
+		<result property="menuOrder"       	column="MENU_ORDER"/>
+		<result property="regDttm"         	column="REG_DTTM"/>
+		<result property="regUserId"        column="REG_USER_ID"/>
+		<result property="updtDttm"         column="UPDT_DTTM"/>
+		<result property="updtUserId"       column="UPDT_USER_ID"/>
+	</resultMap>
+
+	<insert id="insertMenu">
+	/* ncis.sql.cmn.menu.insertMenu */
+		<selectKey order="BEFORE" keyProperty="menuSeq" resultType="Long">
+			SELECT nextval('CM_MENU_SEQ')
+		</selectKey>
+
+		INSERT INTO CM_MENU (
+			MENU_SEQ
+			,PARENT_SEQ
+			,MENU_NM
+			,MENU_PATTERN
+			,MENU_FILE
+			,MENU_DESC
+			,MENU_LEVEL
+			,POPUP_YN
+			,USE_YN
+			,MENU_ORDER
+			,REG_DTTM
+			,REG_USER_ID
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		) VALUES (
+			#{menuSeq }
+			,#{parentSeq }
+			,#{menuNm }
+			,#{menuPattern, javaType=String, jdbcType=VARCHAR }
+			,#{menuFile, javaType=String, jdbcType=VARCHAR }
+			,#{menuDesc, javaType=String, jdbcType=VARCHAR }
+			,#{menuLevel }
+			,#{popupYn }
+			,#{useYn }
+			,(SELECT COALESCE(max(MENU_ORDER), 0)+1 FROM CM_MENU WHERE PARENT_SEQ = #{parentSeq})
+			,now()
+			,#{regUserId }
+			,now()
+			,#{updtUserId}
+		)
+	</insert>
+
+	<update id="updateMenu">
+	/* ncis.sql.cmn.menu.updateMenu */
+		UPDATE CM_MENU SET
+			MENU_NM 	= #{menuNm }
+			,MENU_PATTERN 	= #{menuPattern, javaType=String, jdbcType=VARCHAR }
+			,MENU_FILE 		= #{menuFile, javaType=String, jdbcType=VARCHAR }
+			,MENU_DESC 		= #{menuDesc, javaType=String, jdbcType=VARCHAR }
+			,POPUP_YN 		= #{popupYn }
+			,USE_YN 			= #{useYn }
+			,UPDT_DTTM		= now()
+			,UPDT_USER_ID			= #{updtUserId}
+		WHERE
+			MENU_SEQ = #{menuSeq }
+	</update>
+
+	<delete id="deleteMenu">
+	/* ncis.sql.cmn.menu.deleteMenu */
+		DELETE FROM CM_MENU WHERE MENU_SEQ = #{value }
+	</delete>
+
+	<insert id="insertMenuRole">
+	/* ncis.sql.cmn.menu.insertMenuRole */
+		WITH UPSERT AS (
+			SELECT
+				#{menuSeq} AS MENU_SEQ, #{roleCd}::text AS ROLE_CD,
+				#{readYn}::text AS READ_YN, #{writeYn}::text AS WRITE_YN, #{actYn}::text AS ACT_YN,
+				#{regUserId}::text AS REG_USER_ID, #{updtUserId}::text AS UPDT_USER_ID
+		),
+		UPDATE_OPTION AS (
+			UPDATE CM_MENU_ROLE MR
+				SET READ_YN = UPSERT.READ_YN, WRITE_YN = UPSERT.WRITE_YN, ACT_YN=UPSERT.ACT_YN,
+					UPDT_DTTM = now(), UPDT_USER_ID=UPSERT.UPDT_USER_ID
+			FROM UPSERT
+			WHERE  MR.MENU_SEQ=UPSERT.MENU_SEQ AND MR.ROLE_CD=UPSERT.ROLE_CD
+		)
+		INSERT INTO CM_MENU_ROLE (
+			MENU_SEQ,
+			ROLE_CD,
+			READ_YN,
+			WRITE_YN,
+			ACT_YN,
+			REG_DTTM,
+			REG_USER_ID,
+			UPDT_DTTM,
+			UPDT_USER_ID
+		)
+		SELECT
+			UPSERT.MENU_SEQ, UPSERT.ROLE_CD, UPSERT.READ_YN, UPSERT.WRITE_YN, UPSERT.ACT_YN,
+			now(), UPSERT.REG_USER_ID, now(), UPSERT.UPDT_USER_ID
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM CM_MENU_ROLE AS MR
+				WHERE MR.MENU_SEQ = UPSERT.MENU_SEQ
+					AND MR.ROLE_CD = UPSERT.ROLE_CD
+			)
+	</insert>
+
+	<update id="updateMenuDownOrderByUp">
+	/* ncis.sql.cmn.menu.updateMenuDownOrderByUp */
+		UPDATE CM_MENU SET
+			MENU_ORDER = MENU_ORDER + 1
+		WHERE (MENU_ORDER, PARENT_SEQ) = (
+					  SELECT MENU_ORDER-1, PARENT_SEQ
+					  FROM CM_MENU
+					  WHERE MENU_SEQ = #{value}
+				)
+	</update>
+
+	<update id="updateMenuUpOrder">
+	/* ncis.sql.cmn.menu.updateMenuUpOrder */
+		UPDATE CM_MENU SET
+			MENU_ORDER =
+						CASE
+							WHEN MENU_ORDER = 1 THEN 1
+							ELSE MENU_ORDER-1
+						END
+		WHERE MENU_SEQ = #{value}
+	</update>
+
+	<update id="updateMenuUpOrderByDown">
+	/* ncis.sql.cmn.menu.updateMenuUpOrderByDown */
+		UPDATE CM_MENU SET
+			MENU_ORDER = MENU_ORDER - 1
+		WHERE (MENU_ORDER, PARENT_SEQ) = (
+					  SELECT MENU_ORDER+1, PARENT_SEQ
+					  FROM CM_MENU
+					  WHERE MENU_SEQ = #{value }
+					)
+	</update>
+
+	<update id="updateMenuDownOrder">
+	/* ncis.sql.cmn.menu.updateMenuDownOrder */
+		UPDATE CM_MENU SET
+			MENU_ORDER = MENU_ORDER+1
+		WHERE MENU_SEQ = #{value }
+	</update>
+
+	<update id="updateMenuCopyRoleList">
+	/* ncis.sql.cmn.menu.updateMenuCopyRoleList */
+		INSERT INTO CM_MENU_ROLE (
+			MENU_SEQ, ROLE_CD, READ_YN, WRITE_YN, ACT_YN,
+			REG_DTTM, REG_USER_ID, UPDT_DTTM, UPDT_USER_ID
+		)
+		SELECT
+			#{targetMenuSeq}, ROLE_CD, READ_YN, WRITE_YN, ACT_YN,
+			now(), #{regUserId}, now(), #{updtUserId}
+		FROM
+			CM_MENU_ROLE
+		WHERE
+			MENU_SEQ = #{sourceMenuSeq}
+	</update>
+
+	<delete id="deleteMenuRole">
+	/* ncis.sql.cmn.menu.deleteMenuRole */
+		DELETE FROM CM_MENU_ROLE WHERE MENU_SEQ = #{value}
+	</delete>
+
+</mapper>

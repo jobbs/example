@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmRole">
+
+	<resultMap type="ncis.cmn.entity.CmRole" id="resultRole">
+		<result property="roleCd"			column="ROLE_CD" />
+		<result property="roleNm"         column="ROLE_NM" />
+		<result property="roleTyCd"         column="ROLE_TY_CD" />
+		<result property="useYn"         	column="USE_YN" />
+		<result property="regDttm"          column="REG_DTTM" />
+		<result property="regUserId"            column="REG_USER_ID" />
+		<result property="updtDttm"          column="UPDT_DTTM" />
+		<result property="updtUserId"            column="UPDT_USER_ID" />
+	</resultMap>
+
+	<insert id="insertCmRole">
+	/* ncis.sql.cmn.role.insertRole */
+		INSERT INTO CM_ROLE (
+			 ROLE_CD
+			,ROLE_NM
+			,ROLE_TY_CD
+			,USE_YN
+			,REG_DTTM
+			,REG_USER_ID
+			,UPDT_DTTM
+			,UPDT_USER_ID
+
+		) VALUES (
+			 #{roleCd }
+			,#{roleNm }
+			,#{roleTyCd }
+			,#{useYn }
+			,now()
+			,#{regUserId }
+			,now()
+			,#{updtUserId }
+		)
+	</insert>
+
+	<update id="updateCmRole">
+	/* ncis.sql.cmn.role.updateRole */
+		UPDATE CM_ROLE
+		SET
+			ROLE_NM = #{roleNm },
+			ROLE_TY_CD = #{roleTyCd },
+			USE_YN = #{useYn }
+		WHERE
+			ROLE_CD = #{roleCd }
+	</update>
+
+	<delete id="deleteMenuRole">
+	/* ncis.sql.cmn.role.deleteMenuRole */
+		DELETE FROM CM_MENU_ROLE WHERE ROLE_CD = #{value}
+	</delete>
+
+	<delete id="deleteUserRole">
+		/* ncis.sql.cmn.role.deleteUserRole */
+		DELETE FROM CM_USR_ROLE WHERE ROLE_CD = #{value}
+	</delete>
+
+	<delete id="deleteCmRole">
+		/* ncis.sql.cmn.role.deleteRole */
+		DELETE FROM CM_ROLE WHERE ROLE_CD = #{value}
+	</delete>
+
+</mapper>

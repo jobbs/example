@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.ZErrRptProcss">
+
+	<resultMap type="ncis.cmn.entity.ZErrRptProcss" id="resultZErrRptProcss">
+		<result property="errRptProcssSeq"  column="ERR_RPT_PROCSS_SEQ"/>
+		<result property="errRptSeq"        column="ERR_RPT_SEQ"/>
+		<result property="procssCont"       column="PROCSS_CONT"/>
+		<result property="procssStatCd"     column="PROCSS_STAT_CD"/>
+		<result property="regUsrId"         column="REG_USR_ID"/>
+		<result property="regDttm"          column="REG_DTTM"/>
+		<result property="updtUsrId"        column="UPDT_USR_ID"/>
+		<result property="updtDttm"         column="UPDT_DTTM"/>
+	</resultMap>
+
+	<insert id="insertZErrRptProcss">
+		/* ncis.sql.cmn.ZErrRpt.insertZErrRptProcss */
+		INSERT INTO Z_ERR_RPT_PROCSS (
+			ERR_RPT_SEQ
+			,PROCSS_CONT
+			,PROCSS_STAT_CD
+			,REG_USR_ID
+			,REG_DTTM
+			,UPDT_USR_ID
+			,UPDT_DTTM
+		) VALUES (
+			#{errRptSeq }
+			,#{procssCont }
+			,#{procssStatCd }
+			,#{regUsrId }
+			,now()
+			,#{updtUsrId }
+			,now()
+		)
+	</insert>
+
+	<update id="updateZErrRptProcss">
+		/* ncis.sql.cmn.ZErrRpt.updateZErrRptProcss */
+		UPDATE Z_ERR_RPT_PROCSS SET
+			PROCSS_CONT = #{procssCont }
+			,PROCSS_STAT_CD = #{procssStatCd }
+			,UPDT_USR_ID = #{updtUsrId }
+			,UPDT_DTTM = now()
+		WHERE ERR_RPT_PROCSS_SEQ = #{errRptProcssSeq}
+	</update>
+
+	<delete id="deleteZErrRptProcss">
+		/* ncis.sql.cmn.ZErrRpt.deleteZErrRptProcss */
+		DELETE FROM Z_ERR_RPT_PROCSS WHERE ERR_RPT_PROCSS_SEQ = #{value}
+	</delete>
+
+	<delete id="deleteZErrRptProcssByParent">
+		/* ncis.sql.cmn.ZErrRpt.deleteZErrRptProcssByParent */
+		DELETE FROM Z_ERR_RPT_PROCSS WHERE ERR_RPT_SEQ = #{value}
+	</delete>
+
+</mapper>

@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.atmscl.servc">
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcVo" id="resultServcList">
+        <result property="regionId" column="REGION_ID"/>
+        <result property="regionNm" column="REGION_NM"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netNm" column="NET_CL_NM"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="servcAreaSeq" column="SERVC_AREA_SEQ"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="servcAreaNm" column="SERVC_AREA_NM"/>
+		<result property="servcNm" column="SERVC_NM"/>
+		<result property="jobId" column="JOB_ID"/>
+		<result property="rmk" column="RMK"/>
+		<result property="creDttm" column="CRE_DTTM"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+		<result property="delDttm" column="DEL_DTTM"/>
+		<result property="creUserId" column="CRE_USER_ID"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+		<result property="delUserId" column="DEL_USER_ID"/>
+		<result property="delYn" column="DEL_YN"/>
+		<result property="bldId" column="BLD_ID"/>
+		<result property="servcId" column="SERVC_ID"/>
+		<result property="creImgId" column="CRE_IMG_ID"/>
+		<result property="statCd" column="STAT_CD"/>
+		<result property="statCdNm" column="STAT_CD_NM"/>
+		<result property="ctlTrgtYn" column="CTL_TRGT_YN"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ScrtkyVo" id="resultScrtKyList">
+		<result property="scrtkyId" column="SCRTKY_ID"/>
+        <result property="id" column="ID"/>
+		<result property="passwd" column="PASSWD"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcPodVo" id="resultServcPodList">
+        <result property="institutionNm" column="INSTITUTION_NM"/>
+        <result property="jobNm" column="JOB_NM"/>
+		<result property="servcNm" column="SERVC_NM"/>
+		<result property="podNm" column="POD_NM"/>
+		<result property="statCdNm" column="STAT_CD_NM"/>
+		<result property="servcSeq" column="SERVC_SEQ"/>
+		<result property="cpuCorQty" column="CPU_COR_QTY"/>
+		<result property="memAsgnCapa" column="MEM_ASGN_CAPA"/>
+		<result property="cpuUseRt" column="CPU_USE_RT"/>
+		<result property="memUseRt" column="MEM_USE_RT"/>
+		<result property="netwkIn" column="NETWK_IN"/>
+		<result property="netwkOut" column="NETWK_OUT"/>
+		<result property="creDttm" column="CRE_DTTM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcRouteVo" id="resultServcRouteList">
+        <result property="routeNm" column="ROUTE_NM"/>
+        <result property="routeId" column="ROUTE_ID"/>
+		<result property="targtPort" column="TARGT_PORT"/>
+		<result property="hstNm" column="HST_NM"/>
+		<result property="servcSeq" column="SERVC_SEQ"/>
+		<result property="servcAreaId" column="SERVC_AREA_ID"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcPortVo" id="resultServcPortList">
+        <result property="portId" column="PORT_ID"/>
+        <result property="portNm" column="PORT_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcAreaVo" id="resultLimit">
+        <result property="maxCpuCorQty" column="MAX_CPU_COR_QTY"/>
+        <result property="maxMemCapa" column="MAX_MEM_CAPA"/>
+        <result property="minCpuCorQty" column="MIN_CPU_COR_QTY"/>
+        <result property="minMemCapa" column="MIN_MEM_CAPA"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.BldVo" id="resultBldList">
+        <result property="bldId" column="BLD_ID"/>
+        <result property="creImgNm" column="CRE_IMG_NM"/>
+        <result property="bldVer" column="BLD_VER"/>
+        <result property="repoAddr" column="REPO_ADDR"/>
+        <result property="bldStatCd" column="BLD_STAT_CD"/>
+        <result property="creDttm" column="CRE_DTTM"/>
+        <result property="bldStatNm" column="BLD_STAT_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.AtmsclDistrbVo" id="resultDistrbList">
+        <result property="distrbConfNm" column="DISTRB_CONF_NM"/>
+        <result property="distrbStatCd" column="DISTRB_STAT_CD"/>
+        <result property="distrbVer" column="DISTRB_VER"/>
+        <result property="distrbConfId" column="DISTRB_CONF_ID"/>
+        <result property="creDttm" column="CRE_DTTM"/>
+        <result property="distrbStatNm" column="DISTRB_STAT_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.BaseImgVo" id="resultImgList">
+        <result property="imgNm" column="IMG_NM"/>
+        <result property="imgRepoAddr" column="IMG_REPO_ADDR"/>
+        <result property="imgVer" column="IMG_VER"/>
+        <result property="creDttm" column="CRE_DTTM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.atmscl.vo.ServcSclngVo" id="resultServcSclngList">
+        <result property="sclngClCd" column="SCLNG_CL_CD"/>
+        <result property="sclngClNm" column="SCLNG_CL_CD_NM"/>
+        <result property="scalrNm" column="SCALR_NM"/>
+        <result property="nowPodQty" column="NOW_POD_QTY"/>
+        <result property="minPodQty" column="MIN_POD_QTY"/>
+        <result property="maxPodQty" column="MAX_POD_QTY"/>
+        <result property="thresClCd" column="THRES_CL_CD"/>
+        <result property="thresClNm" column="THRES_CL_NM"/>
+        <result property="strtThresVl" column="STRT_THRES_VL"/>
+        <result property="endThresVl" column="END_THRES_VL"/>
+        <result property="sclGrpCd" column="SCL_GRP_CD"/>
+        <result property="sclGrpNm" column="SCL_GRP_NM"/>
+        <result property="thresClCd" column="THRES_CL_CD"/>
+        <result property="thresClNm" column="THRES_CL_NM"/>
+        <result property="rsrvStrtDt" column="RSRV_STRT_DT"/>
+        <result property="rsrvEndDt" column="RSRV_END_DT"/>
+	</resultMap>
+
+	<!--  조회 권한 수정 - 시스템관리자 전부 조회(searchUserId : null) , 운영자(OPRADM:센터 별 조회), 담당자(요청사용자 ID로 조회), 일반사용자(요청사용자 ID로 조회)  -->
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN CM_RSRC_POOL_USER CM_RSRC_POOL_USER
+						ON CM_RSRC_POOL_USER.RSRC_POOL_ID = TBL1.RSRC_POOL_ID
+						AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+				</when>
+
+				<when test="oprChr">
+					INNER JOIN CM_JOB_USER CM_JOB_USER
+						ON CM_JOB_USER.USER_ID = #{searchUserId}
+						AND CM_JOB_USER.JOB_ID = TBL1.JOB_ID
+				</when>
+
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<if test='!all'>
+		<!-- 삭제관계없이 모두 조회 -->
+			AND UPPER(TBL2.DEL_YN) = 'N'
+		</if>
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND TBL3.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND TBL5.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netClCd != null and !netClCd.isEmpty()">
+			AND TBL6.NET_Cl_CD = #{netClCd}
+		</if>
+		<if test="rsrcPoolId != null and !rsrcPoolId.isEmpty()">
+			AND TBL3.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		<if test="institutionNm != null and !institutionNm.isEmpty()">
+			AND TBL7.INSTITUTION_NM LIKE '%' || #{institutionNm} || '%'
+		</if>
+		<if test="servcNm != null and !servcNm.isEmpty()">
+			AND TBL2.SERVC_NM LIKE '%' || #{servcNm} || '%'
+		</if>
+		<if test="jobNm != null and !jobNm.isEmpty()">
+			AND TBL8.JOB_NM LIKE '%' || #{jobNm} || '%'
+		</if>
+	</sql>
+
+    <!--  서비스 총건수 조회 -->
+	<select id="selectServcTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServcTotCnt */
+		SELECT
+			COUNT(*)
+		FROM RX_SERVC_AREA TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+		AND TBL2.SERVC_TY_CD IN('01','02')
+		AND TBL1.DEL_YN = 'N'
+		LEFT OUTER JOIN RC_RSRC_POOL TBL3
+		ON TBL1.RSRC_POOL_ID = TBL3.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION TBL4
+		ON TBL4.REGION_ID = TBL3.REGION_ID
+		LEFT OUTER JOIN RC_ZONE TBL5
+		ON TBL5.ZONE_ID = TBL3.ZONE_ID
+		LEFT OUTER JOIN RC_NET TBL6
+		ON TBL6.NET_ID = TBL3.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION TBL7
+		ON TBL1.INSTITUTION_ID = TBL7.INSTITUTION_ID
+		LEFT OUTER JOIN CM_JOB TBL8
+		ON TBL1.JOB_ID = TBL8.JOB_ID
+		<include refid="validateAuth"/>
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<!--  서비스 목록 조회 -->
+	<select id="selectServcList" resultMap="resultServcList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServcList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			TBL3.REGION_ID
+			,TBL4.REGION_NM
+			,TBL5.ZONE_NM
+			,TBL6.NET_NM
+			,TBL6.NET_CL_CD
+			,TBL7.INSTITUTION_NM
+			,TBL3.RSRC_POOL_ID
+			,TBL3.RSRC_POOL_NM
+			,TBL1.SERVC_AREA_ID
+			,TBL1.SERVC_AREA_NM
+			,TBL1.SERVC_AREA_UID
+			,TBL1.INSTITUTION_ID
+			,TBL1.JOB_ID
+			,TBL1.RMK
+			,TO_CHAR(TBL2.CRE_DTTM, 'YYYY-MM-DD') CRE_DTTM
+			,TO_CHAR(TBL2.UPDT_DTTM, 'YYYY-MM-DD') UPDT_DTTM
+			,TBL2.CRE_USER_ID
+			,TBL2.UPDT_USER_ID
+			,TBL2.SERVC_NM
+			,TBL2.SERVC_SEQ
+			,TBL2.SERVC_TY_CD
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL2.CRE_USER_ID) CRE_USER_NM
+			,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL2.UPDT_USER_ID) UPDT_USER_NM
+			,TBL8.JOB_NM
+			,TBL9.SUM_MEM_ASGN_CAPA
+			,TBL9.AVG_MEM_USE_RT
+			,TBL9.SUM_CPU_COR_QTY
+			,TBL9.AVG_CPU_USE_RT
+			,TBL9.NETWK_IN
+			,TBL9.NETWK_OUT
+			,COALESCE(TBL9.POD_QTY,0) AS POD_QTY
+		FROM RX_SERVC_AREA TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+		AND TBL2.SERVC_TY_CD IN('01','02')
+		AND TBL1.DEL_YN = 'N'
+		LEFT OUTER JOIN RC_RSRC_POOL TBL3
+		ON TBL1.RSRC_POOL_ID = TBL3.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION TBL4
+		ON TBL4.REGION_ID = TBL3.REGION_ID
+		LEFT OUTER JOIN RC_ZONE TBL5
+		ON TBL5.ZONE_ID = TBL3.ZONE_ID
+		LEFT OUTER JOIN RC_NET TBL6
+		ON TBL6.NET_ID = TBL3.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION TBL7
+		ON TBL1.INSTITUTION_ID = TBL7.INSTITUTION_ID
+		LEFT OUTER JOIN CM_JOB TBL8
+		ON TBL1.JOB_ID = TBL8.JOB_ID
+		LEFT OUTER JOIN(
+			SELECT
+				TBL_S1.SERVC_SEQ
+				,SUM(MEM_ASGN_CAPA) AS SUM_MEM_ASGN_CAPA
+				,ROUND(AVG(MEM_USE_RT),2) AS AVG_MEM_USE_RT
+				,SUM(CPU_COR_QTY) AS SUM_CPU_COR_QTY
+				,ROUND(AVG(CPU_USE_RT),2) AS AVG_CPU_USE_RT
+				,ROUND(AVG(NETWK_IN),2) AS NETWK_IN
+				,ROUND(AVG(NETWK_OUT),2) AS NETWK_OUT
+				,COUNT(*) AS POD_QTY
+			FROM RX_SERVC_POD TBL_S1
+			INNER JOIN RX_SERVC TBL_S2
+			ON TBL_S1.SERVC_SEQ =  TBL_S2.SERVC_SEQ
+			AND TBL_S2.SERVC_TY_CD IN('01','02')
+			AND TBL_S1.POD_TY_CD IN('01','02')
+			AND TBL_S1.DEL_YN = 'N'
+			GROUP BY TBL_S1.SERVC_SEQ
+			) TBL9
+		ON TBL2.SERVC_SEQ = TBL9.SERVC_SEQ
+		<include refid="validateAuth"/>
+		<where>
+			<include refid="search"/>
+		</where>
+		<if test="searchType == 'usage_order'">
+		ORDER BY COALESCE(AVG_CPU_USE_RT,0) + COALESCE(AVG_MEM_USE_RT,0)*0.5 + COALESCE(POD_QTY,0)*2 DESC, TBL7.INSTITUTION_NM ASC NULLS LAST, TBL2.SERVC_NM
+		</if>
+		<if test="searchType != 'usage_order'">
+		ORDER BY TBL4.REGION_NM ASC, TBL5.ZONE_NM ASC, TBL6.NET_NM ASC, TBL3.RSRC_POOL_NM ASC,
+		TBL7.INSTITUTION_NM ASC NULLS LAST, TBL8.JOB_NM ASC NULLS LAST, TBL1.SERVC_AREA_NM ASC,  TBL2.CRE_DTTM DESC
+		</if>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+
+	<!-- 서비스 조회 -->
+	<select id="selectServc" resultMap="resultServcList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServc */
+		SELECT
+			TBL3.REGION_ID
+			,TBL4.REGION_NM
+			,TBL5.ZONE_NM
+			,TBL5.ZONE_ID
+			,TBL6.NET_NM
+			,TBL6.NET_CL_CD
+			,TBL7.INSTITUTION_NM
+			,TBL3.RSRC_POOL_ID
+			,TBL3.RSRC_POOL_NM
+			,TBL3.CTL_TRGT_YN
+			,TBL1.SERVC_AREA_ID
+			,TBL1.SERVC_AREA_NM
+			,TBL1.SERVC_AREA_UID
+			,TBL1.INSTITUTION_ID
+			,TBL1.JOB_ID
+			,TBL2.RMK
+			,TBL2.SERVC_TY_CD
+			,TBL1.SERVC_AREA_SEQ
+			,TO_CHAR(TBL2.CRE_DTTM, 'YYYY-MM-DD') CRE_DTTM
+			,TO_CHAR(TBL2.UPDT_DTTM, 'YYYY-MM-DD') UPDT_DTTM
+			,TBL2.CRE_USER_ID
+			,TBL2.UPDT_USER_ID
+			,TBL2.SERVC_NM
+			,TBL2.SERVC_ID
+			,TBL2.SERVC_SEQ
+			,COALESCE(TBL2.STAT_CD,'02') AS STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE CD= COALESCE(TBL2.STAT_CD,'02') AND GRP_CD= '108' AND PARENT_CD = '309' ) AS STAT_CD_NM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL2.CRE_USER_ID), TBL2.CRE_USER_ID) CRE_USER_NM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL2.UPDT_USER_ID),TBL2.UPDT_USER_ID) UPDT_USER_NM
+			,TBL8.JOB_NM
+			,TBL9.SUM_MEM_ASGN_CAPA
+			,TBL9.AVG_MEM_USE_RT
+			,TBL9.SUM_CPU_COR_QTY
+			,TBL9.AVG_CPU_USE_RT
+			,TBL9.NETWK_IN
+			,TBL9.NETWK_OUT
+			,COALESCE(TBL9.POD_QTY,0) AS POD_QTY
+			,TBL10.BLD_ID
+			,TBL10.LAST_BLD_VER
+			,TBL10.CRE_IMG_ID
+			,TBL11.DISTRB_CONF_ID
+			,TBL11.LAST_DISTRB_VER
+		FROM RX_SERVC_AREA TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+		LEFT OUTER JOIN RX_BLD_CONF TBL10
+		ON TBL2.SERVC_SEQ = TBL10.SERVC_SEQ
+		LEFT OUTER JOIN RX_DISTRB_CONF TBL11
+		ON TBL2.SERVC_SEQ = TBL11.SERVC_SEQ
+		LEFT OUTER JOIN RC_RSRC_POOL TBL3
+		ON TBL1.RSRC_POOL_ID = TBL3.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION TBL4
+		ON TBL4.REGION_ID = TBL3.REGION_ID
+		LEFT OUTER JOIN RC_ZONE TBL5
+		ON TBL5.ZONE_ID = TBL3.ZONE_ID
+		LEFT OUTER JOIN RC_NET TBL6
+		ON TBL6.NET_ID = TBL3.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION TBL7
+		ON TBL1.INSTITUTION_ID = TBL7.INSTITUTION_ID
+		LEFT OUTER JOIN CM_JOB TBL8
+		ON TBL1.JOB_ID = TBL8.JOB_ID
+		LEFT OUTER JOIN(
+			SELECT
+				TBL_S1.SERVC_SEQ
+				,SUM(MEM_ASGN_CAPA) AS SUM_MEM_ASGN_CAPA
+				,ROUND(AVG(MEM_USE_RT),2) AS AVG_MEM_USE_RT
+				,SUM(CPU_COR_QTY) AS SUM_CPU_COR_QTY
+				,ROUND(AVG(CPU_USE_RT),2) AS AVG_CPU_USE_RT
+				,ROUND(AVG(NETWK_IN),2) AS NETWK_IN
+				,ROUND(AVG(NETWK_OUT),2) AS NETWK_OUT
+				,COUNT(*) AS POD_QTY
+			FROM RX_SERVC_POD TBL_S1
+			INNER JOIN RX_SERVC TBL_S2
+			ON TBL_S1.SERVC_SEQ =  TBL_S2.SERVC_SEQ
+			AND TBL_S2.SERVC_TY_CD IN('01','02')
+			AND TBL_S1.POD_TY_CD IN('01','02')
+			AND TBL_S1.DEL_YN = 'N'
+			GROUP BY TBL_S1.SERVC_SEQ
+			) TBL9
+		ON TBL2.SERVC_SEQ = TBL9.SERVC_SEQ
+		WHERE TBL2.SERVC_SEQ = #{servcSeq}
+		AND TBL2.DEL_YN = 'N'
+	</select>
+
+
+	<!--  보안키 목록 조회 -->
+	<select id="selectScrtKyList" resultMap="resultScrtKyList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectScrtKyList */
+		SELECT
+			SCRTKY_ID
+			,ID
+			,PASSWD
+		FROM RX_SCRTKY
+		WHERE SERVC_AREA_SEQ = #{servcAreaSeq}
+		AND CRTFC_MTHD_CL_CD = '01'
+	</select>
+
+	<!--  Pod목록 조회 -->
+	<select id="selectServcPodList" resultMap="resultServcPodList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServcPodList */
+		SELECT
+			TBL2.SERVC_NM
+			, TBL1.POD_NM  /* POD명 */
+			, TBL1.SERVC_SEQ  /* 서비스SEQ */
+			, TBL1.POD_ID  /* POD_ID */
+			, TBL1.STAT_CD  /* 상태코드 */
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '303' AND GRP_CD ='102' AND CD = TBL1.STAT_CD ) AS STAT_CD_NM
+			, TBL1.POD_UID  /* POD_UID */
+			, TBL1.POD_IP_ADDR  /* PODIP주소 */
+			, TBL1.HST_IP_ADDR  /* 호스트IP주소 */
+			, COALESCE(TBL1.CPU_COR_QTY,0) AS CPU_COR_QTY  /* CPU코어수 */
+			, TBL1.MEM_ASGN_CAPA  /* 메모리할당량 */
+			, TBL1.STRG_ASGN_CAPA  /* 스토리지할당량 */
+			, TBL1.IMG_ID  /* 이미지ID */
+			, COALESCE(TBL1.CPU_USE_RT,0) AS CPU_USE_RT  /* CPU사용률 */
+			, COALESCE(TBL1.MEM_USE_RT,0) AS MEM_USE_RT   /* 메모리사용률 */
+			, COALESCE(TBL1.NETWK_IN,0) AS NETWK_IN  /* 네트워크IN(KB/sec) */
+			, COALESCE(TBL1.NETWK_OUT,0) AS NETWK_OUT  /* 네트워크OUT(KB/sec) */
+			, TBL1.STRT_DTTM  /* 시작일시 */
+			, TBL1.ATMSCL_NODE_ID  /* 자동확장노드ID */
+			, TO_CHAR(TBL1.CRE_DTTM , 'YYYY-MM-DD HH24:MI:SS') AS CRE_DTTM
+			, TBL1.CRE_DTTM  /* 생성일시 */
+			, TBL1.UPDT_DTTM  /* 수정일시 */
+			, TBL1.RSRC_POOL_ID  /* 자원풀ID */
+		FROM RX_SERVC_POD TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		WHERE TBL1.SERVC_SEQ = #{servcSeq}
+		AND TBL2.DEL_YN = 'N'
+		AND TBL2.SERVC_TY_CD IN('01','02')
+		<if test="statCd != null and !statCd.isEmpty()">
+		AND TBL1.POD_TY_CD IN('01','02')
+		AND TBL1.DEL_YN = 'N'
+		ORDER BY TBL1.CRE_DTTM DESC
+		</if>
+	</select>
+
+	<!--  라우트목록 조회 -->
+	<select id="selectServcRouteList" resultMap="resultServcRouteList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServcRouteList */
+		SELECT
+			TBL5.REGION_ID
+			,TBL6.ZONE_ID
+			,TBL7.NET_CL_CD
+			,TBL4.RSRC_POOL_ID
+			,TBL1.ROUTE_NM
+			,TBL1.ROUTE_ID
+			,TBL1.TARGT_PORT
+			,TBL1.HST_NM
+			,TBL1.SERVC_SEQ
+			,TBL3.SERVC_AREA_ID
+		FROM RX_SERVC_ROUTE TBL1
+		INNER JOIN RX_SERVC TBL2
+		ON TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		INNER JOIN RX_SERVC_AREA TBL3
+		ON TBL2.SERVC_AREA_SEQ = TBL3.SERVC_AREA_SEQ
+		LEFT OUTER JOIN RC_RSRC_POOL TBL4
+		ON TBL3.RSRC_POOL_ID = TBL4.RSRC_POOL_ID
+		AND TBL4.DEL_YN = 'N'
+		LEFT OUTER JOIN RC_REGION TBL5
+		ON TBL4.REGION_ID = TBL5.REGION_ID
+		LEFT OUTER JOIN RC_ZONE TBL6
+		ON TBL4.ZONE_ID = TBL6.ZONE_ID
+		LEFT OUTER JOIN RC_NET TBL7
+		ON TBL4.NET_ID = TBL7.NET_ID
+		WHERE TBL1.SERVC_SEQ = #{servcSeq}
+	</select>
+
+	<!-- 포트정보  조회 -->
+	<select id="selectServcPortList" resultMap="resultServcPortList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectServcPortList */
+		SELECT
+			PORT_ID
+			,PORT_NM
+		FROM RX_SERVC_PORT
+		WHERE SERVC_SEQ = #{servcSeq}
+	</select>
+
+	<!-- 제한정보  조회 -->
+	<select id="selectLimit" resultMap="resultLimit">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectLimit */
+		SELECT
+			COALESCE(MAX_CPU_COR_QTY,0.0) AS MAX_CPU_COR_QTY
+			, COALESCE(MAX_MEM_CAPA,0.0) AS MAX_MEM_CAPA
+			, COALESCE(REQ_CPU_COR_QTY,0.0) AS MIN_CPU_COR_QTY
+			, COALESCE(REQ_MEM_CAPA,0.0) AS MIN_MEM_CAPA
+		FROM RX_SERVC_AREA_LMTT_CONF WHERE LMTT_TY_CD = '03'
+		AND SERVC_AREA_SEQ = #{servcAreaSeq}
+		ORDER BY CRE_DTTM DESC
+		LIMIT 1
+	</select>
+
+	<!-- 빌드정보  조회 -->
+	<select id="selectBldList" resultMap="resultBldList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectBldList */
+		SELECT
+			TBL1.BLD_ID
+			,TBL2.CRE_IMG_NM
+			,TBL2.BLD_VER
+			,TBL2.REPO_ADDR
+			,TBL2.GIT_BRNCH_NM
+			,TBL2.BLD_STAT_CD
+			,TBL2.BLD_HSTRY_ID
+			,TO_CHAR(TBL2.CRE_DTTM, 'YYYY-MM-DD HH24:MI:SS') CRE_DTTM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '312' AND GRP_CD='111' AND CD = TBL2.BLD_STAT_CD) AS BLD_STAT_NM
+		FROM RX_BLD_CONF TBL1
+		INNER JOIN RX_BLD_HSTRY TBL2
+		ON TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		AND TBL1.BLD_ID = TBL2.BLD_ID
+		WHERE TBL1.SERVC_SEQ = #{servcSeq}
+		ORDER BY TBL2.CRE_DTTM DESC, TBL2.BLD_HSTRY_ID DESC
+	</select>
+
+	<!-- 배포정보  조회 -->
+	<select id="selectDistrbList" resultMap="resultDistrbList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectDistrbList */
+		SELECT
+			TBL1.DISTRB_CONF_NM
+			,TBL2.DISTRB_STAT_CD
+			,TBL2.DISTRB_VER
+			,TBL2.DISTRB_ID
+			,TBL2.DISTRB_CONF_ID
+			,TO_CHAR(TBL2.CRE_DTTM, 'YYYY-MM-DD HH24:MI:SS') CRE_DTTM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '311' AND GRP_CD='110' AND CD = TBL2.DISTRB_STAT_CD) AS DISTRB_STAT_NM
+		FROM RX_DISTRB_CONF TBL1
+		INNER JOIN RX_DISTRB_HSTRY TBL2
+		ON TBL1.DISTRB_CONF_ID = TBL2.DISTRB_CONF_ID
+		AND TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		WHERE TBL1.DISTRB_CONF_ID = TBL2.DISTRB_CONF_ID
+		AND TBL1.SERVC_SEQ = #{servcSeq}
+		ORDER BY TBL2.CRE_DTTM DESC, TBL2.DISTRB_ID DESC
+	</select>
+
+	<!-- 이미지정보  조회 -->
+	<select id="selectImgList" resultMap="resultImgList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectImgList */
+		SELECT
+			TBL1.IMG_NM
+			,TBL1.IMG_REPO_ADDR
+			,TBL1.IMG_VER
+			,TBL1.IMG_ID
+			,TO_CHAR(TBL1.CRE_DTTM, 'YYYY-MM-DD') CRE_DTTM
+		FROM RX_IMG TBL1
+		INNER JOIN RX_BLD_CONF TBL2
+		ON TBL1.IMG_ID = TBL2.CRE_IMG_ID
+		AND TBL2.SERVC_SEQ = #{servcSeq}
+		ORDER BY TBL1.CRE_DTTM DESC, TBL1.IMG_VER DESC
+	</select>
+
+
+	<!-- 오토스케일 정보  조회 -->
+	<select id="selecServcSclngList" resultMap="resultServcSclngList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selecServcSclngList */
+		SELECT
+			TBL1.SCLNG_CL_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '304' AND GRP_CD='103' AND CD = TBL1.SCLNG_CL_CD) AS SCLNG_CL_NM
+			,TBL1.SCALR_NM
+			,COALESCE(TBL1.NOW_POD_QTY, 0) AS NOW_POD_QTY
+			,COALESCE(TBL1.MIN_POD_QTY, 0) AS MIN_POD_QTY
+			,COALESCE(TBL1.MAX_POD_QTY, 0) AS MAX_POD_QTY
+			,TBL2.THRES_CL_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '314' AND GRP_CD='113' AND CD = TBL2.THRES_CL_CD) AS THRES_CL_NM
+			,TBL2.STRT_THRES_VL
+			,TBL2.END_THRES_VL
+			,TBL3.SCL_GRP_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '313' AND GRP_CD='112' AND CD = TBL3.SCL_GRP_CD) AS SCL_GRP_NM
+			,TBL3.THRES_CL_CD
+			,TBL1.RSRV_STRT_DT
+			,TBL1.RSRV_END_DT
+		FROM RX_SERVC_SCLNG TBL1
+		INNER JOIN RX_SERVC_SCLNG_THRES_CONF TBL2
+		ON TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		AND TBL1.SCALR_ID = TBL2.SCALR_ID
+		LEFT OUTER JOIN RX_SERVC_SCLNG_GRP_COMP TBL3
+		ON TBL2.SERVC_SEQ = TBL3.SERVC_SEQ
+		AND TBL3.SCALR_ID = TBL2.SCALR_ID
+		AND TBL2.THRES_CL_CD = TBL3.THRES_CL_CD
+		WHERE TBL1.SERVC_SEQ = #{servcSeq}
+		AND COALESCE(TBL1.USE_YN, 'Y') = 'Y'
+	</select>
+
+
+	<!-- 빌드설정벙보정보  조회 -->
+	<select id="selectBldConf" resultMap="resultBldList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectBldConf */
+		SELECT
+			TBL1.SERVC_SEQ
+			, TBL1.BLD_ID
+			, TBL1.BLD_NM
+			, TBL1.BAS_IMG_ID
+			, TBL1.REPO_TY_CD
+			, TBL1.REPO_ADDR
+			, TBL1.GIT_BRNCH_NM
+			, TBL1.GIT_BEST_PATH
+			, TBL1.SCRTKY_ID
+			, TBL1.CRE_IMG_NM
+			, TBL1.CRE_IMG_ID
+			, TBL1.IMG_TAG
+			, TBL1.SERVC_AREA_SEQ
+			, TBL1.LAST_BLD_VER
+			, TBL1.LAST_BLD_DTTM
+			, TBL2.BAS_IMG_SERVC_AREA_ID
+		FROM RX_BLD_CONF TBL1
+		INNER JOIN RX_BLD_HSTRY TBL2
+		ON TBL1.SERVC_SEQ = TBL2.SERVC_SEQ
+		AND TBL1.BLD_ID = TBL2.BLD_ID
+		WHERE TBL1.SERVC_SEQ = #{servcSeq}
+		LIMIT 1
+	</select>
+
+
+	<!-- 배포정보  조회 -->
+	<select id="selectDistrb" resultMap="resultDistrbList">
+		/* ncis.sql.cpt.rsrc.atmscl.servc.selectDistrb */
+		SELECT
+			SERVC_SEQ
+			, DISTRB_CONF_ID
+			, DISTRB_CONF_NM
+			, TMPLAT_NM
+			, CNTANR_ID
+			, IMG_ID
+			, IMG_TAG
+			, RE_STRT_POLICY_CL_CD
+			, DNS_POLICY_CL_CD
+			, RPLCA_QTY
+			, TEST_YN
+			, LAST_DISTRB_DTTM
+			, LAST_DISTRB_VER
+			, STAT_CD
+			, RMK
+			, REQ_CPU_COR_QTY
+			, REQ_MEM_CAPA
+			, LMTT_CPU_COR_QTY
+			, LMTT_MEM_CAPA
+  		FROM RX_DISTRB_CONF
+		WHERE SERVC_SEQ = #{servcSeq}
+		LIMIT 1
+	</select>
+
+</mapper>

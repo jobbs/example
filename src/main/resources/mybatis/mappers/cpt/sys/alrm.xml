@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.alrm">
+
+	<resultMap type="ncis.cpt.sys.alrm.vo.AlrmVo" id="resultAlrmVo" extends="ncis.sql.cmn.cmAlrm.resultCmAlrm">
+		<result property="chargerNm" column="CHARGER_NM" />
+	</resultMap>
+
+	<sql id="search">
+
+		AND CHARGER_ID = #{searchUserId}
+
+		<if test="searchAlrmSbjct != null and !searchAlrmSbjct.isEmpty()">
+			AND ALRM_SBJCT LIKE '%' || #{searchAlrmSbjct} || '%'
+		</if>
+
+		<if test="searchStatCd != null and !searchStatCd.isEmpty()">
+			AND STAT_CD = #{searchStatCd}
+		</if>
+
+		<if test="searchConfirmYn != null and !searchConfirmYn.isEmpty()">
+			AND CONFRM_YN = #{searchConfirmYn}
+		</if>
+		<if test="searchStartDate != null and !searchStartDate.isEmpty()">
+			AND REG_DTTM <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchStartDate},'YYYY-MM-DD')
+		</if>
+
+		<if test="searchEndDate != null and !searchEndDate.isEmpty()">
+			AND REG_DTTM <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchEndDate}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+	</sql>
+
+	<select id="selectAlrmTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.alrm.selectAlrmTotCnt */
+		SELECT COUNT(*) FROM CM_ALRM
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectAlrmList" resultMap="resultAlrmVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.alrm.selectAlrmList */
+		SELECT
+			ALRM_SEQ
+			,ALRM_SBJCT
+			,ALRM_CN
+			,CHARGER_ID
+			,(SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = CHARGER_ID) CHARGER_NM
+			,TRGT_URL
+			,STAT_CD
+			,REG_DTTM
+			,CONFRM_YN
+			,CONFRM_DTTM
+		FROM CM_ALRM
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY REG_DTTM DESC
+
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectAlrm" resultMap="resultAlrmVo">
+		/* ncis.sql.cpt.alrm.selectAlrm */
+		SELECT
+			ALRM_SEQ
+			,ALRM_SBJCT
+			,ALRM_CN
+			,CHARGER_ID
+			,TRGT_URL
+			,STAT_CD
+			,REG_DTTM
+			,CONFRM_YN
+			,CONFRM_DTTM
+		FROM CM_ALRM
+		<where>
+			ALRM_SEQ = #{value }
+		</where>
+
+	</select>
+	<select id="selectAlrmListXlsDwnl" resultMap="resultAlrmVo">
+		/* ncis.sql.cpt.alrm.selectAlrmListXlsDwnl */
+		SELECT
+			ALRM_SEQ
+			,ALRM_SBJCT
+			,ALRM_CN
+			,CHARGER_ID
+			,(SELECT USER_NM FROM CM_USR U WHERE U.USER_ID = CHARGER_ID) CHARGER_NM
+			,TRGT_URL
+			,STAT_CD
+			,REG_DTTM
+			,CONFRM_YN
+			,CONFRM_DTTM
+		FROM CM_ALRM
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY REG_DTTM DESC
+	</select>
+</mapper>

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaAlrmTrgt">
+
+	<resultMap id="resultOaAlrmTrgt" type="ncis.cmn.entity.OaAlrmTrgt">
+	    <result property="patchAlrmSeq"     column="PATCH_ALRM_SEQ"/>  <!-- 패치알림SEQ -->
+	    <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="chargerId"     column="CHARGER_ID"/>  <!-- 담당자ID -->
+        <result property="chargerClCd"     column="CHARGER_CL_CD"/>  <!-- 담당자구분코드 -->
+        <result property="confrmYn"     column="CONFRM_YN"/>  <!-- 확인여부 -->
+        <result property="confrmDt"     column="CONFRM_DT"/>  <!-- 확인일자 -->
+	</resultMap>
+
+	<!-- 알림대상자 등록 -->
+	<insert id="insertOaAlrmTrgt">
+	INSERT INTO OA_ALRM_TRGT (
+	             PATCH_ALRM_SEQ  /* 패치알림SEQ */
+	           , VM_SEQ	/* 가상서버SEQ */
+	           , CHARGER_ID  /* 담당자ID */
+	           , CHARGER_CL_CD  /* 담당자구분코드 */
+	           , CONFRM_YN  /* 확인여부 */
+	           , CONFRM_DT  /* 확인일자 */
+	) VALUES (
+	           #{patchAlrmSeq}  /* 패치알림ID */
+			 , #{vmSeq}	/* 가상서버SEQ */
+	         , #{chargerId}  /* 담당자ID */
+	         , #{chargerClCd}  /* 담당자구분코드 */
+	         , #{confrmYn}  /* 확인여부 */
+	         , #{confrmDt}  /* 확인일자 */
+	)
+	</insert>
+
+	<!-- 알림대상자 수정 -->
+	<update id="updateOaAlrmTrgt">
+	UPDATE OA_ALRM_TRGT
+	         SET CONFRM_YN = #{confrmYn}  /* 확인여부 */
+	           , CONFRM_DT = now()  /* 확인일자 */
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림SEQ */
+           AND VM_SEQ = #{vmSeq}	/* 가상서버SEQ */
+            AND CHARGER_ID = #{chargerId}  /* 담당자ID */
+	</update>
+
+	<!-- 알림대상자 삭제 -->
+	<delete id="deleteOaAlrmTrgt">
+	DELETE FROM OA_ALRM_TRGT
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림SEQ */
+           AND CHARGER_ID = #{chargerId}  /* 담당자ID */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.net">
+
+	<resultMap type="ncis.cpt.rsrc.zone.vo.NetVo" id="resultNetVo" extends="ncis.sql.cmn.rcNet.resultRcNet">
+	</resultMap>
+
+	<select id="selectNetAllList" resultMap="resultNetVo">
+		/* ncis.sql.cpt.rsrc.com.net.selectNet */
+		SELECT
+			NET_ID
+			, NET_NM
+			, NET_CL_CD
+		FROM
+			RC_NET
+		ORDER BY NET_NM
+	</select>
+
+	<select id="selectNet" resultMap="resultNetVo">
+		/* ncis.sql.cpt.rsrc.com.net.selectNet */
+		SELECT
+			NET_ID
+			, NET_NM
+			, NET_CL_CD
+		FROM
+			RC_NET
+		WHERE
+			NET_ID = #{value}
+	</select>
+
+	<select id="selectNetListByZone" resultMap="resultNetVo">
+		/* ncis.sql.cpt.rsrc.com.net.selectNetListByZone */
+		SELECT
+			N.NET_ID, N.NET_NM, N.NET_CL_CD, M.ZONE_ID
+		FROM RC_ZONE_NET_MATRIX M LEFT JOIN RC_NET N ON M.NET_ID=N.NET_ID
+		WHERE
+			M.ZONE_ID = #{zoneId}
+			<if test="byRole and !sysAdm">
+			AND N.NET_ID IN (
+				SELECT NET_ID
+				FROM CM_RSRC_POOL_USER U
+					INNER JOIN RC_RSRC_POOL P ON U.RSRC_POOL_ID = P.RSRC_POOL_ID
+				WHERE
+					U.USER_ID = #{searchUserId}
+					AND P.ZONE_ID = #{zoneId}
+					AND DEL_YN = 'N'
+			)
+			</if>
+		ORDER BY NET_NM
+	</select>
+
+</mapper>

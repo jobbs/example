@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrStrgDelReqList">
+
+	<resultMap id="resultRrStrgDelReqList" type="ncis.cmn.entity.RrStrgDelReqList">
+        <result property="vrDskId"     column="VR_DSK_ID"/>     <!-- 가상디스크ID -->
+        <result property="rsrcReqNo"   column="RSRC_REQ_NO"/>   <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"  column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+	</resultMap>
+
+	<!-- 스토리지삭제요청목록 등록 -->
+	<insert id="insertRrStrgDelReqList">
+	INSERT INTO RR_STRG_DEL_REQ_LIST (
+	           VR_DSK_ID      /* 가상디스크ID */
+	         , RSRC_REQ_NO    /* 자원요청번호 */
+	         , RSRC_REQ_SEQ   /* 자원요청일련번호 */
+	) VALUES (
+	           #{vrDskId}     /* 가상디스크ID */
+	         , #{rsrcReqNo}   /* 자원요청번호 */
+	         , #{rsrcReqSeq}  /* 자원요청일련번호 */
+	)
+	</insert>
+
+	<!-- 스토리지삭제요청목록 수정 -->
+	<update id="updateRrStrgDelReqList">
+	UPDATE RR_STRG_DEL_REQ_LIST
+	   SET VR_DSK_ID    = #{vrDskId}     /* 가상디스크ID */
+	     , RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+	     , RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+     WHERE VR_DSK_ID    = #{vrDskId}     /* 가상디스크ID */
+       AND RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+       AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+
+	</update>
+
+	<!-- 스토리지삭제요청목록 삭제 -->
+	<delete id="deleteRrStrgDelReqList">
+	DELETE FROM RR_STRG_DEL_REQ_LIST
+          WHERE VR_DSK_ID    = #{vrDskId}     /* 가상디스크ID */
+            AND RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+            AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+
+	</delete>
+
+</mapper>

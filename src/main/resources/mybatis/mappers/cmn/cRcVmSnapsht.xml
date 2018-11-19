@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcVmSnapsht">
+
+	<resultMap id="resultRcVmSnapsht" type="ncis.cmn.entity.RcVmSnapsht">
+        <result property="snapshtSeq"     column="SNAPSHT_SEQ"/>  <!-- 스냅샷ID -->
+        <result property="snapshtNm"     column="SNAPSHT_NM"/>  <!-- 스냅샷명 -->
+        <result property="snapshtCreDt"     column="SNAPSHT_CRE_DT"/>  <!-- 스냅샷생성일시 -->
+        <result property="statCd"     column="STAT_CD"/>  <!-- 상태코드 -->
+        <result property="tyCd"     column="TY_CD"/>  <!-- 유형코드 -->
+        <result property="dskNo"     column="DSK_NO"/>  <!-- 디스크번호 -->
+        <result property="rmk"     column="RMK"/>  <!-- 비고 -->
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="uuid"     column="UUID"/>  <!-- UUID -->
+        <result property="snapshtAsgnCapa"     column="SNAPSHT_ASGN_CAPA"/>  <!-- 스냅샷용량 -->
+	</resultMap>
+
+	<!-- 가상서버스냅샷 등록 -->
+	<insert id="insertRcVmSnapsht">
+	INSERT INTO RC_VM_SNAPSHT (
+	             SNAPSHT_SEQ  /* 스냅샷SEQ */
+	           , SNAPSHT_NM  /* 스냅샷명 */
+	           , SNAPSHT_CRE_DT  /* 스냅샷생성일시 */
+	           , STAT_CD  /* 상태코드 */
+	           , TY_CD  /* 유형코드 */
+	           , DSK_NO  /* 디스크번호 */
+	           , RMK  /* 비고 */
+	           , VM_SEQ  /* 가상서버SEQ */
+	           , UUID  /* UUID */
+	           , SNAPSHT_ASGN_CAPA  /* 스냅샷용량 */
+	) VALUES (
+	           #{snapshtSeq}  /* 스냅샷ID */
+	         , #{snapshtNm}  /* 스냅샷명 */
+	         , #{snapshtCreDt}  /* 스냅샷생성일시 */
+	         , #{statCd}  /* 상태코드 */
+	         , #{tyCd}  /* 유형코드 */
+	         , #{dskNo}  /* 디스크번호 */
+	         , #{rmk}  /* 비고 */
+	         , #{vmSeq}  /* 가상서버SEQ */
+	         , #{snapshtAsgnCapa}  /* 스냅샷용량 */
+	)
+	</insert>
+
+	<!-- 가상서버스냅샷 수정 -->
+	<update id="updateRcVmSnapsht">
+	UPDATE RC_VM_SNAPSHT
+	         SET SNAPSHT_SEQ = #{snapshtSeq}  /* 스냅샷SEQ */
+	           , SNAPSHT_NM = #{snapshtNm}  /* 스냅샷명 */
+	           , SNAPSHT_CRE_DT = #{snapshtCreDt}  /* 스냅샷생성일시 */
+	           , STAT_CD = #{statCd}  /* 상태코드 */
+	           , TY_CD = #{tyCd}  /* 유형코드 */
+	           , DSK_NO = #{dskNo}  /* 디스크번호 */
+	           , RMK = #{rmk}  /* 비고 */
+	           , VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	           , UUID = #{uuid}  /* UUID */
+	           , SNAPSHT_ASGN_CAPA = #{snapshtAsgnCapa}  /* 스냅샷용량 */
+         WHERE SNAPSHT_SEQ = #{snapshtSeq}  /* 스냅샷SEQ */
+
+	</update>
+
+	<!-- 가상서버스냅샷 삭제 -->
+	<delete id="deleteRcVmSnapsht">
+	DELETE FROM RC_VM_SNAPSHT
+         WHERE SNAPSHT_SEQ = #{snapshtSeq}  /* 스냅샷SEQ */
+
+	</delete>
+
+</mapper>

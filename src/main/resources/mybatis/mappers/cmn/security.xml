@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.security">
+
+	<resultMap type="ncis.cmn.security.vo.UserVo" id="resultUser" extends="ncis.sql.cmn.cmusr.resultCmUsr">
+		<result property="ncmsRcntLoginDttm" 			column="NCMS_RCNT_LOGIN_DTTM" />
+		<collection property="roleList" column="USER_ID" select="selectRoleListByUesr" />
+		<collection property="menuList" column="USER_ID" select="selectMenuListByUser" />
+		<collection property="uiConfs" 	column="USER_ID" select="selectUsrUiConf" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.menu.vo.MenuVo" id="resultMenuVo" extends="ncis.sql.cmn.menu.resultMenu">
+		<association property="parent" 			column="PARENT_SEQ" 		select="ncis.sql.cpt.menu.selectMenu" notNullColumn="PARENT_SEQ" />
+		<association property="menuRoleList" 	resultMap="ncis.sql.cpt.menu.resultMenuRoleVo" />
+	</resultMap>
+
+	<resultMap type="ncis.cmn.security.vo.Grant" id="resultGrant">
+		<id property="roleCd" column="ROLE_CD"/>
+		<result property="userId" column="USER_ID" />
+		<result property="roleTyCd" column="ROLE_TY_CD" />
+	</resultMap>
+
+	<select id="getUser" resultMap="resultUser">
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		FROM
+			CM_USR
+		WHERE
+			USER_STAT != 'E'
+			AND USER_ID = #{value }
+	</select>
+
+	<select id="selectUserByDn" resultMap="resultUser">
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		FROM
+			CM_USR
+		WHERE
+			USER_STAT != 'E'
+			AND CRTFCT_KEY = #{value }
+	</select>
+
+	<select id="selectRoleListByUesr" parameterType="String" resultMap="resultGrant">
+		SELECT
+			UR.ROLE_CD, USER_ID, ROLE_NM, ROLE_TY_CD
+		FROM CM_USR_ROLE UR LEFT JOIN CM_ROLE R ON UR.ROLE_CD=R.ROLE_CD
+		WHERE USER_ID = #{userId}
+	</select>
+
+	<select id="selectMenuListByUser" resultMap="resultMenuVo">
+		WITH RECURSIVE MENU (
+			MENU_SEQ, PARENT_SEQ, MENU_NM, MENU_PATTERN, MENU_FILE, MENU_DESC, MENU_LEVEL,
+			POPUP_YN, USE_YN, MENU_ORDER, REG_DTTM, REG_USER_ID, UPDT_DTTM, UPDT_USER_ID,
+			ROLE_CD, READ_YN, WRITE_YN, ACT_YN
+		) AS (
+			SELECT
+				MI.MENU_SEQ, PARENT_SEQ, MENU_NM, MENU_PATTERN, MENU_FILE, MENU_DESC, MENU_LEVEL,
+				POPUP_YN, USE_YN, MENU_ORDER, REG_DTTM, REG_USER_ID, UPDT_DTTM, UPDT_USER_ID,
+				MR.ROLE_CD, MR.READ_YN, MR.WRITE_YN, MR.ACT_YN
+			FROM
+				CM_MENU MI
+				LEFT OUTER JOIN (
+					SELECT
+						MENU_SEQ, MR.ROLE_CD, READ_YN, WRITE_YN, ACT_YN
+					FROM
+						CM_MENU_ROLE MR
+						INNER JOIN CM_USR_ROLE RU ON RU.ROLE_CD=MR.ROLE_CD AND USER_ID = #{value }
+					WHERE
+						 MR.READ_YN='Y'
+				) MR ON MI.MENU_SEQ=MR.MENU_SEQ
+			WHERE
+				USE_YN = 'Y'
+				AND NOT EXISTS ( SELECT 1 FROM CM_MENU WHERE PARENT_SEQ = MI.MENU_SEQ)
+				AND ROLE_CD IS NOT NULL
+			UNION ALL
+			SELECT
+				M.MENU_SEQ, M.PARENT_SEQ, M.MENU_NM, M.MENU_PATTERN, M.MENU_FILE, M.MENU_DESC, M.MENU_LEVEL,
+				M.POPUP_YN, M.USE_YN, M.MENU_ORDER, M.REG_DTTM, M.REG_USER_ID, M.UPDT_DTTM, M.UPDT_USER_ID,
+				null::varchar(6), null::varchar(1), null::varchar(1), null::varchar(1)
+			FROM MENU A
+				JOIN CM_MENU M ON M.MENU_SEQ = A.PARENT_SEQ
+		)
+		SELECT DISTINCT *
+		FROM MENU
+		ORDER BY MENU_LEVEL, MENU_ORDER;
+	</select>
+
+	<select id="selectUsrUiConf" resultMap="ncis.sql.cmn.cmUsrUiConf.resultCmUsrUiConf">
+		SELECT
+			CONF_CD,
+			USR_ID,
+			CONF_VL
+		FROM
+			CM_USR_UI_CONF
+		WHERE
+			 USR_ID = #{userId}
+	</select>
+</mapper>

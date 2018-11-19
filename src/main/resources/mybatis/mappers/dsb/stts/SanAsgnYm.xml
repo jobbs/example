@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.asgn.sanAsgnYm">
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.SanAsgnYmVo" id="resultSanAsgnYmVo">
+		<result property="mm" column="mm"/>
+		<result property="mmQ" column="mm_q"/>
+		<result property="ym" column="ym"/>
+		<result property="phyCapa" column="phy_capa"/>
+		<result property="keepCapa" column="keep_capa"/>
+		<result property="totAsgnCapa" column="tot_asgn_capa"/>
+		<result property="vmAsgnCapa" column="vm_asgn_capa"/>
+		<result property="unusedLunCapa" column="unused_lun_capa"/>
+		<result property="unusedLunQty" column="unused_lun_qty"/>
+		<result property="marginQty" column="margin_qty"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.SanAsgnYmVo" id="resultSanAsgnRsrcVo">
+		<result property="rn" column="rn"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="regionId" column="region_id"/>
+		<result property="ym" column="ym"/>
+		<result property="phyCapaS" column="phy_capa_s"/>
+		<result property="keepCapa" column="keep_capa"/>
+		<result property="totAsgnCapa" column="tot_asgn_capa"/>
+		<result property="vmAsgnCapa" column="vm_asgn_capa"/>
+		<result property="unusedLunCapa" column="unused_lun_capa"/>
+		<result property="unusedLunQty" column="unused_lun_qty"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.SanAsgnYmVo" id="resultSanAsgnViewVo">
+		<result property="yy" column="yy"/>
+		<result property="mm" column="mm"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="regionId" column="region_id"/>
+		<result property="unusedLunCapa" column="unused_lun_capa"/>
+		<result property="unusedLunQty" column="unused_lun_qty"/>
+	</resultMap>
+
+
+	<select id="selectSanAsgnYmList" resultMap="resultSanAsgnYmVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgn.sanAsgnYm.selectSanAsgnYmList */
+
+		<if test="trm == 'quarter'">
+		 select
+				case when a.mm_q between '01' and '03' then '01'
+				     when a.mm_q between '04' and '06' then '02'
+				     when a.mm_q between '07' and '09' then '03'
+				     when a.mm_q between '10' and '12' then '04'
+				  end mm,
+
+				  sum(phy_capa) phy_capa,
+				  sum(keep_capa) keep_capa,
+				  sum(tot_asgn_capa) tot_asgn_capa,
+				  sum(vm_asgn_capa) vm_asgn_capa,
+				  sum(unused_lun_capa) unused_lun_capa,
+				  sum(unused_lun_qty) unused_lun_qty,
+				  sum(margin_qty) margin_qty
+			    from
+				(
+	    </if>
+
+
+	    <if test="trm == 'mm' or trm == 'quarter'">
+			     select
+				       substr(b.ym,5,2) mm,
+				       substr(b.ym,5,2) mm_q,
+			           b.ym,
+			           a.phy_capa,
+			           b.keep_capa,
+			           b.tot_asgn_capa,
+			           b.vm_asgn_capa,
+			           b.unused_lun_capa,
+			           b.unused_lun_qty,
+			           round(a.phy_capa*0.9-b.tot_asgn_capa,1) margin_qty
+			        from
+	      </if>
+
+                          (select b.ym,
+								  sum(b.keep_capa) keep_capa,
+								  sum(b.tot_asgn_capa) tot_asgn_capa,
+								  sum(b.vm_asgn_capa) vm_asgn_capa,
+								  sum(c.unused_lun_capa) unused_lun_capa,
+								  sum(c.unused_lun_qty) unused_lun_qty
+
+				                 from
+								            (select a.asgn_ym ym,
+								                    a.rsrc_pool_id,
+												    sum(a.keep_capa) keep_capa,
+												    sum(a.tot_asgn_capa) tot_asgn_capa,
+												    sum(a.vm_asgn_capa) vm_asgn_capa
+										       from st_san_strg_asgn_stte a
+										       where 1=1
+										           <if test="region != null and !region.isEmpty()">
+
+												       	<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+												        	#{item}
+												      	</foreach>
+										            </if>
+										            and a.asgn_ym between #{year}||'01' and #{year}||'12'
+										     group by a.asgn_ym,
+						                              a.rsrc_pool_id
+										    ) b
+										    left join
+											 (select  a.ym,
+											              a.rsrc_pool_id,
+										                  sum(a.unused_lun_capa) unused_lun_capa,
+										                  sum(a.unused_lun_qty) unused_lun_qty
+										              from st_san_strg_unused_lun a
+										            where 1=1
+										                  <if test="region != null and !region.isEmpty()">
+													       	<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+													        	#{item}
+													      	</foreach>
+											              </if>
+											              and a.ym between #{year}||'01' and #{year}||'12'
+										            group by ym,
+										                     rsrc_pool_id
+								             ) c on b.ym = c.ym and b.rsrc_pool_id = c.rsrc_pool_id
+								     group by b.ym
+								 ) b
+				               left join
+								   (select a.ym,
+									       sum(a.phy_capa) phy_capa
+								       from st_ym_phy_capa a
+								     where 1=1
+								           <if test="region != null and !region.isEmpty()">
+
+										       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+										         	#{item}
+										       		</foreach>
+								            </if>
+								           and a.ym between #{year}||'01' and #{year}||'12'
+								    group by a.ym
+								    ) a on b.ym = a.ym
+
+			            order by mm
+	   <if test="trm == 'quarter'">
+       ) a
+         group by
+             case  when a.mm_q between '01' and '03' then '01'
+			       when a.mm_q between '04' and '06' then '02'
+			       when a.mm_q between '07' and '09' then '03'
+			       when a.mm_q between '10' and '12' then '04'
+		      end
+        </if>
+	</select>
+
+
+  <select id="selectSanAsgnRsrcList" resultMap="resultSanAsgnRsrcVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgn.sanAsgnYm.selectSanAsgnRsrcList */
+
+		select
+		    row_number() over(order by a.region_id) rn,
+            a.rsrc_pool_id,
+            a.rsrc_pool_nm,
+            a.region_id,
+            '-' phy_capa_s,
+		    b.keep_capa,
+		    b.tot_asgn_capa,
+		    b.vm_asgn_capa,
+		    c.unused_lun_capa,
+		    c.unused_lun_qty
+
+	       from
+
+				    (select
+				            a.rsrc_pool_id,
+						    sum(a.keep_capa) keep_capa,
+						    sum(a.tot_asgn_capa) tot_asgn_capa,
+						    sum(a.vm_asgn_capa) vm_asgn_capa
+				       from st_san_strg_asgn_stte a
+				       where 1=1
+				          <choose>
+				            <when test="trm == 'mm'">
+				               and a.asgn_ym = #{year}||#{mm}
+				            </when>
+				            <otherwise>
+				              <choose>
+				                 <when test="mm == '01'">
+				                   and a.asgn_ym between #{year}||'01' AND #{year}||'03'
+				                 </when>
+				                 <when test="mm == '02'">
+				                   and a.asgn_ym between #{year}||'04' AND #{year}||'06'
+				                 </when>
+				                 <when test="mm == '03'">
+				                   and a.asgn_ym between #{year}||'07' AND #{year}||'09'
+				                 </when>
+				                 <when test="mm == '04'">
+				                   and a.asgn_ym between #{year}||'10' AND #{year}||'12'
+				                 </when>
+				              </choose>
+				             </otherwise>
+				           </choose>
+
+				              <if test="region != null and !region.isEmpty()">
+					       	     <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+					        	   #{item}
+					      	     </foreach>
+			                  </if>
+				     group by
+				              a.rsrc_pool_id
+				    ) b
+		         left join
+			          (select
+			                  a.rsrc_pool_id,
+			                  sum(a.unused_lun_capa) unused_lun_capa,
+			                  sum(a.unused_lun_qty) unused_lun_qty
+			              from st_san_strg_unused_lun a
+			            where 1=1
+			            <choose>
+				            <when test="trm == 'mm'">
+				             and a.ym = #{year}||#{mm}
+				            </when>
+				            <otherwise>
+				              <choose>
+				                 <when test="mm == '01'">
+				                   and a.ym between #{year}||'01' AND #{year}||'03'
+				                 </when>
+				                 <when test="mm == '02'">
+				                   and a.ym between #{year}||'04' AND #{year}||'06'
+				                 </when>
+				                 <when test="mm == '03'">
+				                   and a.ym between #{year}||'07' AND #{year}||'09'
+				                 </when>
+				                 <when test="mm == '04'">
+				                   and a.ym between #{year}||'10' AND #{year}||'12'
+				                 </when>
+				              </choose>
+				            </otherwise>
+				          </choose>
+				          <if test="region != null and !region.isEmpty()">
+					       	     <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+					        	   #{item}
+					      	     </foreach>
+			               </if>
+
+			            group by
+			                     rsrc_pool_id
+			          ) c on b.rsrc_pool_id = c.rsrc_pool_id
+			        left join  rc_rsrc_pool a on b.rsrc_pool_id = a.rsrc_pool_id
+			      order by a.region_id
+	</select>
+
+	<select id="selectSanAsgnView" resultMap="resultSanAsgnViewVo">
+	/* sqlid : ncis.sql.dsb.stts.asgn.sanAsgnYm.selectSanAsgnView */
+
+        select x.yy,
+               x.mm,
+               x.rsrc_pool_id,
+               x.region_id,
+               y.unused_lun_capa,
+               y.unused_lun_qty,
+               b.rsrc_pool_nm
+          from
+			       (select substr(a.asgn_ym,1,4) yy,
+			               substr(a.asgn_ym,5,2) mm,
+			               a.rsrc_pool_id,
+			               a.region_id
+			           from st_san_strg_asgn_stte a
+			          where 1=1
+			                <choose>
+							<when test="trm == 'mm'">
+				               and a.asgn_ym = #{year}||#{mm}
+				            </when>
+							<otherwise>
+						       <choose>
+							      <when test="mm == '1'">
+							         and a.asgn_ym between #{year}||'01' AND #{year}||'03'
+							      </when>
+							      <when test="mm == '2'">
+							         and a.asgn_ym between #{year}||'04' AND #{year}||'06'
+							      </when>
+							      <when test="mm == '3'">
+							         and a.asgn_ym between #{year}||'07' AND #{year}||'09'
+							      </when>
+							      <when test="mm == '4'">
+							         and a.asgn_ym between #{year}||'10' AND #{year}||'12'
+							      </when>
+							    </choose>
+							 </otherwise>
+					     </choose>
+					      <if test="region != null and !region.isEmpty()">
+							     <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+							       	   #{item}
+							     </foreach>
+						  </if>
+
+					     <if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+				         	and a.rsrc_pool_id = #{rsrcPoolId}
+				         </if>
+
+		             group by substr(a.asgn_ym,1,4),
+			                  substr(a.asgn_ym,5,2),
+		                      a.rsrc_pool_id,
+		                      a.region_id
+		           )x
+		           left join
+				       (select  substr(a.ym,1,4) yy,
+					            substr(a.ym,5,2) mm,
+					            a.rsrc_pool_id,
+
+					            sum(a.unused_lun_capa) unused_lun_capa,
+					            sum(a.unused_lun_qty) unused_lun_qty
+
+				      from st_san_strg_unused_lun a
+				    where 1=1
+				          <choose>
+							<when test="trm == 'mm'">
+				               and a.ym = #{year}||#{mm}
+				            </when>
+							<otherwise>
+						       <choose>
+							      <when test="mm == '1'">
+							         and a.ym between #{year}||'01' AND #{year}||'03'
+							      </when>
+							      <when test="mm == '2'">
+							         and a.ym between #{year}||'04' AND #{year}||'06'
+							      </when>
+							      <when test="mm == '3'">
+							         and a.ym between #{year}||'07' AND #{year}||'09'
+							      </when>
+							      <when test="mm == '4'">
+							         and a.ym between #{year}||'10' AND #{year}||'12'
+							      </when>
+							    </choose>
+							 </otherwise>
+					     </choose>
+					      <if test="region != null and !region.isEmpty()">
+							     <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+							       	   #{item}
+							     </foreach>
+						  </if>
+
+					     <if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+				         	and a.rsrc_pool_id = #{rsrcPoolId}
+				         </if>
+				      group by
+				               substr(a.ym,1,4),
+					           substr(a.ym,5,2),
+					           a.rsrc_pool_id
+			        ) y	on x.yy = y.yy and x.mm = y.mm and x.rsrc_pool_id = y.rsrc_pool_id
+		             left join rc_rsrc_pool b on x.rsrc_pool_id = b.rsrc_pool_id
+	</select>
+
+	<delete id="deleteSanAsgn">
+		/* ncis.sql.dsb.stts.asgn.sanAsgnYm.deleteSanAsgn */
+
+		DELETE FROM  st_san_strg_unused_lun
+		WHERE ym =#{yy}||#{mm}
+
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+		  	  AND rsrc_pool_id = #{rsrcPoolId}
+		</if>
+	</delete>
+
+	<insert id="insertSanAsgn">
+	/* sqlid : ncis.sql.dsb.stts.asgn.sanAsgnYm.insertSanAsgn */
+
+		WITH UPSERT AS (
+			SELECT
+				#{yy}||#{mm}::text AS ym,
+				#{rsrcPoolId}::text AS rsrc_pool_id,
+				#{regionId}::text AS region_id,
+				#{unusedLunCapa} AS unused_lun_capa,
+				#{unusedLunQty} AS unused_lun_qty
+
+		),
+
+		UPDATE_OPTION AS (
+			UPDATE st_san_strg_unused_lun AS strgLun
+				SET ym = UPSERT.ym,
+				    rsrc_pool_id = UPSERT.rsrc_pool_id,
+					region_id = UPSERT.region_id,
+					unused_lun_capa = UPSERT.unused_lun_capa,
+					unused_lun_qty = UPSERT.unused_lun_qty
+
+			FROM UPSERT
+			WHERE
+			    strgLun.ym=UPSERT.ym
+				and strgLun.rsrc_pool_id=UPSERT.rsrc_pool_id
+
+		)
+		INSERT INTO st_san_strg_unused_lun (
+			ym, rsrc_pool_id, region_id, unused_lun_capa, unused_lun_qty
+		)
+		SELECT
+			ym, rsrc_pool_id, region_id, unused_lun_capa, unused_lun_qty
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM st_san_strg_unused_lun AS strgLun
+				WHERE  strgLun.ym = UPSERT.ym
+				       and strgLun.rsrc_pool_id = UPSERT.rsrc_pool_id
+
+			)
+	</insert>
+</mapper>

@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.clstResStte">
+
+
+	 <resultMap type="ncis.dsb.stts.res.vo.PmResInfoVo" id="resultPmResInfoVo">
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.HiperVisorCntVo" id="resultHiperVisorCntVo">
+	    <result property="total" column="total"/>
+		<result property="rhev" column="rhev"/>
+		<result property="vmware" column="vmware"/>
+		<result property="ibm" column="ibm"/>
+		<result property="hp" column="hp"/>
+		<result property="openstack" column="openstack"/>
+		<result property="docker" column="docker"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.VmCntVo" id="resultVmCntVo">
+		<result property="total" column="total"/>
+		<result property="win" column="win"/>
+		<result property="linux" column="linux"/>
+		<result property="hp" column="hp"/>
+		<result property="aix" column="aix"/>
+		<result property="etc" column="etc"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.ResAsgnCntVo" id="resultResAsgnCntVo">
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="lastAsgnStrgCapa" column="last_asgn_strg_capa"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.VirtRtVo" id="resultVirtRtVo">
+		<result property="cpuVirtRt" column="ax_virt_rt"/>
+		<result property="memVirtRt" column="mem_virt_rt"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.AxCntVo" id="resultAxCntVo">
+		<result property="servcCnt" column="SERVC_CNT"/>
+		<result property="podQty" column="POD_QTY"/>
+		<result property="cpuCorQty" column="CPU_COR_QTY"/>
+		<result property="memTotCapa" column="MEM_TOT_CAPA"/>
+		<result property="strgTotCapa" column="STRG_TOT_CAPA"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.res.vo.VmInfoVo" id="resultVmListVo">
+		<result property="regionNm" column="region_nm"/>
+		<result property="zoneNm" column="zone_nm"/>
+		<result property="netNm" column="net_nm"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="clstrNm" column="clstr_nm"/>
+		<result property="prposNm" column="prpos_nm"/>
+		<result property="pmTotal" column="pm_total"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="hipervisor" column="hipervisor"/>
+		<result property="vmTotal" column="vm_total"/>
+		<result property="win" column="win"/>
+		<result property="linux" column="linux"/>
+		<result property="hp" column="hp"/>
+		<result property="aix" column="aix"/>
+		<result property="etc" column="etc"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="lastAsgnStrgCapa" column="last_asgn_strg_capa"/>
+		<result property="cpuVirtRt" column="cpu_virt_rt"/>
+		<result property="memVirtRt" column="mem_virt_rt"/>
+
+	</resultMap>
+
+
+<sql id="search">
+		<choose>
+						<when test='"DD".equals(searchTrmCd)'>
+							AND a.COLCT_DT = REPLACE(#{date},'-','')
+						</when>
+						<when test='"DI".equals(searchTrmCd)'>
+							AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+						</when>
+						<when test='"MM".equals(searchTrmCd)'>
+							AND a.COLCT_YM = #{year}||#{searchMmCd}
+						</when>
+						<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+							AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+						</when>
+						<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+							AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+						</when>
+						<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+							AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+						</when>
+						<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+							AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+						</when>
+						<when test='"YY".equals(searchTrmCd)'>
+					      AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+
+					     </when>
+
+
+			</choose>
+			<if test='regionId !=null and !"".equals(regionId)'>
+						AND a.REGION_ID = #{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+						AND a.ZONE_ID = #{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+						AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+						AND a.RSRC_POOL_ID = #{rsrcPoolId}
+			</if>
+
+	</sql>
+
+ <select id="selectClCnt" resultType="Integer">
+  /* ncis.sql.dsb.stts.res.clstResStte.selectClCnt */
+		select
+             count(distinct a.rsrc_pool_id) rsrc_pool_id
+         from
+            (SELECT A.pm_seq,
+                    MAX(A.rsrc_pool_id) rsrc_pool_id
+              FROM
+			      (SELECT a.pm_seq,
+			        	  FIRST_VALUE(A.rsrc_pool_id)OVER( PARTITION BY A.PM_SEQ ORDER BY
+						  <choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									A.COLCT_DT
+								</when>
+								<otherwise>
+									A.COLCT_YM
+								</otherwise>
+							</choose> DESC) rsrc_pool_id
+			          FROM
+			          <choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							st_pm_colct_sum_1dd a
+						</when>
+					    <otherwise>
+					        st_pm_colct_sum_1mm a
+					     </otherwise>
+					  </choose>
+
+			       where 1=1
+						<include refid="search"/>
+
+	             ) A
+            	 GROUP BY A.PM_SEQ
+           ) A
+  </select>
+
+
+
+ <select id="selectPmResInfo" resultMap="resultPmResInfoVo">
+  /* ncis.sql.dsb.stts.res.clstResStte.selectPmResInfo */
+		select COALESCE(sum(a.last_cpu_cor_qty),0) last_cpu_cor_qty,
+               COALESCE(round(sum(a.last_mem_sum_capa)/1024/1024/1024,0),0) last_mem_sum_capa,
+               COALESCE(round(sum(a.last_strg_sum_capa)/1024/1024/1024/1024,0),0) last_strg_sum_capa
+
+        from
+        	(select a.PM_SEQ,
+        	        max(a.last_cpu_cor_qty) last_cpu_cor_qty,
+        	        max(a.last_mem_sum_capa) last_mem_sum_capa,
+        	        max(a.last_strg_sum_capa) last_strg_sum_capa
+        	   from
+		        	(select a.pm_seq,
+		        	        FIRST_VALUE(A.last_cpu_cor_qty)OVER( PARTITION BY A.PM_SEQ ORDER BY
+							<choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									A.COLCT_DT
+								</when>
+								<otherwise>
+									A.COLCT_YM
+								</otherwise>
+							</choose> DESC) last_cpu_cor_qty,
+							FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.PM_SEQ ORDER BY
+							<choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									A.COLCT_DT
+								</when>
+								<otherwise>
+									A.COLCT_YM
+								</otherwise>
+							</choose> DESC) last_mem_sum_capa,
+							FIRST_VALUE(A.last_strg_sum_capa)OVER( PARTITION BY A.PM_SEQ ORDER BY
+							<choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									A.COLCT_DT
+								</when>
+								<otherwise>
+									A.COLCT_YM
+								</otherwise>
+							</choose> DESC) last_strg_sum_capa
+                       FROM
+			           <choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							st_pm_colct_sum_1dd a
+						</when>
+					    <otherwise>
+					        st_pm_colct_sum_1mm a
+					     </otherwise>
+					</choose>
+			       where 1=1
+			             <include refid="search"/>
+                  ) a
+              group by PM_SEQ
+           ) A
+  </select>
+
+   <select id="selectHiperVisorCnt" resultMap="resultHiperVisorCntVo">
+   /* ncis.sql.dsb.stts.res.clstResStte.selectHiperVisorCnt */
+		select count(a.pm_seq) total,
+		       COALESCE(sum(case when vrlz_sw_ty_cd='01' then 1 else 0 end),0) rhev,
+               COALESCE(sum(case when vrlz_sw_ty_cd='02' then 1 else 0 end),0) vmware,
+               COALESCE(sum(case when vrlz_sw_ty_cd='03' then 1 else 0 end),0) ibm,
+               COALESCE(sum(case when vrlz_sw_ty_cd='04' then 1 else 0 end),0) hp,
+               COALESCE(sum(case when vrlz_sw_ty_cd='05' then 1 else 0 end),0) openstack,
+               COALESCE(sum(case when vrlz_sw_ty_cd='06' then 1 else 0 end),0) docker
+
+
+        from
+          (SELECT A.pm_seq,
+                  MAX(A.vrlz_sw_ty_cd) vrlz_sw_ty_cd
+               FROM
+		            (select a.pm_seq,
+				        	FIRST_VALUE(B.vrlz_sw_ty_cd)OVER( PARTITION BY A.PM_SEQ ORDER BY
+							<choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									A.COLCT_DT
+								</when>
+								<otherwise>
+									A.COLCT_YM
+								</otherwise>
+							</choose> DESC) vrlz_sw_ty_cd
+				        from
+				             <choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									st_pm_colct_sum_1dd a
+								</when>
+							    <otherwise>
+							        st_pm_colct_sum_1mm a
+							     </otherwise>
+							</choose>
+				             ,rc_rsrc_pool b
+				       where 1=1
+				             and a.rsrc_pool_id = b.rsrc_pool_id
+				             <include refid="search"/>
+				     ) a
+            	GROUP BY A.pm_seq
+        ) A
+  </select>
+
+  <select id="selectVmCnt" resultMap="resultVmCntVo">
+  /* ncis.sql.dsb.stts.res.clstResStte.selectVmCnt */
+		 select count(a.vm_seq) total,
+		         sum(case when A.os_ty_cd = '04' then 1 else 0 end) win,
+		         sum(case when A.os_ty_cd = '01' then 1 else 0 end) linux,
+				 sum(case when A.os_ty_cd = '02' then 1 else 0 end) hp,
+				 sum(case when A.os_ty_cd = '03' then 1 else 0 end) aix,
+				 sum(case when A.os_ty_cd not in ('01','02','03','04') or A.os_ty_cd is null then 1 else 0 end) etc
+		    from
+		      (SELECT A.VM_SEQ,
+		              MAX(A.os_ty_cd) os_ty_cd
+		         FROM
+	                (select aa.VM_SEQ,
+				        	FIRST_VALUE(B.os_ty_cd)OVER( PARTITION BY AA.VM_SEQ ORDER BY
+							<choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									AA.COLCT_DT
+								</when>
+								<otherwise>
+									AA.COLCT_YM
+								</otherwise>
+							</choose> DESC) os_ty_cd
+				         FROM
+				             <choose>
+								<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+									st_vm_colct_sum_1dd aa inner join
+									st_pm_colct_sum_1dd a on a.pm_seq = aa.pm_seq and a.colct_dt = aa.colct_dt
+								</when>
+							    <otherwise>
+							        st_vm_colct_sum_1mm aa inner join
+							        st_pm_colct_sum_1mm a on a.pm_seq = aa.pm_seq and a.colct_ym = aa.colct_ym
+							     </otherwise>
+							</choose>
+
+					         left join rc_vm b on aa.vm_seq = b.vm_seq
+					   where 1=1
+
+					         <include refid="search"/>
+				   )A
+                     GROUP BY A.VM_SEQ
+           ) A
+  </select>
+
+
+    <select id="selectResAsgn" resultMap="resultResAsgnCntVo">
+     /* ncis.sql.dsb.stts.res.clstResStte.selectResAsgn */
+		 select COALESCE(sum(a.last_vcore_qty),0) last_asgn_vcor_qty,
+                COALESCE(sum(round(a.last_mem_sum_capa/1024/1024/1024,0)),0) last_asgn_mem_capa,
+                COALESCE(sum(round(a.last_strg_sum_capa/1024/1024/1024/1024,0)),1) last_asgn_strg_capa
+          from
+            (SELECT A.VM_SEQ,
+		            MAX(A.last_vcore_qty) last_vcore_qty,
+		            MAX(A.last_mem_sum_capa) last_mem_sum_capa,
+		            MAX(A.last_strg_sum_capa) last_strg_sum_capa
+		         FROM
+	                (select a.VM_SEQ,
+					        FIRST_VALUE(A.last_vcore_qty)OVER( PARTITION BY A.VM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_vcore_qty,
+							FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.VM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_mem_sum_capa,
+							FIRST_VALUE(A.last_strg_sum_capa)OVER( PARTITION BY A.VM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_strg_sum_capa
+					    FROM
+					  <choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							st_vm_colct_sum_1dd a inner join
+							st_pm_colct_sum_1dd aa on a.pm_seq = aa.pm_seq and a.colct_dt = aa.colct_dt
+						</when>
+					    <otherwise>
+					        st_vm_colct_sum_1mm a inner join
+						    st_pm_colct_sum_1mm aa on a.pm_seq = aa.pm_seq and a.colct_ym = aa.colct_ym
+					     </otherwise>
+				      </choose>
+				   where 1=1
+				      <include refid="search"/>
+			    ) A
+			  GROUP BY A.VM_SEQ
+		 )  A
+  </select>
+
+  <select id="selectVirtRt" resultMap="resultVirtRtVo">
+   /* ncis.sql.dsb.stts.res.clstResStte.selectVirtRt */
+
+		 select COALESCE(CASE WHEN sum(a.last_cpu_cor_qty) = 0 THEN 0 ELSE round(sum(aa.last_vcore_qty)/sum(a.last_cpu_cor_qty)::NUMERIC*100,2) END,0) cpu_virt_rt,
+                COALESCE(CASE WHEN sum(a.last_mem_sum_capa) = 0 THEN 0 ELSE round(sum(aa.last_mem_sum_capa)/sum(a.last_mem_sum_capa)::NUMERIC*100,2) END ,0) mem_virt_rt
+
+		     from
+		          (SELECT A.PM_SEQ,
+		                  MAX(last_cpu_cor_qty) last_cpu_cor_qty,
+		                  MAX(last_mem_sum_capa) last_mem_sum_capa
+		                FROM
+					    	 (select a.PM_SEQ,
+								       FIRST_VALUE(A.last_cpu_cor_qty)OVER( PARTITION BY A.PM_SEQ ORDER BY
+										<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+												A.COLCT_YM
+											</otherwise>
+										</choose> DESC) last_cpu_cor_qty,
+										FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.PM_SEQ ORDER BY
+										<choose>
+											<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+												A.COLCT_DT
+											</when>
+											<otherwise>
+													A.COLCT_YM
+											</otherwise>
+										</choose> DESC) last_mem_sum_capa
+
+									FROM
+							     <choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										st_pm_colct_sum_1dd a
+									</when>
+								    <otherwise>
+								        st_pm_colct_sum_1mm a
+								     </otherwise>
+								</choose>
+								where 1=1
+									   <include refid="search"/>
+                           ) A
+                      GROUP BY A.PM_SEQ
+                  ) A
+				 left join (SELECT A.PM_SEQ,
+		                           SUM(last_vcore_qty) last_vcore_qty,
+		                           SUM(last_mem_sum_capa) last_mem_sum_capa
+				              FROM
+					            (select a.pm_seq,
+					                    A.VM_SEQ,
+					                    a.last_vcore_qty,
+					                    a.last_mem_sum_capa
+					              	from
+					              		(select FIRST_VALUE(A.PM_SEQ)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+													<choose>
+														<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+															A.COLCT_DT
+														</when>
+														<otherwise>
+															A.COLCT_YM
+														</otherwise>
+													</choose> DESC) PM_SEQ,
+					              		        a.VM_SEQ,
+										        FIRST_VALUE(A.last_vcore_qty)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+													<choose>
+														<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+															A.COLCT_DT
+														</when>
+														<otherwise>
+															A.COLCT_YM
+														</otherwise>
+													</choose> DESC) last_vcore_qty,
+												FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+													<choose>
+														<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+															A.COLCT_DT
+														</when>
+														<otherwise>
+															A.COLCT_YM
+														</otherwise>
+													</choose> DESC) last_mem_sum_capa
+											FROM
+							                <choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													st_vm_colct_sum_1dd a
+												</when>
+											    <otherwise>
+											        st_vm_colct_sum_1mm a
+											     </otherwise>
+											</choose>
+										 where 1=1
+										       <include refid="search"/>
+								 		) A
+					             group by a.pm_seq,
+					                      A.VM_SEQ,
+						                  a.last_vcore_qty,
+						                  a.last_mem_sum_capa
+					          ) A
+					          GROUP BY A.PM_SEQ
+				        ) aa on a.pm_seq = aa.pm_seq
+
+  </select>
+  <select id="selectAxCnt" resultMap="resultAxCntVo">
+   /* ncis.sql.dsb.stts.res.clstResStte.selectAxCnt */
+		SELECT
+			  COUNT(SERVC_SEQ) SERVC_CNT,
+			  SUM(POD_QTY) POD_QTY,
+			  SUM(CPU_COR_QTY) CPU_COR_QTY,
+			  ROUND(SUM(MEM_TOT_CAPA)/1024/1024/1024,2) MEM_TOT_CAPA,
+			  ROUND(SUM(STRG_TOT_CAPA)/1024/1024/1024,2) STRG_TOT_CAPA
+	      FROM
+				    (SELECT
+					             SERVC_SEQ,
+					             MAX(POD_QTY) POD_QTY,
+					             MAX(CPU_COR_QTY) CPU_COR_QTY,
+					             MAX(MEM_TOT_CAPA) MEM_TOT_CAPA,
+					             MAX(STRG_TOT_CAPA) STRG_TOT_CAPA
+				            FROM
+				                (SELECT
+										A.SERVC_SEQ,
+										FIRST_VALUE(A.POD_QTY) OVER (PARTITION BY A.SERVC_SEQ ORDER BY
+												<choose>
+													<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+														A.COLCT_DT
+													</when>
+													<otherwise>
+														A.COLCT_YM
+													</otherwise>
+												</choose> DESC) POD_QTY,
+										FIRST_VALUE(A.CPU_COR_QTY) OVER (PARTITION BY A.SERVC_SEQ ORDER BY
+												<choose>
+													<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+														A.COLCT_DT
+													</when>
+													<otherwise>
+														A.COLCT_YM
+													</otherwise>
+												</choose>DESC) CPU_COR_QTY,
+						               	FIRST_VALUE(A.MEM_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ  ORDER BY
+												<choose>
+													<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+														A.COLCT_DT
+													</when>
+													<otherwise>
+														A.COLCT_YM
+													</otherwise>
+												</choose> DESC) MEM_TOT_CAPA,
+						               	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ  ORDER BY
+						               			<choose>
+													<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+														A.COLCT_DT
+													</when>
+													<otherwise>
+														A.COLCT_YM
+													</otherwise>
+												</choose> DESC) STRG_TOT_CAPA
+									   FROM
+				                             (SELECT <choose>
+															<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																A.COLCT_DT,
+															</when>
+															<otherwise>
+																A.COLCT_YM,
+															</otherwise>
+														</choose>
+													  A.SERVC_SEQ,
+								       		          COUNT(A.POD_ID) POD_QTY,
+								       		          SUM(A.CPU_COR_QTY) CPU_COR_QTY,
+							       		              SUM(A.MEM_TOT_CAPA) MEM_TOT_CAPA,
+							       		              SUM(A.STRG_TOT_CAPA) STRG_TOT_CAPA
+
+									              FROM
+									              <choose>
+													 <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										                 ST_RX_POD_SUM_1DD A
+													 </when>
+												   	<otherwise>
+												         ST_RX_POD_SUM_1MM A
+													</otherwise>
+												  </choose>
+												   LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+
+									          where 1=1
+									                <choose>
+															<when test='"DD".equals(searchTrmCd)'>
+																	AND A.COLCT_DT = REPLACE(#{date},'-','')
+															</when>
+															<when test='"DI".equals(searchTrmCd)'>
+																	AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE( #{endDt},'-','')
+															</when>
+															<when test='"MM".equals(searchTrmCd)'>
+																AND A.COLCT_YM = #{year}||#{searchMmCd}
+															</when>
+															<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+																AND A.COLCT_YM between #{year}||'01' AND #{year}||'03'
+															</when>
+															<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+															    AND A.COLCT_YM between #{year}||'04' AND #{year}||'06'
+															</when>
+															<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+															    AND A.COLCT_YM between #{year}||'07' AND #{year}||'09'
+															</when>
+															<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+															    AND A.COLCT_YM between #{year}||'10' AND #{year}||'12'
+															</when>
+
+															<when test='"YY".equals(searchTrmCd)'>
+															      AND A.COLCT_YM between #{year}||'01' AND #{year}||'12'
+															</when>
+														</choose>
+														<if test='regionId !=null and !"".equals(regionId)'>
+															AND B.REGION_ID = #{regionId}
+														</if>
+														<if test='zoneId !=null and !"".equals(zoneId)'>
+															AND A.ZONE_ID = #{zoneId}
+														</if>
+														<if test='netId !=null and !"".equals(netId)'>
+															AND A.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+														</if>
+														<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+															AND A.RSRC_POOL_ID = #{rsrcPoolId}
+														</if>
+									           GROUP BY  <choose>
+															<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+																A.COLCT_DT,
+															</when>
+															<otherwise>
+																A.COLCT_YM,
+															</otherwise>
+														 </choose>
+														 A.SERVC_SEQ
+										   ) A
+								) A
+		           GROUP BY
+						    SERVC_SEQ
+		       ) A
+
+
+  </select>
+  <select id="selectVmList" resultMap="resultVmListVo">
+/* ncis.sql.dsb.stts.res.clstResStte.selectVmList */
+     select FN_REGION_NAME(a.region_id) region_nm,
+	        FN_ZONE_NAME(a.zone_id) zone_nm,
+	        FN_NET_NAME(a.net_id) net_nm,
+	        (select q.rsrc_pool_nm from rc_rsrc_pool q where q.rsrc_pool_id = a.rsrc_pool_id) rsrc_pool_nm,
+	        (select q.clstr_nm from rc_clstr q where q.clstr_seq = a.clstr_seq) clstr_nm,
+	        (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_CODE.CD_NM),',')
+	            FROM CM_CODE
+	          WHERE CM_CODE.PARENT_CD = '101'
+	                and CM_CODE.parent_grp_cd = '002'
+	                AND CM_CODE.CD IN
+	                     (SELECT q.prpos_cl_cd
+	                       FROM rc_clstr_prpos q
+	                     WHERE q.clstr_seq = a.clstr_seq
+	                     )
+	         ) AS prpos_nm,
+
+	        count(a.pm_seq) pm_total,
+	        sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+            round(sum(a.last_mem_sum_capa)/1024/1024/1024,0) last_mem_sum_capa,
+            round(sum(a.last_strg_sum_capa)/1024/1024/1024/1024,2) last_strg_sum_capa,
+            max(fn_code_name('001',b.vrlz_sw_ty_cd)) hipervisor,
+            sum(aa.vm_total) vm_total,
+            sum(aa.win) win,
+            sum(aa.linux) linux,
+            sum(aa.hp) hp,
+            sum(aa.aix) aix,
+            sum(aa.etc) etc,
+            sum(aa.last_vcore_asgn_qty) last_asgn_vcor_qty,
+            sum(aa.last_mem_asgn_capa) last_asgn_mem_capa,
+            sum(aa.last_strg_asgn_capa) last_asgn_strg_capa,
+            round(sum(aa.last_vcore_asgn_qty)/sum(a.last_cpu_cor_qty)::NUMERIC*100,2) cpu_virt_rt,
+            round(sum(aa.last_mem_asgn_capa)/sum(round(a.last_mem_sum_capa/1024/1024/1024,0))::NUMERIC*100,2) mem_virt_rt
+
+	   from
+	          (SELECT	A.region_id,
+				 		a.zone_id,
+				 		a.net_id,
+				 		a.rsrc_pool_id,
+				 		a.clstr_seq,
+				    	a.PM_SEQ,
+				    	MAX(last_cpu_cor_qty) last_cpu_cor_qty,
+				    	MAX(last_mem_sum_capa) last_mem_sum_capa,
+				    	MAX(last_strg_sum_capa) last_strg_sum_capa
+				 	  FROM
+				 	    (SELECT A.region_id,
+				 		       a.zone_id,
+				 		       a.net_id,
+				 		       a.rsrc_pool_id,
+				 		       a.clstr_seq,
+				    		   a.PM_SEQ,
+							   FIRST_VALUE(A.last_cpu_cor_qty)OVER( PARTITION BY A.PM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_cpu_cor_qty,
+								FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.PM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_mem_sum_capa,
+								FIRST_VALUE(A.last_strg_sum_capa)OVER( PARTITION BY A.PM_SEQ ORDER BY
+								<choose>
+									<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+										A.COLCT_DT
+									</when>
+									<otherwise>
+										A.COLCT_YM
+									</otherwise>
+								</choose> DESC) last_strg_sum_capa
+					    FROM
+					      <choose>
+							<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+								st_pm_colct_sum_1dd a
+							</when>
+						    <otherwise>
+						        st_pm_colct_sum_1mm a
+						     </otherwise>
+						  </choose>
+						where 1=1
+				              <include refid="search"/>
+			          ) A
+			          GROUP BY A.region_id,
+				 		       a.zone_id,
+				 		       a.net_id,
+				 		       a.rsrc_pool_id,
+				 		       a.clstr_seq,
+				    		   a.PM_SEQ
+			  ) A
+	        left join (select 	a.pm_seq,
+				                count(a.vm_seq) vm_total,
+						        sum(case when A.os_ty_cd = '04' then 1 else 0 end) win,
+						        sum(case when A.os_ty_cd = '01' then 1 else 0 end) linux,
+								sum(case when A.os_ty_cd = '02' then 1 else 0 end) hp,
+								sum(case when A.os_ty_cd = '03' then 1 else 0 end) aix,
+								sum(case when A.os_ty_cd not in ('01','02','03','04') or A.os_ty_cd is null then 1 else 0 end) etc,
+								sum(round(a.last_strg_sum_capa/1024/1024/1024/1024,2)) last_strg_asgn_capa,
+								sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_asgn_capa,
+								sum(a.last_vcore_qty) last_vcore_asgn_qty
+			            from
+					         (SELECT MAX(A.PM_SEQ) PM_SEQ,
+						             a.VM_SEQ,
+						             MAX(A.os_ty_cd) os_ty_cd,
+						             MAX(A.last_strg_sum_capa) last_strg_sum_capa,
+						             MAX(A.last_mem_sum_capa)	last_mem_sum_capa,
+						             MAX(A.last_vcore_qty) last_vcore_qty
+						          FROM
+					            	 (SELECT  FIRST_VALUE(A.PM_SEQ)OVER( PARTITION BY  A.PM_SEQ, A.VM_SEQ ORDER BY
+											<choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													A.COLCT_DT
+												</when>
+												<otherwise>
+													A.COLCT_YM
+												</otherwise>
+											</choose>
+												 DESC) PM_SEQ,
+						                     a.VM_SEQ,
+									         FIRST_VALUE(B.os_ty_cd)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+											<choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													A.COLCT_DT
+												</when>
+												<otherwise>
+													A.COLCT_YM
+												</otherwise>
+											</choose> DESC) os_ty_cd,
+											FIRST_VALUE(A.last_strg_sum_capa)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+											<choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													A.COLCT_DT
+												</when>
+												<otherwise>
+													A.COLCT_YM
+												</otherwise>
+											</choose> DESC) last_strg_sum_capa,
+					                 		FIRST_VALUE(A.last_mem_sum_capa)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+											<choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													A.COLCT_DT
+												</when>
+												<otherwise>
+													A.COLCT_YM
+												</otherwise>
+											</choose> DESC) last_mem_sum_capa,
+											FIRST_VALUE(A.last_vcore_qty)OVER( PARTITION BY A.PM_SEQ, A.VM_SEQ ORDER BY
+											<choose>
+												<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+													A.COLCT_DT
+												</when>
+												<otherwise>
+													A.COLCT_YM
+												</otherwise>
+											</choose> DESC) last_vcore_qty
+									FROM
+					                 <choose>
+								       <when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					                 		st_vm_colct_sum_1dd a
+					                   </when>
+					                   <otherwise>
+							        		st_vm_colct_sum_1mm a
+							     		</otherwise>
+									</choose>
+					                 left join rc_vm b on a.vm_seq = b.vm_seq
+					          where 1=1
+
+					                <include refid="search"/>
+					     ) A
+		                 group by
+		                          A.VM_SEQ
+	               )A
+	               GROUP BY A.PM_SEQ
+
+	        ) aa on a.pm_seq = aa.pm_seq
+	        left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+
+	  where 1=1
+
+          group by a.region_id,
+                   a.zone_id,
+                   a.net_id,
+                   a.rsrc_pool_id,
+                   a.clstr_seq
+	 </select>
+</mapper>
+

@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.user">
+
+	<resultMap type="ncis.cpt.sys.user.vo.UserVo" id="resultUserVo" extends="ncis.sql.cmn.cmusr.resultCmUsr">
+		<result property="ncmsRcntLoginDttm" 			column="NCMS_RCNT_LOGIN_DTTM" />
+		<result property="roleNm" 						column="ROLE_NM" />
+		<result property="mngRegionNm" 					column="MNG_REGION_NM" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.user.vo.UserRoleVo" id="resultUserRoleVo">
+		<result property="roleCd"			column="ROLE_CD" />
+		<result property="roleNm"         column="ROLE_NM" />
+		<result property="roleTyCd"         column="ROLE_TY_CD" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.user.vo.UserInsttVo" id="resultUserInsttVo">
+		<result property="institutionId"			column="INSTITUTION_ID" />
+		<result property="institutionNm"			column="INSTITUTION_NM" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.user.vo.UserJobVo" id="resultUserJobVo" extends="ncis.sql.cmn.cmJob.resultCmJob">
+		<result property="institutionNm" column="INSTITUTION_NM" />
+		<result property="regionNm" column="REGION_NM" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.user.vo.UserPoolVo" id="resultUserPoolVo" extends="ncis.sql.cmn.rcRsrcPool.resultRcRsrcPool">
+		<association property="region" resultMap="ncis.sql.cmn.rcRegion.resultRcRegion"/>
+		<association property="zone" resultMap="ncis.sql.cmn.rcZone.resultRcZone" />
+		<association property="net" resultMap="ncis.sql.cmn.rcNet.resultRcNet" />
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchUserId != null and !searchUserId.isEmpty()">
+			AND USER_ID LIKE '%' || #{searchUserId} || '%'
+		</if>
+
+		<if test="searchUserNm != null and !searchUserNm.isEmpty()">
+			AND USER_NM LIKE '%' || #{searchUserNm} || '%'
+		</if>
+
+		<if test="startRnctDt != null and !startRnctDt.isEmpty()">
+			AND TO_TIMESTAMP(RCNT_LOGIN_DTTM, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[ >= ]]> TO_TIMESTAMP(#{startRnctDt},'YYYY-MM-DD')
+		</if>
+
+		<if test="endRnctDt != null and !endRnctDt.isEmpty()">
+			AND TO_TIMESTAMP(RCNT_LOGIN_DTTM, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[ <= ]]> TO_TIMESTAMP(#{endRnctDt}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+
+		<if test="lngTrmNotAccs != null and (lngTrmNotAccs eq 'Y'.toString())">
+			AND (
+				RCNT_LOGIN_DTTM IS NULL OR
+				TO_TIMESTAMP(RCNT_LOGIN_DTTM, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[ <= ]]> now() - interval '1 mon'
+			)
+		</if>
+
+		<if test="searchRoleCd != null and !searchRoleCd.isEmpty()">
+			AND EXISTS (
+				SELECT 1
+				FROM
+					CM_USR_ROLE
+				WHERE
+					CM_USR_ROLE.USER_ID = CM_USR.USER_ID
+					AND ROLE_CD = #{searchRoleCd}
+			)
+		</if>
+		
+		<if test="searchInstitutionNm != null and !searchInstitutionNm.isEmpty()">
+            AND INSTITUTION_NM LIKE '%' || #{searchInstitutionNm} || '%'
+        </if>
+	</sql>
+
+	<select id="selectUserTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.user.selectUserTotCnt */
+		SELECT
+			COUNT(*)
+		FROM CM_USR
+		<where>
+			<include refid="search"/>
+			AND (USER_STAT != 'E' OR USER_STAT IS NULL )
+		</where>
+	</select>
+
+	<select id="selectUserList" resultMap="resultUserVo">
+		/* ncis.sql.cpt.user.selectUserList */
+		SELECT
+			A.*
+			,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = MNG_REGION_ID ) AS MNG_REGION_NM
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = A.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,(
+					SELECT
+						array_to_string(array_agg(ROLE_NM), ',')
+					FROM CM_USR_ROLE UR
+					LEFT JOIN CM_ROLE R ON UR.ROLE_CD=R.ROLE_CD
+					WHERE USER_ID = A.USER_ID
+				) AS ROLE_NM
+		FROM (
+			<include refid="ncis.cmn.queryForPagingHeader" />
+			SELECT
+				USER_ID
+				,PASSWD
+				,USER_NM
+				,USER_CL_CD
+				,USER_CL_NM
+				,INSTITUTION_ID
+				,INSTITUTION_NM
+				,ORGNZT_ID
+				,ORGNZT_NM
+				,MNG_REGION_ID
+				,OFCPS_ID
+				,OFCPS_NM
+				,SYS_AUTHR_TY_ID
+				,TELNO
+				,LXTN_NO
+				,FAX_NO
+				,OWNHOM_TEL_NO
+				,MOBILE
+				,EMAIL
+				,USER_STAT
+				,ABSNCE_YN
+				,ABSNCE_ID
+				,ABSNCE_BEGIN_DT
+				,ABSNCE_END_DT
+				,RCNT_LOGIN_DTTM
+				,CRTFCT_KEY
+				,UNITY_CONNECT_TY_CD
+				,REG_DTTM
+				,UPDT_DTTM
+				,UPDT_USER_ID
+			FROM CM_USR
+			<where>
+			<include refid="search"/>
+			AND (USER_STAT != 'E' OR USER_STAT IS NULL )
+		</where>
+			ORDER BY USER_NM
+			<include refid="ncis.cmn.queryForPagingFooter" />
+		) A
+	</select>
+
+	<select id="selectDownloadUser" resultMap="resultUserVo">
+		/* ncis.sql.cpt.user.selectDownloadUser */
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = MNG_REGION_ID ) AS MNG_REGION_NM
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,RCNT_LOGIN_DTTM
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+			,(
+				SELECT
+					array_to_string(array_agg(ROLE_NM), ',')
+				FROM CM_USR_ROLE UR
+				LEFT JOIN CM_ROLE R ON UR.ROLE_CD=R.ROLE_CD
+				WHERE USER_ID = CM_USR.USER_ID
+			) AS ROLE_NM
+		FROM CM_USR
+		<where>
+			<include refid="search"/>
+			AND (USER_STAT != 'E' OR USER_STAT IS NULL )
+		</where>
+		ORDER BY USER_NM
+	</select>
+
+	<select id="selectUser" resultMap="resultUserVo">
+		/* ncis.sql.cpt.user.selectUser */
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = MNG_REGION_ID ) AS MNG_REGION_NM
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,RCNT_LOGIN_DTTM
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+			,(
+				SELECT
+					array_to_string(array_agg(ROLE_NM), ',')
+				FROM CM_USR_ROLE UR
+				LEFT JOIN CM_ROLE R ON UR.ROLE_CD=R.ROLE_CD
+				WHERE USER_ID = CM_USR.USER_ID
+			) AS ROLE_NM
+			,SYS_INPT_YN
+		FROM CM_USR
+		WHERE
+			(USER_STAT != 'E' OR USER_STAT IS NULL )
+			AND USER_ID = #{value}
+	</select>
+
+	<select id="selectUserByDn" resultMap="resultUserVo">
+		/* ncis.sql.cpt.user.selectUser */
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = MNG_REGION_ID ) AS MNG_REGION_NM
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,RCNT_LOGIN_DTTM
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		FROM CM_USR
+		WHERE
+			(USER_STAT != 'E' OR USER_STAT IS NULL )
+			AND CRTFCT_KEY = #{value}
+	</select>
+
+	<select id="selectUserRoleList" resultMap="resultUserRoleVo">
+		/* ncis.sql.cpt.user.selectUserRoleList */
+		SELECT A.ROLE_CD, A.ROLE_NM, A.ROLE_TY_CD
+		FROM CM_USR_ROLE R LEFT JOIN CM_ROLE A
+			ON R.ROLE_CD = A.ROLE_CD
+		WHERE
+			USER_ID = #{value}
+	</select>
+
+	<select id="selectUserInsttList" resultMap="resultUserInsttVo">
+		/* ncis.sql.cpt.user.selectUserInstitutionList */
+		SELECT A.INSTITUTION_ID, A.INSTITUTION_NM
+		FROM CM_USR_INSTITUTION R LEFT JOIN CM_INSTITUTION A
+			ON R.INSTITUTION_ID = A.INSTITUTION_ID
+		WHERE
+			USER_ID = #{value}
+	</select>
+
+	<select id="selectUserJobList" resultMap="resultUserJobVo">
+		/* ncis.sql.cpt.user.selectUserJobList */
+		SELECT
+			J.JOB_ID,
+			J.JOB_NM,
+			J.CLUD_JOB,
+			J.JOB_GRD,
+			J.JOB_REG_DT,
+			I.INSTITUTION_NM,
+			R.REGION_NM
+		FROM (
+			SELECT
+				A.JOB_ID,
+				A.JOB_NM,
+				A.CLUD_JOB,
+				A.JOB_GRD,
+				A.INSTITUTION_ID,
+				A.REGION_ID,
+				A.JOB_REG_DT
+			FROM CM_JOB A, CM_JOB_USER U
+			WHERE
+				A.JOB_ID = U.JOB_ID
+				AND U.USER_ID = #{value}
+				AND A.USE_YN = 'Y'
+		) J LEFT JOIN CM_INSTITUTION I ON J.INSTITUTION_ID=I.INSTITUTION_ID
+		LEFT JOIN RC_REGION R ON R.REGION_ID=J.REGION_ID
+		ORDER BY JOB_NM, REGION_NM, INSTITUTION_NM
+	</select>
+
+	<select id="selectUserPoolList" resultMap="resultUserPoolVo">
+		/* ncis.sql.cpt.user.selectUserPoolList */
+		SELECT
+			P.RSRC_POOL_ID,
+			P.RSRC_POOL_NM,
+			P.VRLZ_SW_TY_CD,
+			P.UUID,
+			P.REG_DTTM,
+			P.REG_USER_ID,
+			P.REGION_ID,
+			R.REGION_NM,
+			P.ZONE_ID,
+			Z.ZONE_NM,
+			P.NET_ID,
+			N.NET_NM
+		FROM (
+			SELECT
+				A.RSRC_POOL_ID,
+				A.RSRC_POOL_NM,
+				A.VRLZ_SW_TY_CD,
+				A.UUID,
+				A.REG_DTTM,
+				A.REG_USER_ID,
+				A.REGION_ID,
+				A.ZONE_ID,
+				A.NET_ID,
+				U.USER_ID
+			FROM
+				RC_RSRC_POOL A, CM_RSRC_POOL_USER U
+			WHERE
+				A.RSRC_POOL_ID = U.RSRC_POOL_ID
+				AND U.USER_ID = #{value}
+				AND A.DEL_YN = 'N'
+		) P
+		LEFT JOIN RC_REGION R ON P.REGION_ID = R.REGION_ID
+		LEFT JOIN RC_ZONE Z ON P.ZONE_ID=Z.ZONE_ID
+		LEFT JOIN RC_NET N ON P.NET_ID=N.NET_ID
+		ORDER BY RSRC_POOL_NM, REGION_NM, ZONE_NM, NET_NM
+
+	</select>
+
+	<select id="selectUserRoleByCodeType" resultType="Integer">
+		/* ncis.sql.cpt.user.selectUserRoleByCodeType */
+		SELECT
+			COUNT(*)
+		FROM
+			CM_USR_ROLE A,
+			CM_ROLE B
+		WHERE
+			A.ROLE_CD = B.ROLE_CD
+			AND USER_ID = #{userId }
+			AND ROLE_TY_CD = #{roleTyCd }
+	</select>
+
+	<select id="selectUserId" resultType="Integer">
+		/* ncis.sql.cpt.user.selectUserId */
+		SELECT COUNT(*) FROM CM_USR WHERE USER_ID = #{userId}
+	</select>
+
+</mapper>

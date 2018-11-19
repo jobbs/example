@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.userconnhist">
+
+	<resultMap type="ncis.cpt.sys.hist.vo.UserConnHistVo" id="resultUserConnHistVo" extends="ncis.sql.cmn.cmUsrConnHist.resultCmUsrConnHist">
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchUserId != null and !searchUserId.isEmpty()">
+			AND USER_ID LIKE '%' || #{searchUserId} || '%'
+		</if>
+		<if test="searchUserNm != null and !searchUserNm.isEmpty()">
+			AND USER_NM LIKE '%' || #{searchUserNm} || '%'
+		</if>
+		<if test="searchConnIp != null and !searchConnIp.isEmpty()">
+			AND CONN_IP LIKE '%' || #{searchConnIp} || '%'
+		</if>
+		<if test="searchStartDate != null and !searchStartDate.isEmpty()">
+			AND CONN_DT <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchStartDate},'YYYY-MM-DD')
+		</if>
+
+		<if test="searchEndDate != null and !searchEndDate.isEmpty()">
+			AND CONN_DT <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchEndDate}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+	</sql>
+
+	<select id="selectUserConnHistTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.userconnhist.selectUserConnHistTotCnt */
+		SELECT COUNT(*) FROM CM_USR_CONN_HIST
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="selectUserConnHistListSql">
+		SELECT  CONN_HIST_SEQ
+				,USER_ID
+				,USER_NM
+				,CONN_IP
+				,TO_CHAR(CONN_DT, 'YYYY-MM-DD HH24:MI') CONN_DT
+		FROM CM_USR_CONN_HIST
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY CONN_HIST_SEQ DESC
+	</sql>
+
+	<select id="selectUserConnHistList" resultMap="resultUserConnHistVo">
+		/* ncis.sql.cpt.userconnhist.selectUserConnHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectUserConnHistListSql" />
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectDownloadUserConnHist" resultMap="resultUserConnHistVo">
+		/* ncis.sql.cpt.userconnhist.selectDownloadUserConnHist */
+		<include refid="selectUserConnHistListSql" />
+	</select>
+
+	<select id="selectUserConnHist" resultMap="resultUserConnHistVo">
+	/* ncis.sql.cpt.userconnhist.selectUserConnHist */
+		SELECT
+			CONN_HIST_SEQ
+			,USER_ID
+			,USER_NM
+			,CONN_IP
+			,TO_CHAR(CONN_DT, 'YYYY-MM-DD HH24:MI') CONN_DT
+		FROM CM_USR_CONN_HIST
+		WHERE CONN_HIST_SEQ = #{value}
+	</select>
+
+</mapper>

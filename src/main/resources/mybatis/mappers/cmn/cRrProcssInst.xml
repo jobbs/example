@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrProcssInst">
+
+	<resultMap id="resultRrProcssInst" type="ncis.cmn.entity.RrProcssInst">
+        <result property="procssInstSeq"     column="PROCSS_INST_SEQ"/>  <!-- 프로세스인스턴스SEQ -->
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+        <result property="strtDttm"     column="STRT_DTTM"/>  <!-- 시작일시 -->
+        <result property="endDttm"     column="END_DTTM"/>  <!-- 종료일시 -->
+        <result property="upperProcssInstSeq"     column="UPPER_PROCSS_INST_SEQ"/>  <!-- 상위프로세스인스턴스SEQ -->
+        <result property="statCd"     column="STAT_CD"/>  <!-- 상태코드 -->
+        <result property="rsrcReqNo"     column="RSRC_REQ_NO"/>  <!-- 자원요청번호 -->
+	</resultMap>
+
+	<!-- 프로세스인스턴스 등록 -->
+	<insert id="insertRrProcssInst">
+
+	<selectKey order="BEFORE" keyProperty="procssInstSeq" resultType="Integer">
+			SELECT nextval('rr_procss_inst_sq01')
+	</selectKey>
+
+	INSERT INTO RR_PROCSS_INST (
+	             PROCSS_INST_SEQ  /* 프로세스인스턴스SEQ */
+	           , PROCSS_SEQ  /* 프로세스ID */
+	           , STRT_DTTM  /* 시작일시 */
+	           , UPPER_PROCSS_INST_SEQ  /* 상위프로세스인스턴스SEQ */
+	           , STAT_CD  /* 상태코드 */
+	           , RSRC_REQ_NO  /* 자원요청번호 */
+	           , REF_JOB_ID /* 참조업무ID */
+	) VALUES (
+	           #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	         , #{procssSeq}  /* 프로세스ID */
+	         , now()  /* 시작일시 */
+	         , #{upperProcssInstSeq}  /* 상위프로세스인스턴스SEQ */
+	         , #{statCd}  /* 상태코드 */
+	         , #{rsrcReqNo}  /* 자원요청번호 */
+	         , #{refJobId}  /* 참조업무ID */
+	)
+	</insert>
+
+
+
+	<!-- 프로세스인스턴스 수정 -->
+	<update id="updateRrProcssInst">
+	UPDATE RR_PROCSS_INST
+	         SET PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	           , PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+	           , STRT_DTTM = now()  /* 시작일시 */
+	           , END_DTTM = now()  /* 종료일시 */
+	           , UPPER_PROCSS_INST_SEQ = #{upperProcssInstSeq}  /* 상위프로세스인스턴스SEQ */
+	           , STAT_CD = #{statCd}  /* 상태코드 */
+	           , RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+         WHERE PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+
+	</update>
+
+	<!-- 프로세스인스턴스 삭제 -->
+	<delete id="deleteRrProcssInst">
+	DELETE FROM RR_PROCSS_INST
+         WHERE PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+
+	</delete>
+
+	<!-- 프로세스인스턴스 상태수정 -->
+	<update id="updateRrProcssInstStat">
+	UPDATE RR_PROCSS_INST
+		SET STAT_CD = #{statCd}  /* 상태코드 */
+		 <if test=" rmk != null and rmk != '' ">
+		 	, RMK = #{rmk}
+		 </if>
+		<if test=" forceComptYn != null and forceComptYn != '' ">
+			,FORCE_COMPT_YN = #{forceComptYn}
+		</if>
+  WHERE PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	</update>
+
+
+</mapper>

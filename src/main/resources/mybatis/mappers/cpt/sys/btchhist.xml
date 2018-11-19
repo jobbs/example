@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.btchhist">
+
+	<resultMap id="resultBtchHist"  type="ncis.cpt.sys.btch.vo.BtchHistVo">
+        <result property="btchWrkNm"     column="BTCH_WRK_NM"/>  <!-- 배치작업명 -->
+        <result property="jobName"     column="JOB_NAME"/>  <!-- 배치작업ID -->
+        <result property="startTime"     column="START_TIME"/>  <!-- 배치시작시간 -->
+        <result property="endTime"     column="END_TIME"/>  <!-- 배치종료시간 -->
+        <result property="status"     column="STATUS"/>  <!-- 배치상태 -->
+        <result property="exitMessage"     column="EXIT_MESSAGE"/>  <!-- 배치종료 메세지 -->
+        <result property="stepNm"     column="STEP_NAME"/>  <!-- 배치 단계명 -->
+        <result property="stepStartTime"     column="STEP_START_TIME"/>  <!-- 배치단계시작시간 -->
+        <result property="stepEndTime"     column="STEP_END_TIME"/>  <!-- 배치단계종료시간 -->
+        <result property="stepStatus"     column="STEP_STATUS"/>  <!-- 배치단계상태 -->
+        <result property="commitCnt"     column="COMMIT_COUNT"/>  <!-- 배치 commit 수 -->
+        <result property="readCnt"     column="READ_COUNT"/>  <!-- 배치 read 수-->
+        <result property="filterCnt"     column="FILTER_COUNT"/>  <!-- 배치 filter 수 -->
+        <result property="writeCnt"     column="WRITE_COUNT"/>  <!-- 배치 write 수 -->
+        <result property="readSkipCnt"     column="READ_SKIP_COUNT"/>  <!-- 배치 readskip 수 -->
+        <result property="processSkipCnt"     column="PROCESS_SKIP_COUNT"/>  <!-- 배치 processskip 수 -->
+        <result property="rollbackCnt"     column="ROLLBACK_COUNT"/>  <!-- 배치 rollback 수 -->
+        <result property="jobExecutionId"     column="JOB_EXECUTION_ID"/>  <!-- 배치 작업 실행 ID -->
+        <result property="jobExitMessage"     column="JOB_EXIT_MESSAGE"/>  <!-- 배치 작업 종료 메세지 -->
+	</resultMap>
+
+
+	<sql id="search">
+		<if test="searchBtchWrkNm != null and !searchBtchWrkNm.isEmpty()">
+			AND BTCH_WRK_NM LIKE '%' || #{searchBtchWrkNm} || '%'
+		</if>
+
+		<if test="searchBtchWrkId != null and !searchBtchWrkId.isEmpty()">
+			AND JOB_NAME LIKE '%' || #{searchBtchWrkId} || '%'
+		</if>
+
+		<if test="searchBtchStartTimeStart != null and !searchBtchStartTimeStart.isEmpty()">
+			AND START_TIME <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchBtchStartTimeStart},'YYYY-MM-DD')
+		</if>
+
+		<if test="searchBtchStartTimeEnd != null and !searchBtchStartTimeEnd.isEmpty()">
+			AND START_TIME <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchBtchStartTimeEnd}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+
+		<if test="searchBtchStatus != null and !searchBtchStatus.isEmpty()">
+			AND STATUS LIKE '%' || #{searchBtchStatus} || '%'
+		</if>
+	</sql>
+
+	<select id="selectBtchHistTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.btchwrk.selectBtchHistTotCnt */
+	SELECT
+		COUNT(BJE.*)
+		FROM
+			BATCH_JOB_INSTANCE BJI
+			, BATCH_JOB_EXECUTION BJE
+			, CM_BTCH_WRK BW
+		<where>
+			BJI.JOB_INSTANCE_ID = BJE.JOB_INSTANCE_ID
+				AND BJI.JOB_NAME = BW.BTCH_WRK_ID
+			<include refid="search" />
+		</where>
+	</select>
+
+	<select id="selectBtchHistList" resultMap="resultBtchHist">
+		/* ncis.sql.cpt.btchwrk.selectBtchHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			BW.BTCH_WRK_NM, BJE.START_TIME, BJE.END_TIME, BJE.STATUS, BJE. EXIT_MESSAGE, BJI.JOB_NAME, BJE.JOB_EXECUTION_ID
+			FROM
+				BATCH_JOB_INSTANCE BJI
+				, BATCH_JOB_EXECUTION BJE
+				, CM_BTCH_WRK BW
+		<where>
+			BJI.JOB_INSTANCE_ID = BJE.JOB_INSTANCE_ID
+				AND BJI.JOB_NAME = BW.BTCH_WRK_ID
+			<include refid="search"/>
+		</where>
+		ORDER BY JOB_EXECUTION_ID DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectBtchHistListXlsDwnl" resultMap="resultBtchHist">
+	/* NCIS.SQL.CPT.BTCHHIST.SELECTBTCHHISTLISTXLSDWNL */
+		SELECT
+			BW.BTCH_WRK_NM, BJE.START_TIME, BJE.END_TIME, BJE.STATUS, BJE. EXIT_MESSAGE, BJI.JOB_NAME
+			FROM
+				BATCH_JOB_INSTANCE BJI
+				, BATCH_JOB_EXECUTION BJE
+				, CM_BTCH_WRK BW
+		<where>
+			BJI.JOB_INSTANCE_ID = BJE.JOB_INSTANCE_ID
+				AND BJI.JOB_NAME = BW.BTCH_WRK_ID
+			<include refid="search"/>
+		</where>
+		ORDER BY JOB_EXECUTION_ID DESC
+	</select>
+
+	<select id="selectBtchHist" resultMap="resultBtchHist">
+		/* ncis.sql.cpt.btchwrk.selectBtchHist */
+		SELECT
+			BW.BTCH_WRK_NM, BJE.START_TIME, BJE.END_TIME, BJE.STATUS, BJE. EXIT_MESSAGE, BJI.JOB_NAME, BJE.JOB_EXECUTION_ID
+			FROM
+				BATCH_JOB_INSTANCE BJI
+				, BATCH_JOB_EXECUTION BJE
+				, CM_BTCH_WRK BW
+		WHERE
+			BJI.JOB_INSTANCE_ID = BJE.JOB_INSTANCE_ID
+			AND BJI.JOB_NAME = BW.BTCH_WRK_ID
+		<choose>
+			<when test="btchWrkNm != null and !btchWrkNm.isEmpty()">
+			AND BW.BTCH_WRK_ID = #{btchWrkNm}
+		ORDER BY END_TIME DESC
+		LIMIT 1
+			</when>
+			<otherwise>
+			AND BJE.JOB_EXECUTION_ID = #{jobExecutionId}
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<select id="selectBtchJobHistList" resultMap="resultBtchHist">
+		/* ncis.sql.cpt.btchwrk.selectBtchJobHistList */
+		SELECT
+			STEP_NAME, COMMIT_COUNT, READ_COUNT, FILTER_COUNT, WRITE_COUNT, READ_SKIP_COUNT, PROCESS_SKIP_COUNT, ROLLBACK_COUNT,
+			START_TIME AS STEP_START_TIME, END_TIME AS STEP_END_TIME, STATUS AS STEP_STATUS, STEP_EXECUTION_ID, EXIT_MESSAGE AS JOB_EXIT_MESSAGE
+			FROM
+				BATCH_STEP_EXECUTION
+		<where>
+				JOB_EXECUTION_ID = #{jobExecutionId}
+				AND NOT STEP_NAME LIKE '%' || 'completedStep'
+		</where>
+		ORDER BY STEP_EXECUTION_ID
+	</select>
+
+	<select id="selectExitMessage" resultType="string">
+		/* ncis.sql.cpt.btchwrk.selectExitMessage */
+		SELECT
+			EXIT_MESSAGE
+			FROM
+				BATCH_STEP_EXECUTION
+		WHERE
+			STEP_EXECUTION_ID = ${value }
+	</select>
+
+
+
+</mapper>

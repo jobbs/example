@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.rsrcoptz.wthdrwSt">
+
+	<resultMap type="ncis.dsb.stts.rsrcoptz.vo.WthdrwStVo" id="resultWthdrwStVo">
+		<result property="quarter" column="quarter"/>
+		<result property="quarterK" column="quarter_k"/>
+		<result property="returnReqQtyVm" column="return_req_qty_vm"/>
+		<result property="returnReqQtyVcore" column="return_req_qty_vcore"/>
+		<result property="returnReqQtyMem" column="return_req_qty_mem"/>
+		<result property="returnReqQtySan" column="return_req_qty_san"/>
+		<result property="returnQtyVm" column="return_qty_vm"/>
+		<result property="returnQtyVcore" column="return_qty_vcore"/>
+		<result property="returnQtyMem" column="return_qty_mem"/>
+		<result property="returnQtySan" column="return_qty_san"/>
+		<result property="returnRtVm" column="return_rt_vm"/>
+		<result property="returnRtVcore" column="return_rt_vcore"/>
+		<result property="returnRtMem" column="return_rt_mem"/>
+		<result property="returnRtSan" column="return_rt_san"/>
+
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.rsrcoptz.vo.WthdrwStVo" id="resultWthdrwRsrcVo">
+		<result property="rn" column="rn"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="regionId" column="region_id"/>
+		<result property="returnReqQtyVm" column="return_req_qty_vm"/>
+		<result property="returnReqQtyVcore" column="return_req_qty_vcore"/>
+		<result property="returnReqQtyMem" column="return_req_qty_mem"/>
+		<result property="returnReqQtySan" column="return_req_qty_san"/>
+		<result property="returnQtyVm" column="return_qty_vm"/>
+		<result property="returnQtyVcore" column="return_qty_vcore"/>
+		<result property="returnQtyMem" column="return_qty_mem"/>
+		<result property="returnQtySan" column="return_qty_san"/>
+		<result property="returnRtVm" column="return_rt_vm"/>
+		<result property="returnRtVcore" column="return_rt_vcore"/>
+		<result property="returnRtMem" column="return_rt_mem"/>
+		<result property="returnRtSan" column="return_rt_san"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.rsrcoptz.vo.WthdrwStVo" id="resultWthdrwStViewVo">
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="stdrYr" column="stdr_yr"/>
+		<result property="quarter" column="quarter"/>
+		<result property="regionId" column="region_id"/>
+		<result property="returnReqQtyVm" column="return_req_qty_vm"/>
+		<result property="returnReqQtyVcore" column="return_req_qty_vcore"/>
+		<result property="returnReqQtyMem" column="return_req_qty_mem"/>
+		<result property="returnReqQtySan" column="return_req_qty_san"/>
+		<result property="returnQtyVm" column="return_qty_vm"/>
+		<result property="returnQtyVcore" column="return_qty_vcore"/>
+		<result property="returnQtyMem" column="return_qty_mem"/>
+		<result property="returnQtySan" column="return_qty_san"/>
+		<result property="returnRtVm" column="return_rt_vm"/>
+		<result property="returnRtVcore" column="return_rt_vcore"/>
+		<result property="returnRtMem" column="return_rt_mem"/>
+		<result property="returnRtSan" column="return_rt_san"/>
+	</resultMap>
+
+
+
+	<select id="selectWthdrwStList" resultMap="resultWthdrwStVo">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwSt.selectWthdrwStList */
+		 select  a.quarter,
+		 		 a.quarter||'분기' quarter_k,
+		         sum(a.return_req_qty_vm) return_req_qty_vm,
+		         sum(a.return_req_qty_vcore) return_req_qty_vcore,
+		         sum(a.return_req_qty_mem) return_req_qty_mem,
+		         sum(a.return_req_qty_san) return_req_qty_san,
+		         sum(a.return_qty_vm) return_qty_vm,
+		         sum(a.return_qty_vcore) return_qty_vcore,
+		         sum(a.return_qty_mem) return_qty_mem,
+		         sum(a.return_qty_san) return_qty_san,
+		         round(sum(a.return_qty_vm)/sum(a.return_req_qty_vm)::numeric*100,2) return_rt_vm,
+		         round(sum(a.return_qty_vcore)/sum(a.return_req_qty_vcore)::numeric*100,2) return_rt_vcore,
+		         round(sum(a.return_qty_mem)/sum(a.return_req_qty_mem)::numeric*100,2) return_rt_mem,
+		         round(sum(a.return_qty_san)/sum(a.return_req_qty_san)::numeric*100,2) return_rt_san
+
+		    from st_quarter_rsrc_withdraw a
+		  where 1=1
+		        <if test='year!=null and !"".equals(year)'>
+		        	and a.stdr_yr = #{year}
+		        </if>
+		         <if test="region != null and !region.isEmpty()">
+					       <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+					       	   #{item}
+					        </foreach>
+			        </if>
+			 group by a.quarter
+		     order by a.quarter
+
+	</select>
+   <select id="selectWthdrwRsrcList" resultMap="resultWthdrwRsrcVo">
+   /* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwSt.selectWthdrwRsrcList */
+       select
+                row_number() over(order by a.region_id) rn,
+                 a.rsrc_pool_id,
+                 b.rsrc_pool_nm,
+                 a.region_id,
+                 a.quarter,
+                 a.return_req_qty_vm,
+				 a.return_req_qty_vcore,
+				 a.return_req_qty_mem,
+				 a.return_req_qty_san,
+				 a.return_qty_vm,
+				 a.return_qty_vcore,
+				 a.return_qty_mem,
+				 a.return_qty_san,
+				 round(a.return_qty_vm/a.return_req_qty_vm::numeric*100,2) return_rt_vm,
+				 round(a.return_qty_vcore/a.return_req_qty_vcore::numeric*100,2) return_rt_vcore,
+				 round(a.return_qty_mem/a.return_req_qty_mem::numeric*100,2) return_rt_mem,
+				 round(a.return_qty_san/a.return_req_qty_san::numeric*100,2) return_rt_san
+
+             from  st_quarter_rsrc_withdraw a left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+
+          where 1=1
+                <if test='year!=null and !"".equals(year)'>
+                	and a.stdr_yr = #{year}
+                </if>
+                <if test='quarter!=null and !"".equals(quarter)'>
+                    and a.quarter = #{quarter}
+                </if>
+            <if test="region != null and !region.isEmpty()">
+			     <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+			      	   #{item}
+			     </foreach>
+			 </if>
+         order by a.region_id
+   </select>
+
+	<select id="selectWthdrwStView" resultMap="resultWthdrwStViewVo">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwSt.selectWthdrwStView */
+
+		  select a.rsrc_pool_id,
+		         b.rsrc_pool_nm,
+		         a.stdr_yr,
+		         a.quarter,
+		         a.region_id,
+		         a.return_req_qty_vm,
+		         a.return_req_qty_vcore,
+		         a.return_req_qty_mem,
+		         a.return_req_qty_san,
+		         a.return_qty_vm,
+		         a.return_qty_vcore,
+		         a.return_qty_mem,
+		         a.return_qty_san,
+		         round(a.return_qty_vm/a.return_req_qty_vm::numeric*100,2) return_rt_vm,
+				 round(a.return_qty_vcore/a.return_req_qty_vcore::numeric*100,2) return_rt_vcore,
+				 round(a.return_qty_mem/a.return_req_qty_mem::numeric*100,2) return_rt_mem,
+				 round(a.return_qty_san/a.return_req_qty_san::numeric*100,2) return_rt_san
+
+
+		     from st_quarter_rsrc_withdraw a left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+		   where 1=1
+		         <if test='year!=null and !"".equals(year)'>
+		           and a.stdr_yr = #{year}
+		         </if>
+		         <if test='quarter!=null and !"".equals(quarter)'>
+		           and a.quarter= #{quarter}
+		         </if>
+		         <if test="region != null and !region.isEmpty()">
+				       <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+				       	   #{item}
+				        </foreach>
+			      </if>
+			      <if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+		            and a.rsrc_pool_id = #{rsrcPoolId}
+		          </if>
+
+              order by a.quarter
+
+
+	</select>
+
+	<delete id="deleteWthdrwSt">
+		/* ncis.sql.dsb.stts.rsrcoptz.wthdrwSt.deleteWthdrwSt */
+
+		DELETE FROM  st_quarter_rsrc_withdraw
+		WHERE stdr_yr =#{stdrYr}
+		      and quarter = #{quarter}
+
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+		  	  AND rsrc_pool_id = #{rsrcPoolId}
+		</if>
+	</delete>
+
+
+	<insert id="insertWthdrwSt">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwSt.insertWthdrwSt */
+		WITH UPSERT AS (
+			SELECT
+				#{rsrcPoolId}::text AS rsrc_pool_id,
+				#{regionId}::text AS REGION_ID,
+				#{stdrYr}::text AS STDR_YR,
+				#{quarter}::text AS QUARTER,
+				#{returnReqQtyVm} AS RETURN_REQ_QTY_VM,
+				#{returnReqQtyVcore} AS RETURN_REQ_QTY_VCORE,
+				#{returnReqQtyMem} AS RETURN_REQ_QTY_MEM,
+				#{returnReqQtySan} AS RETURN_REQ_QTY_SAN,
+				#{returnQtyVm} AS RETURN_QTY_VM,
+				#{returnQtyVcore} AS RETURN_QTY_VCORE,
+				#{returnQtyMem} AS RETURN_QTY_MEM,
+				#{returnQtySan} AS RETURN_QTY_SAN
+
+		),
+		UPDATE_OPTION AS (
+			UPDATE st_quarter_rsrc_withdraw AS withDraw
+
+				SET region_id = UPSERT.region_id,
+				    RETURN_REQ_QTY_VM = UPSERT.RETURN_REQ_QTY_VM,
+					RETURN_REQ_QTY_VCORE = UPSERT.RETURN_REQ_QTY_VCORE,
+					RETURN_REQ_QTY_MEM = UPSERT.RETURN_REQ_QTY_MEM,
+					RETURN_REQ_QTY_SAN = UPSERT.RETURN_REQ_QTY_SAN,
+					RETURN_QTY_VM = UPSERT.RETURN_QTY_VM,
+					RETURN_QTY_VCORE = UPSERT.RETURN_QTY_VCORE,
+					RETURN_QTY_MEM = UPSERT.RETURN_QTY_MEM,
+					RETURN_QTY_SAN = UPSERT.RETURN_QTY_SAN
+
+			FROM UPSERT
+			WHERE
+				withDraw.rsrc_pool_id=UPSERT.rsrc_pool_id
+				AND withDraw.STDR_YR=UPSERT.STDR_YR
+				AND withDraw.QUARTER=UPSERT.QUARTER
+		)
+		INSERT INTO st_quarter_rsrc_withdraw (
+			RSRC_POOL_ID, REGION_ID, STDR_YR, QUARTER, RETURN_REQ_QTY_VM, RETURN_REQ_QTY_VCORE,
+            RETURN_REQ_QTY_MEM, RETURN_REQ_QTY_SAN, RETURN_QTY_VM, RETURN_QTY_VCORE,
+            RETURN_QTY_MEM, RETURN_QTY_SAN
+		)
+		SELECT
+			RSRC_POOL_ID, REGION_ID, STDR_YR, QUARTER, RETURN_REQ_QTY_VM, RETURN_REQ_QTY_VCORE,
+            RETURN_REQ_QTY_MEM, RETURN_REQ_QTY_SAN, RETURN_QTY_VM, RETURN_QTY_VCORE,
+            RETURN_QTY_MEM, RETURN_QTY_SAN
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM st_quarter_rsrc_withdraw AS withDraw
+				WHERE withDraw.RSRC_POOL_ID = UPSERT.RSRC_POOL_ID
+					AND withDraw.STDR_YR = UPSERT.STDR_YR
+					AND withDraw.QUARTER = UPSERT.QUARTER
+			)
+	</insert>
+</mapper>

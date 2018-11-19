@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.tmplat">
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.TmplatVo" id="resultTmplatVo">
+		<result property="tmplatId"			column="TMPLAT_Id"/>  <!-- 템플릿ID -->
+		<result property="tmplatNm"			column="TMPLAT_NM"/>  <!-- 템플릿시퀀스 -->
+		<result property="tmplatClCd"		column="TMPLAT_CL_CD"/>  <!-- 템플릿구분코드 -->
+		<result property="useYn"			column="USE_YN"/>  <!-- 템플릿사용여부 -->
+		<result property="rmk"				column="RMK"/>  <!-- 비고 -->
+		<result property="vrlzSwTyCd"		column="VRLZ_SW_TY_CD"/>  <!-- 가상화SW유형코드 -->
+		<result property="osTyCd"			column="OS_TY_CD"/>  <!-- 운영체제유형코드 -->
+		<result property="osNm"				column="OS_NM"/>  <!-- 운영체제명 -->
+		<result property="osVer"			column="OS_VER"/>  <!-- 운영체제버전 -->
+		<result property="pltfrm"			column="PLTFRM"/>  <!-- 플랫폼 -->
+		<result property="osBit"			column="OS_BIT"/>  <!-- 운영체제비트 -->
+		<result property="krnlVer"			column="KRNL_VER"/>  <!-- 커널버전 -->
+		<result property="lang"				column="LANG"/>  <!-- 언어 -->
+		<result property="strgAsgnCapa"		column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당용량(GB) -->
+		<result property="tmplatVer"		column="TMPLAT_VER"/>  <!-- 템플릿버전 -->
+		<result property="uuid"				column="UUID"/>  <!-- UUID -->
+		<result property="tmplatValidId"	column="UUID"/>  <!-- 템플릿유효ID -->
+		<result property="rsrcPoolId"		column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="regUserId"		column="REG_USER_ID"/>  <!-- 생성자ID -->
+		<result property="regDttm"			column="REG_DTTM"/>  <!-- 생성일시 -->
+		<result property="updtUserId"		column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+		<result property="updtDttm"			column="UPDT_DTTM"/>  <!-- 수정일시 -->
+		<result property="tmplatSeq"		column="TMPLAT_SEQ"/>  <!-- 템플릿시퀀스 -->
+		<result property="regionId"			column="REGION_ID"/>  <!-- 센터ID -->
+		<result property="regionNm"			column="REGION_NM"/>  <!-- 센터ID -->
+		<result property="zoneId"			column="ZONE_ID"/>  <!-- 존ID -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존명 -->
+		<result property="netId"			column="NET_ID"/>  <!-- 망ID -->
+		<result property="netNm"			column="NET_NM"/>  <!-- 망명 -->
+		<result property="poolId"			column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="regUserNm"		column="REG_USER_NM"/>  <!-- 등록자명 -->
+		<result property="updtUserNm"		column="UPDT_USER_NM"/>  <!-- 수정자명 -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀 명 -->
+		<result property="prposCd"			column="PRPOS_CD"/>  <!-- 용도 코드 -->
+		<result property="prposNm"			column="PRPOS_NM"/>  <!-- 용도 명-->
+		<result property="vrlzSwTyNm"		column="VRLZ_SW_TY_NM"/>  <!-- 가상화SW-->
+		<result property="tmplatClNm"		column="TMPLAT_CL_NM"/>  <!-- 용도 명-->
+		<result property="langNm"			column="LANG_NM"/>  <!-- 언어 -->
+		<result property="osBitNm"			column="OS_BIT_NM"/>  <!--OS 비트  -->
+		<result property="prpos"			column="PRPOS"/>  <!-- 용도명 -->
+		<result property="sw"				column="SW"/>  <!-- 소프트웨어명  -->
+		<result property="useYnNm"			column="USE_YN_NM"/>  <!-- 사용여부한글  -->
+		<result property="vmCrePrcssYn"			column="VM_CRE_PRCSS_YN"/>  <!-- 가상서버생성진행여부  -->
+
+		<result property="sRoutingScriptSeq"			column="S_ROUTING_SCRIPT_SEQ"/>  <!-- 망구분 코드-->
+		<result property="sRoutingScript"			column="S_ROUTING_SCRIPT"/>  <!-- 망구분 코드-->
+
+		<result property="netClCd"			column="NET_CL_CD"/>  <!-- 망구분 코드-->
+		<result property="netClNm"			column="NET_CL_NM"/>  <!-- 멍구분 명  -->
+
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.TmplatVo" id="resultTmplatVoDetail">
+		<result property="tmplatId"			column="TMPLAT_Id"/>  <!-- 템플릿ID -->
+		<result property="tmplatNm"			column="TMPLAT_NM"/>  <!-- 템플릿시퀀스 -->
+		<result property="tmplatClCd"		column="TMPLAT_CL_CD"/>  <!-- 템플릿구분코드 -->
+		<result property="useYn"			column="USE_YN"/>  <!-- 템플릿사용여부 -->
+		<result property="rmk"				column="RMK"/>  <!-- 비고 -->
+		<result property="vrlzSwTyCd"		column="VRLZ_SW_TY_CD"/>  <!-- 가상화SW유형코드 -->
+		<result property="osTyCd"			column="OS_TY_CD"/>  <!-- 운영체제유형코드 -->
+		<result property="osNm"				column="OS_NM"/>  <!-- 운영체제명 -->
+		<result property="osVer"			column="OS_VER"/>  <!-- 운영체제버전 -->
+		<result property="pltfrm"			column="PLTFRM"/>  <!-- 플랫폼 -->
+		<result property="osBit"			column="OS_BIT"/>  <!-- 운영체제비트 -->
+		<result property="krnlVer"			column="KRNL_VER"/>  <!-- 커널버전 -->
+		<result property="lang"				column="LANG"/>  <!-- 언어 -->
+		<result property="strgAsgnCapa"		column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당용량(GB) -->
+		<result property="tmplatVer"		column="TMPLAT_VER"/>  <!-- 템플릿버전 -->
+		<result property="uuid"				column="UUID"/>  <!-- 템플릿유효ID -->
+		<result property="tmplatValidId"	column="UUID"/>  <!-- 템플릿유효ID -->
+		<result property="rsrcPoolId"		column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="regUserId"		column="REG_USER_ID"/>  <!-- 생성자ID -->
+		<result property="regDttm"			column="REG_DTTM"/>  <!-- 생성일시 -->
+		<result property="updtUserId"		column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+		<result property="updtDttm"			column="UPDT_DTTM"/>  <!-- 수정일시 -->
+		<result property="tmplatSeq"		column="TMPLAT_SEQ"/>  <!-- 템플릿시퀀스 -->
+		<result property="regionId"			column="REGION_ID"/>  <!-- 센터ID -->
+		<result property="regionNm"			column="REGION_NM"/>  <!-- 센터ID -->
+		<result property="zoneId"			column="ZONE_ID"/>  <!-- 존ID -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존ID -->
+		<result property="netId"			column="NET_ID"/>  <!-- 망ID -->
+		<result property="netNm"			column="NET_NM"/>  <!-- 망ID -->
+		<result property="netClCd"			column="NET_CL_CD"/>  <!-- 망구분코드 -->
+		<result property="netClNm"			column="NET_CL_NM"/>  <!-- 망구분코드명 -->
+		<result property="poolId"			column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="regUserNm"		column="REG_USER_NM"/>  <!-- 등록자명 -->
+		<result property="updtUserNm"		column="UPDT_USER_NM"/>  <!-- 수정자명 -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀 명 -->
+		<result property="prposCd"			column="PRPOS_CD"/>  <!-- 용도 코드 -->
+		<result property="prposNm"			column="PRPOS_NM"/>  <!-- 용도 명-->
+		<result property="vrlzSwTyNm"		column="VRLZ_SW_TY_NM"/>  <!-- 가상화SW-->
+		<result property="tmplatClNm"		column="TMPLAT_CL_NM"/>  <!-- 용도 명-->
+		<result property="langNm"			column="LANG_NM"/>  <!-- 언어 -->
+		<result property="osBitNm"			column="OS_BIT_NM"/>  <!--OS 비트  -->
+		<result property="vmCrePrcssYn"			column="VM_CRE_PRCSS_YN"/>  <!-- 가상서버생성진행여부  -->
+		<collection property="prposList"	column="TMPLAT_SEQ"	select="selectPrposList" />  <!-- 용도List -->
+		<collection property="tmplatSwList" column="TMPLAT_SEQ"	select="selectTmplatSwList" />  <!-- 소프트웨어List -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.TmplatPrposVo" id="resultTmplatPrposVo">
+		<result property="tmplatSeq"		column="TMPLAT_SEQ"/>  <!-- 템플릿ID -->
+		<result property="prposSeq"			column="PRPOS_SEQ"/>  <!-- 용도일련번호 -->
+		<result property="prposCd"			column="PRPOS_CD"/>  <!-- 용도내용 -->
+		<result property="prposNm"			column="PRPOS_NM"/>  <!-- 용도내용 명-->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.TmplatSwVo" id="resultTmplatSwVo">
+		<result property="tmplatSeq"		column="TMPLAT_SEQ"/>  <!-- 템플릿ID -->
+		<result property="swSeq"			column="SW_SEQ"/>  <!-- 소프트웨어ID -->
+		<result property="swNm"				column="SW_NM"/>  <!-- 소프트웨어명 -->
+		<result property="compId"			column="COMP_ID"/>  <!-- 구성ID -->
+		<result property="swVer"			column="SW_VER"/>  <!-- 소프트웨어버전 -->
+		<result property="swMnfctCo"		column="SW_MNFCT_CO"/>  <!-- 소프트웨어제조회사 -->
+		<result property="rmk"				column="RMK"/>  <!-- 비고 -->
+		<result property="creUserId"		column="CRE_USER_ID"/>  <!-- 생성자 -->
+		<result property="updtUserId"		column="UPDT_USER_ID"/>  <!-- 수정자 -->
+		<result property="regUserNm"		column="REG_USER_NM"/>  <!-- 생성자 -->
+		<result property="updtUserNm"		column="UPDT_USER_NM"/>  <!-- 수정자 -->
+	</resultMap>
+
+	<sql id="search">
+			A1.DEL_YN = 'N'
+		<if test="useYn != null and !useYn.isEmpty()">
+			AND A1.USE_YN = #{useYn}
+		</if>
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND A2.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND A2.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netId != null and !netId.isEmpty()">
+			AND A2.NET_ID = #{netId}
+		</if>
+		<if test="poolId != null and !poolId.isEmpty()">
+			AND A2.RSRC_POOL_ID = #{poolId}
+		</if>
+		<if test="osBit != null and !osBit.isEmpty()">
+			AND A1.OS_BIT = #{osBit}
+		</if>
+		<if test="tmplatClCd != null and !tmplatClCd.isEmpty()">
+			AND A1.TMPLAT_CL_CD = #{tmplatClCd}
+		</if>
+		<if test="tmplatNm != null and !tmplatNm.isEmpty()">
+			AND UPPER(A1.TMPLAT_NM) LIKE '%' || UPPER(#{tmplatNm}) || '%'
+		</if>
+		<if test="vrlzSwTyCd != null and !vrlzSwTyCd.isEmpty()">
+			AND A1.VRLZ_SW_TY_CD = #{vrlzSwTyCd}
+		</if>
+		<if test="osTyCd != null and !osTyCd.isEmpty()">
+			AND A1.OS_TY_CD = #{osTyCd}
+		</if>
+		<if test="osNm != null and !osNm.isEmpty()">
+			AND UPPER(A1.OS_NM) LIKE '%' || UPPER(#{osNm}) || '%'
+		</if>
+		<if test="prposCd != null and !prposCd.isEmpty()">
+			AND B.PRPOS_CD = #{prposCd}
+		</if>
+		<if test="netClCd != null and !netClCd.isEmpty()">
+			AND A5.NET_CL_CD = #{netClCd}
+		</if>
+		<if test="vmCrePrcssYn != null and !vmCrePrcssYn.isEmpty()">
+			AND A1.VM_CRE_PRCSS_YN = #{vmCrePrcssYn}
+		</if>
+	</sql>
+
+	<sql id="searchSw">
+		<if test="compId != null and !compId.isEmpty()">
+			AND UPPER(COMP_ID) LIKE '%' || UPPER(#{compId}) || '%'
+		</if>
+		<if test="swNm != null and !swNm.isEmpty()">
+			AND UPPER(SW_NM) LIKE '%' || UPPER(#{swNm}) || '%'
+		</if>
+		<if test="swVer != null and !swVer.isEmpty()">
+			AND UPPER(SW_VER) LIKE '%' || UPPER(#{swVer}) || '%'
+		</if>
+		<if test="swMnfctCo != null and !swMnfctCo.isEmpty()">
+			AND UPPER(SW_MNFCT_CO) LIKE '%' || UPPER(#{swMnfctCo}) || '%'
+		</if>
+	</sql>
+
+	<select id="selectTmplatTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.tmplat.selectTmplatTotCnt */
+		SELECT	COUNT(*)
+		FROM	RR_TMPLAT A1
+		LEFT OUTER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION A3
+				ON A3.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A4
+				ON A4.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A5
+				ON A5.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = A1.TMPLAT_CL_CD
+				AND A6.PARENT_GRP_CD ='016'
+		LEFT OUTER JOIN CM_CODE A7
+				ON A7.CD = A1.VRLZ_SW_TY_CD
+				AND A7.PARENT_GRP_CD ='001'
+		LEFT OUTER JOIN CM_CODE A8
+				ON A8.CD = A1.OS_TY_CD
+				AND A8.PARENT_GRP_CD ='003'
+		LEFT OUTER JOIN CM_CODE A9
+				ON A9.CD = A1.OS_BIT
+				AND A9.PARENT_GRP_CD ='004'
+		LEFT OUTER JOIN CM_CODE A10
+				ON A10.CD = A1.LANG
+				AND A10.PARENT_GRP_CD ='017'
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectTmplatList" resultMap="resultTmplatVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.tmplat.selectTmplatList */
+		SELECT	A1.USE_YN
+				,A3.REGION_NM
+				,A4.ZONE_NM
+				,A5.NET_NM
+				,A2.NET_CL_CD
+				,A11.CD_NM AS NET_CL_NM
+				,A2.RSRC_POOL_NM
+				,A1.TMPLAT_ID
+				,A1.TMPLAT_NM
+				,A6.CD_NM AS TMPLAT_CL_CD
+				,A1.TMPLAT_VER
+				,A7.CD_NM AS VRLZ_SW_TY_CD
+				,A8.CD_NM AS OS_TY_CD
+				,A1.OS_NM
+				,A1.OS_VER
+				,(SELECT ARRAY_TO_STRING(ARRAY_AGG(B2.CD_NM), ',') AS PRPOS FROM RR_TMPLAT_PRPOS B1 INNER JOIN CM_CODE B2 ON B2.PARENT_CD = '118' AND B2.PARENT_GRP_CD = '019' AND B2.CD = B1.PRPOS_CD WHERE B1.TMPLAT_SEQ = A1.TMPLAT_SEQ) AS PRPOS
+				,A1.PLTFRM
+				,A9.CD_NM AS OS_BIT
+				,A1.KRNL_VER
+				,A10.CD_NM AS LANG
+				,A1.STRG_ASGN_CAPA
+				,A1.REG_DTTM
+				,A1.TMPLAT_SEQ
+				,A1.S_ROUTING_SCRIPT_SEQ
+				,A1.VM_CRE_PRCSS_YN
+				,(SELECT SCRIPT FROM RN_S_ROUTING_SCRIPT WHERE RN_S_ROUTING_SCRIPT.S_ROUTING_SCRIPT_SEQ = A1.S_ROUTING_SCRIPT_SEQ) AS S_ROUTING_SCRIPT
+		FROM 	RR_TMPLAT A1
+		LEFT OUTER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION A3
+				ON A3.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A4
+				ON A4.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A5
+				ON A5.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = A1.TMPLAT_CL_CD
+				AND A6.PARENT_GRP_CD ='016'
+		LEFT OUTER JOIN CM_CODE A7
+				ON A7.CD = A1.VRLZ_SW_TY_CD
+				AND A7.PARENT_GRP_CD ='001'
+		LEFT OUTER JOIN CM_CODE A8
+				ON A8.CD = A1.OS_TY_CD
+				AND A8.PARENT_GRP_CD ='003'
+		LEFT OUTER JOIN CM_CODE A9
+				ON A9.CD = A1.OS_BIT
+				AND A9.PARENT_GRP_CD ='004'
+		LEFT OUTER JOIN CM_CODE A10
+				ON A10.CD = A1.LANG
+				AND A10.PARENT_GRP_CD ='017'
+		LEFT JOIN CM_CODE A11 ON A11.CD = A2.NET_CL_CD AND A11.PARENT_GRP_CD = '067'
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY A3.REGION_NM, A4.ZONE_NM, A5.NET_NM, A2.RSRC_POOL_NM, A1.TMPLAT_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectTmplatDetail" resultMap="resultTmplatVoDetail">
+		/* ncis.sql.cpt.tmplat.selectTmplatDetail */
+		SELECT	A1.TMPLAT_ID
+				,A1.TMPLAT_NM
+				,A1.TMPLAT_CL_CD
+				,A1.USE_YN
+				,A1.RMK
+				,A1.VRLZ_SW_TY_CD
+				,A1.OS_TY_CD
+				,A1.OS_NM
+				,A1.OS_VER
+				,A1.PLTFRM
+				,A1.OS_BIT
+				,A1.KRNL_VER
+				,A1.LANG
+				,A1.STRG_ASGN_CAPA
+				,A1.TMPLAT_VER
+				,A1.UUID
+				,A1.RSRC_POOL_ID AS POOL_ID
+				,A1.REG_USER_ID
+				,A1.REG_DTTM
+				,A1.UPDT_USER_ID
+				,A1.UPDT_DTTM
+				,A1.TMPLAT_SEQ
+				,A2.REGION_ID
+				,A3.REGION_NM
+				,A2.ZONE_ID
+				,A4.ZONE_NM
+				,A2.NET_ID
+				,A5.NET_NM
+				,A2.NET_CL_CD
+				,A11.CD_NM AS NET_CL_NM
+				,A2.RSRC_POOL_NM
+				,A1.S_ROUTING_SCRIPT_SEQ
+				,A1.VM_CRE_PRCSS_YN
+				,(SELECT SCRIPT FROM RN_S_ROUTING_SCRIPT WHERE RN_S_ROUTING_SCRIPT.S_ROUTING_SCRIPT_SEQ = A1.S_ROUTING_SCRIPT_SEQ) AS S_ROUTING_SCRIPT
+				,CASE WHEN A1.REG_USER_ID = 'batch' THEN '배치' ELSE A6.USER_NM END AS REG_USER_NM
+				,CASE WHEN A1.UPDT_USER_ID = 'batch' THEN '배치' ELSE A7.USER_NM END AS UPDT_USER_NM
+		FROM 	RR_TMPLAT A1
+		LEFT OUTER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_REGION A3
+				ON A3.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A4
+				ON A4.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A5
+				ON A5.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_USR A6
+				ON A6.USER_ID = A1.REG_USER_ID
+		LEFT OUTER JOIN CM_USR A7
+				ON A7.USER_ID = A1.UPDT_USER_ID
+		LEFT JOIN CM_CODE A11 ON A11.CD = A2.NET_CL_CD AND A11.PARENT_GRP_CD = '067'
+		WHERE	A1.DEL_YN = 'N'
+				AND A1.TMPLAT_SEQ = #{value}
+	</select>
+
+	<select id="selectPrposList" resultMap="resultTmplatPrposVo"  parameterType="integer">
+		/* ncis.sql.cpt.tmplat.selectPrposList */
+		SELECT	A1.TMPLAT_SEQ
+				,A2.PRPOS_SEQ
+				,A2.PRPOS_CD
+				,A3.CD_NM AS PRPOS_NM
+		FROM 	RR_TMPLAT A1
+		LEFT OUTER JOIN RR_TMPLAT_PRPOS A2
+				ON A1.TMPLAT_SEQ = A2.TMPLAT_SEQ
+		LEFT OUTER JOIN CM_CODE A3
+				ON A3.CD=A2.PRPOS_CD
+				AND PARENT_GRP_CD ='019'
+		WHERE	A1.DEL_YN = 'N'
+				AND A1.TMPLAT_SEQ = #{value}
+	</select>
+
+	<select id="selectTmplatSwList" resultMap="resultTmplatSwVo"  parameterType="integer">
+		/* ncis.sql.cpt.tmplat.selectTmplatSwList */
+		SELECT	A1.TMPLAT_SEQ
+				,A3.SW_SEQ
+				,A3.SW_NM
+				,A3.COMP_ID
+				,A3.SW_VER
+				,A3.SW_MNFCT_CO
+				,A3.RMK
+				,A3.CRE_USER_ID
+				,A3.UPDT_USER_ID
+				,A4.USER_NM AS REG_USER_NM
+				,A5.USER_NM AS UPDT_USER_NM
+		FROM 	RR_TMPLAT A1
+		INNER JOIN RR_TMPLAT_APPLC_SW A2
+				ON A1.TMPLAT_SEQ = A2.TMPLAT_SEQ
+		LEFT OUTER JOIN RR_SW A3
+				ON A2.SW_SEQ = A3.SW_SEQ
+		LEFT OUTER JOIN CM_USR A4
+				ON A4.USER_ID = A3.CRE_USER_ID
+		LEFT OUTER JOIN CM_USR A5
+				ON A5.USER_ID = A3.UPDT_USER_ID
+		WHERE	A1.DEL_YN = 'N'
+				AND A1.TMPLAT_SEQ = #{value}
+	</select>
+
+	<select id="selectSwTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.tmplat.selectSwTotCnt */
+		SELECT	COUNT(*)
+		FROM RR_SW
+		<where>
+			<include refid="searchSw"/>
+		</where>
+	</select>
+
+	<select id="selectSwList" resultMap="resultTmplatSwVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.tmplat.selectSwList */
+		SELECT	SW_SEQ
+				,SW_NM
+				,COMP_ID
+				,SW_VER
+				,SW_MNFCT_CO
+				,RMK
+				,CRE_USER_ID
+				,UPDT_USER_ID
+		FROM 	RR_SW
+		<where>
+			<include refid="searchSw"/>
+		</where>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+
+	<!-- 자원요청 vm 생성 팝업 - 템플릿 조회 (권한설정 없음)-->
+	<select id="selectRrVmTmplatList" resultMap="resultTmplatVo">
+	/* ncis.sql.cpt.tmplat.selectRrVmTmplatList */
+	<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT	A1.TMPLAT_ID
+				,A1.TMPLAT_NM
+				,A1.TMPLAT_CL_CD
+				,A1.USE_YN
+				,A1.RMK
+				,A1.VRLZ_SW_TY_CD
+				,A1.OS_TY_CD
+				,A1.OS_NM
+				,A1.OS_VER
+				,A1.PLTFRM
+				,A1.OS_BIT
+				,A1.KRNL_VER
+				,A1.LANG
+				,A1.STRG_ASGN_CAPA
+				,A1.TMPLAT_VER
+				,A1.UUID
+				,A1.RSRC_POOL_ID AS POOL_ID
+				,A1.REG_USER_ID
+				,A1.REG_DTTM
+				,A1.UPDT_USER_ID
+				,A1.UPDT_DTTM
+				,A1.TMPLAT_SEQ
+				,A2.REGION_ID
+				,A3.REGION_NM
+				,A2.ZONE_ID
+				,A4.ZONE_NM
+				,A2.NET_ID
+				,A5.NET_NM
+				,A2.RSRC_POOL_NM
+				,A12.USER_NM AS REG_USER_NM
+				,A13.USER_NM AS UPDT_USER_NM
+				,B.PRPOS_CD
+		    	,A6.CD_NM PRPOS_NM
+		    	,A7.CD_NM VRLZ_SW_TY_NM
+		    	,A8.CD_NM TMPLAT_CL_NM
+		    	,A9.CD_NM LANG_NM
+		    	,A10.CD_NM OS_BIT_NM
+		    	,A11.CD_NM USE_YN_NM
+		    	,(SELECT ARRAY_TO_STRING(ARRAY_AGG(B2.CD_NM), ',') AS PRPOS FROM RR_TMPLAT_PRPOS B1 INNER JOIN CM_CODE B2 ON B2.PARENT_CD = '118' AND B2.PARENT_GRP_CD = '019' AND B2.CD = B1.PRPOS_CD WHERE B1.TMPLAT_SEQ = A1.TMPLAT_SEQ) AS PRPOS
+		    	, A5.NET_CL_CD
+		    	, FN_CODE_NAME('067', A5.NET_CL_CD) NET_CL_NM
+		FROM	RR_TMPLAT A1
+		LEFT OUTER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT JOIN 	RR_TMPLAT_PRPOS B
+				ON 	A1.TMPLAT_SEQ = B.TMPLAT_SEQ
+		LEFT OUTER JOIN RC_REGION A3
+				ON A3.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A4
+				ON A4.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A5
+				ON A5.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = B.PRPOS_CD
+				AND A6.PARENT_GRP_CD ='019'
+		LEFT OUTER JOIN CM_CODE A7
+				ON A7.CD = A1.VRLZ_SW_TY_CD
+				AND A7.PARENT_GRP_CD ='001'
+		LEFT OUTER JOIN CM_CODE A8
+				ON A8.CD = A1.TMPLAT_CL_CD
+				AND A8.PARENT_GRP_CD ='016'
+		LEFT OUTER JOIN CM_CODE A9
+				ON A9.CD = A1.LANG
+				AND A9.PARENT_GRP_CD ='017'
+		LEFT OUTER JOIN CM_CODE A10
+				ON A10.CD = A1.OS_BIT
+				AND A10.PARENT_GRP_CD ='004'
+		LEFT OUTER JOIN CM_CODE A11
+				ON A11.CD = A1.USE_YN
+				AND A11.PARENT_GRP_CD ='071'
+		LEFT OUTER JOIN CM_USR A12
+				ON A12.USER_ID = A1.REG_USER_ID
+		LEFT OUTER JOIN CM_USR A13
+				ON A13.USER_ID = A1.UPDT_USER_ID
+		<trim  prefix="WHERE" prefixOverrides="AND | OR">
+			<include refid="search"/>
+			AND A2.DEL_YN = 'N'
+		</trim>
+		ORDER BY A1.TMPLAT_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+</mapper>

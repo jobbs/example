@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcClstr">
+
+	<resultMap id="resultRcClstr" type="ncis.cmn.entity.RcClstr">
+		<result property="clstrSeq"    column="CLSTR_SEQ" />     <!-- 클러스터SEQ -->
+		<result property="clstrId"     column="CLSTR_ID" />      <!-- 클러스터ID -->
+		<result property="clstrNm"     column="CLSTR_NM" />      <!-- 클러스터명 -->
+		<result property="clstrCompId" column="CLSTR_COMP_ID" /> <!-- 클러스터구성ID -->
+		<result property="useYn"       column="USE_YN" />        <!-- 사용여부 -->
+		<result property="testYn"      column="TEST_YN" />       <!-- 테스트여부 -->
+		<result property="delYn"       column="DEL_YN" />        <!-- 삭제여부 -->
+		<result property="uuid"        column="UUID" />          <!-- UUID -->
+		<result property="regUserId"   column="REG_USER_ID" />   <!-- 등록자ID -->
+		<result property="regDttm"     column="REG_DTTM" />      <!-- 등록일시 -->
+		<result property="delUserId"   column="DEL_USER_ID" />   <!-- 삭제자ID -->
+		<result property="delDttm"     column="DEL_DTTM" />      <!-- 삭제일시 -->
+		<result property="updtUserId"  column="UPDT_USER_ID" />  <!-- 수정자ID -->
+		<result property="updtDttm"    column="UPDT_DTTM" />     <!-- 수정일시 -->
+		<result property="rsrcPoolId"  column="RSRC_POOL_ID" />  <!-- 자원풀ID -->
+		<result property="rmk"         column="RMK"/>            <!-- 비고 -->
+	</resultMap>
+
+	<!-- 클러스터 등록 -->
+	<insert id="insertRcClstr">
+		<selectKey order="BEFORE" keyProperty="clstrSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('CLSTR_SEQ')
+		</selectKey>
+		INSERT INTO
+		RC_CLSTR(
+			CLSTR_SEQ       /* 클러스터SEQ */
+			, CLSTR_ID      /* 클러스터ID */
+			, CLSTR_NM      /* 클러스터명 */
+			, CLSTR_COMP_ID /* 클러스터구성ID */
+			, USE_YN        /* 사용여부 */
+			, TEST_YN       /* 테스트여부 */
+			, DEL_YN        /* 삭제여부 */
+			, UUID          /* UUID */
+			, REG_USER_ID   /* 등록자ID */
+			, REG_DTTM      /* 등록일시 */
+			, DEL_USER_ID   /* 삭제자ID */
+			, DEL_DTTM      /* 삭제일시 */
+			, UPDT_USER_ID  /* 수정자ID */
+			, UPDT_DTTM     /* 수정일시 */
+			, RSRC_POOL_ID  /* 자원풀ID */
+		)
+		VALUES(
+			#{clstrSeq}      /* 클러스터SEQ */
+			, #{clstrId}     /* 클러스터ID */
+			, #{clstrNm}     /* 클러스터명 */
+			, #{clstrCompId} /* 클러스터구성ID */
+			, #{useYn}       /* 사용여부 */
+			, #{testYn}      /* 테스트여부 */
+			, 'N'            /* 삭제여부 */
+			, #{uuid}        /* UUID */
+			, #{regUserId}   /* 등록자ID */
+			, NOW()          /* 등록일시 */
+			, NULL           /* 삭제자ID */
+			, NULL           /* 삭제일시 */
+			, NULL           /* 수정자ID */
+			, NULL           /* 수정일시 */
+			, #{rsrcPoolId}  /* 자원풀ID */
+		)
+	</insert>
+
+	<!-- 클러스터 수정 -->
+	<update id="updateRcClstr">
+		UPDATE
+			RC_CLSTR
+		SET
+			UPDT_DTTM       = NOW()          /* 수정일시 */
+			, UPDT_USER_ID  = #{updtUserId}  /* 수정자ID */
+			, CLSTR_COMP_ID = #{clstrCompId} /* 클러스터구성ID */
+			, CLSTR_NM 		= #{clstrNm} 	 /* 클러스터명 */
+			, USE_YN        = #{useYn}       /* 사용여부 */
+			, RMK           = #{rmk}         /* 비고 */
+		WHERE
+			CLSTR_SEQ = #{clstrSeq} /* 클러스터SEQ */
+	</update>
+
+	<!-- 클러스터 삭제 -->
+	<delete id="deleteRcClstr">
+		UPDATE
+			RC_CLSTR
+		SET
+			DEL_DTTM      = NOW()        /* 삭제일시 */
+			, DEL_USER_ID = #{delUserId} /* 삭제자ID */
+			, DEL_YN      = 'Y'          /* 삭제여부 */
+		WHERE
+			CLSTR_SEQ = #{clstrSeq} /* 클러스터SEQ */
+	</delete>
+
+</mapper>

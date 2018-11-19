@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.vmlog">
+
+	<resultMap type="ncis.dsb.stts.log.vmLog.vo.VmLogVo" id="resultVmLogVo">
+		<result property="eqpLogColctDttm" column="eqp_log_colct_dttm"/>
+		<result property="jobNm" column="job_nm"/>
+		<result property="vmCompId" column="vm_comp_id"/>
+		<result property="vmNm" column="vm_nm"/>
+		<result property="hstNm" column="hst_nm"/>
+		<result property="eqpIpAddr" column="eqp_ip_addr"/>
+		<result property="logMsg" column="log_msg"/>
+	</resultMap>
+
+<sql id="search">
+                <if test='jobId!=null and !"".equals(jobId)'>
+		            and a.vm_seq in (select q.vm_seq
+		                                from rc_vm_job q
+		                              where q.job_id in (#{jobId})
+		                            )
+
+	            </if>
+
+	             and eqp_log_colct_dttm between (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+				<if test='compId!=null and !"".equals(compId)'>
+	            	and b.vm_comp_id like '%'||#{compId}||'%'
+	            </if>
+
+</sql>
+
+
+	<select id="selectVmLogTotCnt" resultType="Integer">
+
+		/*ncis.sql.dsb.stts.vmlog.selectVmLogTotCnt*/
+		 select count(*)
+              from st_nsims_log_colct a left join rc_vm b on a.vm_seq = b.vm_seq
+	      where 1=1
+	            <include refid="search"/>
+
+	</select>
+
+
+	<select id="selectVmLogList" resultMap="resultVmLogVo">
+
+		/*ncis.sql.dsb.stts.vmlog.selectVmLogList*/
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		 select a.eqp_log_colct_dttm::CHARACTER VARYING,
+		 		(select array_to_string(array_agg(job_nm),',')
+			        from CM_JOB where job_id in (select job_id
+			                                       from rc_vm_job
+			                                      where vm_seq = a.vm_seq
+			                                             <if test='jobId!=null and !"".equals(jobId)'>
+			                                           		and job_id=#{jobId}
+			                                           	 </if>
+			                                     )
+
+			      ) job_nm,
+	            b.vm_comp_id,
+	            b.vm_nm,
+	            a.hst_nm,
+	            a.eqp_ip_addr::CHARACTER VARYING,
+	            a.log_msg
+	        from st_nsims_log_colct a left join rc_vm b on a.vm_seq = b.vm_seq
+
+
+	      where 1=1
+	            <include refid="search"/>
+	      order by  a.eqp_log_colct_dttm
+
+          <include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+</mapper>

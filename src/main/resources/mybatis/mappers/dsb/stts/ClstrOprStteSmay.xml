@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.clstrOprStteSmay">
+
+
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.ClstrOprStteSmayVo" id="resultClstrOprStteSmayVo">
+		<result property="yy" column="yy"/>
+		<result property="gubun" column="gubun"/>
+		<result property="totHold" column="tot_hold"/>
+		<result property="totAsgn" column="tot_asgn"/>
+		<result property="totAsgnRt" column="tot_asgn_rt"/>
+		<result property="djHold" column="dj_hold"/>
+		<result property="djAsgn" column="dj_asgn"/>
+		<result property="djAsgnRt" column="dj_asgn_rt"/>
+		<result property="gjHold" column="gj_hold"/>
+		<result property="gjAsgn" column="gj_asgn"/>
+		<result property="gjAsgnRt" column="gj_asgn_rt"/>
+	</resultMap>
+
+		<resultMap type="ncis.dsb.stts.rsrcuse.vo.ClstrOprStteSmayVo" id="resultClstrOprStteSmayRsAutoVo">
+		<result property="yy" column="yy"/>
+		<result property="gubun" column="gubun"/>
+
+		<result property="totAtmsclNode" column="TOT_ATMSCL_NODE"/>
+		<result property="totPodQtyAsgn" column="TOT_POD_QTY_ASGN"/>
+		<result property="totAtmsclNodeRt" column="TOT_ATMSCL_NODE_RT"/>
+
+		<result property="djAtmsclNode" column="DJ_ATMSCL_NODE"/>
+		<result property="djPodAsgn" column="DJ_POD_ASGN"/>
+		<result property="djAtmsclNodeRt" column="DJ_ATMSCL_NODE_RT"/>
+
+		<result property="gjAtmsclNode" column="GJ_ATMSCL_NODE"/>
+		<result property="gjPodAsgn" column="GJ_POD_ASGN"/>
+		<result property="gjAtmsclNodeRt" column="GJ_ATMSCL_NODE_RT"/>
+	</resultMap>
+
+
+	<select id="selecClstrOprStteSmayList" resultMap="resultClstrOprStteSmayVo">
+
+		                  /* ncis.sql.dsb.stts.clstrOprStteSmay.selecClstrOprStteSmayList */
+
+			select
+			       seq
+			      , yy
+			      , case seq when 1 then '서버'
+			                when 2 then 'VCORE'
+			                when 3 then 'MEM(GB)'
+			                when 4 then 'SAN(GB)'
+			                else '' end gubun
+			     , COALESCE(sum( case seq when 1 then tot_hold
+			                     when 2 then tot_last_cpu_cor_qty
+			                     when 3 then tot_last_mem_sum_capa
+			                     when 4 then tot_last_strg_sum_capa
+			                     else 0 end ),0) tot_hold
+			     , COALESCE(sum( case seq when 1 then tot_asgn
+			                     when 2 then tot_last_asgn_vcor_qty
+			                     when 3 then tot_last_asgn_mem_capa
+			                     when 4 then tot_vm_last_strg_sum_capa
+			                     else 0 end ),0) tot_asgn
+			     , round(COALESCE(sum( case seq when 1 then tot_asgn_rt
+			                     when 2 then tot_asgn_vcore_rt
+			                     when 3 then tot_asgn_mem_rt
+			                     when 4 then tot_asgn_strg_rt
+			                     else 0 end ),0),2) tot_asgn_rt
+			     , COALESCE(sum( case seq when 1 then dj_hold
+			                     when 2 then dj_last_cpu_cor_qty
+			                     when 3 then dj_last_mem_sum_capa
+			                     when 4 then dj_last_strg_sum_capa
+			                     else 0 end ),0) dj_hold
+			      , COALESCE(sum( case seq when 1 then dj_asgn
+			                     when 2 then dj_last_asgn_vcor_qty
+			                     when 3 then dj_last_asgn_mem_capa
+			                     when 4 then dj_vm_last_strg_sum_capa
+			                     else 0 end ),0) dj_asgn
+			       , round(COALESCE(sum( case seq when 1 then dj_asgn_rt
+			                     when 2 then dj_asgn_vcore_rt
+			                     when 3 then dj_asgn_mem_rt
+			                     when 4 then dj_asgn_strg_rt
+			                     else 0 end),0 ),2) dj_asgn_rt
+			       , COALESCE(sum( case seq when 1 then gj_hold
+			                     when 2 then gj_last_cpu_cor_qty
+			                     when 3 then gj_last_mem_sum_capa
+			                     when 4 then gj_last_strg_sum_capa
+			                     else 0 end ),0) gj_hold
+			       , COALESCE(sum( case seq when 1 then gj_asgn
+			                     when 2 then gj_last_asgn_vcor_qty
+			                     when 3 then gj_last_asgn_mem_capa
+			                     when 4 then gj_vm_last_strg_sum_capa
+			                     else 0 end ),0) gj_asgn
+			       , COALESCE(sum( case seq when 1 then gj_asgn_rt
+			                     when 2 then gj_asgn_vcore_rt
+			                     when 3 then gj_asgn_mem_rt
+			                     when 4 then gj_asgn_strg_rt
+			                     else 0 end ),0) gj_asgn_rt
+
+			    from (
+						    select
+								qq.seq,
+								substr(a.colct_ym,1,4) yy,
+								/* 서버수 */
+								count(a.pm_seq) tot_hold,
+								sum(a.last_v_srvr_qty) tot_asgn,
+								case when count(a.pm_seq) = 0 then 0 else ROUND(sum(a.last_v_srvr_qty)/count(a.pm_seq)::numeric*100,2) end tot_asgn_rt,
+								count(case when a.region_id = 'DJ' then a.pm_seq end ) dj_hold,
+								sum(case when a.region_id = 'DJ' then a.last_v_srvr_qty end ) dj_asgn,
+								case when count(case when a.region_id = 'DJ' then a.pm_seq end) = 0 then 0 else ROUND(sum(case when a.region_id = 'DJ' then a.last_v_srvr_qty end )/count(case when a.region_id = 'DJ' then a.pm_seq end)::numeric*100,2) end dj_asgn_rt,
+								count(case when a.region_id = 'GJ' then a.pm_seq end ) gj_hold,
+								sum(case when a.region_id = 'GJ' then a.last_v_srvr_qty end ) gj_asgn,
+								case when count(case when a.region_id = 'GJ' then a.pm_seq end) = 0 then 0 else ROUND(sum(case when a.region_id = 'GJ' then a.last_v_srvr_qty end )/count(case when a.region_id = 'GJ' then a.pm_seq end)::numeric*100,2) end gj_asgn_rt,
+								/* vcore */
+								sum(a.last_cpu_cor_qty) tot_last_cpu_cor_qty,
+								sum(b.last_vcore_qty) tot_last_asgn_vcor_qty,
+								case when sum(a.last_cpu_cor_qty) = 0 then 0 else ROUND(sum(b.last_vcore_qty)/sum(a.last_cpu_cor_qty)::numeric*100,2) end tot_asgn_vcore_rt,
+								sum(case when a.region_id = 'DJ' then a.last_cpu_cor_qty end) dj_last_cpu_cor_qty,
+								sum(case when a.region_id = 'DJ' then b.last_vcore_qty end ) dj_last_asgn_vcor_qty,
+								case when sum(case when a.region_id = 'DJ' then a.last_cpu_cor_qty end ) = 0 then 0 else round(sum(case when a.region_id = 'DJ' then b.last_vcore_qty end )/sum(case when a.region_id = 'DJ' then a.last_cpu_cor_qty end )::numeric*100,2) end dj_asgn_vcore_rt,
+								sum(case when a.region_id = 'GJ' then a.last_cpu_cor_qty end) gj_last_cpu_cor_qty,
+								sum(case when a.region_id = 'GJ' then b.last_vcore_qty end ) gj_last_asgn_vcor_qty,
+								case when sum(case when a.region_id = 'GJ' then a.last_cpu_cor_qty end ) = 0 then 0 else round((sum(case when a.region_id = 'GJ' then b.last_vcore_qty end )/sum(case when a.region_id = 'GJ' then a.last_cpu_cor_qty end ))::numeric*100,2) end gj_asgn_vcore_rt,
+
+								/* mem */
+								sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) tot_last_mem_sum_capa,
+								sum(round(b.last_mem_sum_capa/1024/1024/1024,0)) tot_last_asgn_mem_capa,
+								case when sum(a.last_mem_sum_capa) = 0 then 0 else sum(b.last_mem_sum_capa)/sum(a.last_mem_sum_capa)*100 end tot_asgn_mem_rt,
+								sum(case when a.region_id = 'DJ' then round(a.last_mem_sum_capa/1024/1024/1024,0) end) dj_last_mem_sum_capa,
+							    sum(case when a.region_id = 'DJ' then round(b.last_mem_sum_capa/1024/1024/1024,0) end) dj_last_asgn_mem_capa,
+								case when sum(case when a.region_id = 'DJ' then a.last_mem_sum_capa end ) = 0 then 0 else round(sum(case when a.region_id = 'DJ' then b.last_mem_sum_capa end)/sum(case when a.region_id = 'DJ' then a.last_mem_sum_capa end )*100,2) end dj_asgn_mem_rt,
+								sum(case when a.region_id = 'GJ' then round(a.last_mem_sum_capa/1024/1024/1024,0) end) gj_last_mem_sum_capa,
+								sum(case when a.region_id = 'GJ' then round(b.last_mem_sum_capa/1024/1024/1024,0) end) gj_last_asgn_mem_capa,
+								case when sum(case when a.region_id = 'GJ' then a.last_mem_sum_capa end ) = 0 then 0 else round(sum(case when a.region_id = 'GJ' then b.last_mem_sum_capa end)/sum(case when a.region_id = 'GJ' then a.last_mem_sum_capa end )*100,2) end gj_asgn_mem_rt,
+
+								/* san */
+								sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) tot_last_strg_sum_capa,
+								sum(round(b.last_strg_sum_capa/1024/1024/1024,0)) tot_vm_last_strg_sum_capa,
+								case when sum(a.last_strg_sum_capa) = 0 then 0 else sum(b.last_strg_sum_capa)/sum(a.last_strg_sum_capa)*100 end tot_asgn_strg_rt,
+								sum(round(case when a.region_id = 'DJ' then a.last_strg_sum_capa end/1024/1024/1024,0)) dj_last_strg_sum_capa,
+								sum(round(case when b.region_id = 'DJ' then b.last_strg_sum_capa end/1024/1024/1024,0)) dj_vm_last_strg_sum_capa,
+								case when sum(case when a.region_id = 'DJ' then a.last_strg_sum_capa end) = 0 then 0 else round(sum(case when b.region_id = 'DJ' then b.last_strg_sum_capa end )/sum(case when a.region_id = 'DJ' then a.last_strg_sum_capa end)::numeric*100,2) end dj_asgn_strg_rt,
+								sum(case when a.region_id = 'GJ' then round(a.last_strg_sum_capa/1024/1024/1024,0) end) gj_last_strg_sum_capa,
+								sum(case when b.region_id = 'GJ' then round(b.last_strg_sum_capa/1024/1024/1024,0) end) gj_vm_last_strg_sum_capa,
+								case when sum(case when a.region_id = 'GJ' then a.last_strg_sum_capa end) = 0 then 0 else round(sum(case when b.region_id = 'GJ' then b.last_strg_sum_capa end ) /sum(case when a.region_id = 'GJ' then a.last_strg_sum_capa end)::numeric*100,2) end gj_asgn_strg_rt
+
+						  from st_pm_colct_sum_1mm a left join
+							(select
+									COLCT_YM,
+									region_id,
+									pm_seq,
+									sum(last_vcore_qty) last_vcore_qty,
+									sum(last_mem_sum_capa) last_mem_sum_capa,
+									sum(last_strg_sum_capa) last_strg_sum_capa
+								 from st_vm_colct_sum_1mm
+								  where 1=1
+										 and COLCT_YM in (select max(b.colct_ym)
+															from st_vm_colct_sum_1mm b
+														   where b.colct_ym between #{year}||'01' and #{year}||'12'
+												         )
+								  group by
+										   COLCT_YM,
+										   region_id,
+										   pm_seq
+							 ) b on a.pm_seq = b.pm_seq and a.colct_ym = b.colct_ym
+							 cross join
+						      (select (row_number() over()) seq from cm_code limit 4) qq
+						 where a.COLCT_YM in (select max(b.colct_ym)
+						                            from st_pm_colct_sum_1mm b
+						                       where b.colct_ym between #{year}||'01' and #{year}||'12'
+
+									         )
+						 group by substr(a.colct_ym,1,4),
+						          seq
+			       ) sub
+			 group by seq,
+			          yy,
+			       case seq when 1 then '서버'
+			                when 2 then 'VCORE'
+			                when 3 then 'MEM(GB)'
+			                when 4 then 'SAN(GB)'
+			                else '' end
+			 order by seq
+
+
+
+
+	</select>
+<select id="selectClstrOprStteSmayRsAutoList" resultMap="resultClstrOprStteSmayRsAutoVo">
+/*ncis.sql.dsb.stts.clstrOprStteSmay.selectClstrOprStteSmayRsAutoList*/
+SELECT
+			       SEQ
+			     , YY
+			      , CASE SEQ WHEN 1 THEN '서버'
+			                WHEN 2 THEN 'CORE'
+			                WHEN 3 THEN 'MEM(GB)'
+			                ELSE '' END GUBUN
+			     , COALESCE(SUM( CASE SEQ WHEN 1 THEN TOT_ATMSCL_NODE
+			                     WHEN 2 THEN TOT_CPU_COR_QTY
+			                     WHEN 3 THEN TOT_MEM_CAPA
+			                     ELSE 0 END ),0) TOT_ATMSCL_NODE
+			     , COALESCE(SUM( CASE SEQ WHEN 1 THEN TOT_POD_QTY_ASGN
+			                     WHEN 2 THEN TOT_CPU_ASGN
+			                     WHEN 3 THEN TOT_MEM_ASGN
+			                     ELSE 0 END ),0) TOT_POD_QTY_ASGN
+			     , ROUND(COALESCE(SUM( CASE SEQ WHEN 1 THEN TOT_ATMSCL_NODE_RT
+			                     WHEN 2 THEN TOT_CPU_RT
+			                     WHEN 3 THEN TOT_MEM_RT
+			                     ELSE 0 END ),0),2) TOT_ATMSCL_NODE_RT
+			     , COALESCE(SUM( CASE SEQ WHEN 1 THEN DJ_ATMSCL_NODE
+			                     WHEN 2 THEN DJ_CPU_COR_QTY
+			                     WHEN 3 THEN DJ_MEM_CAPA
+			                     ELSE 0 END ),0) DJ_ATMSCL_NODE
+			      , COALESCE(SUM( CASE SEQ WHEN 1 THEN DJ_POD_ASGN
+			                     WHEN 2 THEN DJ_CPU_ASGN
+			                     WHEN 3 THEN DJ_MEM_ASGN
+			                     ELSE 0 END ),0) DJ_POD_ASGN
+			       , ROUND(COALESCE(SUM( CASE SEQ WHEN 1 THEN DJ_ATMSCL_NODE_RT
+			                     WHEN 2 THEN DJ_CPU_RT
+			                     WHEN 3 THEN DJ_MEM_RT
+			                     ELSE 0 END),0 ),2) DJ_ATMSCL_NODE_RT
+			       , COALESCE(SUM( CASE SEQ WHEN 1 THEN GJ_ATMSCL_NODE
+			                     WHEN 2 THEN GJ_CPU_COR_QTY
+			                     WHEN 3 THEN GJ_MEM_CAPA
+			                     ELSE 0 END ),0) GJ_ATMSCL_NODE
+			       , COALESCE(SUM( CASE SEQ WHEN 1 THEN GJ_POD_ASGN
+			                     WHEN 2 THEN GJ_CPU_ASGN
+			                     WHEN 3 THEN GJ_MEM_ASGN
+			                     ELSE 0 END ),0) GJ_POD_ASGN
+			       , COALESCE(SUM( CASE SEQ WHEN 1 THEN GJ_ATMSCL_NODE_RT
+			                     WHEN 2 THEN GJ_CPU_RT
+			                     WHEN 3 THEN GJ_MEM_RT
+			                     ELSE 0 END ),0) GJ_ATMSCL_NODE_RT
+
+			    FROM (
+
+
+					SELECT
+
+						QQ.SEQ,
+						SUBSTR(B.COLCT_YM,1,4) YY,
+						/*TOTAL 보유량*/
+						SUM(B.ATMSCL_NODE_CNT) TOT_ATMSCL_NODE,
+						SUM(B.CPU_COR_QTY) TOT_CPU_COR_QTY,
+						ROUND(SUM(B.MEM_TOT_CAPA/1024/1024/1024),2) TOT_MEM_CAPA,
+
+						/*TOTAL 할당량*/
+						SUM(B.POD_QTY) TOT_POD_QTY_ASGN,
+						ROUND(SUM(B.POD_AVG_CPU_ASGN_CAPA/1000),2) TOT_CPU_ASGN,
+						ROUND(SUM(B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024),2) TOT_MEM_ASGN,
+
+						/*TOTAL 할당률*/
+						ROUND( (SUM(B.POD_QTY)/SUM(B.ATMSCL_NODE_CNT))*100,2) TOT_ATMSCL_NODE_RT,
+						ROUND( SUM(B.POD_AVG_CPU_ASGN_CAPA/1000)/SUM(B.CPU_COR_QTY)*100,2) TOT_CPU_RT,
+						ROUND( (SUM(B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024)/SUM(B.MEM_TOT_CAPA/1024/1024/1024))*100,2) TOT_MEM_RT,
+
+						/*REGION DJ 보유량*/
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.ATMSCL_NODE_CNT END) DJ_ATMSCL_NODE,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.CPU_COR_QTY END) DJ_CPU_COR_QTY,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN ROUND(B.MEM_TOT_CAPA/1024/1024/1024,2) END) DJ_MEM_CAPA,
+
+						/*REGION DJ 할당량*/
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.POD_QTY END) DJ_POD_ASGN,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN ROUND(B.POD_AVG_CPU_ASGN_CAPA/1000,2) END) DJ_CPU_ASGN,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN ROUND(B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024,2) END) DJ_MEM_ASGN,
+
+						/*REGION DJ 할당률*/
+						ROUND( (SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.POD_QTY END)/SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.ATMSCL_NODE_CNT END) )*100 ,2) DJ_ATMSCL_NODE_RT,
+						ROUND( (SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.POD_AVG_CPU_ASGN_CAPA/1000 END) / SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.CPU_COR_QTY END))*100,2) DJ_CPU_RT,
+						ROUND( ( SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024 END)/SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'DJ' THEN B.MEM_TOT_CAPA/1024/1024/1024 END))*100 ,2) DJ_MEM_RT,
+
+						/*REGION GJ 보유량*/
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.ATMSCL_NODE_CNT END) GJ_ATMSCL_NODE,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.CPU_COR_QTY END) GJ_CPU_COR_QTY,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN ROUND(B.MEM_TOT_CAPA/1024/1024/1024,2) END) GJ_MEM_CAPA,
+
+						/*REGION GJ 할당량*/
+
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.POD_QTY END) GJ_POD_ASGN,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN ROUND(B.POD_AVG_CPU_ASGN_CAPA/1000,2) END) GJ_CPU_ASGN,
+						SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN ROUND(B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024,2) END) GJ_MEM_ASGN,
+
+						/*REGION GJ 할당률*/
+						ROUND( (SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.POD_QTY END)/SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.ATMSCL_NODE_CNT END)  )*100 ,2) GJ_ATMSCL_NODE_RT,
+						ROUND( ( SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.POD_AVG_CPU_ASGN_CAPA/1000 END)/SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.CPU_COR_QTY END))*100,2) GJ_CPU_RT,
+						ROUND( (SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.POD_AVG_MEM_ASGN_CAPA/1024/1024/1024 END)/SUM(CASE WHEN RC_RSRC_POOL.REGION_ID = 'GJ' THEN B.MEM_TOT_CAPA/1024/1024/1024 END))*100 ,2) GJ_MEM_RT
+
+					FROM
+							(
+								SELECT
+									SUBSTR(A.COLCT_YM,1,6) COLCT_YM ,
+									A.ATMSCL_NODE_ID,
+									COUNT(A.ATMSCL_NODE_ID) ATMSCL_NODE_CNT,
+									SUM(A.POD_QTY) POD_QTY,
+									SUM(A.CPU_COR_QTY) CPU_COR_QTY ,
+									AVG(A.POD_AVG_CPU_ASGN_CAPA) POD_AVG_CPU_ASGN_CAPA,
+									AVG(A.POD_AVG_MEM_ASGN_CAPA) POD_AVG_MEM_ASGN_CAPA,
+									SUM(A.MEM_TOT_CAPA) MEM_TOT_CAPA
+
+								FROM ST_RX_NODE_SUM_1MM A
+								WHERE 1=1 AND A.COLCT_YM IN (SELECT MAX(B.COLCT_YM) FROM ST_RX_NODE_SUM_1MM B WHERE B.COLCT_YM LIKE #{year}||'%')
+								GROUP BY SUBSTR(A.COLCT_YM,1,6),A.ATMSCL_NODE_ID
+							)B LEFT JOIN RX_NODE A ON A.ATMSCL_NODE_ID = B.ATMSCL_NODE_ID
+							   INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = A.RSRC_POOL_ID
+							 CROSS JOIN (SELECT (ROW_NUMBER() OVER()) SEQ FROM CM_CODE LIMIT 3) QQ
+						WHERE A.ATMSCL_NODE_TY_CD IN ('04')
+					GROUP BY SUBSTR(B.COLCT_YM,1,4),QQ.SEQ
+		) SUB
+
+	 GROUP BY SEQ,
+	YY,
+	CASE SEQ WHEN 1 THEN '서버'
+		WHEN 2 THEN 'CORE'
+		WHEN 3 THEN 'MEM(GB)'
+		ELSE '' END
+	ORDER BY SEQ
+	</select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.patch">
+
+	<resultMap type="ncis.cpt.opr.patch.vo.VmPatchVo" id="resultVmPatchVo" extends="ncis.sql.cmn.rcVm.resultRcVm"></resultMap>
+
+	<resultMap type="ncis.cpt.opr.patch.vo.VmPatchPackgVo" id="resultVmPatchPackg">
+		<result property="packgNm" column="PACKG_NM"/>
+		<result property="ver" column="VER"/>
+		<result property="instlDt" column="INSTL_DT"/>
+		<result property="release" column="RELEASE"/>
+		<result property="lastVer" column="LAST_VER"/>
+		<result property="lastRelease" column="LAST_RELEASE"/>
+		<result property="repositNm" column="REPOSIT_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='!all'>
+		<!-- 삭제관계없이 모두 조회 -->
+		AND UPPER(RC_RSRC_POOL.DEL_YN) = 'N'
+		AND UPPER(RC_CLSTR.DEL_YN) = 'N'
+		AND (RC_PM.PM_SEQ ISNULL OR UPPER(RC_PM.DEL_YN) = 'N')
+		AND UPPER(RC_VM.DEL_YN) = 'N'
+		</if>
+		<if test='searchRegionId != null and searchRegionId != ""'>
+		AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchZoneId != null and searchZoneId != ""'>
+		AND RC_RSRC_POOL.ZONE_ID = #{searchZoneId}
+		</if>
+		<if test='searchNetId != null and searchNetId != ""'>
+		AND RC_RSRC_POOL.NET_CL_CD = #{searchNetId}
+		</if>
+		<if test='searchRsrcPoolId != null and searchRsrcPoolId != ""'>
+		AND RC_RSRC_POOL.RSRC_POOL_ID = #{searchRsrcPoolId}
+		</if>
+		<if test='searchStatCd != null and searchStatCd != ""'>
+		AND RC_VM.STAT_CD = #{searchStatCd}
+		</if>
+		<if test='searchInstitutionNm != null and searchInstitutionNm != ""'>
+		AND CM_INSTITUTION.INSTITUTION_NM LIKE '%' || #{searchInstitutionNm} || '%'
+		</if>
+		<if test='searchJobNm != null and searchJobNm != ""'>
+		AND RC_VM.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (SELECT CM_JOB.JOB_ID FROM CM_JOB INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_JOB.USE_YN = 'Y' AND CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.JOB_NM LIKE '%' || #{searchJobNm} || '%'))
+		</if>
+		<if test='searchVmNm != null and searchVmNm != ""'>
+		AND RC_VM.VM_NM LIKE '%' || #{searchVmNm} || '%'
+		</if>
+		<if test='searchVmCompId != null and searchVmCompId != ""'>
+		AND RC_VM.VM_COMP_ID LIKE '%' || #{searchVmCompId} || '%'
+		</if>
+		<if test='searchHstNm != null and searchHstNm != ""'>
+		AND RC_VM.HST_NM LIKE '%' || #{searchHstNm} || '%'
+		</if>
+		<if test='searchRprsntIpAddr != null and searchRprsntIpAddr != ""'>
+		AND RC_VM.RPRSNT_IP_ADDR LIKE '%' || #{searchRprsntIpAddr} || '%'
+		</if>
+		<if test='searchOsTyCd != null and searchOsTyCd != ""'>
+		AND RC_VM.OS_TY_CD = #{searchOsTyCd}
+		</if>
+		<if test='searchPackgNm != null and searchPackgNm != ""'>
+		AND RC_VM.VM_SEQ IN (SELECT VM_SEQ FROM OA_VM_INSTL_PACKG WHERE RC_VM.VM_SEQ = OA_VM_INSTL_PACKG.VM_SEQ AND PACKG_NM LIKE '%' || #{searchPackgNm} || '%')
+		</if>
+		<choose>
+			<when test='existsVrlzSwTyCdList != null'>
+			<!-- 포함 -->
+				<choose>
+					<when test="existsVrlzSwTyCdList.length > 0">
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="existsVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+							#{vrlzSwTyCd}
+						</foreach>
+						)
+					</when>
+					<otherwise>
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100')
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="fromClauseVm">
+		LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+		INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+		LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_VM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+		LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+		LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = RC_VM.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+		LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = RC_VM.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+		LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+		LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		LEFT JOIN (
+			SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+		) AS JOBS_NM ON JOBS_NM.VM_SEQ = RC_VM.VM_SEQ
+	</sql>
+
+	<sql id="fromClauseVmUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+							AND CM_INSTITUTION.USE_YN = 'Y'
+							AND CM_JOB.USE_YN = 'Y'
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="order">
+		<choose>
+			<when test="sysAdm or oprAdm">
+				ORDER BY RC_REGION.REGION_NM ASC, RC_ZONE.ZONE_NM ASC, RC_NET.NET_NM ASC, RC_RSRC_POOL.RSRC_POOL_NM ASC, RC_VM.VM_NM NULLS LAST
+			</when>
+			<otherwise>
+				ORDER BY CM_INSTITUTION.INSTITUTION_NM ASC NULLS LAST, JOBS_NM.JOBS_NM ASC NULLS LAST, RC_VM.VM_NM ASC NULLS LAST
+			</otherwise>
+		</choose>
+	</sql>
+
+	<select id="selectVmPatchListTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.patch.selectVmPatchListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		WHERE
+			RC_VM.PACKG_MNG_TRGT_YN = 'Y'
+			<include refid="search"/>
+	</select>
+
+	<select id="selectVmPatchList" resultMap="resultVmPatchVo">
+		/* ncis.sql.cpt.opr.patch.selectVmPatchList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RC_VM.VM_SEQ
+			, RC_VM.VM_ID
+			, RC_VM.VM_NM
+			, RC_VM.STAT_CD
+			, STAT_GRP_CD.CD_NM AS STAT_GRP_CD_NM
+			, STAT_GRP_CD.CD AS STAT_GRP_CD
+			, STAT_CD.CD_NM AS STAT_CD_NM
+			, RC_VM.HST_NM
+			, RC_VM.RPRSNT_IP_ADDR
+			, RC_VM.OS_TY_CD
+			, OS_TY_CD.CD_NM AS OS_TY_CD_NM
+			, RC_VM.VM_COMP_ID
+			, RC_VM.VM_CL_CD
+			, VM_CL_CD.CD_NM AS VM_CL_CD_NM
+			, CM_INSTITUTION.INSTITUTION_ID
+			, CM_INSTITUTION.INSTITUTION_NM
+			, RC_VM.REG_USER_ID
+			, TO_CHAR(RC_VM.REG_DTTM, 'YYYY-MM-DD') AS REG_DTTM
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_CL_CD
+			, RC_NET.NET_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, RC_CLSTR.CLSTR_NM
+			, JOBS_NM
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		WHERE
+			RC_VM.PACKG_MNG_TRGT_YN = 'Y'
+			<include refid="search"/>
+		<include refid="order"/>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmPatch" resultMap="resultVmPatchVo">
+		/* ncis.sql.cpt.opr.patch.selectVmPatch */
+		SELECT
+			RC_VM.VM_SEQ
+			, RC_VM.VM_ID
+			, RC_VM.VM_NM
+			, RC_VM.STAT_CD
+			, STAT_CD.CD_NM AS STAT_CD_NM
+			, STAT_GRP_CD.CD_NM AS STAT_GRP_CD_NM
+			, RC_VM.HST_NM
+			, RC_VM.RPRSNT_IP_ADDR
+			, RC_VM.OS_TY_CD
+			, OS_TY_CD.CD_NM AS OS_TY_CD_NM
+			, RC_VM.VM_COMP_ID
+			, RC_VM.VM_CL_CD
+			, VM_CL_CD.CD_NM AS VM_CL_CD_NM
+			, CM_INSTITUTION.INSTITUTION_ID
+			, CM_INSTITUTION.INSTITUTION_NM
+			, RC_VM.REG_USER_ID
+			, TO_CHAR(RC_VM.REG_DTTM, 'YYYY-MM-DD') AS REG_DTTM
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_CL_CD
+			, RC_NET.NET_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, RC_CLSTR.CLSTR_NM
+			, JOBS_NM
+			, OA_VM_INSTL_PACKG.PACKG_NM
+			, RC_VM.CPU_VCORE_QTY
+			, RC_VM.MEM_ASGN_CAPA
+			, RC_VM.STRG_ASGN_CAPA
+			, TO_CHAR(RC_VM.SERVC_STRT_DT, 'YYYY-MM-DD') AS SERVC_STRT_DT
+			, TO_CHAR(RC_VM.SERVC_END_DT, 'YYYY-MM-DD') AS SERVC_END_DT
+			, RC_PM.PM_COMP_ID
+			, RC_VM.OS_NM
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			LEFT JOIN (
+				SELECT
+					A.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(A.PACKG_NM),',') AS PACKG_NM
+				FROM
+				(
+					SELECT 	OA_VM_INSTL_PACKG.VM_SEQ, PACKG_NM
+					FROM OA_VM_INSTL_PACKG
+					GROUP BY OA_VM_INSTL_PACKG.VM_SEQ, OA_VM_INSTL_PACKG.PACKG_NM) A
+				GROUP BY A.VM_SEQ
+			) AS OA_VM_INSTL_PACKG ON RC_VM.VM_SEQ = OA_VM_INSTL_PACKG.VM_SEQ
+		WHERE
+			RC_VM.VM_SEQ = #{vmSeq}
+	</select>
+
+	<select id="selectVmPatchPackgListTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.patch.selectVmPatchPackgListTotCnt */
+		SELECT
+			COUNT(*)
+ 		FROM
+ 			OA_PACKG A , OA_PACKG_VER B, OA_VM_INSTL_PACKG C, RC_VM D
+		WHERE
+			A.PACKG_SEQ = B.PACKG_SEQ
+   			AND B.PACKG_SEQ = C.PACKG_SEQ
+   			AND A.PACKG_NM = C.PACKG_NM
+   			AND B.VER=C.VER
+   			AND C.VM_SEQ = D.VM_SEQ
+   			AND D.VM_SEQ = #{vmSeq}
+	</select>
+
+	<select id="selectVmPatchPackgList" resultMap="resultVmPatchPackg">
+		/* ncis.sql.cpt.opr.patch.selectVmPatchPackgList */
+		SELECT
+			A.PACKG_NM
+			, A2.VER
+			, A2.INSTL_DT
+			, A2.RELEASE
+			, A1.VER AS LAST_VER
+			, A1.RELEASE AS LAST_RELEASE
+			, R.REPOSIT_NM
+		FROM
+			OA_PACKG_REPOSIT R
+ INNER JOIN OA_PACKG A ON R.REPOSIT_ID = A.REPOSIT_ID
+ INNER JOIN OA_PACKG_VER B ON A.PACKG_SEQ=B.PACKG_SEQ
+ INNER JOIN (
+		SELECT
+			P.PACKG_SEQ
+			, P.PACKG_NM
+			, MAX(V.VER) AS VER
+			, MAX(V.RELEASE) AS RELEASE
+		FROM
+			OA_PACKG_REPOSIT R
+			INNER JOIN OA_PACKG P ON R.REPOSIT_ID = P.REPOSIT_ID
+			INNER JOIN OA_PACKG_VER V ON P.PACKG_SEQ = V.PACKG_SEQ
+			GROUP BY P.PACKG_SEQ, P.PACKG_NM
+			) A1 ON B.PACKG_SEQ= A1.PACKG_SEQ AND A.PACKG_NM = A1.PACKG_NM
+ INNER JOIN (
+		SELECT
+			OA_VM_INSTL_PACKG.PACKG_NM
+			, RC_REGION.REGION_ID
+			, RC_NET.NET_CL_CD
+			, OA_VM_INSTL_PACKG.VER
+			, OA_VM_INSTL_PACKG.RELEASE
+			, TO_CHAR(OA_VM_INSTL_PACKG.INSTL_DT, 'YYYY-MM-DD') AS INSTL_DT
+			, OA_VM_INSTL_PACKG.PACKG_SEQ
+		FROM RC_VM
+			LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			INNER JOIN OA_VM_INSTL_PACKG ON OA_VM_INSTL_PACKG.VM_SEQ = RC_VM.VM_SEQ AND OA_VM_INSTL_PACKG.DEL_YN='N' AND RC_VM.VM_SEQ=#{vmSeq }
+			) A2 ON A2.PACKG_NM = A.PACKG_NM AND A2.PACKG_SEQ=B.PACKG_SEQ AND R.REGION_ID = A2.REGION_ID AND R.NET_CL_CD = A2.NET_CL_CD AND B.VER = A2.VER AND B.RELEASE = A2.RELEASE
+		ORDER BY PACKG_NM
+	</select>
+
+	<select id="selectVmPatchExcelList" resultMap="resultVmPatchVo">
+		/* ncis.sql.cpt.opr.patch.selectVmPatchExcelList */
+		SELECT
+			RC_VM.VM_SEQ
+			, RC_VM.VM_ID
+			, RC_VM.VM_NM
+			, RC_VM.STAT_CD
+			, STAT_GRP_CD.CD_NM AS STAT_GRP_CD_NM
+			, STAT_GRP_CD.CD AS STAT_GRP_CD
+			, STAT_CD.CD_NM AS STAT_CD_NM
+			, RC_VM.HST_NM
+			, RC_VM.RPRSNT_IP_ADDR
+			, RC_VM.OS_TY_CD
+			, OS_TY_CD.CD_NM AS OS_TY_CD_NM
+			, RC_VM.VM_COMP_ID
+			, RC_VM.VM_CL_CD
+			, VM_CL_CD.CD_NM AS VM_CL_CD_NM
+			, CM_INSTITUTION.INSTITUTION_ID
+			, CM_INSTITUTION.INSTITUTION_NM
+			, RC_VM.REG_USER_ID
+			, TO_CHAR(RC_VM.REG_DTTM, 'YYYY-MM-DD') AS REG_DT
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_CL_CD
+			, RC_NET.NET_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, RC_CLSTR.CLSTR_NM
+			, JOBS_NM
+			<!-- , OA_VM_INSTL_PACKG.PACKG_NM -->
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+			<!-- LEFT JOIN (
+				SELECT
+					A.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(A.PACKG_NM),',') AS PACKG_NM
+				FROM
+				(
+					SELECT 	OA_VM_INSTL_PACKG.VM_SEQ, PACKG_NM
+					FROM OA_VM_INSTL_PACKG
+					GROUP BY OA_VM_INSTL_PACKG.VM_SEQ, OA_VM_INSTL_PACKG.PACKG_NM) A
+				GROUP BY A.VM_SEQ
+			) AS OA_VM_INSTL_PACKG ON RC_VM.VM_SEQ = OA_VM_INSTL_PACKG.VM_SEQ -->
+		WHERE
+			RC_VM.PACKG_MNG_TRGT_YN = 'Y'
+			<include refid="search"/>
+			<include refid="order"/>
+	</select>
+
+
+
+
+
+</mapper>

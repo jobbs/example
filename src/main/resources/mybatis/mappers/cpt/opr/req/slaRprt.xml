@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.slaRprt">
+
+	<resultMap type="ncis.cpt.opr.req.slaRprt.vo.SlaRprtVo" id="resultSlaRprtVo">
+		<result property="avg" column="AVG"/>
+		<result property="total" column="TOTAL"/>
+		<result property="vmCreTime" column="VM_CRE_TIME"/>
+		<result property="vmDleTime" column="VM_DLE_TIME"/>
+		<result property="specTime" column="SPEC_TIME"/>
+		<result property="pmCreTime" column="PM_CRE_TIME"/>
+		<result property="pmDleTime" column="PM_DLE_TIME"/>
+		<result property="clstrCreTime" column="CLSTR_CRE_TIME"/>
+		<result property="clstrDelTime" column="CLSTR_DEL_TIME"/>
+		<result property="slbTime" column="SLB_TIME"/>
+		<result property="vmStrCreTime" column="VM_STR_CRE_TIME"/>
+		<result property="avgCnt" column="AVG_CNT"/>
+		<result property="totalCnt" column="TOTAL_CNT"/>
+		<result property="vmCre1" column="VM_CRE1"/>
+		<result property="vmCre2" column="VM_CRE2"/>
+		<result property="vmDle1" column="VM_DLE1"/>
+		<result property="vmDle2" column="VM_DLE2"/>
+		<result property="spec1" column="SPEC1"/>
+		<result property="spec2" column="SPEC2"/>
+		<result property="slb1" column="SLB1"/>
+		<result property="slb2" column="SLB2"/>
+		<result property="pmCre1" column="PM_CRE1"/>
+		<result property="pmCre2" column="PM_CRE2"/>
+		<result property="pmDle1" column="PM_DLE1"/>
+		<result property="pmDle2" column="PM_DLE2"/>
+		<result property="clstrCre1" column="CLSTR_CRE1"/>
+		<result property="clstrCre2" column="CLSTR_CRE2"/>
+		<result property="clstrDel1" column="CLSTR_DEL1"/>
+		<result property="clstrDel2" column="CLSTR_DEL2"/>
+		<result property="vmStrCre1" column="VM_STR_CRE1"/>
+		<result property="vmStrCre2" column="VM_STR_CRE2"/>
+		<result property="servcAreaCreTime" column="SERVC_AREA_CRE_TIME"/>
+		<result property="servcAreaCngTime" column="SERVC_AREA_CNG_TIME"/>
+		<result property="servcAreaDelTime" column="SERVC_AREA_DEL_TIME"/>
+		<result property="servcAreaCre1" column="SERVC_AREA_CRE1"/>
+		<result property="servcAreaCre2" column="SERVC_AREA_CRE2"/>
+		<result property="servcAreaCng1" column="SERVC_AREA_CNG1"/>
+		<result property="servcAreaCng2" column="SERVC_AREA_CNG2"/>
+		<result property="servcAreaDel1" column="SERVC_AREA_DEL1"/>
+		<result property="servcAreaDel2" column="SERVC_AREA_DEL2"/>
+		
+	</resultMap>
+
+	<sql id="search">
+
+		<!-- 리전  -->
+		<if test="searchRegion != null and !searchRegion.isEmpty()">
+			AND region_id = #{searchRegion}
+		</if>
+
+		<!-- 부처명 -->
+		<if test="institutionId != null and !institutionId.isEmpty()">
+		 	AND TBL1.REQ_INSTITUTION_ID = (SELECT CM_INSTITUTION.INSTITUTION_ID FROM CM_INSTITUTION WHERE CM_INSTITUTION.INSTITUTION_ID = TBL1.REQ_INSTITUTION_ID AND REQ_INSTITUTION_ID = #{institutionId})
+		</if>
+
+		<!-- 요청구분  -->
+		<if test="searchrSrcReqClCd != null and !searchrSrcReqClCd.isEmpty()">
+			AND TBL1.RSRC_REQ_CL_CD =  #{searchrSrcReqClCd}
+		</if>
+
+		<!-- 요청유형  -->
+		<if test="searchrSrcReqTyCd != null and !searchrSrcReqTyCd.isEmpty()">
+			AND rsrc_req_ty_cd = #{searchrSrcReqTyCd}
+		</if>
+
+		<!-- 요청일자 -->
+		<if test="searchStartRegDt != null and !searchStartRegDt.isEmpty()">
+			<![CDATA[
+				AND RSRC_REQ_DTTM >= TO_DATE(#{searchStartRegDt}, 'YYYY-MM-DD')
+			]]>
+		</if>
+
+		<if test="searchEndRegDt != null and !searchEndRegDt.isEmpty()">
+			<![CDATA[
+				AND RSRC_REQ_DTTM <= TO_TIMESTAMP(#{searchEndRegDt}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+			]]>
+		</if>
+
+	</sql>
+
+	<select id="selectSlaRprt" resultMap="resultSlaRprtVo">
+		/* ncis.sql.cpt.opr.req.slaRprt.selectSlaRprt */
+		SELECT
+			/* 시간 */
+    		COALESCE(ROUND(AVG(CASE WHEN SEQ = 1 THEN ESTIME END),1),0) AVG
+   			, COALESCE(ROUND(SUM(CASE WHEN SEQ = 1 THEN ESTIME END),1),0) TOTAL
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '01' THEN ESTIME END),0) VM_CRE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '02' THEN ESTIME END),0) VM_DLE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '03' THEN ESTIME END),0) SPEC_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '05' THEN ESTIME END),0) PM_CRE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '06' THEN ESTIME END),0) PM_DLE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '07' THEN ESTIME END),0) CLSTR_CRE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '08' THEN ESTIME END),0) CLSTR_DEL_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '04' THEN ESTIME END),0) SLB_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '09' THEN ESTIME END),0) VM_STR_CRE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '11' THEN ESTIME END),0) SERVC_AREA_CRE_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '12' THEN ESTIME END),0) SERVC_AREA_CNG_TIME
+   			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '13' THEN ESTIME END),0) SERVC_AREA_DEL_TIME
+
+			/* 건수 */
+    		, COALESCE(ROUND(SUM(CASE WHEN SEQ = 1 THEN TOT END)),0) AVG_CNT
+			, COALESCE(ROUND(SUM(CASE WHEN SEQ = 1 THEN CNT END)),0) TOTAL_CNT
+			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '01' THEN CNT END),0) VM_CRE1
+			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '01' THEN TOT END),0) VM_CRE2
+			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '02' THEN CNT END),0) VM_DLE1
+			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '02' THEN TOT END),0) VM_DLE2
+			, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '03' THEN CNT END),0) SPEC1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '03' THEN TOT END),0) SPEC2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '04' THEN CNT END),0) SLB1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '04' THEN TOT END),0) SLB2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '05' THEN CNT END),0) PM_CRE1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '05' THEN TOT END),0) PM_CRE2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '06' THEN CNT END),0) PM_DLE1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '06' THEN TOT END),0) PM_DLE2
+           	, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '07' THEN CNT END),0) CLSTR_CRE1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '07' THEN TOT END),0) CLSTR_CRE2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '08' THEN CNT END),0) CLSTR_DEL1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '08' THEN TOT END),0) CLSTR_DEL2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '09' THEN CNT END),0) VM_STR_CRE1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '09' THEN TOT END),0) VM_STR_CRE2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '11' THEN CNT END),0) SERVC_AREA_CRE1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '11' THEN TOT END),0) SERVC_AREA_CRE2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '12' THEN CNT END),0) SERVC_AREA_CNG1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '12' THEN TOT END),0) SERVC_AREA_CNG2
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '13' THEN CNT END),0) SERVC_AREA_DEL1
+     		, COALESCE(MAX(CASE WHEN SEQ = 2 AND RSRC_REQ_TY_CD = '13' THEN TOT END),0) SERVC_AREA_DEL2
+		FROM (
+			SELECT
+				RSRC_REQ_TY_CD
+     			, COUNT(1) TOT
+     			, COALESCE(SUM(CASE WHEN RSRC_REQ_PRCSS_STAT_CD ='03' THEN 1 END),0) CNT
+     			<choose>
+		 			<when test ="searchTime == '01'">
+	     				, ROUND(AVG(CASE WHEN RSRC_REQ_PRCSS_STAT_CD ='03' THEN EXTRACT(EPOCH FROM TBL1.COMPT_DTTM - TBL1.REG_DTTM) END /60/60/24)::numeric,1) AS ESTIME
+	     			</when>
+	     			<when test ="searchTime == '02'">
+	     				, ROUND(AVG(CASE WHEN RSRC_REQ_PRCSS_STAT_CD ='03' THEN EXTRACT(EPOCH FROM TBL1.COMPT_DTTM - TBL1.REG_DTTM) END /60/60)::numeric,1) AS ESTIME
+	     			</when>
+	     			<when test ="searchTime == '03'">
+	     				, AVG(CASE WHEN RSRC_REQ_PRCSS_STAT_CD ='03' THEN EXTRACT(EPOCH FROM TBL1.COMPT_DTTM - TBL1.REG_DTTM) END /60)::INTEGER AS ESTIME
+	     			</when>
+	     		</choose>
+  			FROM
+  				RR_RSRC_REQ TBL1
+ 				INNER JOIN CM_USR RSRC_REQ_USER ON RSRC_REQ_USER.USER_ID = TBL1.RSRC_REQ_USER_ID
+ 				WHERE
+ 				TBL1.DEL_YN = 'N'
+ 				AND DISPLAY_YN = 'Y'
+ 				<if test="searchUserId != null and !searchUserId.isEmpty()">
+					AND TBL1.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+      			</if>
+ 			<include refid="search"/>
+ 			GROUP BY RSRC_REQ_TY_CD
+			ORDER BY RSRC_REQ_TY_CD
+ 		) XX
+     , (SELECT 1 SEQ
+        UNION ALL
+        SELECT 2
+       ) YY
+	</select>
+
+</mapper>

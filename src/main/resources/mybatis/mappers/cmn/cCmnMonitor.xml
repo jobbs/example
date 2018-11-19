@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.monitor">
+
+
+	<sql id="search">
+	           <choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE('${date}','-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE('${strtDt}','-','') AND REPLACE('${endDt}','-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "MM".equals(colctCd)'>
+					AND A.COLCT_YM = '${year}${searchMmCd}'
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE '${year}${searchMmCd}%'
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}01' AND '${year}03'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0101' AND '${year}0331'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}04' AND '${year}06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0401' AND '${year}0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}07' AND '${year}09'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0701' AND '${year}0931'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}10' AND '${year}12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}1001' AND '${year}1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "01".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}01' AND '${year}06'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0101' AND '${year}0631'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"HH".equals(searchTrmCd) and "02".equals(searchHhCd) '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}07' AND '${year}12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0701' AND '${year}1231'
+						</otherwise>
+					</choose>
+				</when>
+				<when test='"YY".equals(searchTrmCd)  '>
+					<choose>
+						<when test='"MM".equals(colctCd)'>
+							AND A.COLCT_YM between '${year}01' AND '${year}12'
+						</when>
+						<otherwise>
+							AND A.COLCT_DT between '${year}0101' AND '${year}1231'
+						</otherwise>
+					</choose>
+				</when>
+			</choose>
+	</sql>
+
+
+	<resultMap id="resultVmVo" type="ncis.cpt.rsrc.com.vo.VmVo">
+		<result property="vmSeq" column="VM_SEQ"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="osNm" column="OS_NM"/>
+		<result property="jobsNm" column="JOBS_NM"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="institutionId" column="INSTITUTION_ID"/>
+	</resultMap>
+
+	<select id="selectVmInfo" resultMap="resultVmVo">
+	/* ncis.sql.cmn.monitor.selectVmInfo*/
+		SELECT
+			V.VM_SEQ
+			, VM_NM
+			, VM_COMP_ID
+			, OS_NM
+			, JOBS_NM.INSTITUTION_NM
+			, JOBS_NM.JOBS_NM
+		FROM RC_VM V 		LEFT JOIN (
+			SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_INSTITUTION.INSTITUTION_NM),',') AS INSTITUTION_NM , ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+		) AS JOBS_NM ON JOBS_NM.VM_SEQ = V.VM_SEQ
+		WHERE V.DEL_YN = 'N'
+		AND V.VM_SEQ = #{vmSeq}
+	</select>
+
+
+	<resultMap id="resultLineChartVo" type="ncis.cmn.vo.LineChartVo">
+		<result property="time" column="DT"/>
+		<result property="cpuUseRatio" column="AVG_CPU_USE_RT"/>
+		<result property="memUseRatio" column="AVG_MEM_USE_RT"/>
+		<result property="sanUseRatio" column="AVG_STRG_USE_RT"/>
+		<result property="inTrafficUsed" column="AVG_IN_TRFIC"/>
+		<result property="outTrafficUsed" column="AVG_OUT_TRFIC"/>
+	</resultMap>
+
+	<select id="selectVmLineChartList" resultMap="resultLineChartVo">
+		/* ncis.sql.cmn.monitor.selectVmLineChartList */
+		SELECT
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				a.COLCT_DT||' '||a.COLCT_HOUR||':'||a.COLCT_MI DT,
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				a.COLCT_DT||' '||a.COLCT_HOUR DT,
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				a.COLCT_DT DT,
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				a.COLCT_YM DT,
+			</when>
+		</choose>
+					AVG_CPU_USE_RT
+					,AVG_MEM_USE_RT
+					,ROUND(CASE WHEN SUM_STRG_SUM_CAPA=0 THEN 0 ELSE SUM_STRG_USE_CAPA/SUM_STRG_SUM_CAPA*100 END,1) AVG_STRG_USE_RT
+					,ROUND(AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC
+					,ROUND(AVG_OUT_TRFIC/1024,2) AVG_OUT_TRFIC
+
+		FROM
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				ST_VM_COLCT_SUM_10MI A
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1HH A
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1DD A
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				ST_VM_COLCT_SUM_1MM A
+			</when>
+		</choose>
+			left join RC_VM bb on a.vm_seq = bb.vm_Seq
+
+		WHERE 1=1
+		AND A.VM_SEQ= ${vmSeq}
+		<include refid="search"/>
+
+		ORDER BY 1
+	</select>
+
+
+	<resultMap id="resultPmVo" type="ncis.cpt.rsrc.com.vo.PmVo">
+		<result property="pmSeq" column="PM_SEQ"/>
+		<result property="pmNm" column="PM_NM"/>
+		<result property="pmCompId" column="PM_COMP_ID"/>
+		<result property="regionId"        column="REGION_ID"/>
+	    <result property="regionNm"        column="REGION_NM"/>
+	    <result property="zoneId"          column="ZONE_ID"/>
+	    <result property="zoneNm"          column="ZONE_NM"/>
+	    <result property="netId"           column="NET_ID"/>
+	    <result property="netNm"           column="NET_NM"/>
+   	    <result property="netClCd"         column="NET_CL_CD"/>
+	    <result property="rsrcPoolId"      column="RSRC_POOL_ID"/>
+	    <result property="rsrcPoolNm"      column="RSRC_POOL_NM"/>
+	    <result property="clstrNm"         column="CLSTR_NM"/>
+	</resultMap>
+
+	<select id="selectPmInfo" resultMap="resultPmVo">
+	/* ncis.sql.cmn.monitor.selectPmInfo*/
+		SELECT
+			P.PM_SEQ
+			, PM_NM
+			, PM_COMP_ID
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_ID
+			, RC_NET.NET_NM
+			, RC_NET.NET_CL_CD
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.CTL_TRGT_YN
+			, RC_CLSTR.CLSTR_NM
+		FROM RC_PM P
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = P.CLSTR_SEQ AND P.DEL_YN = 'N' AND RC_CLSTR.DEL_YN = 'N' AND RC_CLSTR.USE_YN = 'Y'
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID AND RC_RSRC_POOL.DEL_YN = 'N'
+			INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+			INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		WHERE P.DEL_YN = 'N'
+		AND P.PM_SEQ = #{pmSeq}
+	</select>
+
+	<select id="selectPmLineChartList" resultMap="resultLineChartVo">
+		/* ncis.sql.cmn.monitor.selectPmLineChartList */
+		SELECT
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				a.COLCT_DT||' '||a.COLCT_HOUR||':'||a.COLCT_MI DT,
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				a.COLCT_DT||' '||a.COLCT_HOUR DT,
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				a.COLCT_DT DT,
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				a.COLCT_YM DT,
+			</when>
+		</choose>
+					AVG_CPU_USE_RT
+					,AVG_MEM_USE_RT
+					,ROUND(CASE WHEN (SUM_STRG_SUM_CAPA is null OR SUM_STRG_SUM_CAPA = 0) THEN 0 ELSE SUM_STRG_USE_CAPA/SUM_STRG_SUM_CAPA*100 END,1) AVG_STRG_USE_RT
+					,ROUND(AVG_IN_TRFIC/1024,2) AVG_IN_TRFIC
+					,ROUND(AVG_OUT_TRFIC/1024,2) AVG_OUT_TRFIC
+
+		FROM
+		<choose>
+			<when test='"MI".equals(colctCd)'>
+				ST_PM_COLCT_SUM_10MI A
+			</when>
+			<when test='"HH".equals(colctCd)'>
+				ST_PM_COLCT_SUM_1HH A
+			</when>
+			<when test='"DD".equals(colctCd)'>
+				ST_PM_COLCT_SUM_1DD A
+			</when>
+			<when test='"MM".equals(colctCd)'>
+				ST_PM_COLCT_SUM_1MM A
+			</when>
+		</choose>
+			left join RC_PM bb on a.pm_seq = bb.pm_Seq
+
+		WHERE 1=1
+		AND A.PM_SEQ= ${pmSeq}
+		<include refid="search"/>
+
+
+		ORDER BY 1
+	</select>
+
+
+
+</mapper>

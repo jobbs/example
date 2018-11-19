@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrRsrcReqDtlNetwk">
+
+	<resultMap id="resultRrRsrcReqDtlNetwk" type="ncis.cmn.entity.RrRsrcReqDtlNetwk">
+        <result property="rsrcReqNo"			column="RSRC_REQ_NO"/>  <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"			column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+        <result property="rsrcReqCn"			column="RSRC_REQ_CN"/>  <!-- 자원요청내용 -->
+        <result property="rsrcReqPrcssStatCd"	column="RSRC_REQ_PRCSS_STAT_CD"/>  <!-- 자원요청진행상태코드 -->
+        <result property="procssInstSeq"		column="PROCSS_INST_SEQ"/>  <!-- 프로세스인스턴스ID -->
+        <result property="exeDttm"				column="EXE_DTTM"/>  <!-- 실행일시 -->
+        <result property="zoneId"				column="ZONE_ID"/>  <!-- 존ID -->
+        <result property="netId"				column="NET_ID"/>  <!-- 망ID -->
+        <result property="vipAddr"				column="VIP_ADDR"/>  <!-- VIP주소 -->
+        <result property="prtcl"				column="PRTCL"/>  <!-- 프로토콜 -->
+        <result property="port"					column="PORT"/>  <!-- 포트 -->
+        <result property="slbTyCd"				column="SLB_TY_CD"/>  <!-- SLB유형코드 -->
+        <result property="sessMntncTyCd"		column="SESS_MNTNC_TY_CD"/>  <!-- 세션유지유형코드 -->
+        <result property="sessMntncVl"			column="SESS_MNTNC_VL"/>  <!-- 세션유지값 -->
+        <result property="statConfrm"			column="STAT_CONFRM"/>  <!-- 상태확인 -->
+        <result property="statConfrmCycle"		column="STAT_CONFRM_CYCLE"/>  <!-- 상태확인주기 -->
+        <result property="statConfrmTOut"		column="STAT_CONFRM_T_OUT"/>  <!-- 상태확인타임아웃 -->
+        <result property="maxTryCnt"			column="MAX_TRY_CNT"/>  <!-- 최대시도횟수 -->
+        <result property="statConfrmHttpUrl"	column="STAT_CONFRM_HTTP_URL"/>  <!-- 상태확인_HTTP_URL -->
+        <result property="rsrcReqTyCd"			column="RSRC_REQ_TY_CD"/>  <!-- 자원요청유형코드 -->
+        <result property="rsrcPoolId"			column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+        <result property="uuid"					column="UUID"/>  <!-- UUID -->
+        <result property="comptDttm"			column="COMPT_DTTM"/>  <!-- 완료일시 -->
+        <result property="regDttm"				column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="rjctTyCd"				column="RJCT_TY_CD"/>  <!-- 반려유형코드 -->
+        <result property="rjctDttm"				column="RJCT_DTTM"/>  <!-- 반려일시 -->
+        <result property="rjctReasn"			column="RJCT_REASN"/>  <!-- 반려사유 -->
+	</resultMap>
+
+	<!-- 자원요청상세_네트워크 등록 -->
+	<insert id="insertRrRsrcReqDtlNetwk">
+		<!--
+		<selectKey order="BEFORE" keyProperty="rsrcReqSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('rr_rsrc_req_dtl_netwk_sq01')
+		</selectKey>
+		 -->
+
+		/* ncis.sql.cmn.rrRsrcReqDtlNetwk.insertRrRsrcReqDtlNetwk */
+		INSERT INTO RR_RSRC_REQ_DTL_NETWK (
+		             RSRC_REQ_NO  /* 자원요청번호 */
+		           , RSRC_REQ_SEQ  /* 자원요청일련번호 */
+		           , RSRC_REQ_CN  /* 자원요청내용 */
+		           , RSRC_REQ_PRCSS_STAT_CD  /* 자원요청진행상태코드 */
+		           , PROCSS_INST_SEQ  /* 프로세스인스턴스ID */
+		           , EXE_DTTM  /* 실행일시 */
+		           , ZONE_ID  /* 존ID */
+		           , NET_ID  /* 망ID */
+		           , VIP_ADDR  /* VIP주소 */
+		           , PRTCL  /* 프로토콜 */
+		           , PORT  /* 포트 */
+		           , SLB_TY_CD  /* SLB유형코드 */
+		           , SESS_MNTNC_TY_CD  /* 세션유지유형코드 */
+		           , SESS_MNTNC_VL  /* 세션유지값 */
+		           , STAT_CONFRM  /* 상태확인 */
+		           , STAT_CONFRM_CYCLE  /* 상태확인주기 */
+		           , STAT_CONFRM_T_OUT  /* 상태확인타임아웃 */
+		           , MAX_TRY_CNT  /* 최대시도횟수 */
+		           , STAT_CONFRM_HTTP_URL  /* 상태확인_HTTP_URL */
+		           , RSRC_REQ_TY_CD  /* 자원요청유형코드 */
+		           , RSRC_POOL_ID	/* 자원풀ID */
+		           , UUID  /* UUID */
+		           , COMPT_DTTM	/* 완료일시 */
+		           , REG_DTTM	/* 등록일시 */
+		           , RJCT_TY_CD	/* 반려유형코드 */
+		           , RJCT_DTTM	/* 반려일시 */
+		           , RJCT_REASN	/* 반려사유 */
+		) VALUES (
+		           #{rsrcReqNo}  /* 자원요청번호 */
+		         , #{rsrcReqSeq}  /* 자원요청일련번호 */
+		         , #{rsrcReqCn}  /* 자원요청내용 */
+		         , #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		         , #{procssInstSeq}  /* 프로세스인스턴스ID */
+		         , now()  /* 실행일시 */
+		         , #{zoneId}  /* 존ID */
+		         , #{netId}  /* 망ID */
+		         , #{vipAddr}  /* VIP주소 */
+		         , #{prtcl}  /* 프로토콜 */
+		         , #{port}  /* 포트 */
+		         , #{slbTyCd}  /* SLB유형코드 */
+		         , #{sessMntncTyCd}  /* 세션유지유형코드 */
+		         , #{sessMntncVl}  /* 세션유지값 */
+		         , #{statConfrm}  /* 상태확인 */
+		         , #{statConfrmCycle}  /* 상태확인주기 */
+		         , #{statConfrmTOut}  /* 상태확인타임아웃 */
+		         , #{maxTryCnt}  /* 최대시도횟수 */
+		         , #{statConfrmHttpUrl}  /* 상태확인_HTTP_URL */
+		         , #{rsrcReqTyCd}  /* 자원요청유형코드 */
+		         , #{rsrcPoolId}  /* 자원풀ID */
+		         , #{uuid}  /* UUID */
+		         , #{comptDttm}	/* 완료일시 */
+	             , now()	/* 등록일시 */
+	             , #{rjctTyCd}	/* 반려유형코드 */
+	             , #{rjctDttm}	/* 반려일시 */
+	             , #{rjctReasn}	/* 반려사유 */
+		)
+	</insert>
+
+	<!-- 자원요청상세_네트워크 수정 -->
+	<update id="updateRrRsrcReqDtlNetwk">
+	UPDATE RR_RSRC_REQ_DTL_NETWK
+	<trim prefix="SET" prefixOverrides=",">
+		<if test="rsrcReqCn != null and rsrcReqCn != '' ">
+			, RSRC_REQ_CN = #{rsrcReqCn}  /* 자원요청내용 */
+		</if>
+		<if test="rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd != '' ">
+			, RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+		</if>
+		<if test="procssInstSeq != null ">
+			, PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스ID */
+		</if>
+		<if test="exeUserId != null and exeUserId != '' ">
+			, EXE_USER_ID = #{exeUserId}  /* 실행자ID */
+		</if>
+		<if test="exeDttm != null ">
+			, EXE_DTTM = #{exeDttm}  /* 실행일시 */
+		</if>
+		<if test="zoneId != null and zoneId != '' ">
+			, ZONE_ID = #{zoneId}  /* 존ID */
+		</if>
+		<if test="netId != null and netId != '' ">
+		 	, NET_ID = #{netId}  /* 망ID */
+		</if>
+		<if test="vipAddr != null and vipAddr != '' ">
+			, VIP_ADDR = #{vipAddr}  /* VIP주소 */
+		</if>
+		<if test="prtcl != null and prtcl != '' ">
+			, PRTCL = #{prtcl}  /* 프로토콜 */
+		</if>
+		<if test="port != null and port != '' ">
+			, PORT = #{port}  /* 포트 */
+		</if>
+		<if test="slbTyCd != null and slbTyCd != '' ">
+			, SLB_TY_CD = #{slbTyCd}  /* SLB유형코드 */
+		</if>
+		<if test="sessMntncTyCd != null and sessMntncTyCd != '' ">
+			, SESS_MNTNC_TY_CD = #{sessMntncTyCd}  /* 세션유지유형코드 */
+		</if>
+		<if test="sessMntncVl != null and sessMntncVl != '' ">
+			, SESS_MNTNC_VL = #{sessMntncVl}  /* 세션유지값 */
+		</if>
+		<if test="statConfrm != null and statConfrm != '' ">
+			, STAT_CONFRM = #{statConfrm}  /* 상태확인 */
+		</if>
+		<if test="statConfrmCycle != null ">
+			, STAT_CONFRM_CYCLE = #{statConfrmCycle}  /* 상태확인주기 */
+		</if>
+		<if test="statConfrmTOut != null ">
+			, STAT_CONFRM_T_OUT = #{statConfrmTOut}  /* 상태확인타임아웃 */
+		</if>
+		<if test="maxTryCnt != null  ">
+			, MAX_TRY_CNT = #{maxTryCnt}  /* 최대시도횟수 */
+		</if>
+		<if test="statConfrmHttpUrl != null and statConfrmHttpUrl != '' ">
+			, STAT_CONFRM_HTTP_URL = #{statConfrmHttpUrl}  /* 상태확인_HTTP_URL */
+		</if>
+		<if test="rsrcReqTyCd != null and rsrcReqTyCd != '' ">
+			, RSRC_REQ_TY_CD = #{rsrcReqTyCd}  /* 자원요청유형코드 */
+		</if>
+		<if test="rsrcPoolId != null and rsrcPoolId != '' ">
+			, RSRC_POOL_ID = #{rsrcPoolId} 	/* 자원풀ID */
+		</if>
+		<if test="uuid != null and uuid != '' ">
+			, UUID = #{uuid} 	/* UUID */
+		</if>
+		<if test="comptDttm != null ">
+			, COMPT_DTTM = #{comptDttm}	/* 완료일시 */
+		</if>
+		<if test="regDttm != null ">
+		 	, REG_DTTM = #{regDttm}	/* 등록일시 */
+		</if>
+		<if test="rjctTyCd != null and rjctTyCd != '' ">
+			, RJCT_TY_CD	= #{rjctTyCd} /* 반려유형코드 */
+		</if>
+		<if test="rjctDttm != null ">
+		 	, RJCT_DTTM = #{rjctDttm}	/* 반려일시 */
+		</if>
+		<if test="rjctReasn != null and rjctReasn != '' ">
+			, RJCT_REASN =  #{rjctReasn}	/* 반려사유 */
+		</if>
+	</trim>
+         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+	<!-- 자원요청상세_네트워크 상태 업데이트   -->
+	<update id="updateRsrcReqNetwkPrcssStatCd">
+	/* ncis.sql.cmn.rrRsrcReqDtlNetwk.updateRsrcReqNetwkPrcssStatCd */
+	UPDATE	RR_RSRC_REQ_DTL_NETWK
+	   SET	RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+	   <choose>
+			<when test="rsrcReqPrcssStatCd == '02' or rsrcReqPrcssStatCd == '03' ">
+				, EXE_DTTM  = Now()						/* 실행일시 */
+				, COMPT_DTTM  = Now()					/* 완료일시 */
+			</when>
+			<when test="rsrcReqPrcssStatCd == '04'">
+				, RJCT_TY_CD = #{rjctTyCd}				/* 반려유형코드 */
+				,	RJCT_REASN = #{rjctReasn}			/* 반려사유 */
+				,	RJCT_DTTM = Now()					/* 반려시간 */
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	 WHERE	RSRC_REQ_NO = #{rsrcReqNo}  			/* 자원요청번호 */
+	 	<if test="rsrcReqSeq != null">
+       AND	RSRC_REQ_SEQ = #{rsrcReqSeq}  			/* 자원요청일련번호 */
+       </if>
+	</update>
+
+	<!-- 자원요청상세_네트워크 실행정보 초기화 -->
+	<update id="updateRrRsrcReqDtlNetwkInitExeInfo">
+	/* ncis.sql.cmn.rrRsrcReqDtlNetwk.updateRrRsrcReqDtlNetwkInitExeInfo */
+		UPDATE	RR_RSRC_REQ_DTL_NETWK
+		   SET	RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+				,PROCSS_INST_SEQ = null
+				,EXE_DTTM =  null
+				,UUID = null
+		 WHERE 	RSRC_REQ_NO = #{rsrcReqNo}   /* 자원요청번호 */
+		   AND 	RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+
+	<!-- 자원요청상세_네트워크 삭제 -->
+	<delete id="deleteRrRsrcReqDtlNetwk">
+	DELETE FROM RR_RSRC_REQ_DTL_NETWK
+         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</delete>
+
+</mapper>

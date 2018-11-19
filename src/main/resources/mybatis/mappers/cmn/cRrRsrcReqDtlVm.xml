@@ -1,0 +1,431 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrRsrcReqDtlVm">
+
+	<resultMap id="resultRrRsrcReqDtlVm" type="ncis.cmn.entity.RrRsrcReqDtlVm">
+        <result property="rsrcReqNo"           column="RSRC_REQ_NO"/>             <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"          column="RSRC_REQ_SEQ"/>            <!-- 자원요청일련번호 -->
+        <result property="rsrcReqCn"           column="RSRC_REQ_CN"/>             <!-- 자원요청내용 -->
+        <result property="rsrcReqTyCd"         column="RSRC_REQ_TY_CD"/>          <!-- 자원요청유형코드 -->
+        <result property="rsrcReqPrcssStatCd"  column="RSRC_REQ_PRCSS_STAT_CD"/>  <!-- 자원요청진행상태코드 -->
+        <result property="procssInstSeq"       column="PROCSS_INST_SEQ"/>         <!-- 프로세스인스턴스SEQ -->
+        <result property="exeDttm"             column="EXE_DTTM"/>                <!-- 실행일시 -->
+        <result property="rjctTyCd"            column="RJCT_TY_CD"/>              <!-- 반려유형코드 -->
+        <result property="rjctReasn"           column="RJCT_REASN"/>              <!-- 반려사유 -->
+        <result property="rjctDttm"            column="RJCT_DTTM"/>               <!-- 반려일시 -->
+        <result property="zoneId"              column="ZONE_ID"/>                 <!-- 존ID -->
+        <result property="netId"               column="NET_ID"/>                  <!-- 망ID -->
+        <result property="rsrcPoolId"          column="RSRC_POOL_ID"/>            <!-- 매니저ID -->
+        <result property="uuid"                column="UUID"/>                    <!-- UUID -->
+        <result property="ipAutoAsgnYn"        column="IP_AUTO_ASGN_YN"/>         <!-- IP자동할당여부 -->
+        <result property="vmId"                column="VM_ID"/>                   <!-- 가상서버ID -->
+        <result property="vmNm"                column="VM_NM"/>                   <!-- 가상서버명 -->
+        <result property="vmCompId"            column="VM_COMP_ID"/>              <!-- 가상서버구성ID -->
+        <result property="hstNm"               column="HST_NM"/>                  <!-- 호스트명 -->
+        <result property="prposClCd"           column="PRPOS_CL_CD"/>             <!-- 용도구분코드 -->
+        <result property="useGvDprtId"         column="USE_GV_DPRT_ID"/>          <!-- 사용부처ID -->
+        <result property="useJobId"            column="USE_JOB_ID"/>              <!-- 사용업무ID -->
+        <result property="vrCnvrSwTyCd"        column="VR_CNVR_SW_TY_CD"/>        <!-- 가상화SW유형코드 -->
+        <result property="clstrSeq"            column="CLSTR_SEQ"/>               <!-- 클러스터일련번호 -->
+        <result property="pmSeq"               column="PM_SEQ"/>                  <!-- 물리서버일련번호 -->
+        <result property="rsrcPoolNm"          column="RSRC_POOL_NM"/>            <!-- 자원풀명 -->
+        <result property="ipAddr"              column="IP_ADDR"/>                 <!-- IP주소 -->
+        <result property="osTyCd"              column="OS_TY_CD"/>                <!-- OS유형코드 -->
+        <result property="osNm"                column="OS_NM"/>                   <!-- OS명 -->
+        <result property="swSeq"               column="SW_SEQ"/>                  <!-- 소프트웨어SEQ -->
+        <result property="servcStrtDt"         column="SERVC_STRT_DT"/>           <!-- 서비스시작일자 -->
+        <result property="servcEndDt"          column="SERVC_END_DT"/>            <!-- 서비스종료일자 -->
+        <result property="reqCpuVcoreQty"      column="REQ_CPU_VCORE_QTY"/>       <!-- 요청CPU(vCore) -->
+        <result property="reqMemAsgnCapa"      column="REQ_MEM_ASGN_CAPA"/>       <!-- 요청메모리(GB) -->
+        <result property="reqVrStrgId"         column="REQ_VR_STRG_ID"/>          <!-- 요청가상스토리ID -->
+        <result property="strgAsgnCapa"        column="STRG_ASGN_CAPA"/>          <!-- 스토리지할당용량(GB) -->
+        <result property="atchFileId"          column="ATCH_FILE_ID"/>            <!-- 첨부파일ID -->
+        <result property="rmk"                 column="RMK"/>                     <!-- 비고 -->
+        <result property="reqSpecSeq"          column="REQ_SPEC_SEQ"/>            <!-- 요청스펙SEQ -->
+        <result property="tmplatSeq"           column="TMPLAT_SEQ"/>              <!-- 템플릿일련번호 -->
+        <result property="vmChngClCd"          column="VM_CHNG_CL_CD"/>           <!-- 가상서버변경구분코드 -->
+        <result property="chngPreSpecSeq"      column="CHNG_PRE_SPEC_SEQ"/>       <!-- 변경전스펙SEQ -->
+        <result property="chngPreCpuVcoreQty"  column="CHNG_PRE_CPU_VCORE_QTY"/>  <!-- 변경전CPU(vCore) -->
+        <result property="chngPreMemAsgnCapa"  column="CHNG_PRE_MEM_ASGN_CAPA"/>  <!-- 변경전메모리할당량(GB) -->
+        <result property="chngReqSpecSeq"      column="CHNG_REQ_SPEC_SEQ"/>       <!-- 변경요청스펙SEQ -->
+        <result property="chngReqCpuVcoreQty"  column="CHNG_REQ_CPU_VCORE_QTY"/>  <!-- 변경요청CPU(vCore) -->
+        <result property="chngReqMemAsgnCapa"  column="CHNG_REQ_MEM_ASGN_CAPA"/>  <!-- 변경요청메모리할당량(GB) -->
+        <result property="chngReqStrgAsgnCapa" column="CHNG_REQ_STRG_ASGN_CAPA"/> <!-- 변경요청스토리지할당량(GB) -->
+        <result property="asgnVrDskId"         column="ASGN_VR_DSK_ID"/>          <!-- 할당가상디스크ID -->
+        <result property="shareYn"             column="SHARE_YN"/>                <!-- 공유여부 -->
+        <result property="netClCd"             column="NET_CL_CD"/>               <!-- 망구분코드 -->
+        <result property="regDttm"             column="REG_DTTM"/>                <!-- 등록일시 -->
+        <result property="comptDttm"           column="COMPT_DTTM"/>              <!-- 완료일시 -->
+        <result property="oprChargerId"        column="OPR_CHARGER_ID"/>          <!-- 운영담당자ID -->
+        <result property="oprBusnssOperId"     column="OPR_BUSNSS_OPER_ID"/>      <!-- 운영사업자ID -->
+        <result property="chngPreStrgAsgnCapa" column="CHNG_PRE_STRG_ASGN_CAPA"/> <!-- 변경전스토리지할당량(GB) -->
+        <result property="vmSeq"               column="VM_SEQ"/>                  <!-- 가상서버일련번호 -->
+	</resultMap>
+
+	<!-- 자원요청상세_가상서버 등록 -->
+	<insert id="insertRrRsrcReqDtlVm">
+		/* ncis.sql.cmn.rrRsrcReqDtlVm.insertRrRsrcReqDtlVm */
+		INSERT INTO RR_RSRC_REQ_DTL_VM (
+		        RSRC_REQ_NO                       /* 자원요청번호 */
+		      , RSRC_REQ_SEQ                      /* 자원요청일련번호 */
+		      , RSRC_REQ_CN                       /* 자원요청내용 */
+		      , RSRC_REQ_TY_CD                    /* 자원요청유형코드 */
+		      , RSRC_REQ_PRCSS_STAT_CD            /* 자원요청진행상태코드 */
+		      , PROCSS_INST_SEQ                   /* 프로세스인스턴스SEQ */
+		      , EXE_DTTM                          /* 실행일시 */
+		      , RJCT_TY_CD                        /* 반려유형코드 */
+		      , RJCT_REASN                        /* 반려사유 */
+		      , RJCT_DTTM                         /* 반려일시 */
+		      , ZONE_ID                           /* 존ID */
+		      , NET_ID                            /* 망ID */
+		      , RSRC_POOL_ID                      /* 매니저ID */
+		      , UUID                              /* UUID */
+		      , IP_AUTO_ASGN_YN                   /* IP자동할당여부 */
+		      , VM_ID                             /* 가상서버ID */
+		      , VM_NM                             /* 가상서버명 */
+		      , VM_COMP_ID                        /* 가상서버구성ID */
+		      , HST_NM                            /* 호스트명 */
+		      , PRPOS_CL_CD                       /* 용도구분코드 */
+		      , USE_GV_DPRT_ID                    /* 사용부처ID */
+		      , USE_JOB_ID                        /* 사용업무ID */
+		      , VR_CNVR_SW_TY_CD                  /* 가상화SW유형코드 */
+		      , CLSTR_SEQ                         /* 클러스터일련번호 */
+		      , PM_SEQ                            /* 물리서버일련번호 */
+		      , RSRC_POOL_NM                      /* 자원풀명 */
+		      , IP_ADDR                           /* IP주소 */
+		      , OS_TY_CD                          /* OS유형코드 */
+		      , OS_NM                             /* OS명 */
+		      , SW_SEQ                            /* 소프트웨어SEQ */
+		      , SERVC_STRT_DT                     /* 서비스시작일자 */
+		      , SERVC_END_DT                      /* 서비스종료일자 */
+		      , REQ_CPU_VCORE_QTY                 /* 요청CPU(vCore) */
+		      , REQ_MEM_ASGN_CAPA                 /* 요청메모리(GB) */
+		      , REQ_STRG_DMN_SEQ                  /* 요청스토리도메인SEQ */
+		      , STRG_ASGN_CAPA                    /* 스토리지할당용량(GB) */
+		      , ATCH_FILE_ID                      /* 첨부파일ID */
+		      , RMK                               /* 비고 */
+		      , REQ_SPEC_SEQ                      /* 요청스펙SEQ */
+		      , TMPLAT_SEQ                        /* 템플릿일련번호 */
+		      , VM_CHNG_CL_CD                     /* 가상서버변경구분코드 */
+		      , CHNG_PRE_SPEC_SEQ                 /* 변경전스펙SEQ */
+		      , CHNG_PRE_CPU_VCORE_QTY            /* 변경전CPU(vCore) */
+		      , CHNG_PRE_MEM_ASGN_CAPA            /* 변경전메모리할당량(GB) */
+		      , CHNG_REQ_SPEC_SEQ                 /* 변경요청스펙SEQ */
+		      , CHNG_REQ_CPU_VCORE_QTY            /* 변경요청CPU(vCore) */
+		      , CHNG_REQ_MEM_ASGN_CAPA            /* 변경요청메모리할당량(GB) */
+		      , CHNG_REQ_STRG_ASGN_CAPA           /* 변경요청스토리지할당량(GB) */
+		      , ASGN_VR_DSK_ID                    /* 할당가상디스크ID */
+		      , SHARE_YN                          /* 공유여부 */
+		      , NET_CL_CD                         /* 망구분코드 */
+		      , REG_DTTM                          /* 등록일시 */
+		      , COMPT_DTTM                        /* 완료일시 */
+		      , OPR_CHARGER_ID                    /* 운영담당자ID */
+		      , OPR_BUSNSS_OPER_ID                /* 운영사업자ID */
+		      , CHNG_PRE_STRG_ASGN_CAPA           /* 변경전스토리지할당량(GB) */
+		      , VM_SEQ                            /* 가상서버일련번호 */
+		) VALUES (
+	     	    #{rsrcReqNo}                      /* 자원요청번호 */
+		      , #{rsrcReqSeq}                     /* 자원요청일련번호 */
+		      , #{rsrcReqCn}                      /* 자원요청내용 */
+		      , #{rsrcReqTyCd}                    /* 자원요청유형코드 */
+		      , #{rsrcReqPrcssStatCd}             /* 자원요청진행상태코드 */
+		      , #{procssInstSeq}                  /* 프로세스인스턴스SEQ */
+		      , #{exeDttm}                        /* 실행일시 */
+		      , #{rjctTyCd}                       /* 반려유형코드 */
+		      , #{rjctReasn}                      /* 반려사유 */
+		      , #{rjctDttm}                       /* 반려일시 */
+		      , #{zoneId}                         /* 존ID */
+		      , #{netId}                          /* 망ID */
+		      , #{rsrcPoolId}                     /* 매니저ID */
+		      , #{uuid}                           /* UUID */
+		      , #{ipAutoAsgnYn}                   /* IP자동할당여부 */
+		      , #{vmId}                           /* 가상서버ID */
+		      , #{vmNm}                           /* 가상서버명 */
+		      , #{vmCompId}                       /* 가상서버구성ID */
+		      , #{hstNm}                          /* 호스트명 */
+		      , #{prposClCd}                      /* 용도구분코드 */
+		      , #{useGvDprtId}                    /* 사용부처ID */
+		      , #{useJobId}                       /* 사용업무ID */
+		      , #{vrCnvrSwTyCd}                   /* 가상화SW유형코드 */
+		      , #{clstrSeq}                       /* 클러스터일련번호 */
+		      , #{pmSeq}                          /* 물리서버일련번호 */
+		      , #{rsrcPoolNm}                     /* 자원풀명 */
+		      , #{ipAddr}                         /* IP주소 */
+		      , #{osTyCd}                         /* OS유형코드 */
+		      , #{osNm}                           /* OS명 */
+		      , #{swSeq}                          /* 소프트웨어SEQ */
+		      <choose>
+			      <when test="servcStrtDt == null or servcStrtDt == '' or servcEndDt == null or servcEndDt == ''">
+			      , null                                  /* 서비스시작일자 */
+			      , null                                  /* 서비스종료일자 */
+			      </when>
+			      <otherwise>
+			      , to_date(#{servcStrtDt}, 'YYYY-MM-DD') /* 서비스시작일자 */
+			      , to_date(#{servcEndDt}, 'YYYY-MM-DD')  /* 서비스종료일자 */
+			      </otherwise>
+		      </choose>
+		      , #{reqCpuVcoreQty}                 /* 요청CPU(vCore) */
+		      , #{reqMemAsgnCapa}                 /* 요청메모리(GB) */
+		      , #{reqStrgDmnSeq}                    /* 요청가상스토리ID */
+		      , #{strgAsgnCapa}                   /* 스토리지할당용량(GB) */
+		      , #{atchFileId}                     /* 첨부파일ID */
+		      , #{rmk}                            /* 비고 */
+		      , #{reqSpecSeq}                     /* 요청스펙SEQ */
+		      , #{tmplatSeq}                      /* 템플릿일련번호 */
+		      , #{vmChngClCd}                     /* 가상서버변경구분코드 */
+		      , #{chngPreSpecSeq}                 /* 변경전스펙SEQ */
+		      , #{chngPreCpuVcoreQty}             /* 변경전CPU(vCore) */
+		      , #{chngPreMemAsgnCapa}             /* 변경전메모리할당량(GB) */
+		      , #{chngReqSpecSeq}                 /* 변경요청스펙SEQ */
+		      , #{chngReqCpuVcoreQty}             /* 변경요청CPU(vCore) */
+		      , #{chngReqMemAsgnCapa}             /* 변경요청메모리할당량(GB) */
+		      , #{chngReqStrgAsgnCapa}            /* 변경요청스토리지할당량(GB) */
+		      , #{asgnVrDskId}                    /* 할당가상디스크ID */
+		      , #{shareYn}                        /* 공유여부 */
+		      , #{netClCd}                        /* 망구분코드 */
+		      , Now()                             /* 등록일시 */
+		      , #{comptDttm}                      /* 완료일시 */
+		      , #{oprChargerId}                   /* 운영담당자ID */
+		      , #{oprBusnssOperId}                /* 운영사업자ID */
+		      , #{chngPreStrgAsgnCapa}            /* 변경전스토리지할당량(GB) */
+		      , #{vmSeq}                          /* 가상서버일련번호 */
+		)
+	</insert>
+
+	<!-- 자원요청상세_가상서버 수정 -->
+	<update id="updateRrRsrcReqDtlVm">
+	UPDATE RR_RSRC_REQ_DTL_VM
+       SET RSRC_REQ_NO              = #{rsrcReqNo}               /* 자원요청번호 */
+	     , RSRC_REQ_SEQ             = #{rsrcReqSeq}              /* 자원요청일련번호 */
+	     , RSRC_REQ_CN              = #{rsrcReqCn}               /* 자원요청내용 */
+	     , RSRC_REQ_TY_CD           = #{rsrcReqTyCd}             /* 자원요청유형코드 */
+	     , RSRC_REQ_PRCSS_STAT_CD   = #{rsrcReqPrcssStatCd}      /* 자원요청진행상태코드 */
+	     , PROCSS_INST_SEQ          = #{procssInstSeq}           /* 프로세스인스턴스SEQ */
+	     , EXE_DTTM                 = #{exeDttm}                 /* 실행일시 */
+	     , RJCT_TY_CD               = #{rjctTyCd}                /* 반려유형코드 */
+	     , RJCT_REASN               = #{rjctReasn}               /* 반려사유 */
+	     , RJCT_DTTM                = #{rjctDttm}                /* 반려일시 */
+	     , ZONE_ID                  = #{zoneId}                  /* 존ID */
+	     , NET_ID                   = #{netId}                   /* 망ID */
+	     , RSRC_POOL_ID             = #{rsrcPoolId}              /* 매니저ID */
+	     , UUID                     = #{uuid}                    /* UUID */
+	     , IP_AUTO_ASGN_YN          = #{ipAutoAsgnYn}            /* IP자동할당여부 */
+	     , VM_ID                    = #{vmId}                    /* 가상서버ID */
+	     , VM_NM                    = #{vmNm}                    /* 가상서버명 */
+	     , VM_COMP_ID               = #{vmCompId}                /* 가상서버구성ID */
+	     , HST_NM                   = #{hstNm}                   /* 호스트명 */
+	     , PRPOS_CL_CD              = #{prposClCd}               /* 용도구분코드 */
+	     , USE_GV_DPRT_ID           = #{useGvDprtId}             /* 사용부처ID */
+	     , USE_JOB_ID               = #{useJobId}                /* 사용업무ID */
+	     , VR_CNVR_SW_TY_CD         = #{vrCnvrSwTyCd}            /* 가상화SW유형코드 */
+	     , CLSTR_SEQ                = #{clstrSeq}                /* 클러스터일련번호 */
+	     , PM_SEQ                   = #{pmSeq}                   /* 물리서버일련번호 */
+	     , RSRC_POOL_NM             = #{rsrcPoolNm}              /* 자원풀명 */
+	     , IP_ADDR                  = #{ipAddr}                  /* IP주소 */
+	     , OS_TY_CD                 = #{osTyCd}                  /* OS유형코드 */
+	     , OS_NM                    = #{osNm}                    /* OS명 */
+	     , SW_SEQ                   = #{swSeq}                   /* 소프트웨어SEQ */
+	     , SERVC_STRT_DT            = #{servcStrtDt}             /* 서비스시작일자 */
+	     , SERVC_END_DT             = #{servcEndDt}              /* 서비스종료일자 */
+	     , REQ_CPU_VCORE_QTY        = #{reqCpuVcoreQty}          /* 요청CPU(vCore) */
+	     , REQ_MEM_ASGN_CAPA        = #{reqMemAsgnCapa}          /* 요청메모리(GB) */
+	     , REQ_STRG_DMN_SEQ         = #{reqStrgDmnSeq}           /* 요청스토리지도메인SEQ */
+	     , STRG_ASGN_CAPA           = #{strgAsgnCapa}            /* 스토리지할당용량(GB) */
+	     , ATCH_FILE_ID             = #{atchFileId}              /* 첨부파일ID */
+	     , RMK                      = #{rmk}                     /* 비고 */
+	     , REQ_SPEC_SEQ             = #{reqSpecSeq}              /* 요청스펙SEQ */
+	     , TMPLAT_SEQ               = #{tmplatSeq}               /* 템플릿일련번호 */
+	     , VM_CHNG_CL_CD            = #{vmChngClCd}              /* 가상서버변경구분코드 */
+	     , CHNG_PRE_SPEC_SEQ        = #{chngPreSpecSeq}          /* 변경전스펙SEQ */
+	     , CHNG_PRE_CPU_VCORE_QTY   = #{chngPreCpuVcoreQty}      /* 변경전CPU(vCore) */
+	     , CHNG_PRE_MEM_ASGN_CAPA   = #{chngPreMemAsgnCapa}      /* 변경전메모리할당량(GB) */
+	     , CHNG_REQ_SPEC_SEQ        = #{chngReqSpecSeq}          /* 변경요청스펙SEQ */
+	     , CHNG_REQ_CPU_VCORE_QTY   = #{chngReqCpuVcoreQty}      /* 변경요청CPU(vCore) */
+	     , CHNG_REQ_MEM_ASGN_CAPA   = #{chngReqMemAsgnCapa}      /* 변경요청메모리할당량(GB) */
+	     , CHNG_REQ_STRG_ASGN_CAPA  = #{chngReqStrgAsgnCapa}     /* 변경요청스토리지할당량(GB) */
+	     , ASGN_VR_DSK_ID           = #{asgnVrDskId}             /* 할당가상디스크ID */
+	     , SHARE_YN                 = #{shareYn}                 /* 공유여부 */
+	     , NET_CL_CD                = #{netClCd}                 /* 망구분코드 */
+	     , REG_DTTM                 = #{regDttm}                 /* 등록일시 */
+	     , COMPT_DTTM               = #{comptDttm}               /* 완료일시 */
+	     , OPR_CHARGER_ID           = #{oprChargerId}            /* 운영담당자ID */
+	     , OPR_BUSNSS_OPER_ID       = #{oprBusnssOperId}         /* 운영사업자ID */
+	     , CHNG_PRE_STRG_ASGN_CAPA  = #{chngPreStrgAsgnCapa}     /* 변경전스토리지할당량(GB) */
+	     , VM_SEQ                   = #{vmSeq}                   /* 가상서버일련번호 */
+     WHERE RSRC_REQ_NO              = #{rsrcReqNo}               /* 자원요청번호 */
+       AND RSRC_REQ_SEQ             = #{rsrcReqSeq}              /* 자원요청일련번호 */
+	</update>
+
+    <!-- 자원요청상세_가상서버 자원요청진행상태코드 수정 -->
+	<update id="updateRsrcReqPrcssStatCd">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.updateRsrcReqPrcssStatCd */
+	UPDATE RR_RSRC_REQ_DTL_VM
+	   SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+	     , COMPT_DTTM             = Now()                  /* 완료일시 */
+     WHERE RSRC_REQ_NO IN (
+                            SELECT RSRC_REQ_NO
+                              FROM RR_RSRC_REQ
+                             WHERE TICKT_NO       = #{ticktNo}      /* 티켓번호 */
+	                           AND RSRC_REQ_TY_CD = #{rsrcReqTyCd}  /* 자원요청유형코드 */
+                           )
+	</update>
+
+
+	<!-- 자원요청상세_가상서버 스펙변경정보 수정 -->
+	<update id="updateRrRsrcReqDtlVmSpecChng">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.updateRrRsrcReqDtlVmSpecChng */
+	UPDATE RR_RSRC_REQ_DTL_VM
+		SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		<choose>
+			<when test="rsrcReqPrcssStatCd != null and  rsrcReqPrcssStatCd == '02'">
+				, EXE_DTTM  = Now()						/* 실행시간 */
+				, PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+				, ZONE_ID = #{zoneId}
+				, NET_ID = #{netId}
+				, RSRC_POOL_ID = #{rsrcPoolId}
+				, NET_CL_CD = #{netClCd}
+				, UUID = #{uuid}
+				<if test="vrCnvrSwTyCd != null">
+				, VR_CNVR_SW_TY_CD = #{vrCnvrSwTyCd}
+				</if>
+				<if test="reqStrgDmnSeq != null">
+				, REQ_STRG_DMN_SEQ = #{reqStrgDmnSeq}
+				</if>
+				<if test="vmStopYn != null">
+				, VM_STOP_YN = #{vmStopYn}
+				</if>
+				<if test="reqStrgAsgnPolicyCd != null">
+				, REQ_STRG_ASGN_POLICY_CD = #{reqStrgAsgnPolicyCd}
+				</if>
+			</when>
+			<when test="rsrcReqPrcssStatCd != null and  rsrcReqPrcssStatCd == '03'">
+				, COMPT_DTTM =  now() /* 완료일시 */
+			</when>
+			<when test="rsrcReqPrcssStatCd != null and  rsrcReqPrcssStatCd == '04'">
+				, RJCT_TY_CD = #{rjctTyCd}				/* 반려유형코드 */
+				, RJCT_REASN = #{rjctReasn}			/* 반려사유 */
+				, RJCT_DTTM = Now()					/* 반려시간 */
+			</when>
+			<when test="rsrcReqPrcssStatCd != null and  rsrcReqPrcssStatCd == '07'">
+				, EXE_DTTM  = Now()						/* 실행시간 */
+				, ZONE_ID = #{zoneId}
+				, NET_ID = #{netId}
+				, RSRC_POOL_ID = #{rsrcPoolId}
+				, NET_CL_CD = #{netClCd}
+				, UUID = #{uuid}
+				<if test="vrCnvrSwTyCd != null">
+				, VR_CNVR_SW_TY_CD = #{vrCnvrSwTyCd}
+				</if>
+				<if test="reqStrgDmnSeq != null">
+				, REQ_STRG_DMN_SEQ = #{reqStrgDmnSeq}
+				</if>
+				<if test="vmStopYn != null">
+				, VM_STOP_YN = #{vmStopYn}
+				</if>
+				<if test="reqStrgAsgnPolicyCd != null">
+				, REQ_STRG_ASGN_POLICY_CD = #{reqStrgAsgnPolicyCd}
+				</if>
+				, COMPT_DTTM =  now() /* 완료일시 */
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}   /* 자원요청번호 */
+		AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+	<!-- 자원요청상세_가상서버 생성정보 수정 -->
+	<update id="updateRrRsrcReqDtlVmCre">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.updateRrRsrcReqDtlVmCre */
+	UPDATE RR_RSRC_REQ_DTL_VM
+		SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		,ZONE_ID = #{zoneId}
+		,NET_ID = #{netId}
+		,RSRC_POOL_ID = #{rsrcPoolId}
+		,VM_ID = #{vmId}
+		,PROCSS_INST_SEQ = #{procssInstSeq}
+		,TMPLAT_SEQ = #{tmplatSeq}
+		,CLSTR_SEQ = #{clstrSeq}
+		,CLSTR_PRPOS_CL_CD = #{clstrPrposClCd}
+		<if test="pmSeq != null">
+		,PM_SEQ = #{pmSeq}
+		</if>
+		,REQ_STRG_DMN_SEQ = #{reqStrgDmnSeq}
+		,VR_CNVR_SW_TY_CD = #{vrCnvrSwTyCd}
+		,EXE_DTTM =  Now()
+		<if test="exeStatCd != null">
+		,EXE_STAT_CD = #{exeStatCd}
+		</if>
+		<if test="reqMaxCpuVcoreQty != null">
+		,REQ_MAX_CPU_VCORE_QTY = #{reqMaxCpuVcoreQty}
+		</if>
+		<if test="reqMinCpuVcoreQty != null">
+		,REQ_MIN_CPU_VCORE_QTY = #{reqMinCpuVcoreQty}
+		</if>
+		<if test="reqMaxMemAsgnCapa != null">
+		,REQ_MAX_MEM_ASGN_CAPA = #{reqMaxMemAsgnCapa}
+		</if>
+		<if test="reqMinMemAsgnCapa != null">
+		,REQ_MIN_MEM_ASGN_CAPA = #{reqMinMemAsgnCapa}
+		</if>
+		<if test="reqEntMinVl != null">
+		,REQ_ENT_MIN_VL = #{reqEntMinVl}
+		</if>
+		<if test="reqEntMaxVl != null">
+		,REQ_ENT_MAX_VL = #{reqEntMaxVl}
+		</if>
+		<if test="reqEntDfltVl != null">
+		,REQ_ENT_DFLT_VL = #{reqEntDfltVl}
+		</if>
+		<if test=" rsrcReqPrcssStatCd != null and rsrcReqPrcssStatCd == '07' ">
+	  	,COMPT_DTTM             = Now()                  /* 완료일시 */
+		</if>
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}   /* 자원요청번호 */
+		AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+	<!-- 자원요청상세_가상서버 삭제 -->
+	<delete id="deleteRrRsrcReqDtlVm">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.deleteRrRsrcReqDtlVm */
+	DELETE FROM RR_RSRC_REQ_DTL_VM
+          WHERE RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호 */
+            AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+
+	</delete>
+
+	<!-- 자원요청상세_실행정보 초기화 -->
+	<update id="updateRrRsrcReqDtlVmInitExeInfo">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.updateRrRsrcReqDtlVmInitExeInfo */
+	UPDATE RR_RSRC_REQ_DTL_VM
+		SET RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		,PROCSS_INST_SEQ = null
+		,EXE_DTTM =  null
+		,UUID = null
+		,VM_ID = null
+		WHERE RSRC_REQ_NO = #{rsrcReqNo}   /* 자원요청번호 */
+		AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	</update>
+
+
+
+	<!-- 자원요청상세_가상서버 HA설정정보 초기화 -->
+	<update id="updateRrRsrcReqDtlVmHaInit">
+	/* ncis.sql.cmn.rrRsrcReqDtlVm.updateRrRsrcReqDtlVmHaInit */
+	UPDATE RR_RSRC_REQ_DTL_VM
+		SET
+		RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}
+		,RSRC_POOL_ID = NULL
+		,VM_ID = NULL
+		,PROCSS_INST_SEQ = NULL
+		,TMPLAT_SEQ = NULL
+		,CLSTR_SEQ = NULL
+		,CLSTR_PRPOS_CL_CD = NULL
+		,PM_SEQ = NULL
+		,REQ_STRG_DMN_SEQ = NULL
+		,VR_CNVR_SW_TY_CD = NULL
+		,EXE_STAT_CD = #{exeStatCd}
+		WHERE RSRC_REQ_NO =#{rsrcReqNo}
+	</update>
+
+
+</mapper>

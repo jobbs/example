@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaVmInstlPackg">
+
+	<resultMap id="resultOaVmInstlPackg" type="ncis.cmn.entity.OaVmInstlPackg">
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="packgSeq"     column="PACKG_SEQ"/>  <!-- 패키지SEQ -->
+        <result property="ver"     column="VER"/>  <!-- 버전 -->
+        <result property="packgNm"     column="PACKG_NM"/>  <!-- 패키지명 -->
+        <result property="instlDt"     column="INSTL_DT"/>  <!-- 설치일자 -->
+        <result property="release"     column="RELEASE"/>  <!-- 릴리즈 -->
+        <result property="delUserId"     column="DEL_USER_ID"/>  <!-- 삭제자ID -->
+        <result property="delDttm"     column="DEL_DTTM"/>  <!-- 삭제일시 -->
+        <result property="delYn"     column="DEL_YN"/>  <!-- 삭제여부 -->
+	</resultMap>
+
+	<!-- 가상서버설치패키지 등록 -->
+	<insert id="insertOaVmInstlPackg">
+	INSERT INTO OA_VM_INSTL_PACKG (
+	             VM_SEQ  /* 가상서버SEQ */
+	           , PACKG_SEQ  /* 패키지SEQ */
+	           , VER  /* 버전 */
+	           , PACKG_NM  /* 패키지명 */
+	           , INSTL_DT  /* 설치일자 */
+	           , RELEASE  /* 릴리즈 */
+	           , DEL_USER_ID  /* 삭제자ID */
+	           , DEL_DTTM  /* 삭제일시 */
+	           , DEL_YN  /* 삭제여부 */
+	) VALUES (
+	           #{vmSeq}  /* 가상서버SEQ */
+	         , #{packgSeq}  /* 패키지SEQ */
+	         , #{ver}  /* 버전 */
+	         , #{packgNm}  /* 패키지명 */
+	         , #{instlDt}::DATE  /* 설치일자 */
+	         , #{release}  /* 릴리즈 */
+	         , #{delUserId}  /* 삭제자ID */
+	         , #{delDttm}  /* 삭제일시 */
+	         , #{delYn}  /* 삭제여부 */
+	)
+	</insert>
+
+	<!-- 가상서버설치패키지 수정 -->
+	<update id="updateOaVmInstlPackg">
+	UPDATE OA_VM_INSTL_PACKG
+       SET VM_SEQ       = #{vmSeq}     		/* 가상서버SEQ */
+	     , PACKG_SEQ    = #{packgSeq}  		/* 패키지일련번호 */
+	     , VER          = #{ver}       		/* 버전 */
+	     , PACKG_NM     = #{packgNm}   		/* 패키지명 */
+	     , INSTL_DT     = #{instlDt}::DATE  /* 설치일자 */
+	     , RELEASE      = #{release}   		/* 릴리즈 */
+	     , DEL_YN       = #{delYn}          /* 삭제여부 */
+	     , DEL_USER_ID  = #{delUserId}      /* 삭제자ID */
+	     , DEL_DTTM     = #{delDttm}        /* 삭제일시 */
+     WHERE VM_SEQ       = #{vmSeq}     		/* 가상서버SEQ */
+       AND PACKG_SEQ    = #{packgSeq}  		/* 패키지일련번호 */
+       AND VER          = #{ver}       		/* 버전 */
+       AND RELEASE      = #{release}   		/* 릴리즈 */
+
+	</update>
+
+	<!-- 가상서버설치패키지 삭제 -->
+	<delete id="deleteOaVmInstlPackg">
+	DELETE FROM OA_VM_INSTL_PACKG
+         WHERE VM_SEQ = #{vmSeq}  /* 가상서버ID */
+           AND PACKG_SEQ = #{packgSeq}  /* 패키지ID */
+           AND VER = #{ver}  /* 버전 */
+
+	</delete>
+
+</mapper>

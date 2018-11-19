@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.patch.mngmObjVm">
+
+	<resultMap type="ncis.cpt.opr.patch.vo.MngmObjVmVo" id="resultMngmObjVmVo" extends="ncis.sql.cmn.rcVm.resultRcVm">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="insttNm" column="INSTT_NM"/>
+		<result property="insttId" column="INSTT_ID"/>
+		<result property="mngmVmCnt" column="MNGM_VM_CNT"/>
+		<result property="vmCnt" column="VM_CNT"/>
+		<result property="zoneId"        column="ZONE_ID"/>
+	    <result property="netId"         column="NET_ID"/>
+	    <result property="rsrcPoolId"    column="RSRC_POOL_ID"/>
+	</resultMap>
+
+	<sql id="search">
+		RC_VM.VM_CL_CD = '01'
+		AND RC_VM.OS_TY_CD = '01'
+<!-- 		AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN ('01', '02') -->
+		AND RC_CLSTR.DEL_YN = 'N'
+		AND RC_VM.DEL_YN = 'N'
+		AND RC_RSRC_POOL.DEL_YN = 'N'
+		<if test='searchRegionId != null and searchRegionId != ""'>
+		AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchNetClCd != null and searchNetClCd != ""'>
+		AND RC_RSRC_POOL.NET_CL_CD = #{searchNetClCd}
+		</if>
+		<if test='searchInsttId != null and searchInsttId != ""'>
+		AND RC_VM.INSTITUTION_ID = #{searchInsttId}
+		</if>
+	</sql>
+
+	<sql id="fromClauseVm">
+		LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+		INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_VM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+		LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+		LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = RC_VM.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+		LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = RC_VM.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+		LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+		LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		LEFT JOIN (
+			SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_INSTITUTION.INSTITUTION_NM),',') AS INSTITUTION_NM , MAX(CM_JOB.INSTITUTION_ID) AS INSTITUTION_ID,  ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+		) AS JOBS_NM ON JOBS_NM.VM_SEQ = RC_VM.VM_SEQ
+	</sql>
+
+
+	<select id="selectMngmObjVmTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.patch.mngmObjVm.selectMngmObjVmTotCnt */
+		SELECT COUNT(A.*) FROM
+		(SELECT
+			CM_INSTITUTION.INSTITUTION_ID
+		FROM
+			RC_VM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{userId}
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		GROUP BY CM_INSTITUTION.INSTITUTION_ID, RC_RSRC_POOL.NET_CL_CD, RC_RSRC_POOL.REGION_ID) A
+	</select>
+
+	<select id="selectMngmObjVmList" resultMap="resultMngmObjVmVo">
+		/* ncis.sql.cpt.opr.patch.mngmObjVm.selectMngmObjVmList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT COUNT(*) AS VM_CNT
+			  , SUM(CASE WHEN RC_VM.PACKG_MNG_TRGT_YN = 'Y' THEN 1 ELSE 0 END) AS MNGM_VM_CNT
+			  , (SELECT CM_CODE.CD_NM FROM CM_CODE WHERE CM_CODE.GRP_CD = '067' AND PARENT_CD = 'NETCD' AND CM_CODE.CD = RC_RSRC_POOL.NET_CL_CD) AS NET_NM
+			  , RC_RSRC_POOL.NET_CL_CD
+			  , RC_REGION.REGION_ID
+			  , RC_REGION.REGION_NM
+			  , CM_INSTITUTION.INSTITUTION_NM AS INSTT_NM
+			  , CM_INSTITUTION.INSTITUTION_ID AS INSTT_ID
+		FROM
+			RC_VM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		GROUP BY RC_RSRC_POOL.NET_CL_CD, RC_REGION.REGION_ID, CM_INSTITUTION.INSTITUTION_ID
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectMngmObjVm" resultMap="resultMngmObjVmVo">
+		/* ncis.sql.cpt.opr.patch.mngmObjVm.selectMngmObjVm */
+		SELECT COUNT(*) AS VM_CNT
+			  , SUM(CASE WHEN RC_VM.PACKG_MNG_TRGT_YN = 'Y' THEN 1 ELSE 0 END) AS MNGM_VM_CNT
+			  , (SELECT CM_CODE.CD_NM FROM CM_CODE WHERE CM_CODE.GRP_CD = '067' AND PARENT_CD = 'NETCD' AND CM_CODE.CD = RC_RSRC_POOL.NET_CL_CD) AS NET_NM
+			  , RC_RSRC_POOL.NET_CL_CD
+			  , RC_REGION.REGION_ID
+			  , RC_REGION.REGION_NM
+			  , CM_INSTITUTION.INSTITUTION_NM AS INSTT_NM
+			  , CM_INSTITUTION.INSTITUTION_ID AS INSTT_ID
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+<!-- 			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ -->
+<!-- 			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID -->
+<!-- 			INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID -->
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+		WHERE
+			RC_VM.VM_CL_CD = '01'
+			AND RC_VM.OS_TY_CD = '01'
+<!-- 			AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN ('01', '02') -->
+			AND JOBS_NM.INSTITUTION_ID = #{insttId}
+			AND RC_VM.INSTITUTION_ID = #{insttId}
+			AND RC_RSRC_POOL.NET_CL_CD = #{netClCd}
+			AND RC_RSRC_POOL.REGION_ID = #{regionId}
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND RC_VM.DEL_YN = 'N'
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+		GROUP BY RC_RSRC_POOL.NET_CL_CD, RC_REGION.REGION_ID, CM_INSTITUTION.INSTITUTION_ID
+	</select>
+
+
+	<select id="selectMngmObjVmReq" resultMap="resultMngmObjVmVo">
+		/* ncis.sql.cpt.opr.patch.mngmObjVm.selectMngmObjVmReq */
+		SELECT
+			A.REGION_ID
+			, A.ZONE_ID
+			, A.NET_ID
+			, A.NET_CL_CD
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, A.RPRSNT_IP_ADDR
+			, A.INSTITUTION_ID
+			, A.UUID
+		FROM
+			RC_RSRC_POOL
+			INNER JOIN
+					(SELECT
+						RC_RSRC_POOL.REGION_ID
+						, RC_RSRC_POOL.ZONE_ID
+						, RC_RSRC_POOL.NET_ID
+						, RC_RSRC_POOL.NET_CL_CD
+						, RC_VM.RPRSNT_IP_ADDR
+						, RC_VM.INSTITUTION_ID
+						, RC_VM.UUID
+					FROM
+						RC_VM
+						INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+						INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+					WHERE
+						RC_VM.VM_SEQ = #{value} ) AS A ON RC_RSRC_POOL.REGION_ID = A.REGION_ID and RC_RSRC_POOL.ZONE_ID = A.ZONE_ID AND RC_RSRC_POOL.NET_CL_CD = A.NET_CL_CD
+
+		WHERE RSRC_POOL_CL_CD = '04' LIMIT 1
+	</select>
+
+	<!-- 패키지 삭제여부가 Y가 아닌 데이터 조회 -->
+	<select id="selectOaPackgDeleted" resultType="ncis.cmn.entity.OaPackg">
+	/* ncis.sql.cpt.opr.patch.mngmObjVm.selectOaPackgDeleted */
+	SELECT PACKG_SEQ AS PACKG_ID        /* 패키지일련번호 */
+	     , PACKG_NM             		/* 패키지명 */
+	     , USE_PRPOS            		/* 사용용도 */
+	     , SYS_KND_CD           		/* 시스템종류코드 */
+	     , SUPPLY_CO            		/* 제공회사 */
+	     , LICNSE               		/* 라이선스 */
+	     , REGION_ID            		/* 리전ID */
+	     , NET_CL_CD               		/* 망구분코드 */
+	     , REPOSIT_ID           		/* 레파지토리ID */
+	     , DEL_YN               		/* 삭제여부 */
+	     , DEL_USER_ID          		/* 삭제자ID */
+	     , DEL_DTTM             		/* 삭제일시 */
+      FROM OA_PACKG
+     WHERE DEL_YN   <![CDATA[<>]]> 'Y'  /* 삭제여부 */
+       <if test="repositId != null and !repositId.isEmpty()">
+       AND REPOSIT_ID = #{repositId}  	/* 레파지토리ID */
+       </if>
+       <if test="packgNm != null and !packgNm.isEmpty()">
+       AND PACKG_NM   = #{packgNm}    	/* 패키지명 */
+       </if>
+	</select>
+
+	<!-- 패키지버전 삭제여부 Y가 아닌 데이터 조회 -->
+	<select id="selectOaPackgVerDeleted" resultType="ncis.cmn.entity.OaPackgVer">
+	/* ncis.sql.cpt.opr.patch.mngmObjVm.selectOaPackgVerDeleted */
+	SELECT PACKG_SEQ               		/* 패키지일련번호 */
+	     , VER                     		/* 버전 */
+	     , REG_DTTM                		/* 등록일시 */
+	     , PACKG_CN                		/* 패키지내용 */
+	     , RELEASE                 		/* 릴리즈 */
+	     , FILE_SIZE               		/* 파일크기 */
+	     , PACKG_FILE_NM           		/* 패키지파일명 */
+	     , CN                      		/* 내용 */
+	     , DEL_YN                  		/* 삭제여부 */
+	     , DEL_USER_ID             		/* 삭제자ID */
+	     , DEL_DTTM                		/* 삭제일시 */
+      FROM OA_PACKG_VER
+     WHERE DEL_YN   <![CDATA[<>]]> 'Y'  /* 삭제여부 */
+       AND PACKG_SEQ = #{packgSeq}  	/* 패키지일련번호 */
+       AND VER       = #{ver}       	/* 버전 */
+       AND RELEASE   = #{release}   	/* 릴리즈 */
+	</select>
+
+	<!-- 가상서버설치패키지 조회 -->
+	<select id="selectOaVmInstlPackg" resultType="ncis.cmn.entity.OaVmInstlPackg">
+	/* ncis.sql.cpt.opr.patch.mngmObjVm.selectOaVmInstlPackg */
+	SELECT VM_SEQ              		/* 가상서버SEQ */
+	     , PACKG_SEQ           		/* 패키지일련번호 */
+	     , VER                 		/* 버전 */
+	     , PACKG_NM            		/* 패키지명 */
+	     , INSTL_DT            		/* 설치일자 */
+	     , RELEASE             		/* 릴리즈 */
+	     , DEL_YN              		/* 삭제여부 */
+	     , DEL_USER_ID         		/* 삭제자ID */
+	     , DEL_DTTM            		/* 삭제일시 */
+      FROM OA_VM_INSTL_PACKG
+     WHERE 1=1
+       AND VM_SEQ    = #{vmSeq}     /* 가상서버SEQ */
+       AND PACKG_SEQ = #{packgSeq}  /* 패키지일련번호 */
+       AND VER       = #{ver}       /* 버전 */
+       AND RELEASE   = #{release}   /* 릴리즈 */
+	</select>
+
+
+</mapper>

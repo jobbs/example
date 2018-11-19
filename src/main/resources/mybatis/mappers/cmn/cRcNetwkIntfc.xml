@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcNetwkIntfc">
+
+	<resultMap id="resultRcNetwkIntfc" type="ncis.cmn.entity.RcNetwkIntfc">
+        <result property="netwkIntfcSeq" column="NETWK_INTFC_SEQ"/> <!-- 네트워크인터페이스SEQ -->
+        <result property="vrSwtchSeq"    column="VR_SWTCH_SEQ"/>    <!-- 가상스위치SEQ -->
+        <result property="netwkIntfcNm"  column="NETWK_INTFC_NM"/>  <!-- 네트워크인터페이스명 -->
+        <result property="ipAddr"        column="IP_ADDR"/>         <!-- IP주소 -->
+        <result property="macAddr"       column="MAC_ADDR"/>        <!-- MAC주소 -->
+        <result property="uuid"          column="UUID"/>            <!-- UUID -->
+        <result property="subnetMask"    column="SUBNET_MASK"/>     <!-- 서브넷마스크 -->
+        <result property="gtwyIpAddr"    column="GTWY_IP_ADDR"/>    <!-- 게이트웨이IP주소 -->
+        <result property="vmSeq"         column="VM_SEQ"/>          <!-- 가상서버SEQ -->
+        <result property="nicPrposCd"    column="NIC_PRPOS_CD"/>    <!-- NIC용도코드 -->
+	</resultMap>
+
+	<!-- 네트워크인터페이스 등록 -->
+	<insert id="insertRcNetwkIntfc">
+		/* ncis.sql.cmn.rcNetwkIntfc.insertRcNetwkIntfc */
+		INSERT INTO
+		RC_NETWK_INTFC (
+			NETWK_INTFC_SEQ   	/* 네트워크인터페이스SEQ */
+			, NETWK_ID       	/* 네트워크ID */
+			, NETWK_INTFC_NM 	/* 네트워크인터페이스명 */
+			, IP_ADDR       	/* IP주소 */
+			, MAC_ADDR       	/* MAC주소 */
+			, UUID           	/* UUID */
+			, SUBNET_MASK    	/* 서브넷마스크 */
+			, GTWY_IP_ADDR   	/* 게이트웨이IP주소 */
+			, VM_SEQ         	/* 가상서버SEQ */
+			, NIC_PRPOS_CD   	/* NIC용도코드 */
+			, DEL_YN			/* 삭제여부 */
+		)
+		VALUES (
+			#{netwkIntfcSeq}   	/* 네트워크인터페이스SEQ */
+			, #{netwkId}      	/* 네트워크ID */
+			, #{netwkIntfcNm} 	/* 네트워크인터페이스명 */
+			, #{ipAddr}      	/* IP주소 */
+			, #{macAddr}      	/* MAC주소 */
+			, #{uuid}         	/* UUID */
+			, #{subnetMask}   	/* 서브넷마스크 */
+			, #{gtwyIpAddr}   	/* 게이트웨이IP주소 */
+			, #{vmSeq}        	/* 가상서버SEQ */
+			, #{nicPrposCd}   	/* NIC용도코드 */
+			, 'N'				/* 삭제여부 */
+		)
+	</insert>
+
+	<!-- 네트워크인터페이스 수정 -->
+	<update id="updateRcNetwkIntfc">
+		/* ncis.sql.cmn.rcNetwkIntfc.updateRcNetwkIntfc */
+		UPDATE
+			RC_NETWK_INTFC
+		SET
+			NETWK_INTFC_SEQ   = #{netwkIntfcSeq} 	/* 네트워크인터페이스SEQ */
+			, NETWK_ID       = #{netwkId}      		/* 네트워크ID */
+			, NETWK_INTFC_NM = #{netwkIntfcNm} 		/* 네트워크인터페이스명 */
+			, IP_ADDR        = #{ipAddr}       		/* IP주소 */
+			, MAC_ADDR       = #{macAddr}      		/* MAC주소 */
+			, UUID           = #{uuid}         		/* UUID */
+			, SUBNET_MASK    = #{subnetMask}   		/* 서브넷마스크 */
+			, GTWY_IP_ADDR   = #{gtwyIpAddr}   		/* 게이트웨이IP주소 */
+			, VM_SEQ         = #{vmSeq}        		/* 가상서버SEQ */
+			, NIC_PRPOS_CD   = #{nicPrposCd}   		/* NIC용도코드 */
+		WHERE
+			NETWK_INTFC_SEQ = #{netwkIntfcSeq}   	/* 네트워크인터페이스SEQ */
+	</update>
+
+	<!-- 네트워크인터페이스 삭제 -->
+	<delete id="deleteRcNetwkIntfc">
+		/* ncis.sql.cmn.rcNetwkIntfc.deleteRcNetwkIntfc */
+		DELETE
+		FROM
+			RC_NETWK_INTFC
+        WHERE
+        	NETWK_INTFC_SEQ = #{netwkIntfcSeq} 		/* 네트워크인터페이스SEQ */
+
+	</delete>
+
+</mapper>

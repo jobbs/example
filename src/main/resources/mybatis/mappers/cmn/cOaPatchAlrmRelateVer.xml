@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaPatchAlrmRelateVer">
+
+	<resultMap id="resultOaPatchAlrmRelateVer" type="ncis.cmn.entity.OaPatchAlrmRelateVer">
+        <result property="packgSeq"     column="PACKG_SEQ"/>  <!-- 패키지ID -->
+        <result property="ver"     column="VER"/>  <!-- 버전 -->
+        <result property="patchAlrmSeq"     column="PATCH_ALRM_SEQ"/>  <!-- 패치알림Seq -->
+        <result property="compPackgClCd"     column="COMP_PACKG_CL_CD"/>  <!-- 구성패키지구분코드 -->
+	</resultMap>
+
+	<!-- 패치알림관련패키지버전 등록 -->
+	<insert id="insertOaPatchAlrmRelateVer">
+		INSERT INTO OA_PATCH_ALRM_RELATE_VER (
+		             PACKG_SEQ  /* 패키지Seq */
+		           , VER  /* 버전 */
+		           , RELEASE /* 릴리즈 */
+		           , PATCH_ALRM_SEQ  /* 패치알림ID */
+		           , COMP_PACKG_CL_CD  /* 구성패키지구분코드 */
+		) VALUES (
+		           #{packgSeq}  /* 패키지Seq */
+		         , #{ver}  /* 버전 */
+		         , #{release} /* 릴리즈 */
+		         , #{patchAlrmSeq}  /* 패치알림ID */
+		         , #{compPackgClCd}  /* 구성패키지구분코드 */
+		)
+	</insert>
+
+	<!-- 패치알림관련패키지버전 수정 -->
+	<update id="updateOaPatchAlrmRelateVer">
+	UPDATE OA_PATCH_ALRM_RELATE_VER
+	         SET PACKG_SEQ = #{packgSeq}  /* 패키지Seq */
+	           , VER = #{ver}  /* 버전 */
+	           , PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+	           , COMP_PACKG_CL_CD = #{compPackgClCd}  /* 구성패키지구분코드 */
+         WHERE PACKG_SEQ = #{packgSeq}  /* 패키지ID */
+           AND VER = #{ver}  /* 버전 */
+           AND PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+
+	</update>
+
+	<!-- 패치알림관련패키지버전 삭제 -->
+	<delete id="deleteOaPatchAlrmRelateVer">
+	DELETE FROM OA_PATCH_ALRM_RELATE_VER
+         WHERE PACKG_SEQ = #{packgSeq}  /* 패키지Seq */
+           AND VER = #{ver}  /* 버전 */
+           AND PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림ID */
+
+	</delete>
+
+
+</mapper>

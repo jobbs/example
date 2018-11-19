@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxPv">
+	<!-- PV 등록 -->
+	<insert id="insertRxPv" parameterType="ncis.cmn.entity.RxPv">
+
+		/* ncis.sql.cmn.rxPv.insertRxPv */
+		INSERT INTO RX_PV(
+              RSRC_POOL_ID  /* 자원풀ID */
+			, PV_ID  /* PV_ID */
+			, PV_NM  /* PV명 */
+			, PV_UID  /* PV_UID */
+			, STRG_ASGN_CAPA  /* 스토리지할당량 */
+			, ACCSS_MODE_CL_CD  /* 접근모드구분코드 */
+			, STRG_CL_CD  /* 스토리지구분코드 */
+			, GLSTR_ENDPNT_ID  /* 글러스터엔드포인트ID */
+			, STRG_PATH  /* 스토리지경로 */
+			, STRG_HST_ADDR  /* 스토리지호스트주소 */
+			, ISCSI_IQN  /* ISCSI_IQN */
+			, ISCSI_LUN  /* ISCSI_LUN */
+			, RE_USE_POLICY_CL_CD  /* 재사용정책구분코드 */
+			, CRE_DTTM  /* 생성일시 */
+			, UPDT_DTTM  /* 수정일시 */
+			, STAT_CD  /* 상태코드 */
+        VALUES (
+			  #{rsrcPoolId}  /* 자원풀ID */
+			, #{pvId}  /* PV_ID */
+			, #{pvNm}  /* PV명 */
+			, #{pvUid}  /* PV_UID */
+			, #{strgAsgnCapa}  /* 스토리지할당량 */
+			, #{accssModeClCd}  /* 접근모드구분코드 */
+			, #{strgClCd}  /* 스토리지구분코드 */
+			, #{glstrEndpntId}  /* 글러스터엔드포인트ID */
+			, #{strgPath}  /* 스토리지경로 */
+			, #{strgHstAddr}  /* 스토리지호스트주소 */
+			, #{iscsiIqn}  /* ISCSI_IQN */
+			, #{iscsiLun}  /* ISCSI_LUN */
+			, #{reUsePolicyClCd}  /* 재사용정책구분코드 */
+			, #{creDttm}  /* 생성일시 */
+			, #{updtDttm}  /* 수정일시 */
+			, #{statCd}  /* 상태코드 */
+        )
+	</insert>
+
+	<!-- PV 삭제 -->
+	<delete id="deleteRxPv">
+		/* ncis.sql.cmn.RxPv.deleteRxPv */
+		UPDATE RX_PV
+        SET SERVC_AREA_SEQ = NULL
+		, UPDT_DTTM = now()
+        WHERE RSRC_POOL_ID = #{rsrcPoolId}
+        <if test="pvId != null and !pvId.isEmpty()">
+		AND PV_ID = #{pvId}
+		</if>
+		<if test="servcAreaSeq >0">
+		AND SERVC_AREA_SEQ = #{servcAreaSeq}
+		</if>
+	</delete>
+
+	<!-- PV 수정 -->
+	<update id="updateRxPv">
+		/* ncis.sql.cmn.RxPv.updateRxPv */
+		UPDATE RX_PV
+		SET SERVC_AREA_SEQ = #{servcAreaSeq}
+		, UPDT_DTTM = now()
+        WHERE PV_ID = #{pvId}
+        AND RSRC_POOL_ID = #{rsrcPoolId}
+	</update>
+
+</mapper>

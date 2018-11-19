@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrSw">
+
+	<resultMap id="resultRrSw" type="ncis.cmn.entity.RrSw">
+        <result property="swSeq"     	column="SW_SEQ"/>  <!-- 소프트웨어ID -->
+        <result property="swNm"     	column="SW_NM"/>  <!-- 소프트웨어명 -->
+        <result property="compId"     	column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="swVer"     	column="SW_VER"/>  <!-- 소프트웨어버전 -->
+        <result property="swMnfctCo"    column="SW_MNFCT_CO"/>  <!-- 소프트웨어제조사 -->
+        <result property="rmk"     		column="RMK"/>  <!-- 비고 -->
+        <result property="creUserId"    column="CRE_USER_ID"/>  <!-- 생성자ID -->
+        <result property="updtUserId"   column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+	</resultMap>
+
+	<insert id="insertRrSw">
+		<selectKey order="BEFORE" keyProperty="swSeq" resultType="integer">
+			SELECT nextval('rr_sw_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rrSw.insertRrSw */
+		INSERT INTO RR_SW (
+		             SW_SEQ  /* 소프트웨어ID */
+		           , SW_NM  /* 소프트웨어명 */
+		           , COMP_ID  /* 구성ID */
+		           , SW_VER  /* 소프트웨어버전 */
+		           , SW_MNFCT_CO  /* 소프트웨어제조사 */
+		           , RMK  /* 비고 */
+		           , CRE_USER_ID  /* 생성자ID */
+		           , CRE_DTTM   /* 생성일시 */
+		) VALUES (
+		           #{swSeq}  /* 소프트웨어ID */
+		         , #{swNm}  /* 소프트웨어명 */
+		         , #{compId}  /* 구성ID */
+		         , #{swVer}  /* 소프트웨어버전 */
+		         , #{swMnfctCo}  /* 소프트웨어제조사 */
+		         , #{rmk}  /* 비고 */
+		         , #{creUserId}  /* 생성자ID */
+		         , now()  /* 생성일시 */
+		)
+	</insert>
+
+	<update id="updateRrSw">
+	/* ncis.sql.cmn.rrSw.updateRrSw */
+	UPDATE RR_SW SET
+		SW_NM = #{swNm},  /* 소프트웨어ID */
+		SW_VER = #{swVer},  /* 소프트웨어버전 */
+		SW_MNFCT_CO =#{swMnfctCo},  /* 소프트웨어제조사 */
+		RMK = #{rmk},  /* 비고 */
+		UPDT_USER_ID = #{updtUserId},  /* 수정자ID*/
+		UPDT_DTTM = now()  /* 수정일시*/
+	WHERE
+		SW_SEQ=#{swSeq}
+	</update>
+
+	<delete id="deleteRrSw">
+		/* ncis.sql.cmn.rrSw.deleteRrSw */
+		DELETE FROM RR_SW
+		WHERE SW_SEQ IN
+		<if test="updtCheck != null and !updtCheck.isEmpty()">
+			<foreach collection="updtCheck" item="item" open="(" close=")" separator=",">
+				 #{item}  /* 소프트웨어ID */
+			</foreach>
+		</if>
+	</delete>
+
+	<delete id="deleteSw">
+		/* ncis.sql.cmn.rrSw.deleteSw */
+		DELETE FROM RR_SW
+		WHERE SW_SEQ = #{swSeq}
+	</delete>
+
+</mapper>

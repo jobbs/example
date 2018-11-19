@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrTmplatPrpos">
+
+	<resultMap id="resultRrTmplatPrpos" type="ncis.cmn.entity.RrTmplatPrpos">
+        <result property="tmplatSeq"     column="TMPLAT_SEQ"/>  <!-- 템플릿ID -->
+        <result property="prposSeq"     column="PRPOS_SEQ"/>  <!-- 용도일련번호 -->
+        <result property="prposCd"     column="PRPOS_CD"/>  <!-- 용도코드 -->
+	</resultMap>
+
+	<insert id="insertRrTmplatPrpos">
+		<selectKey order="BEFORE" keyProperty="prposSeq" resultType="integer">
+			SELECT nextval('rr_tmplat_prpos_sq01')
+		</selectKey>
+		/* ncis.sql.cmn.rrTmplatPrpos.insertRrTmplatPrpos */
+		INSERT INTO RR_TMPLAT_PRPOS (	 TMPLAT_SEQ  /* 템플릿시퀀스 */
+										,PRPOS_SEQ  /* 용도일련번호 */
+										,PRPOS_CD  /* 용도코드 */
+		) VALUES (	 #{tmplatSeq}  /* 템플릿시퀀스 */
+					,#{prposSeq}  /* 용도일련번호 */
+					,#{prposCd}  /* 용도코드 */
+		)
+	</insert>
+
+	<delete id="deleteRrTmplatPrpos">
+		/* ncis.sql.cmn.rrTmplatPrpos.deleteRrTmplatPrpos */
+		DELETE FROM RR_TMPLAT_PRPOS
+        WHERE TMPLAT_SEQ = #{tmplatSeq}  /* 템플릿시퀀스 */
+	</delete>
+</mapper>

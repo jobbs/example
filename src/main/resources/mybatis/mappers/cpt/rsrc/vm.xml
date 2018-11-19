@@ -1,0 +1,1049 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.vm">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmVo" id="resultVmVoList" extends="ncis.sql.cmn.rcVm.resultRcVm">
+		<result property="regionId"      column="REGION_ID"/>
+	    <result property="regionNm"      column="REGION_NM"/>
+	    <result property="zoneId"        column="ZONE_ID"/>
+	    <result property="zoneNm"        column="ZONE_NM"/>
+	    <result property="netId"         column="NET_ID"/>
+	    <result property="netNm"         column="NET_NM"/>
+	    <result property="netClCd"       column="NET_CL_CD"/>
+	    <result property="netClCdNm"     column="NET_CL_CD_NM"/>
+	    <result property="rsrcPoolId"    column="RSRC_POOL_ID"/>
+	    <result property="rsrcPoolNm"    column="RSRC_POOL_NM"/>
+	    <result property="rsrcPoolVersion"    column="RSRC_POOL_VERSION"/>
+	    <result property="vrlzSwTyCd"    column="VRLZ_SW_TY_CD"/>
+	    <result property="vrlzSwTyCdNm"  column="VRLZ_SW_TY_CD_NM"/>
+	    <result property="ctlTrgtYn"     column="CTL_TRGT_YN"/>
+	    <result property="clstrSeq"      column="CLSTR_SEQ"/>
+	    <result property="clstrNm"       column="CLSTR_NM"/>
+	    <result property="pmSeq"         column="PM_SEQ"/>
+	    <result property="pmNm"          column="PM_NM"/>
+	    <result property="pmCompId"      column="PM_COMP_ID"/>
+	    <result property="haYnNm"        column="HA_YN_NM"/>
+	    <result property="statCdNm"      column="STAT_CD_NM"/>
+	    <result property="statGrpCdNm"   column="STAT_GRP_CD_NM"/>
+	    <result property="statGrpCd"     column="STAT_GRP_CD"/>
+	    <result property="osTyCdNm"      column="OS_TY_CD_NM"/>
+	    <result property="vmClCdNm"      column="VM_CL_CD_NM"/>
+	    <result property="institutionNm" column="INSTITUTION_NM"/>
+	    <result property="jobsNm"        column="JOBS_NM"/>
+	    <result property="netwkTyClCdNm" column="NETWK_TY_CL_CD_NM"/>
+	    <result property="maxMemAsgnCapa" column="MAX_MEM_ASGN_CAPA"/>
+	    <result property="minMemAsgnCapa" column="MIN_MEM_ASGN_CAPA"/>
+	    <result property="maxCpuVcoreQty" column="MAX_CPU_VCORE_QTY"/>
+	    <result property="minCpuVcoreQty" column="MIN_CPU_VCORE_QTY"/>
+	    <result property="haGrpId"        column="HA_GRP_ID"/>
+	    <result property="strtupDttm"     column="STRTUP_DTTM"/>
+	    <result property="creDttm"        column="CRE_DTTM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmVo" id="resultVmVoDetail" extends="resultVmVoList">
+		<collection property="vmJobVoList"            column="{searchVmSeq = VM_SEQ}"      select="ncis.sql.cpt.rsrc.com.vmJob.selectVmJobList"/>
+		<collection property="netwkIntfcVoList"       column="{vmSeq = VM_SEQ}"            select="ncis.sql.cpt.rsrc.com.netwkIntfc.selectNetwkIntfcList"/>
+		<collection property="vrDskVoList"            column="{searchVmSeq = VM_SEQ}"      select="ncis.sql.cpt.rsrc.strg.vrDsk.selectVrDskList"/>
+		<collection property="oprRelateChargerVoList" column="{searchCompId = VM_COMP_ID}" select="ncis.sql.cpt.rsrc.com.oprRelateCharger.selectOprRelateChargerListByCompId"/>
+		<collection property="vmProcssMsgVoList"      column="{vmSeq = VM_SEQ}"            select="selectVmProcssMsgList"/>
+		<collection property="vmSwVoList"             column="{vmCompId = VM_COMP_ID}"     select="selectVmSwList"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmSnapVo" id="resultVmSnapVoList" extends="ncis.sql.cmn.rcVmSnapsht.resultRcVmSnapsht">
+		<result property="ctlTrgtYn"     column="CTL_TRGT_YN"/>  <!-- 제어여부 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmResHistVo" id="resultVmResHistVoList" extends="ncis.sql.cmn.rrVmWrkHist.resultRrVmWrkHist">
+		<result property="wrkNm"     column="WRK_NM"/>  <!-- 작업자명 -->
+        <result property="wrkEmail"     column="WRK_EMAIL"/>  <!-- 작업자이메일 -->
+        <result property="wrkPhone"     column="WRK_PHONE"/>  <!-- 작업자전화번호 -->
+        <result property="cdNm"     column="CD_NM"/>  <!-- 이력구분명 -->
+        <result property="beforeInfo"     column="BEFORE_INFO"/>  <!-- 변경전 정보 -->
+        <result property="afterInfo"     column="AFTER_INFO"/>  <!-- 변경후 정보 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmMigrHistVo" id="resultVmMigrHistVoList" extends="ncis.sql.cmn.rrVmWrkHist.resultRrVmWrkHist">
+		<result property="wrkNm"     column="WRK_NM"/>  <!-- 작업자명 -->
+        <result property="wrkEmail"     column="WRK_EMAIL"/>  <!-- 작업자이메일 -->
+        <result property="wrkPhone"     column="WRK_PHONE"/>  <!-- 작업자전화번호 -->
+        <result property="cdNm"     column="CD_NM"/>  <!-- 이력구분명 -->
+        <result property="beforeInfo"     column="BEFORE_INFO"/>  <!-- 변경전 정보 -->
+        <result property="afterInfo"     column="AFTER_INFO"/>  <!-- 변경후 정보 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmSnapHistVo" id="resultVmSnapHistVoList" extends="ncis.sql.cmn.rrVmWrkHist.resultRrVmWrkHist">
+		<result property="wrkNm"     column="WRK_NM"/>  <!-- 작업자명 -->
+        <result property="wrkEmail"     column="WRK_EMAIL"/>  <!-- 작업자이메일 -->
+        <result property="wrkPhone"     column="WRK_PHONE"/>  <!-- 작업자전화번호 -->
+        <result property="cdNm"     column="CD_NM"/>  <!-- 이력구분명 -->
+        <result property="detailInfo"     column="DETAIL_INFO"/>  <!-- 상세정보 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmCompHistVo" id="resultVmCompHistVoList" extends="ncis.sql.cmn.rrVmWrkHist.resultRrVmWrkHist">
+		<result property="wrkNm"     column="WRK_NM"/>  <!-- 작업자명 -->
+        <result property="wrkEmail"     column="WRK_EMAIL"/>  <!-- 작업자이메일 -->
+        <result property="wrkPhone"     column="WRK_PHONE"/>  <!-- 작업자전화번호 -->
+        <result property="cdNm"     column="CD_NM"/>  <!-- 이력구분명 -->
+        <result property="beforeInfo"     column="BEFORE_INFO"/>  <!-- 변경전 정보 -->
+        <result property="afterInfo"     column="AFTER_INFO"/>  <!-- 변경후 정보 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmSnapReqVo" id="resultVmSnapReqVo">
+		<result property="regionId"      column="REGION_ID"/>
+	    <result property="zoneId"        column="ZONE_ID"/>
+	    <result property="netId"         column="NET_ID"/>
+	    <result property="netClCd"         column="NET_CL_CD"/>
+	    <result property="rsrcPoolId"       column="RSRC_POOL_ID"/>
+	    <result property="vmUuid"       column="VM_UUID"/>
+	    <result property="vmSeq"       column="VM_SEQ"/>
+	    <result property="vmId"       column="VM_ID"/>
+	    <result property="snapshtNm"       column="SNAPSHT_NM"/>
+	    <result property="snapshtSeq"       column="SNAPSHT_SEQ"/>
+	    <result property="uuid"       column="UUID"/>
+	    <result property="statGrpCd"     column="STAT_GRP_CD"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmProcssVo" id="resultVmProcssVo">
+		<result property="procssInstSeq"      column="PROCSS_INST_SEQ"/>
+	    <result property="procssSeq"        column="PROCSS_SEQ"/>
+	    <result property="varVl"         column="VAR_VL"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmProcssMsgVo" id="resultVmProcssMsgVo">
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/>
+	    <result property="procssClCd"    column="PROCSS_CL_CD"/>
+	    <result property="procssClCdNm"  column="PROCSS_CL_CD_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmSwVo" id="resultVmSwVo">
+		<result property="vmCompId"  column="VM_COMP_ID"/>
+	    <result property="swCompId"  column="SW_COMP_ID"/>
+	    <result property="swNm"      column="SW_NM"/>
+	    <result property="instlVer"  column="INSTL_VER"/>
+	    <result property="patchVer"  column="PATCH_VER"/>
+	    <result property="instlDt"   column="INSTL_DT"/>
+	</resultMap>
+
+	<sql id="order">
+		<choose>
+			<when test='orderBy != null and "rt".equals(orderBy)'>
+				ORDER BY (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) + (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) DESC NULLS LAST, JOBS_NM.INSTITUTION_NM ASC NULLS LAST, JOBS_NM ASC NULLS LAST, VM_NM ASC NULLS LAST
+			</when>
+			<when test='orderBy != null and "vmP".equals(orderBy)'>
+				<choose>
+					<when test="sysAdm or oprAdm">
+						ORDER BY RC_REGION.REGION_NM ASC, RC_ZONE.ZONE_NM ASC, RC_NET.NET_NM ASC, RC_RSRC_POOL.RSRC_POOL_NM ASC, RC_VM.VM_NM NULLS LAST, RC_VM.VM_ID NULLS LAST
+					</when>
+					<otherwise>
+						ORDER BY JOBS_NM.INSTITUTION_NM ASC NULLS LAST, JOBS_NM.JOBS_NM ASC NULLS LAST, RC_VM.VM_NM ASC NULLS LAST
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				<choose>
+					<when test="sysAdm or oprAdm">
+						ORDER BY RC_REGION.REGION_NM ASC, RC_ZONE.ZONE_NM ASC, RC_NET.NET_NM ASC, RC_RSRC_POOL.RSRC_POOL_NM ASC, RC_CLSTR.CLSTR_NM ASC, RC_PM.PM_NM ASC NULLS LAST, RC_VM.VM_NM NULLS LAST, RC_VM.VM_ID NULLS LAST
+					</when>
+					<otherwise>
+						ORDER BY JOBS_NM.INSTITUTION_NM ASC NULLS LAST, JOBS_NM.JOBS_NM ASC NULLS LAST, RC_VM.VM_NM ASC NULLS LAST
+					</otherwise>
+				</choose>
+
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="search">
+		<if test='!all'>
+		<!-- 삭제관계없이 모두 조회 -->
+		AND RC_RSRC_POOL.DEL_YN = 'N'
+		AND RC_CLSTR.DEL_YN = 'N'
+		AND (RC_PM.PM_SEQ ISNULL OR RC_PM.DEL_YN = 'N')
+		AND RC_VM.DEL_YN = 'N'
+		AND RC_CLSTR.USE_YN = 'Y'
+		</if>
+		<choose>
+			<when test='equalsVmClCd != null and equalsVmClCd != ""'>
+			<!-- 일치 -->
+			AND RC_VM.VM_CL_CD = #{equalsVmClCd}
+			</when>
+			<otherwise>
+				<choose>
+					<when test='netVmSltAt'>
+						AND RC_VM.VM_CL_CD IN ('01','02')
+					</when>
+					<otherwise>
+						AND RC_VM.VM_CL_CD = '01'
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		<if test='equalsRegionId != null and equalsRegionId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.REGION_ID = #{equalsRegionId}
+		</if>
+		<if test='equalsZoneId != null and equalsZoneId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.ZONE_ID = #{equalsZoneId}
+		</if>
+		<if test='equalsNetId != null and equalsNetId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.NET_ID = #{equalsNetId}
+		</if>
+		<if test='equalsNetClCd != null and equalsNetClCd != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.NET_CL_CD = #{equalsNetClCd}
+		</if>
+		<if test='equalsRsrcPoolId != null and equalsRsrcPoolId != ""'>
+		<!-- 일치 -->
+		AND RC_RSRC_POOL.RSRC_POOL_ID = #{equalsRsrcPoolId}
+		</if>
+		<if test='equalsStatCd != null and equalsStatCd != ""'>
+		<!-- 일치 -->
+		AND RC_VM.STAT_CD = #{equalsStatCd}
+		</if>
+		<if test='equalsStatGrpCd != null and equalsStatGrpCd != ""'>
+		<!-- 일치 -->
+		AND STAT_GRP_CD.CD = #{equalsStatGrpCd}
+		</if>
+		<if test='equalsClstrSeq != null and equalsClstrSeq != ""'>
+		<!-- 일치 -->
+		AND RC_PM.CLSTR_SEQ = #{equalsClstrSeq}
+		</if>
+		<if test='containsClstrNm != null and containsClstrNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_CLSTR.CLSTR_NM LIKE '%' || #{containsClstrNm} || '%'
+		</if>
+		<if test='equalsPmSeq != null and equalsPmSeq != ""'>
+		<!-- 일치 -->
+		AND RC_VM.PM_SEQ = #{equalsPmSeq}
+		</if>
+		<if test='containsPmNm != null and containsPmNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_PM.PM_NM LIKE '%' || #{containsPmNm} || '%'
+		</if>
+		<if test='containsPmCompId != null and containsPmCompId != ""'>
+		<!-- 부분일치 -->
+		AND RC_PM.PM_COMP_ID LIKE '%' || #{containsPmCompId} || '%'
+		</if>
+		<if test='containsVmNm != null and containsVmNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.VM_NM LIKE '%' || #{containsVmNm} || '%'
+		</if>
+		<if test='containsVmId != null and containsVmId != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.VM_ID LIKE '%' || #{containsVmId} || '%'
+		</if>
+		<if test='containsVmCompId != null and containsVmCompId != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.VM_COMP_ID LIKE '%' || #{containsVmCompId} || '%'
+		</if>
+		<if test='containsHstNm != null and containsHstNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.HST_NM LIKE '%' || #{containsHstNm} || '%'
+		</if>
+		<if test='containsRprsntIpAddr != null and containsRprsntIpAddr != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.RPRSNT_IP_ADDR LIKE '%' || #{containsRprsntIpAddr} || '%'
+		</if>
+		<if test='equalsOsTyCd != null and equalsOsTyCd != ""'>
+		<!-- 일치 -->
+		AND RC_VM.OS_TY_CD = #{equalsOsTyCd}
+		</if>
+		<if test='equalsInstitutionId != null and equalsInstitutionId != ""'>
+		<!-- 일치 -->
+		AND JOBS_NM.INSTITUTION_ID = #{equalsInstitutionId}
+		</if>
+		<if test='containsInstitutionNm != null and containsInstitutionNm != ""'>
+		<!-- 부분일치 -->
+		AND JOBS_NM.INSTITUTION_NM LIKE '%' || #{containsInstitutionNm} || '%'
+		</if>
+		<if test='existsContainsJobNm != null and existsContainsJobNm != ""'>
+		<!-- 부분일치 -->
+		AND RC_VM.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (SELECT CM_JOB.JOB_ID FROM CM_JOB INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_JOB.USE_YN = 'Y' AND CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.JOB_NM LIKE '%' || #{existsContainsJobNm} || '%'))
+		</if>
+		 <if test='equalsJobId != null and equalsJobId != ""'>
+		<!-- 일치 -->
+		AND RC_VM.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_JOB.USE_YN = 'Y' AND CM_INSTITUTION.USE_YN = 'Y' AND RC_VM_JOB.JOB_ID = #{equalsJobId})
+		</if>
+		<choose>
+			<when test='existsVrlzSwTyCdList != null'>
+			<!-- 포함 -->
+				<choose>
+					<when test="existsVrlzSwTyCdList.length > 0">
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="existsVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+							#{vrlzSwTyCd}
+						</foreach>
+						)
+					</when>
+					<otherwise>
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y')
+			</otherwise>
+		</choose>
+
+		<choose>
+			<when test='equalsRsrcPoolClCd != null'>
+			<!-- 일치 -->
+				AND RC_RSRC_POOL.RSRC_POOL_CL_CD = #{equalsRsrcPoolClCd}
+			</when>
+			<otherwise>
+				<choose>
+					<when test='netVmSltAt'>
+						AND RC_RSRC_POOL.RSRC_POOL_CL_CD IN ('01', '03')
+					</when>
+					<otherwise>
+						AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+
+		<if test='equalsVmSeq != null and equalsVmSeq != ""'>
+		<!-- 일치 -->
+		AND RC_VM.VM_SEQ = #{equalsVmSeq}
+		</if>
+		<if test='equalsVmCompId != null and equalsVmCompId != ""'>
+		<!-- 일치 -->
+		AND RC_VM.VM_COMP_ID = #{equalsVmCompId}
+		</if>
+		<if test='searchPackgMngTrgtYn != null and searchPackgMngTrgtYn != ""'>
+		<!-- 일치 -->
+		AND COALESCE(RC_VM.PACKG_MNG_TRGT_YN, 'N') = #{searchPackgMngTrgtYn}
+		</if>
+	</sql>
+
+	<sql id="searchHist">
+		H.VM_SEQ = #{searchVmSeq}
+
+		<if test='vmReqTyCdList != null '>
+		AND VM_REQ_TY_CD IN(
+			<foreach collection="vmReqTyCdList" item="vmReqTyCd" open="" close="" separator=", ">
+				#{vmReqTyCd}
+			</foreach>
+			)
+
+		</if>
+	</sql>
+
+	<sql id="selectClauseVm">
+		RC_VM.VM_SEQ
+		, RC_VM.VM_ID
+		, RC_VM.VM_NM
+		, RC_VM.STAT_CD
+		, STAT_GRP_CD.CD_NM AS STAT_GRP_CD_NM
+		, STAT_GRP_CD.CD AS STAT_GRP_CD
+		, STAT_CD.CD_NM AS STAT_CD_NM
+		, RC_VM.SERVC_STRT_DT
+		, RC_VM.SERVC_END_DT
+		, RC_VM.HST_NM
+		, (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.CPU_USE_RT::numeric, 1), 0) ELSE 0 END) AS CPU_USE_RT
+		, COALESCE(RC_VM.CPU_ENT, 0) AS CPU_ENT
+		, COALESCE(RC_VM.CPU_VCORE_QTY, 0) AS CPU_VCORE_QTY
+		, COALESCE(RC_VM.MEM_ASGN_CAPA, 0) AS MEM_ASGN_CAPA
+		, (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.MEM_USE_RT::numeric, 1), 0) ELSE 0 END) AS MEM_USE_RT
+		, COALESCE(RC_VM.STRG_ASGN_CAPA, 0) AS STRG_ASGN_CAPA
+		, RC_VM.RPRSNT_IP_ADDR
+		, RC_VM.OS_TY_CD
+		, OS_TY_CD.CD_NM AS OS_TY_CD_NM
+		, RC_VM.PLTFRM
+		, RC_VM.OS_BIT
+		, RC_VM.KRNL_VER
+		, RC_VM.PATCH_VER
+		, RC_VM.LANG
+		, RC_VM.OS_NM
+		, RC_VM.OS_VER
+		, (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.NETWK_IN::numeric, 1), 0) ELSE 0 END) AS NETWK_IN
+		, (CASE WHEN RC_VM.STAT_CD = '02' THEN COALESCE(ROUND(RC_VM.NETWK_OUT::numeric, 1), 0) ELSE 0 END) AS NETWK_OUT
+		, (CASE WHEN RC_VM.STAT_CD = '02' THEN RC_VM.STRTUP_DTTM ELSE NULL END) AS STRTUP_DTTM
+		, RC_VM.CRE_DTTM
+		, RC_VM.VM_COMP_ID
+		, RC_VM.VM_CL_CD
+		, VM_CL_CD.CD_NM AS VM_CL_CD_NM
+		, RC_VM.TMPLAT_SEQ
+		, RC_VM.HA_YN
+		, FN_YN(RC_VM.HA_YN) AS HA_YN_NM
+		, JOBS_NM.INSTITUTION_NM
+		, JOBS_NM.JOBS_NM
+		, RC_PM.PM_SEQ
+		, RC_PM.PM_NM
+		, RC_PM.PM_COMP_ID
+		, RC_VM.UUID
+		, RC_VM.REG_USER_ID
+		, RC_VM.REG_DTTM
+		, RC_VM.DEL_USER_ID
+		, RC_VM.DEL_DTTM
+		, RC_VM.DEL_YN
+		, FN_YN(RC_VM.DEL_YN) AS DE_YN_NM
+		, RC_VM.UPDT_USER_ID
+		, RC_VM.UPDT_DTTM
+		, RC_VM.SYNC_DTTM
+		, RC_REGION.REGION_ID
+		, RC_REGION.REGION_NM
+		, RC_ZONE.ZONE_ID
+		, RC_ZONE.ZONE_NM
+		, RC_NET.NET_ID
+		, RC_NET.NET_NM
+		, RC_NET.NET_CL_CD
+		, NET_CL_CD.CD_NM AS NET_CL_CD_NM
+		, RC_RSRC_POOL.RSRC_POOL_ID
+		, RC_RSRC_POOL.RSRC_POOL_NM
+		, RC_RSRC_POOL.RSRC_POOL_VERSION
+		, RC_RSRC_POOL.VRLZ_SW_TY_CD
+		, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+		, RC_RSRC_POOL.CTL_TRGT_YN
+		, RC_CLSTR.CLSTR_SEQ
+		, RC_CLSTR.CLSTR_NM
+		, RC_VM.RMK
+		, RC_VM.PACKG_MNG_TRGT_YN
+		, RC_VM.MAX_MEM_ASGN_CAPA
+		, RC_VM.MIN_MEM_ASGN_CAPA
+		, RC_VM.MAX_CPU_VCORE_QTY
+		, RC_VM.MIN_CPU_VCORE_QTY
+		, RC_VM.HA_GRP_ID
+	</sql>
+
+	<sql id="fromClauseVm">
+		LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+		INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		LEFT JOIN CM_CODE STAT_CD ON STAT_CD.CD = RC_VM.STAT_CD AND STAT_CD.PARENT_GRP_CD = '010'
+		LEFT JOIN CM_CODE STAT_GRP_CD ON STAT_GRP_CD.CD = STAT_CD.VAR_VL1 AND STAT_GRP_CD.PARENT_GRP_CD = '074'
+		LEFT JOIN CM_CODE OS_TY_CD ON OS_TY_CD.CD = RC_VM.OS_TY_CD AND OS_TY_CD.PARENT_GRP_CD = '003'
+		LEFT JOIN CM_CODE VM_CL_CD ON VM_CL_CD.CD = RC_VM.VM_CL_CD AND VM_CL_CD.PARENT_GRP_CD = '033'
+		LEFT JOIN CM_CODE NET_CL_CD ON NET_CL_CD.CD = RC_NET.NET_CL_CD AND NET_CL_CD.PARENT_GRP_CD = '067'
+		LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		LEFT JOIN (
+			SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_INSTITUTION.INSTITUTION_NM),',') AS INSTITUTION_NM , MAX(CM_JOB.INSTITUTION_ID) AS INSTITUTION_ID,  ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+		) AS JOBS_NM ON JOBS_NM.VM_SEQ = RC_VM.VM_SEQ
+	</sql>
+
+
+
+
+
+
+
+
+	<select id="selectVmTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<choose>
+			<when test='netVmSltAt'>
+				LEFT OUTER JOIN CM_CODE NETWK_TY_CL_CD ON NETWK_TY_CL_CD.CD = RC_VM.NETWK_TY_CL_CD AND NETWK_TY_CL_CD.PARENT_GRP_CD ='061'
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="fromClauseVmUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+							AND CM_INSTITUTION.USE_YN = 'Y'
+							AND CM_JOB.USE_YN = 'Y'
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectVmListPaging" resultMap="resultVmVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmListPaging */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			<include refid="selectClauseVm" />
+			<choose>
+			<when test='netVmSltAt!= null and netVmSltAt'>
+				, NETWK_TY_CL_CD.CD_NM AS NETWK_TY_CL_CD_NM
+			</when>
+			<otherwise>
+				, '' AS NETWK_TY_CL_CD_NM
+			</otherwise>
+		</choose>
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<choose>
+			<when test='netVmSltAt'>
+				LEFT OUTER JOIN CM_CODE NETWK_TY_CL_CD ON NETWK_TY_CL_CD.CD = RC_VM.NETWK_TY_CL_CD AND NETWK_TY_CL_CD.PARENT_GRP_CD ='061'
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+		<include refid="order"/>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmList" resultMap="resultVmVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmList */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+		<include refid="order"/>
+	</select>
+
+	<select id="selectVm" resultMap="resultVmVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVm */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_SEQ = #{value}
+	</select>
+
+	<select id="selectVmByVmCompId" resultMap="resultVmVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVm */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_COMP_ID = #{value}
+	</select>
+
+	<select id="selectVmByVmSearchVo" resultMap="resultVmVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmByVmSearchVo */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectVmDetail" resultMap="resultVmVoDetail">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmDetail */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_SEQ = #{value}
+	</select>
+
+	<select id="selectVmDetailByVmCompId" resultMap="resultVmVoDetail">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmDetailByVmCompId */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_COMP_ID = #{value}
+			AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectVmDetailByVmSearchVo" resultMap="resultVmVoDetail">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmDetailByVmSearchVo */
+		SELECT
+			<include refid="selectClauseVm" />
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectVmTotCntByVmSeq" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmTotCntByVmSeq */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_SEQ = #{value}
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND (RC_PM.PM_SEQ ISNULL OR RC_PM.DEL_YN = 'N')
+			AND RC_VM.DEL_YN = 'N'
+	</select>
+
+	<select id="selectVmTotCntByVmCompId" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmTotCntByVmCompId */
+		SELECT
+			COUNT(*)
+		FROM
+			RC_VM
+			<include refid="fromClauseVm" />
+		WHERE
+			RC_VM.VM_COMP_ID = #{value}
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND (RC_PM.PM_SEQ ISNULL OR RC_PM.DEL_YN = 'N')
+			AND RC_VM.DEL_YN = 'N'
+	</select>
+
+	<select id="selectVmSnapList" resultMap="resultVmSnapVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmSnapList */
+		SELECT SNAPSHT_SEQ
+	           , SNAPSHT_NM
+	           , SNAPSHT_CRE_DT
+	           , STAT_CD
+	           , TY_CD
+	           , DSK_NO
+	           , RMK
+	           , VM_SEQ
+	           , SNAPSHT_ASGN_CAPA
+	    FROM
+	    	RC_VM_SNAPSHT
+		WHERE
+			VM_SEQ = #{value}
+			AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectVmHistTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmHistTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			RR_VM_WRK_HIST H
+		<where>
+			<include refid="searchHist"/>
+		</where>
+	</select>
+
+	<select id="selectVmResHistList" resultMap="resultVmResHistVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmResHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT   H.VM_SEQ
+			   , TO_CHAR(WRK_DT, 'YYYY-MM-DD HH24:MI:SS') WRK_DT
+			   , VM_REQ_TY_CD
+			   , WRK_ID
+			   , USER_NM AS WRK_NM
+			   , CH_BEF_CPU_QTY
+			   , CH_AFT_CPU_QTY
+			   , CH_BEF_MEM_ASGN_CAPA
+			   , CH_AFT_MEM_ASGN_CAPA
+			   , CH_BEF_STRG_ASGN_CAPA
+			   , CH_AFT_STRG_ASGN_CAPA
+			   , RSRC_REQ_NO
+			   , RSRC_REQ_SEQ
+			   , LGCY_P_SRVR_ID
+			   , CHNG_P_SRVR_ID
+			   , SNAPSHT_NM
+			   , DSK_NO
+			   , SNAPSHT_HSTRY_CL_CD
+			   , LGCY_COMP_ID
+			   , CHNG_COMP_ID
+			   , CD_NM
+			   , VM_NM
+			   , CASE
+					WHEN VM_REQ_TY_CD IS NOT NULL AND VM_REQ_TY_CD ='02' THEN 'CPU(vCore) : ' || CH_BEF_CPU_QTY || ' / 메모리할당량(GB) : ' || CH_BEF_MEM_ASGN_CAPA
+					WHEN VM_REQ_TY_CD IS NOT NULL AND VM_REQ_TY_CD ='04' THEN '스토리지할당량(GB) : ' || CH_BEF_STRG_ASGN_CAPA
+				END BEFORE_INFO
+			   , CASE
+			   		WHEN VM_REQ_TY_CD IS NOT NULL AND VM_REQ_TY_CD ='01' THEN '가상서버명 : ' || VM_NM
+					WHEN VM_REQ_TY_CD IS NOT NULL AND VM_REQ_TY_CD ='02' THEN 'CPU(vCore) : ' || CH_AFT_CPU_QTY || ' / 메모리할당량(GB) : ' || CH_AFT_MEM_ASGN_CAPA
+					WHEN VM_REQ_TY_CD IS NOT NULL AND VM_REQ_TY_CD ='04' THEN '스토리지할당량(GB) : ' || CH_AFT_STRG_ASGN_CAPA
+				END AFTER_INFO
+		FROM
+  			 RR_VM_WRK_HIST H
+  			 LEFT JOIN CM_USR U ON H.WRK_ID = U.USER_ID
+  			 LEFT JOIN CM_CODE C ON H.VM_REQ_TY_CD = C.CD AND C.GRP_CD = #{searchGrpCd}
+  			 LEFT JOIN RC_VM V ON H.VM_SEQ = V.VM_SEQ
+  		<where>
+			<include refid="searchHist"/>
+		</where>
+		ORDER BY WRK_DT DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmMigrHistList" resultMap="resultVmMigrHistVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmMigrHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT   VM_SEQ
+			   , TO_CHAR(WRK_DT, 'YYYY-MM-DD HH24:MI:SS') WRK_DT
+			   , VM_REQ_TY_CD
+			   , WRK_ID
+			   , USER_NM AS WRK_NM
+			   , CH_BEF_CPU_QTY
+			   , CH_AFT_CPU_QTY
+			   , CH_BEF_MEM_ASGN_CAPA
+			   , CH_AFT_MEM_ASGN_CAPA
+			   , CH_BEF_STRG_ASGN_CAPA
+			   , CH_AFT_STRG_ASGN_CAPA
+			   , RSRC_REQ_NO
+			   , RSRC_REQ_SEQ
+			   , LGCY_P_SRVR_ID
+			   , CHNG_P_SRVR_ID
+			   , SNAPSHT_NM
+			   , DSK_NO
+			   , SNAPSHT_HSTRY_CL_CD
+			   , LGCY_COMP_ID
+			   , CHNG_COMP_ID
+			   , CD_NM
+			   , '물리서버ID : ' || LGCY_P_SRVR_ID AS BEFORE_INFO
+			   , '물리서버ID : ' || CHNG_P_SRVR_ID AS AFTER_INFO
+		FROM
+  			 RR_VM_WRK_HIST H
+  			 LEFT JOIN CM_USR U ON H.WRK_ID = U.USER_ID
+  			 LEFT JOIN CM_CODE C ON H.VM_REQ_TY_CD = C.CD AND C.GRP_CD = #{searchGrpCd}
+  		<where>
+			<include refid="searchHist"/>
+		</where>
+		ORDER BY WRK_DT DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmSnapHistList" resultMap="resultVmSnapHistVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmSnapHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT   VM_SEQ
+			   , TO_CHAR(WRK_DT, 'YYYY-MM-DD HH24:MI:SS') WRK_DT
+			   , VM_REQ_TY_CD
+			   , WRK_ID
+			   , USER_NM AS WRK_NM
+			   , CH_BEF_CPU_QTY
+			   , CH_AFT_CPU_QTY
+			   , CH_BEF_MEM_ASGN_CAPA
+			   , CH_AFT_MEM_ASGN_CAPA
+			   , CH_BEF_STRG_ASGN_CAPA
+			   , CH_AFT_STRG_ASGN_CAPA
+			   , RSRC_REQ_NO
+			   , RSRC_REQ_SEQ
+			   , LGCY_P_SRVR_ID
+			   , CHNG_P_SRVR_ID
+			   , SNAPSHT_NM
+			   , DSK_NO
+			   , SNAPSHT_HSTRY_CL_CD
+			   , LGCY_COMP_ID
+			   , CHNG_COMP_ID
+			   , CD_NM
+			   , '스냅샷명 : '|| SNAPSHT_NM AS DETAIL_INFO
+		FROM
+  			 RR_VM_WRK_HIST H
+  			 LEFT JOIN CM_USR U ON H.WRK_ID = U.USER_ID
+  			 LEFT JOIN CM_CODE C ON H.VM_REQ_TY_CD = C.CD AND C.GRP_CD = #{searchGrpCd}
+  		<where>
+			<include refid="searchHist"/>
+		</where>
+		ORDER BY WRK_DT DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmCompHistList" resultMap="resultVmCompHistVoList">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmCompHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT   VM_SEQ
+			   , TO_CHAR(WRK_DT, 'YYYY-MM-DD HH24:MI:SS') WRK_DT
+			   , VM_REQ_TY_CD
+			   , WRK_ID
+			   , USER_NM AS WRK_NM
+			   , CH_BEF_CPU_QTY
+			   , CH_AFT_CPU_QTY
+			   , CH_BEF_MEM_ASGN_CAPA
+			   , CH_AFT_MEM_ASGN_CAPA
+			   , CH_BEF_STRG_ASGN_CAPA
+			   , CH_AFT_STRG_ASGN_CAPA
+			   , RSRC_REQ_NO
+			   , RSRC_REQ_SEQ
+			   , LGCY_P_SRVR_ID
+			   , CHNG_P_SRVR_ID
+			   , SNAPSHT_NM
+			   , DSK_NO
+			   , SNAPSHT_HSTRY_CL_CD
+			   , LGCY_COMP_ID
+			   , CHNG_COMP_ID
+			   , CD_NM
+			   , '구성ID : ' || LGCY_COMP_ID AS BEFORE_INFO
+			   , '구성ID : ' || CHNG_COMP_ID AS AFTER_INFO
+		FROM
+  			 RR_VM_WRK_HIST H
+  			 LEFT JOIN CM_USR U ON H.WRK_ID = U.USER_ID
+  			 LEFT JOIN CM_CODE C ON H.VM_REQ_TY_CD = C.CD AND C.GRP_CD = #{searchGrpCd}
+  		<where>
+			<include refid="searchHist"/>
+		</where>
+		ORDER BY WRK_DT DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVmSttsByUser" resultType="HashMap">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmSttsByUser */
+		SELECT
+			COUNT(RC_VM.*) AS VM_CNT
+			, COALESCE(SUM(RC_VM.CPU_ENT), 0) AS TOT_CPU_ENT
+			, COALESCE(SUM(RC_VM.CPU_VCORE_QTY), 0) AS TOT_CPU_VCORE_QTY
+			, COALESCE(SUM(RC_VM.MEM_ASGN_CAPA), 0) AS TOT_MEM_ASGN_CAPA
+			, COALESCE(SUM(RC_VM.STRG_ASGN_CAPA), 0) AS TOT_STRG_ASGN_CAPA
+		FROM
+			RC_VM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			<if test="!sysAdm">
+				<choose>
+					<when test="oprAdm">
+						INNER JOIN (
+							SELECT
+								DISTINCT CM_RSRC_POOL_USER.RSRC_POOL_ID
+							FROM
+								CM_RSRC_POOL_USER
+							WHERE
+								CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+					</when>
+					<otherwise>
+						INNER JOIN (
+							SELECT
+								DISTINCT RC_VM_JOB.VM_SEQ
+							FROM
+								CM_JOB_USER
+								INNER JOIN RC_VM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB_USER.JOB_ID
+								INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+								INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+							WHERE
+								CM_JOB_USER.USER_ID = #{searchUserId}
+								AND CM_INSTITUTION.USE_YN = 'Y'
+								AND CM_JOB.USE_YN = 'Y'
+						) VM ON VM.VM_SEQ = RC_VM.VM_SEQ
+					</otherwise>
+				</choose>
+			</if>
+		WHERE
+			RC_VM.DEL_YN = 'N'
+			AND RC_VM.VM_CL_CD = '01'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y')
+			AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+	</select>
+
+	<select id="selectVmJobSttsByUser" resultType="HashMap">
+		/* ncis.sql.cpt.rsrc.com.vm.selectVmJobSttsByUser */
+		SELECT
+			COUNT(DISTINCT CM_INSTITUTION.INSTITUTION_ID) AS INSTITUTION_CNT
+			, COUNT(DISTINCT CM_JOB.JOB_ID) AS JOB_CNT
+		FROM
+			RC_VM
+			INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			LEFT JOIN RC_VM_JOB ON RC_VM_JOB.VM_SEQ = RC_VM.VM_SEQ
+			LEFT JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID AND CM_JOB.USE_YN = 'Y'
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID AND CM_INSTITUTION.USE_YN = 'Y'
+			<if test="!sysAdm">
+				<choose>
+					<when test="oprAdm">
+						INNER JOIN (
+							SELECT
+								DISTINCT CM_RSRC_POOL_USER.RSRC_POOL_ID
+							FROM
+								CM_RSRC_POOL_USER
+							WHERE
+								CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+						) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+					</when>
+					<otherwise>
+						INNER JOIN (
+							SELECT
+								DISTINCT CM_JOB_USER.JOB_ID
+							FROM
+								CM_JOB_USER
+							WHERE
+								CM_JOB_USER.USER_ID = #{searchUserId}
+						) JOB ON JOB.JOB_ID = CM_JOB.JOB_ID
+					</otherwise>
+				</choose>
+			</if>
+		WHERE
+			RC_VM.DEL_YN = 'N'
+			AND RC_VM.VM_CL_CD = '01'
+			AND RC_CLSTR.DEL_YN = 'N'
+			AND RC_RSRC_POOL.DEL_YN = 'N'
+			AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD = '100' AND USE_YN = 'Y')
+			AND RC_RSRC_POOL.RSRC_POOL_CL_CD = '01'
+	</select>
+
+	<select id="selectVmSnapReq" resultMap="resultVmSnapReqVo">
+	/* ncis.sql.cpt.rsrc.com.vm.selectVmSnapReq */
+	SELECT  <if test='snapshtSeq != null and snapshtSeq != ""'>
+				RC_VM_SNAPSHT.SNAPSHT_NM
+				, RC_VM_SNAPSHT.SNAPSHT_SEQ,
+			</if>
+			  RC_VM.VM_ID
+			, RC_VM.VM_SEQ
+			, RC_VM.UUID AS VM_UUID
+			, RC_RSRC_POOL.REGION_ID
+			, RC_RSRC_POOL.ZONE_ID
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_NET.NET_ID
+			, RC_NET.NET_CL_CD
+			, RC_VM_SNAPSHT.UUID
+			, FN_CODE_VAR1('010', RC_VM.STAT_CD) AS STAT_GRP_CD
+	FROM
+		RC_VM
+		LEFT JOIN RC_VM_SNAPSHT ON RC_VM.VM_SEQ = RC_VM_SNAPSHT.VM_SEQ
+		INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+	WHERE
+		RC_VM.VM_SEQ = #{vmSeq}
+		<if test='snapshtSeq != null and snapshtSeq != ""'>
+			AND RC_VM_SNAPSHT.SNAPSHT_SEQ = #{snapshtSeq}
+		</if>
+	ORDER BY RC_VM.VM_SEQ DESC LIMIT 1
+
+	</select>
+
+	<select id="selectVmProcss" resultMap="resultVmProcssVo">
+	/* ncis.sql.cpt.rsrc.com.vm.selectVmProcss */
+	SELECT
+   		 MAX(TBL2.PROCSS_INST_SEQ)  PROCSS_INST_SEQ
+    FROM
+    	RR_PROCSS_INST TBL1
+    	INNER JOIN RR_PROCSS_VAR_LIST TBL2 ON TBL1.PROCSS_INST_SEQ = TBL2.PROCSS_INST_SEQ
+    WHERE
+    	TBL1.PROCSS_SEQ = #{procssSeq}
+    	AND TBL1.STAT_CD IN('01', '04')
+    	<if test='refJobIdList != null'>
+			AND TBL1.REF_JOB_ID IN
+			<foreach collection="refJobIdList" item="refJobId" open="(" close=")" separator=", ">
+				#{refJobId}
+			</foreach>
+
+		</if>
+    	AND TBL2.VAR_NM='vmSeq'
+    	AND VAR_VL = #{varVl}
+
+	</select>
+
+	<select id="selectVmProcssMsgList" resultMap="resultVmProcssMsgVo">
+	/* ncis.sql.cpt.rsrc.com.vm.selectVmProcssMsgList */
+		SELECT
+			CASE
+			WHEN MSG_TYPE = '09' THEN '스토리지추가 진행중'
+			WHEN MSG_TYPE = '02' THEN '삭제 진행중'
+			WHEN MSG_TYPE = '03' THEN '스펙변경 진행중'
+			WHEN MSG_TYPE = 'MIG' THEN '마이그레이션 진행중'
+			WHEN MSG_TYPE = 'SNAP_CRE' THEN '스냅샷생성 진행중'
+			WHEN MSG_TYPE = 'SNAP_RESTOR' THEN '스냅샷복원 진행중'
+			WHEN MSG_TYPE = 'SNAP_DEL' THEN '스냅샷삭제 진행중'
+			END AS PROCSS_CL_CD_NM
+			, CASE
+			WHEN MSG_TYPE = '09' THEN '03'
+			WHEN MSG_TYPE = '02' THEN '04'
+			WHEN MSG_TYPE = '03' THEN '02'
+			WHEN MSG_TYPE = 'MIG' THEN  '05'
+			WHEN MSG_TYPE = 'SNAP_CRE' THEN  '06'
+			WHEN MSG_TYPE = 'SNAP_RESTOR' THEN  '07'
+			WHEN MSG_TYPE = 'SNAP_DEL' THEN  '08'
+			END AS PROCSS_CL_CD
+			, TBL1.PROCSS_INST_SEQ
+			, TBL1.RSRC_REQ_NO
+			, TBL1.RSRC_REQ_SEQ
+		FROM(
+			SELECT
+				TBL1.RSRC_REQ_TY_CD MSG_TYPE, TBL3.PROCSS_INST_SEQ, TBL3.RSRC_REQ_NO, TBL1.RSRC_REQ_SEQ
+			FROM
+				RR_RSRC_REQ_DTL_VM TBL1
+				INNER JOIN RC_VM TBL2 ON TBL1.VM_SEQ = TBL2.VM_SEQ
+				INNER JOIN RR_PROCSS_INST TBL3 ON TBL1.PROCSS_INST_SEQ = TBL3.PROCSS_INST_SEQ
+			WHERE
+				TBL3.STAT_CD = '01'
+				AND TBL1.VM_SEQ = #{vmSeq}
+			UNION ALL
+			SELECT
+				TBL1.REF_JOB_ID MSG_TYPE, TBL1.PROCSS_INST_SEQ, TBL1.RSRC_REQ_NO, NULL AS RSRC_REQ_SEQ
+			FROM
+				RR_PROCSS_INST TBL1
+				INNER JOIN RR_PROCSS_VAR_LIST TBL2 ON TBL1.PROCSS_INST_SEQ = TBL2.PROCSS_INST_SEQ
+			WHERE
+				TBL1.PROCSS_SEQ = '20160010'
+				AND TBL1.STAT_CD = '01'
+				AND TBL1.REF_JOB_ID IN ('SNAP_CRE', 'SNAP_RESTOR', 'SNAP_DEL', 'MIG')
+				AND TBL2.VAR_NM = 'vmSeq'
+				AND TBL2.VAR_VL = #{vmSeq}::character varying
+		) TBL1
+	</select>
+
+	<select id="selectVmProcssVarList" resultType="String">
+	/* ncis.sql.cpt.rsrc.com.vm.selectVmProcssVarList */
+		SELECT
+			VAR_VL
+		FROM
+			RR_PROCSS_VAR_LIST
+		WHERE
+			PROCSS_INST_SEQ = #{procssInstSeq}
+			AND VAR_NM = 'jsonData'
+	</select>
+
+	<select id="selectVmSwList" resultMap="resultVmSwVo">
+	/* ncis.sql.cpt.rsrc.com.vm.selectVmSwList */
+		SELECT
+			SI_SW_COMP.INSTL_COMP_ID AS VM_COMP_ID, --가상서버구성ID
+			SI_COMP_COMMON.COMP_ID AS SW_COMP_ID,   --소프트웨어구성ID
+			SI_COMP_COMMON.COMP_RSRC_NM AS SW_NM,   --소프트웨어이름
+			SI_SW_COMP.FRST_INSTL_VER AS INSTL_VER, --설치버전
+			SI_SW_COMP.NOW_PATCH_VER AS PATCH_VER,  --패치버전
+			SI_SW_COMP.SW_INSTL_DT AS INSTL_DT      --설치일자
+		FROM
+			SI_SW_COMP
+			INNER JOIN SI_COMP_COMMON ON SI_SW_COMP.COMP_ID = SI_COMP_COMMON.COMP_ID
+		WHERE
+			SI_SW_COMP.INSTL_COMP_ID = #{vmCompId}
+			AND SI_SW_COMP.INSTL_COMP_ID IS NOT NULL
+			AND SI_SW_COMP.INSTL_COMP_ID != ''
+		ORDER BY
+			SI_COMP_COMMON.COMP_RSRC_NM ASC NULLS LAST, SI_COMP_COMMON.COMP_ID ASC NULLS LAST, SI_SW_COMP.SW_INSTL_DT ASC NULLS LAST
+	</select>
+
+</mapper>

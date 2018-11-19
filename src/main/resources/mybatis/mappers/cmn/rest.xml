@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rest">
+
+	<resultMap type="ncis.cmn.rest.vo.RestInfo" id="resultRestInfo">
+		<result property="host"        column="HOST"/>
+		<result property="token"      column="TOKEN"/>
+	</resultMap>
+
+	<select id="selectConnectInfo" resultMap="resultRestInfo">
+		SELECT GATEWAY_HOST AS HOST, GATEWAY_TOKEN AS TOKEN
+		FROM CM_GATEWAY
+		WHERE REGION_ID = #{value}
+	</select>
+
+</mapper>

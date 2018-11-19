@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaVmDistrbDtl">
+
+	<resultMap id="resultOaVmDistrbDtl" type="ncis.cmn.entity.OaVmDistrbDtl">
+        <result property="distrbSeq"     column="DISTRB_SEQ"/>  <!-- 배포SEQ -->
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="distrbComptDttm"     column="DISTRB_COMPT_DTTM"/>  <!-- 배포완료일시 -->
+        <result property="vmCompId"     column="VM_COMP_ID"/>  <!-- 가상서버구성ID -->
+	</resultMap>
+
+	<!-- 가상서버별배포상세(배포이력 포함) 등록 -->
+	<insert id="insertOaVmDistrbDtl">
+	INSERT INTO OA_VM_DISTRB_DTL (
+	             DISTRB_SEQ  /* 배포SEQ */
+	           , VM_SEQ  /* 가상서버SEQ */
+	           , DISTRB_COMPT_DTTM  /* 배포완료일시 */
+	           , VM_COMP_ID  /* 가상서버구성ID */
+	) VALUES (
+	           #{distrbSeq}  /* 배포SEQ */
+	         , #{vmSeq}  /* 가상서버SEQ */
+	         , now()  /* 배포완료일시 */
+	         , #{vmCompId}  /* 가상서버구성ID */
+	)
+	</insert>
+
+	<!-- 가상서버별배포상세(배포이력 포함) 수정 -->
+	<update id="updateOaVmDistrbDtl">
+	UPDATE OA_VM_DISTRB_DTL
+	         SET "DISTRB_SEQ" = #{distrbSeq}  /* 배포SEQ */
+	           , VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	           , DISTRB_COMPT_DTTM = now()  /* 배포완료일시 */
+	           , VM_COMP_ID = #{vmCompId}  /* 가상서버구성ID */
+         WHERE DISTRB_ID = #{distrbId}  /* 배포ID */
+           AND VM_ID = #{vmId}  /* 가상서버ID */
+
+	</update>
+
+	<!-- 가상서버별배포상세(배포이력 포함) 삭제 -->
+	<delete id="deleteOaVmDistrbDtl">
+	DELETE FROM OA_VM_DISTRB_DTL
+         WHERE "DISTRB_SEQ" = #{distrbSeq}  /* 배포SEQ */
+           AND VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+
+	</delete>
+
+</mapper>

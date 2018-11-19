@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmGateway">
+
+	<resultMap id="resultCmGateway" type="ncis.cmn.entity.CmGateway">
+	    <result property="gatewaySeq"     column="GATEWAY_SEQ"/>  <!-- 게이트웨이SEQ -->
+        <result property="gatewayNm"     column="GATEWAY_NM"/>  <!-- 게이트웨이명 -->
+        <result property="gatewayHost"     column="GATEWAY_HOST"/>  <!-- 호스트 -->
+        <result property="gatewayToken"     column="GATEWAY_TOKEN"/>  <!-- 토큰(인증) -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 리전ID -->
+	</resultMap>
+
+	<!-- API게이트웨이정보 등록 -->
+	<insert id="insertCmGateway">
+	/* ncis.sql.cmn.cmGateway.insertCmGateway*/
+	INSERT INTO CM_GATEWAY (
+	           GATEWAY_NM  /* 게이트웨이명 */
+	           , GATEWAY_HOST  /* 호스트 */
+	           , GATEWAY_TOKEN  /* 토큰(인증) */
+	           , REG_USER_ID  /* 등록자ID */
+	           , REG_DTTM  /* 등록일시 */
+	           , UPDT_USER_ID  /* 수정자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , REGION_ID  /* 리전ID */
+	) VALUES (
+	         #{gatewayNm}  /* 게이트웨이명 */
+	         , #{gatewayHost}  /* 호스트 */
+	         , #{gatewayToken}  /* 토큰(인증) */
+	         , #{regUserId}  /* 등록자ID */
+	         , now()  /* 등록일시 */
+	         , #{updtUserId}  /* 수정자ID */
+	         , now()  /* 수정일시 */
+	         , #{regionId}  /* 리전ID */
+	)
+	</insert>
+
+	<!-- API게이트웨이정보 수정 -->
+	<update id="updateCmGateway">
+	/* ncis.sql.cmn.cmGateway.updateCmGateway*/
+	UPDATE CM_GATEWAY
+	         SET
+	           GATEWAY_NM = #{gatewayNm}  /* 게이트웨이명 */
+	           , GATEWAY_HOST = #{gatewayHost}  /* 호스트 */
+	           , GATEWAY_TOKEN = #{gatewayToken}  /* 토큰(인증) */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , REGION_ID = #{regionId}  /* 리전ID */
+	WHERE GATEWAY_SEQ = #{gatewaySeq }
+
+	</update>
+
+	<!-- API게이트웨이정보 삭제 -->
+	<delete id="deleteCmGateway">
+	/* ncis.sql.cmn.cmGateway.deleteCmGateway*/
+	DELETE FROM CM_GATEWAY
+	WHERE GATEWAY_SEQ = #{value }
+	</delete>
+
+
+		<!-- MAC 대역 조회 -->
+	<select id="selectCmGatewayByRegion" resultMap="resultCmGateway">
+	/* ncis.sql.cmn.cmGateway.selectCmGatewayByRegion */
+	SELECT GATEWAY_SEQ         /* 게이트웨이 SEQ */
+	     , GATEWAY_NM          /* 게이트웨이 이름 */
+	     , GATEWAY_HOST        /* 게이트웨이 호스트 */
+	     , GATEWAY_TOKEN       /* 게이트웨이 토큰 */
+	     , REGION_ID           /* 지역 구분 */
+      FROM CM_GATEWAY
+     WHERE REGION_ID = #{regionId}   /* 지역 구분 */
+	</select>
+
+</mapper>

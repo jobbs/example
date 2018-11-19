@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.oprRelateCharger">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.OprRelateChargerVo" id="resultOprRelateChargerVo" extends="ncis.sql.cmn.siOprRelateCharger.resultSiOprRelateCharger">
+		<result property="userNm"        column="USER_NM"/>
+		<result property="telno"         column="TELNO"/>
+		<result property="email"         column="EMAIL"/>
+		<result property="relaterClCdNm" column="RELATER_CL_CD_NM"/>
+
+	</resultMap>
+
+	<sql id="search">
+		<if test='essentialSearchCompId or ( searchCompId != null and searchCompId != "")'>
+		AND SI_OPR_RELATE_CHARGER.COMP_ID = #{searchCompId}
+		</if>
+	</sql>
+
+	<!-- 운영연관담당자 목록 조회 -->
+	<select id="selectOprRelateChargerList" resultMap="resultOprRelateChargerVo">
+		/* ncis.sql.cpt.rsrc.com.oprRelateCharger.selectOprRelateChargerList */
+		SELECT
+			SI_OPR_RELATE_CHARGER.USER_ID
+			, SI_OPR_RELATE_CHARGER.COMP_ID
+			, SI_OPR_RELATE_CHARGER.RELATER_CL_CD
+			, FN_CODE_NAME('050', SI_OPR_RELATE_CHARGER.RELATER_CL_CD) AS RELATER_CL_CD_NM
+			, CM_USR.USER_NM
+			, CM_USR.TELNO
+			, CM_USR.EMAIL
+		FROM
+			SI_OPR_RELATE_CHARGER
+			INNER JOIN
+			CM_USR ON SI_OPR_RELATE_CHARGER.USER_ID = CM_USR.USER_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY
+			COMP_ID ASC
+			, RELATER_CL_CD ASC
+	</select>
+
+	<!-- 운영연관담당자 목록 조회 -->
+	<select id="selectOprRelateChargerListByCompId" resultMap="resultOprRelateChargerVo">
+		/* ncis.sql.cpt.rsrc.com.oprRelateCharger.selectOprRelateChargerListByCompId */
+		SELECT
+			SI_OPR_RELATE_CHARGER.USER_ID
+			, SI_OPR_RELATE_CHARGER.COMP_ID
+			, SI_OPR_RELATE_CHARGER.RELATER_CL_CD
+			, FN_CODE_NAME('050', SI_OPR_RELATE_CHARGER.RELATER_CL_CD) AS RELATER_CL_CD_NM
+			, CM_USR.USER_NM
+			, CM_USR.TELNO
+			, CM_USR.EMAIL
+		FROM
+			SI_OPR_RELATE_CHARGER
+			INNER JOIN
+			CM_USR ON SI_OPR_RELATE_CHARGER.USER_ID = CM_USR.USER_ID
+		WHERE
+			SI_OPR_RELATE_CHARGER.COMP_ID = #{searchCompId}
+			AND SI_OPR_RELATE_CHARGER.COMP_ID IS NOT NULL
+			AND SI_OPR_RELATE_CHARGER.COMP_ID != ''
+		ORDER BY
+			COMP_ID ASC
+			, RELATER_CL_CD ASC
+	</select>
+
+</mapper>

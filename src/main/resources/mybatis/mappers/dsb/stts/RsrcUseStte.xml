@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.rsrcUseStte">
+
+
+
+	<resultMap type="ncis.dsb.stts.rsrcuse.vo.RsrcUseStteVo" id="resultRsrcUseStteVo">
+		<result property="mm" column="mm"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="clstrSeq" column="clstr_seq"/>
+		<result property="vrlzSwTyCd" column="vrlz_sw_ty_cd"/>
+		<result property="rhev" column="rhev"/>
+		<result property="vmware" column="vmware"/>
+		<result property="ibm" column="ibm"/>
+		<result property="hp" column="hp"/>
+		<result property="openstack" column="openstack"/>
+		<result property="docker" column="docker"/>
+		<result property="ovm" column="ovm"/>
+		<result property="openshift" column="openshift"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="lastVSrvrQty" column="last_v_srvr_qty"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="vmLastAsgnStrgCapa" column="vm_last_asgn_strg_capa"/>
+		<result property="autoLastServc" column="auto_last_servc"/>
+		<result property="autoLastCoreQty" column="auto_last_core_qty"/>
+		<result property="autoLastMemCapa" column="auto_last_mem_capa"/>
+		<result property="autoLastStrgCpa" column="auto_last_strg_cpa"/>
+		<result property="maxCpuUseRt" column="max_cpu_use_rt"/>
+		<result property="maxMemUseRt" column="max_mem_use_rt"/>
+		<result property="vmMaxCpuUseRt" column="vm_max_cpu_use_rt"/>
+		<result property="vmMaxMemUseRt" column="vm_max_mem_use_rt"/>
+		<result property="vmMaxStrgUseRt" column="vm_max_strg_use_rt"/>
+		<result property="autoMaxCpuUseRt" column="auto_max_cpu_use_rt"/>
+		<result property="autoMaxMemUseRt" column="auto_max_mem_use_rt"/>
+	</resultMap>
+
+	<sql id="search">
+	  </sql>
+
+
+	<select id="selectRsrcUseStteList" resultMap="resultRsrcUseStteVo">
+			/* ncis.sql.dsb.stts.rsrcUseStte.selectRsrcUseStteList */
+
+
+		        <if test="trm == 'quarter'">
+		          with mm_t as(
+		        </if>
+		               select tt.mm,
+		                      tt.mm_q,
+		                      sum(tt.rsrc_pool_id) rsrc_pool_id,
+		                      sum(tt.clstr_seq) clstr_seq,
+		                      sum(tt.vrlz_sw_ty_cd) vrlz_sw_ty_cd,
+		                      sum(tt.rhev) rhev,
+		                      sum(tt.vmware) vmware,
+		                      sum(tt.ibm) ibm,
+		                      sum(tt.hp) hp,
+		                      sum(tt.openstack) openstack,
+		                      sum(tt.docker) docker,
+		                      sum(tt.ovm) ovm,
+		                      sum(tt.openshift) openshift,
+		                      sum(tt.last_cpu_cor_qty) last_cpu_cor_qty,
+		                      sum(tt.last_mem_sum_capa) last_mem_sum_capa,
+		                      sum(tt.last_strg_sum_capa) last_strg_sum_capa,
+		                      sum(tt.last_v_srvr_qty) last_v_srvr_qty,
+		                      (case when sum(last_asgn_vcor_qty) is null then 0 else sum(qq.last_asgn_vcor_qty) end) last_asgn_vcor_qty,
+		                      (case when sum(last_asgn_mem_capa) is null then 0 else sum(qq.last_asgn_mem_capa) end) last_asgn_mem_capa,
+		                      (case when sum(vm_last_asgn_strg_capa) is null then 0 else sum(qq.vm_last_asgn_strg_capa) end) vm_last_asgn_strg_capa,
+		                      sum(tt.auto_last_servc) auto_last_servc,
+		                      sum(tt.auto_last_core_qty) auto_last_core_qty,
+		                      sum(tt.auto_last_mem_capa) auto_last_mem_capa,
+		                      sum(tt.auto_last_strg_cpa) auto_last_strg_cpa,
+		                      round(sum(tt.max_cpu_use_rt),2) max_cpu_use_rt,
+		                      round(sum(tt.max_mem_use_rt),2) max_mem_use_rt,
+		                      (case when sum(qq.max_cpu_use_rt) is null then 0.00 else round(sum(qq.max_cpu_use_rt),2) end) vm_max_cpu_use_rt,
+		                      (case when sum(qq.max_mem_use_rt) is null then 0.00 else round(sum(qq.max_mem_use_rt),2) end) vm_max_mem_use_rt,
+		                      (case when sum(qq.max_strg_use_rt) is null then 0.00 else round(sum(qq.max_strg_use_rt),2) end) vm_max_strg_use_rt,
+						      round(sum(auto_cpu_use_rt),2) auto_max_cpu_use_rt,
+						      round(sum(auto_mem_use_rt),2) auto_max_mem_use_rt
+		                 from
+						    (select
+                                 <choose>
+							         <when test="trm == 'mm'">
+						               	substr(a.colct_ym,5,2)||'월' mm,
+						             </when>
+						             <otherwise>
+								         case  when substr(a.colct_ym,5,2) between '01' and '03' then '1분기'
+										       when substr(a.colct_ym,5,2) between '04' and '06' then '2분기'
+										       when substr(a.colct_ym,5,2) between '07' and '09' then '3분기'
+										       when substr(a.colct_ym,5,2) between '10' and '12' then '4분기'
+									     end mm,
+								     </otherwise>
+                                  </choose>
+									substr(a.colct_ym,5,2) mm_q,
+									count(distinct a.rsrc_pool_id) rsrc_pool_id,
+									count(distinct a.clstr_seq) clstr_seq,
+									count(qq.vrlz_sw_ty_cd) vrlz_sw_ty_cd,
+									sum(case when qq.vrlz_sw_ty_cd = '01' then 1 else 0 end) rhev,
+									sum(case when qq.vrlz_sw_ty_cd = '02' then 1 else 0 end) vmware,
+									sum(case when qq.vrlz_sw_ty_cd = '03' then 1 else 0 end) ibm,
+									sum(case when qq.vrlz_sw_ty_cd = '04' then 1 else 0 end) hp,
+									sum(case when qq.vrlz_sw_ty_cd = '05' then 1 else 0 end) openstack,
+									sum(case when qq.vrlz_sw_ty_cd = '06' then 1 else 0 end) docker,
+									sum(case when qq.vrlz_sw_ty_cd = '09' then 1 else 0 end) ovm,
+									sum(case when qq.vrlz_sw_ty_cd = '07' then 1 else 0 end) openshift,
+									sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+									sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+									sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) last_strg_sum_capa,
+									0 auto_last_servc,
+									0 auto_last_core_qty,
+									0 auto_last_mem_capa,
+									0 auto_last_strg_cpa,
+									sum(a.last_v_srvr_qty) last_v_srvr_qty,
+									avg(a.max_cpu_use_rt) max_cpu_use_rt,
+									avg(a.max_mem_use_rt) max_mem_use_rt,
+									0 auto_cpu_use_rt,
+									0 auto_mem_use_rt
+				               from st_pm_colct_sum_1mm a left join rc_rsrc_pool qq on a.rsrc_pool_id = qq.rsrc_pool_id
+				      		  where 1=1
+						      <if test="region != null and !region.isEmpty()">
+
+						       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+						         	#{item}
+						       		</foreach>
+						     </if>
+
+					         <if test="year != null and !year.isEmpty()">
+					            and a.colct_ym between #{year}||'01' and #{year}||'12'
+					         </if>
+						    group by substr(a.colct_ym,5,2)
+						    <!-- order by substr(a.colct_ym,5,2) asc -->
+                   	 UNION ALL
+                   	 select a.mm,
+							a.mm_q,
+							a.rsrc_pool_id,
+							a.clstr_seq,
+						    a.vrlz_sw_ty_cd,
+					        a.rhev,
+					        a.vmware,
+					        a.ibm,
+					        a.hp,
+					        a.openstack,
+					        a.docker,
+					        a.ovm,
+					        a.openshift,
+					        a.last_cpu_cor_qty,
+					        a.last_mem_sum_capa,
+					        a.last_strg_sum_capa,
+					        a.auto_last_servc,
+					        a.auto_last_core_qty,
+					  	    a.auto_last_mem_capa,
+ 				            a.auto_last_strg_cpa,
+					        a.last_v_srvr_qty,
+					        a.max_cpu_use_rt,
+					        a.max_mem_use_rt,
+					        a.auto_cpu_use_rt,
+					        a.auto_mem_use_rt
+					   from
+							(select
+								   <choose>
+						           		<when test="trm == 'mm'">
+					               			substr(cc.colct_ym,5,2)||'월' mm,
+					             		</when>
+					             		<otherwise>
+									         case  when substr(cc.colct_ym,5,2) between '01' and '03' then '1분기'
+											       when substr(cc.colct_ym,5,2) between '04' and '06' then '2분기'
+											       when substr(cc.colct_ym,5,2) between '07' and '09' then '3분기'
+											       when substr(cc.colct_ym,5,2) between '10' and '12' then '4분기'
+										     end mm,
+							     		</otherwise>
+		                           </choose>
+								   substr(cc.colct_ym,5,2) mm_q,
+								   count(distinct cc.rsrc_pool_id) rsrc_pool_id,
+								   0 clstr_seq,
+								   count(distinct cc.rsrc_pool_id) vrlz_sw_ty_cd,
+							       0 rhev,
+							       0 vmware,
+							       0 ibm,
+							       0 hp,
+							       0 openstack,
+							       0 docker,
+							       0 ovm,
+							       count(distinct cc.rsrc_pool_id) openshift,
+							       0 last_cpu_cor_qty,
+							       0 last_mem_sum_capa,
+							       0 last_strg_sum_capa,
+							       COUNT(DISTINCT case when cc.last_pod_qty > 0 then cc.servc_seq end) as  auto_last_servc,
+							       COALESCE(ROUND(SUM(cpu_asgn_capa)/1000,0),0) auto_last_core_qty,
+							  	   COALESCE(ROUND(SUM(mem_tot_capa)/1024/1024/1024,0),0) auto_last_mem_capa,
+		 				           COALESCE(ROUND(SUM(strg_tot_capa)/1024/1024/1024,0),0) auto_last_strg_cpa,
+							       0 last_v_srvr_qty,
+							       0 max_cpu_use_rt,
+							       0 max_mem_use_rt,
+							       avg(cc.max_cpu_use_rt) auto_cpu_use_rt,
+							       avg(cc.max_mem_use_rt) auto_mem_use_rt
+						      from
+								   (select c.COLCT_YM,
+									       b.region_id,
+									       c.zone_id,
+									       c.net_id,
+									       c.rsrc_pool_id,
+									       c.servc_seq,
+									       FIRST_VALUE(c.cpu_asgn_capa) OVER (PARTITION BY c.servc_seq ORDER BY c.colct_ym DESC) cpu_asgn_capa,
+									       FIRST_VALUE(c.mem_tot_capa) OVER (PARTITION BY c.servc_seq  ORDER BY c.colct_ym DESC) mem_tot_capa,
+									       FIRST_VALUE(c.strg_tot_capa) OVER (PARTITION BY c.servc_seq  ORDER BY c.colct_ym DESC) strg_tot_capa,
+									       c.max_cpu_use_rt,
+									       c.max_mem_use_rt,
+									       c.last_pod_qty
+									  from st_rx_servc_sum_1mm c
+									  left join rc_rsrc_pool b on c.rsrc_pool_id = b.rsrc_pool_id
+									 where 1=1
+									  <if test="region != null and !region.isEmpty()">
+
+								       		<foreach collection="region" open="AND b.region_id IN(" close=")" separator="," item="item">
+								         	#{item}
+								       		</foreach>
+								     </if>
+
+							         <if test="year != null and !year.isEmpty()">
+							            and c.colct_ym between #{year}||'01' and #{year}||'12'
+							         </if>
+
+							        ) cc
+							   where 1=1
+						       group by cc.colct_ym
+							)a
+							where a.auto_last_servc > 0
+				    )tt
+					    left join
+	                     (select
+										 substr(a.colct_ym,5,2) mm_q,
+										 avg(a.max_cpu_use_rt) max_cpu_use_rt,
+										 avg(a.max_mem_use_rt) max_mem_use_rt,
+										 avg(a.max_strg_use_rt) max_strg_use_rt,
+										 sum(a.last_vcore_qty) last_asgn_vcor_qty,
+										 sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa,
+										 sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) vm_last_asgn_strg_capa
+
+									     from st_vm_colct_sum_1mm a
+									   where 1=1
+									       <if test="region != null and !region.isEmpty()">
+
+									       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+									         	#{item}
+									       		</foreach>
+									      </if>
+
+										  <if test="year != null and !year.isEmpty()">
+								             and a.colct_ym between #{year}||'01' and #{year}||'12'
+								          </if>
+									       group by substr(a.colct_ym,5,2)
+
+	                      ) qq
+	                      on tt.mm_q = qq.mm_q
+	                   group by tt.mm, tt.mm_q
+				       order by tt.mm_q
+                <if test="trm == 'quarter'">
+                )
+	              select aa.mm,
+                         aa.mm_q,
+                         aa.rsrc_pool_id,
+                         aa.clstr_seq,
+                         aa.vrlz_sw_ty_cd,
+                         aa.rhev,
+                         aa.vmware,
+                         aa.ibm,
+                         aa.hp,
+                         aa.openstack,
+                         aa.docker,
+                         aa.ovm,
+                         aa.openshift,
+                         aa.last_cpu_cor_qty,
+                         aa.last_mem_sum_capa,
+                         aa.last_strg_sum_capa,
+                         aa.last_v_srvr_qty,
+                         aa.last_asgn_vcor_qty,
+                         aa.last_asgn_mem_capa,
+                         aa.vm_last_asgn_strg_capa,
+                         aa.auto_last_servc,
+		                 aa.auto_last_core_qty,
+		                 aa.auto_last_mem_capa,
+		                 aa.auto_last_strg_cpa,
+                         aa.max_cpu_use_rt,
+                         aa.max_mem_use_rt,
+				         aa.vm_max_cpu_use_rt,
+				         aa.vm_max_mem_use_rt,
+				         aa.vm_max_strg_use_rt,
+				         aa.auto_max_cpu_use_rt,
+						 aa.auto_max_mem_use_rt
+	                 from mm_t aa
+
+
+
+                               where aa.mm_q in
+                                          (select max(qq.mm_q)
+                                              from mm_t qq
+                                            group by   case when qq.mm_q between '01' and '03' then '03'
+													    when qq.mm_q between '04' and '06' then '06'
+													    when qq.mm_q between '07' and '09' then '09'
+													    when qq.mm_q between '10' and '12' then '12'
+						                              end
+					                          )
+               </if>
+
+
+	</select>
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!----------------------------------------------------------------------------------------------------------------------
+                                     RedBC - TrustPKI Client Toolkit::TrustWeb Install Page v2.1
+----------------------------------------------------------------------------------------------------------------------->
+<html>
+<head>
+<title>RedBC TrustPKI Client Toolkit - TrustWeb ��ġ</title>
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true">
+
+<!-- RedBC TrustPKI Client Toolkit ���� ��ũ��Ʈ -->
+<script language="javascript" src="../SettingForClient/CQWebCommon.js"></script>
+<script language="javascript">
+USER_OS = DetectedOS();
+USER_BROWSER = DetectedBrowser();
+
+if(USER_OS == MICROSOFT_WINDOWS)
+{
+	if(USER_BROWSER == MICROSOFT_IE)
+	{
+		InstObject();
+		if(CheckObjTWC() == true)
+		{
+			history.back();
+		}
+	}
+	else if(USER_BROWSER == MOZILLA_FF || USER_BROWSER == APPLE_SAFARI || USER_BROWSER == GOOGLE_CHROME || USER_BROWSER == OPERASOFTWARE_OPERA)
+	{
+	}
+	else
+	{
+		SetupObjError();
+		history.back();
+	}
+}
+else if(USER_OS == MICROSOFT_WINDOWS_64)
+{
+	if(USER_BROWSER == MICROSOFT_IE)
+	{
+		InstObjectX64();
+		if(CheckObjTWC() == true)
+		{
+			history.back();
+		}
+	}
+	else
+	{
+		SetupObjError();
+		history.back();
+	}
+}
+else
+{
+	SetupObjError();
+	history.back();
+}
+</script>
+</head>
+<body>
+<center>
+<div id="ActiveX" style='display:block'>
+	<img src='./Install.gif' align='top' usemap='#installmap' border='0' WIDTH='650' HEIGHT='350'>
+</div>
+<div id="NPPlugin" style='display:none'>
+	<img src='./InstallPI.png' align='top' usemap='#installmap' border='0' WIDTH='650' HEIGHT='350'>
+</div>
+
+<script language="javascript">
+
+if(USER_OS == MICROSOFT_WINDOWS)
+{
+	if(USER_BROWSER == MICROSOFT_IE)
+	{
+		if(CheckObjTWC() == true)
+		{
+			history.back();
+		}
+	}
+	else if(USER_BROWSER == MOZILLA_FF || USER_BROWSER == APPLE_SAFARI || USER_BROWSER == GOOGLE_CHROME || USER_BROWSER == OPERASOFTWARE_OPERA)
+	{
+		var ObjActiveX = document.getElementById("ActiveX");
+		var ObjNPPlugin = document.getElementById("NPPlugin");
+		ObjActiveX.style.display = 'none';
+		ObjNPPlugin.style.display = 'block';
+	}
+
+	document.writeln("<map name='installmap'>");
+	document.writeln("<area shape='rect' coords='242, 263, 408, 287' href='"+CQWEB_EXE+"'>");
+	document.writeln("</map>");
+}
+else if(USER_OS == MICROSOFT_WINDOWS_64)
+{
+	if(USER_BROWSER == MICROSOFT_IE)
+	{
+		if(CheckObjTWC() == true)
+		{
+			history.back();
+		}
+	}
+
+	document.writeln("<map name='installmap'>");
+	document.writeln("<area shape='rect' coords='242, 263, 408, 287' href='"+CQWEB_EXE_X64+"'>");
+	document.writeln("</map>");
+}
+
+</script>
+</center>
+</body>
+</html>

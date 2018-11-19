@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.thrd.pmThrdConf">
+
+
+
+	<select id="selectPmThrdConfList" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" resultType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectPmThrdConfList */
+
+			SELECT A.PATH
+					, A.PM_NM
+					, A.PM_ID
+					, A.PM_SEQ
+					, A.PM_COMP_ID
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CONT_CNT END) SERVER_STAT_CONT_CNT
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CMPR_STDR END) SERVER_STAT_CMPR_STDR
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END ) MAJOR_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END ) MAJOR_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_CPU_VRLZ_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_CPU_VRLZ_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_CPU_VRLZ_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_CPU_VRLZ_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END)  MAJOR_CPU_VRLZ_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='12' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END)  MAJOR_CPU_VRLZ_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_MEM_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END)  MAJOR_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END)  MAJOR_MEM_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_MEM_VRLZ_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_MEM_VRLZ_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_MEM_VRLZ_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_MEM_VRLZ_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END)  MAJOR_MEM_VRLZ_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='22' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END)  MAJOR_MEM_VRLZ_RT_CONT_CNT
+					, C.USER_NM
+					, C.CNT USER_CNT
+					, D.GRD_NM
+			FROM
+			 (SELECT DISTINCT B.REGION_NM||'>'||D.ZONE_NM||'>'||I.NET_NM||'>'||C.RSRC_POOL_NM||'>'||F.CLSTR_NM PATH,
+					G.PM_NM,
+					G.PM_ID,
+					G.PM_SEQ,
+					G.PM_COMP_ID
+			 FROM
+			 <if test="!allRsrcPoolAuth">
+			 	CM_RSRC_POOL_USER A,
+			 </if>
+			 	RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I
+			 WHERE 1=1
+			 <if test="!allRsrcPoolAuth">
+			  	AND  A.USER_ID = #{searchUserId}
+				AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			  </if>
+			  AND  B.REGION_ID = C.REGION_ID
+			  AND  C.ZONE_ID = D.ZONE_ID
+			  AND  E.ZONE_ID = D.ZONE_ID
+			  AND  E.NET_ID = C.NET_ID
+			  AND  I.NET_ID = C.NET_ID
+			  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+			 <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND B.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND D.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND E.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND F.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND G.PM_SEQ=#{pmSeq}
+			 </if>
+			 AND G.DEL_YN='N'
+			 ) A LEFT JOIN  ST_TRGT_SRVR_THRES_CONF B ON (B.THRES_TRGT_SRVR_SEQ = A.PM_SEQ AND TRGT_SRVR_CL_CD =#{trgtSrvrClCd})
+			 LEFT JOIN
+			(   SELECT THRES_TRGT_SRVR_SEQ, USER_NM, CNT
+			FROM (
+			SELECT COUNT(1) OVER(PARTITION BY X.DSPTH_CONF_ID) CNT , USER_NM, THRES_TRGT_SRVR_SEQ, ROW_NUMBER() OVER(PARTITION BY THRES_TRGT_SRVR_SEQ ORDER BY USER_NM) SEQ
+			FROM ST_DSPTH_CONF X, ST_EVNT_DSPTH_CHARGER Y,  CM_USR Z
+			WHERE X.TRGT_SRVR_CL_CD =#{trgtSrvrClCd}
+			AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+			AND Y.DSPTH_TRGT_ID = Z.USER_ID
+			ORDER BY THRES_TRGT_SRVR_SEQ, USER_NM
+			) A
+			WHERE SEQ =1
+			) C ON A.PM_SEQ = C.THRES_TRGT_SRVR_SEQ
+			LEFT JOIN (
+				SELECT THRES_TRGT_SRVR_SEQ, TRIM(COALESCE(NM1,'')||' ' ||COALESCE(NM2,'')||' ' ||COALESCE(NM3,'')) GRD_NM
+				FROM (
+				SELECT THRES_TRGT_SRVR_SEQ,
+					MAX(CASE WHEN DSPTH_GRD_CD = '01' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM1,
+					MAX(CASE WHEN DSPTH_GRD_CD = '02' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM2,
+					MAX(CASE WHEN DSPTH_GRD_CD = '03' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM3
+				FROM ST_DSPTH_CONF X, ST_DSPTH_GRD Y
+				WHERE X.TRGT_SRVR_CL_CD =#{trgtSrvrClCd}
+				AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+				GROUP BY THRES_TRGT_SRVR_SEQ
+				) A
+			) D ON A.PM_SEQ = D.THRES_TRGT_SRVR_SEQ
+			GROUP BY A.PATH, A.PM_NM,A.PM_ID,A.PM_SEQ, C.USER_NM, C.CNT, D.GRD_NM, A.PM_COMP_ID
+			ORDER BY 1,2,3
+	</select>
+
+	<select id="selectAxThrdConfList" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" resultType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectPmThrdConfList */
+
+			SELECT A.PATH
+					, A.PM_NM
+					, A.PM_SEQ
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CONT_CNT END) SERVER_STAT_CONT_CNT
+					, MAX(CASE WHEN B.IDX_ITM_ID='0' THEN B.CONF_CMPR_STDR END) SERVER_STAT_CMPR_STDR
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='1' THEN B.CONF_CONT_CNT END) WARNING_STAT_CONT_CNT
+					, MAX(CASE WHEN B.IDX_ITM_ID='1' THEN B.CONF_CMPR_STDR END) WARNING_STAT_CMPR_STDR
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_CPU_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END ) MAJOR_CPU_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='11' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END ) MAJOR_CPU_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.THRES_CONF_VL END)  CRITICAL_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CMPR_STDR END)  CRITICAL_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='02' THEN B.CONF_CONT_CNT END)  CRITICAL_MEM_USE_RT_CONT_CNT
+
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.THRES_CONF_VL END)  MAJOR_MEM_USE_RT_VL
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CMPR_STDR END)  MAJOR_MEM_USE_RT_CMPR_STDR
+					, MAX(CASE WHEN B.IDX_ITM_ID='21' AND B.THRES_GRD_ID='03' THEN B.CONF_CONT_CNT END)  MAJOR_MEM_USE_RT_CONT_CNT
+
+					, C.USER_NM
+					, C.CNT USER_CNT
+					, D.GRD_NM
+			FROM
+			 (SELECT DISTINCT D.INSTITUTION_NM||'>' || E.SERVC_NM PATH,
+					E.SERVC_NM PM_NM,
+					E.SERVC_SEQ PM_SEQ
+			 FROM
+			 <if test="!allJobAuth">
+			 	CM_JOB_USER A,
+			 </if>
+			 	RX_SERVC_AREA B INNER JOIN CM_INSTITUTION D ON B.INSTITUTION_ID = D.INSTITUTION_ID
+			  		                LEFT JOIN RX_SERVC E ON B.SERVC_AREA_SEQ = E.SERVC_AREA_SEQ
+			 WHERE 1=1
+			 <if test="!allJobAuth">
+			  	AND  A.USER_ID = #{searchUserId}
+				AND  A.JOB_ID = B.JOB_ID
+			  </if>
+			   <if test='institutionId !=null and !"".equals(institutionId)'>
+			  	AND B.INSTITUTION_ID =#{institutionId}
+			  </if>
+			  <if test='servcSeq !=null and !"".equals(servcSeq)'>
+			  	AND E.SERVC_SEQ =#{servcSeq}::INTEGER
+			  </if>
+
+			  	AND B.DEL_YN = 'N'
+				AND D.USE_YN = 'Y'
+				AND UPPER(E.DEL_YN) = 'N'
+			 ) A LEFT JOIN  ST_TRGT_SRVR_THRES_CONF B ON (B.THRES_TRGT_SRVR_SEQ = A.PM_SEQ AND TRGT_SRVR_CL_CD ='03')
+			 LEFT JOIN
+			(   SELECT THRES_TRGT_SRVR_SEQ, USER_NM, CNT
+					FROM (
+						SELECT COUNT(1) OVER(PARTITION BY X.DSPTH_CONF_ID) CNT , USER_NM, THRES_TRGT_SRVR_SEQ, ROW_NUMBER() OVER(PARTITION BY THRES_TRGT_SRVR_SEQ ORDER BY USER_NM) SEQ
+						FROM ST_DSPTH_CONF X, ST_EVNT_DSPTH_CHARGER Y,  CM_USR Z
+						WHERE X.TRGT_SRVR_CL_CD ='03'
+						AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+						AND Y.DSPTH_TRGT_ID = Z.USER_ID
+						ORDER BY THRES_TRGT_SRVR_SEQ, USER_NM
+					) A
+					WHERE SEQ =1
+			) C ON A.PM_SEQ = C.THRES_TRGT_SRVR_SEQ
+			LEFT JOIN (
+				SELECT THRES_TRGT_SRVR_SEQ, TRIM(COALESCE(NM1,'')||' ' ||COALESCE(NM2,'')||' ' ||COALESCE(NM3,'')) GRD_NM
+					FROM (
+						SELECT THRES_TRGT_SRVR_SEQ,
+							MAX(CASE WHEN DSPTH_GRD_CD = '01' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM1,
+							MAX(CASE WHEN DSPTH_GRD_CD = '02' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM2,
+							MAX(CASE WHEN DSPTH_GRD_CD = '03' THEN FN_CODE_NAME('027',DSPTH_GRD_CD) END) NM3
+						FROM ST_DSPTH_CONF X, ST_DSPTH_GRD Y
+						WHERE X.TRGT_SRVR_CL_CD ='03'
+						AND X.DSPTH_CONF_ID = Y.DSPTH_CONF_ID
+						GROUP BY THRES_TRGT_SRVR_SEQ
+					 ) A
+			) D ON A.PM_SEQ = D.THRES_TRGT_SRVR_SEQ
+			GROUP BY A.PATH, A.PM_NM,A.PM_SEQ, C.USER_NM, C.CNT, D.GRD_NM
+			ORDER BY 1,2,3
+	</select>
+
+	<select id="selectPmThrdConfListCount" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfSearchVo" resultType="int">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectPmThrdConfListCount */
+		SELECT COUNT(DISTINCT(A.PATH, A.PM_NM, A.PM_ID, A.PM_SEQ)) cnt
+			FROM
+			 (SELECT DISTINCT B.REGION_NM||'>'||D.ZONE_NM||'>'||I.NET_NM||'>'||C.RSRC_POOL_NM||'>'||F.CLSTR_NM PATH,
+					G.PM_NM,
+					G.PM_ID,
+					G.PM_SEQ
+			 FROM
+			 	<if test="!allRsrcPoolAuth">
+					CM_RSRC_POOL_USER A,
+			 	</if>
+			 	RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I
+			 WHERE 1=1
+			 <if test="!allRsrcPoolAuth">
+			  AND  A.USER_ID = #{searchUserId}
+			  AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			  </if>
+			  AND  B.REGION_ID = C.REGION_ID
+			  AND  C.ZONE_ID = D.ZONE_ID
+			  AND  E.ZONE_ID = D.ZONE_ID
+			  AND  E.NET_ID = C.NET_ID
+			  AND  I.NET_ID = C.NET_ID
+			  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+			 <if test='regionId !=null and !"".equals(regionId)'>
+			 	AND B.REGION_ID =#{regionId}
+			 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND D.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND E.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND F.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND G.PM_SEQ=#{pmSeq}
+			 </if>
+			 AND G.DEL_YN='N'
+			 ) A LEFT JOIN  ST_TRGT_SRVR_THRES_CONF B ON (B.THRES_TRGT_SRVR_SEQ = A.PM_SEQ AND TRGT_SRVR_CL_CD ='02')
+	</select>
+
+	<select id="selectEqpAuthrDspthYn" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfPSearchVo" resultType="String">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectEqpAuthrDspthYn */
+		SELECT EQP_AUTHR_DSPTH_YN
+		FROM ST_DSPTH_CONF A
+		WHERE TRGT_SRVR_CL_CD =#{trgtSrvrClCd}
+		AND THRES_TRGT_SRVR_SEQ = #{thresTrgtSrvrSeq}
+	</select>
+	<select id="selectDspthFormList" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfPSearchVo" resultType="String">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectDspthFormList */
+		SELECT DSPTH_TY_CD
+		FROM ST_DSPTH_CONF A, ST_DSPTH_FORM B
+		WHERE TRGT_SRVR_CL_CD =#{trgtSrvrClCd}
+		AND THRES_TRGT_SRVR_SEQ = #{thresTrgtSrvrSeq}
+		AND A.DSPTH_CONF_ID = B.DSPTH_CONF_ID
+	</select>
+	<select id="selectDspthGrdList" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfPSearchVo" resultType="String">
+	/* ncis.sql.dsb.thrd.pmThrdConf.selectDspthGrdList */
+		SELECT DSPTH_GRD_CD
+		FROM ST_DSPTH_CONF A, ST_DSPTH_GRD B
+		WHERE TRGT_SRVR_CL_CD = #{trgtSrvrClCd}
+		AND THRES_TRGT_SRVR_SEQ = #{thresTrgtSrvrSeq}
+		AND A.DSPTH_CONF_ID = B.DSPTH_CONF_ID
+	</select>
+	<select id="selectEvntDspthChargerList" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfPSearchVo" resultType="ncis.cmn.entity.CmUsr">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectEvntDspthChargerList */
+		SELECT DSPTH_TRGT_ID USER_ID, (SELECT USER_NM FROM CM_USR X WHERE X.USER_ID = B.DSPTH_TRGT_ID) USER_NM
+		FROM ST_DSPTH_CONF A, ST_EVNT_DSPTH_CHARGER B
+		WHERE TRGT_SRVR_CL_CD =#{trgtSrvrClCd}
+		AND THRES_TRGT_SRVR_Seq = #{thresTrgtSrvrSeq}
+		AND A.DSPTH_CONF_ID = B.DSPTH_CONF_ID
+	</select>
+	<select id="selectUserList" resultType="ncis.cpt.sys.user.vo.UserVo" parameterType="ncis.dsb.thrd.thrdConf.vo.UserSearchVo">
+		/* ncis.sql.dsb.thrd.pmThrdConf.selectUserList */
+		SELECT
+			USER_ID
+			,PASSWD
+			,USER_NM
+			,USER_CL_CD
+			,USER_CL_NM
+			,INSTITUTION_ID
+			,INSTITUTION_NM
+			,ORGNZT_ID
+			,ORGNZT_NM
+			,MNG_REGION_ID
+			,OFCPS_ID
+			,OFCPS_NM
+			,SYS_AUTHR_TY_ID
+			,TELNO
+			,LXTN_NO
+			,FAX_NO
+			,OWNHOM_TEL_NO
+			,MOBILE
+			,EMAIL
+			,USER_STAT
+			,ABSNCE_YN
+			,ABSNCE_ID
+			,ABSNCE_BEGIN_DT
+			,ABSNCE_END_DT
+			,RCNT_LOGIN_DTTM
+			,(SELECT MAX(CONN_DT) FROM CM_USR_CONN_HIST WHERE USER_ID = CM_USR.USER_ID ) AS NCMS_RCNT_LOGIN_DTTM
+			,CRTFCT_KEY
+			,UNITY_CONNECT_TY_CD
+			,REG_DTTM
+			,UPDT_DTTM
+			,UPDT_USER_ID
+		FROM CM_USR
+		WHERE 1=1
+		<if test='"01".equals(searchGubun)'>
+			AND USER_ID LIKE '%'|| #{searchNm} ||'%'
+		</if>
+		<if test='"02".equals(searchGubun)'>
+			AND USER_NM LIKE '%'|| #{searchNm} ||'%'
+		</if>
+		ORDER BY USER_NM
+	</select>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.board">
+
+	<resultMap type="ncis.cpt.board.vo.BoardVo" id="resultBoardVo" extends="ncis.sql.cmn.Cmboard.resultCmBoard">
+		<result property="answerCnt" column="ANSWER_CNT"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.board.vo.BoardVo" id="resultDetailBoardVo" extends="ncis.sql.cmn.Cmboard.resultCmBoard">
+		<association property="answer" column="BOARD_SEQ" select="selectAnswer" />
+		<collection property="boardFiles" column="BOARD_SEQ" select="selectBoardFileList"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.board.vo.BoardFileVo" id="resultBoardFileVo">
+		<id property="seq" column="FILE_SEQ"/>
+		<result property="parentSeq" column="BOARD_SEQ"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="originFileName" column="FILE_ORI_NM"/>
+		<result property="saveFileName" column="FILE_TMP_NM"/>
+		<result property="order" column="FILE_ORDER"/>
+		<result property="regId" column="REG_USER_ID"/>
+	</resultMap>
+
+	<sql id="search">
+		AND BOARD_CD = #{boardCd}
+		AND PARENT_SEQ IS NULL
+		AND ( #{searchSbjct}::text is null or SBJCT LIKE '%' || #{searchSbjct} || '%' )
+		AND (#{searchContent}::text is null or (SELECT REGEXP_REPLACE(CONTENTS, '<![CDATA[ <[^>]*> ]]>', '', 'g') ) LIKE '%' || #{searchContent} || '%')
+	</sql>
+
+	<select id="selectBoardTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.board.selectBoardTotCnt */
+		SELECT COUNT(*) FROM CM_BOARD
+		<where>
+			<include refid="search"/>;
+		</where>
+	</select>
+
+	<select id="selectBoardList" resultMap="resultBoardVo">
+		/* ncis.sql.cpt.board.selectBoardTotCnt */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT  BOARD_SEQ
+				,PARENT_SEQ
+				,BOARD_CD
+				,REG_NM
+				,SBJCT
+				,CONTENTS
+				,HIT_CNT
+				,REG_DT
+				,REG_USER_ID
+				,UPDT_DT
+				,UPDT_USER_ID
+				,(SELECT COUNT(1) FROM CM_BOARD A WHERE A.PARENT_SEQ=B.BOARD_SEQ ) ANSWER_CNT
+		FROM CM_BOARD B
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY BOARD_SEQ DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectBoard" resultMap="resultDetailBoardVo">
+		/* ncis.sql.cpt.board.selectBoard */
+		SELECT
+			BOARD_SEQ
+			,PARENT_SEQ
+			,BOARD_CD
+			,REG_DT
+			,REG_NM
+			,SBJCT
+			,CONTENTS
+			,HIT_CNT
+			,REG_DT
+			,REG_USER_ID
+			,UPDT_DT
+			,UPDT_USER_ID
+		FROM CM_BOARD
+		WHERE BOARD_SEQ = #{value}
+	</select>
+
+	<select id="selectAnswer" resultMap="resultDetailBoardVo">
+		/* ncis.sql.cpt.board.selectAnswer */
+		SELECT
+			BOARD_SEQ
+			,PARENT_SEQ
+			,BOARD_CD
+			,REG_NM
+			,SBJCT
+			,CONTENTS
+			,HIT_CNT
+			,REG_DT
+			,REG_USER_ID
+			,UPDT_DT
+			,UPDT_USER_ID
+		FROM CM_BOARD
+		WHERE PARENT_SEQ = #{value}
+	</select>
+
+	<select id="selectFile" resultMap="resultBoardFileVo">
+		/* ncis.sql.cpt.board.selectFile */
+		SELECT
+			FILE_SEQ,
+			BOARD_SEQ,
+			FILE_PATH,
+			FILE_ORI_NM,
+			FILE_TMP_NM,
+			FILE_ORDER,
+			FILE_REG_DT,
+			REG_USER_ID
+		FROM CM_BOARD_FILE
+		WHERE FILE_SEQ = #{value}
+	</select>
+
+	<select id="selectBoardFileList" resultMap="resultBoardFileVo">
+		/* ncis.sql.cpt.board.selectBoardFileList */
+		SELECT
+			FILE_SEQ,
+			BOARD_SEQ,
+			FILE_PATH,
+			FILE_ORI_NM,
+			FILE_TMP_NM,
+			FILE_ORDER,
+			FILE_REG_DT,
+			REG_USER_ID
+		FROM CM_BOARD_FILE
+		WHERE BOARD_SEQ = #{value}
+	</select>
+</mapper>

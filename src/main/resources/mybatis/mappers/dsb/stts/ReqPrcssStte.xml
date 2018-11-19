@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.reqPrcssStte">
+
+	<select id="selectCludReqPrcssStteList" resultType="ncis.dsb.stts.reqPrcssStte.vo.ReqPrcssStteVo">
+		/*ncis.sql.dsb.stts.reqPrcssStte.selectCludReqPrcssStteList*/
+		SELECT 	LPAD(YM::TEXT,3)  || CASE WHEN 'mm'=#{trm} THEN '월' ELSE '분기' END YM_NM,
+				lpad(YM::text,2,'0') YM,
+				SUM(VM_CREATE_QTY) VM_CREATE_QTY,
+				SUM(VM_REMOVE_QTY) VM_REMOVE_QTY,
+				SUM(SPEC_UPDATE_QTY) SPEC_UPDATE_QTY,
+				SUM(SAN_ADD_QTY) SAN_ADD_QTY,
+				SUM(WITHDRAW_QTY) WITHDRAW_QTY,
+				SUM(TOT) TOT
+		FROM (
+			SELECT 	CASE WHEN 'mm'=#{trm} THEN COALESCE(A.YM,B.YM)::INTEGER
+						 WHEN 'quarter'=#{trm} AND  COALESCE(A.YM,B.YM) BETWEEN '01' AND '03' THEN 1
+						 WHEN 'quarter'=#{trm} AND  COALESCE(A.YM,B.YM) BETWEEN '04' AND '06' THEN 2
+						 WHEN 'quarter'=#{trm} AND  COALESCE(A.YM,B.YM) BETWEEN '07' AND '09' THEN 3
+						 WHEN 'quarter'=#{trm} AND  COALESCE(A.YM,B.YM) BETWEEN '10' AND '12' THEN 4
+				END YM,
+				A.VM_CREATE_QTY,
+				A.VM_REMOVE_QTY,
+				A.SPEC_UPDATE_QTY,
+				A.SAN_ADD_QTY,
+				B.WITHDRAW_QTY,
+				COALESCE(A.VM_CREATE_QTY,0)+
+				COALESCE(A.VM_REMOVE_QTY,0)+
+				COALESCE(A.SPEC_UPDATE_QTY,0)+
+				COALESCE(A.SAN_ADD_QTY,0)+
+				COALESCE(B.WITHDRAW_QTY,0) TOT
+			FROM
+			(
+
+				SELECT  TO_CHAR(A.COMPT_DTTM,'MM') YM ,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='01' THEN (1) END) VM_CREATE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='02' THEN (1) END) VM_REMOVE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='03' THEN (1) END) SPEC_UPDATE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='09' THEN (1) END) SAN_ADD_QTY
+				FROM RR_RSRC_REQ_DTL_VM A, RC_RSRC_POOL B, RR_RSRC_REQ C
+				WHERE A.RSRC_REQ_TY_CD IN ('01','02','03','09')
+				AND A.RSRC_REQ_PRCSS_STAT_CD ='03'/*완료건*/
+				AND A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				AND A.RSRC_REQ_NO = C.RSRC_REQ_NO
+				AND C.DISPLAY_YN = 'Y' AND C.DEL_YN = 'N'
+				AND A.COMPT_DTTM BETWEEN (#{year}||'0101')::TIMESTAMP AND (#{year}||'1231 235959.999999')::TIMESTAMP
+				<if test="region != null and !region.isEmpty()">
+			    	<foreach collection="region" open="AND B.REGION_ID IN(" close=")" separator="," item="item">
+			      		#{item}
+			    	</foreach>
+			  	</if>
+				GROUP BY  TO_CHAR(A.COMPT_DTTM,'MM')
+			) A
+			FULL OUTER JOIN
+			(
+				SELECT 	SUBSTR(WITHDRAW_COMPT_YM,5,2) YM,
+					SUM(WITHDRAW_QTY) WITHDRAW_QTY
+				FROM ST_SAN_WITHDRAW_STTE  A, RC_RSRC_POOL B
+				WHERE WITHDRAW_COMPT_YM LIKE #{year}||'%'
+				AND A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				<if test="region != null and !region.isEmpty()">
+		       		<foreach collection="region" open="AND B.REGION_ID IN(" close=")" separator="," item="item">
+		         	#{item}
+		       		</foreach>
+		     	</if>
+				GROUP BY WITHDRAW_COMPT_YM
+			) B
+			ON A.YM = B.YM
+		) A
+		GROUP BY A.YM
+		ORDER BY A.YM
+	</select>
+	<select id="selectCludReqPrcssStteDtl" resultType="ncis.dsb.stts.reqPrcssStte.vo.ReqPrcssStteVo">
+		/*ncis.sql.dsb.stts.reqPrcssStte.selectCludReqPrcssStteDtl*/
+		SELECT 	B.REGION_ID,
+				REGION_NM,
+				B.ZONE_ID,
+				ZONE_NM,B.NET_ID ,
+				NET_NM,
+				A.RSRC_POOL_ID,
+				B.RSRC_POOL_NM,
+				VM_CREATE_QTY,
+				VM_REMOVE_QTY,
+				SPEC_UPDATE_QTY,
+				SAN_ADD_QTY,
+				WITHDRAW_QTY,
+				COALESCE(A.VM_CREATE_QTY,0)+
+				COALESCE(A.VM_REMOVE_QTY,0)+
+				COALESCE(A.SPEC_UPDATE_QTY,0)+
+				COALESCE(A.SAN_ADD_QTY,0)+
+				COALESCE(A.WITHDRAW_QTY,0) TOT,
+				RANK() OVER(ORDER BY B.RSRC_POOL_NM) RNK
+		FROM (
+			SELECT COALESCE(A.RSRC_POOL_ID, B. RSRC_POOL_ID) RSRC_POOL_ID,
+					VM_CREATE_QTY,
+					VM_REMOVE_QTY,
+					SPEC_UPDATE_QTY,
+					SAN_ADD_QTY,
+					WITHDRAW_QTY
+			FROM
+			(
+				SELECT  B.RSRC_POOL_ID,
+						SUM(CASE WHEN A.RSRC_REQ_TY_CD='01' THEN (1) END) VM_CREATE_QTY,
+						SUM(CASE WHEN A.RSRC_REQ_TY_CD='02' THEN (1) END) VM_REMOVE_QTY,
+						SUM(CASE WHEN A.RSRC_REQ_TY_CD='03' THEN (1) END) SPEC_UPDATE_QTY,
+						SUM(CASE WHEN A.RSRC_REQ_TY_CD='09' THEN (1) END) SAN_ADD_QTY
+				FROM RR_RSRC_REQ_DTL_VM A, RC_RSRC_POOL B, RR_RSRC_REQ C
+				WHERE A.RSRC_REQ_TY_CD IN ('01','02','03','09')
+				AND A.RSRC_REQ_PRCSS_STAT_CD ='03'/*완료건*/
+				AND A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				AND A.RSRC_REQ_NO = C.RSRC_REQ_NO
+				AND C.DISPLAY_YN = 'Y' AND C.DEL_YN = 'N'
+				<choose>
+					<when test='"mm".equals(trm)'>
+						AND A.COMPT_DTTM BETWEEN (#{year}||#{ym}||'01')::TIMESTAMP AND (#{year}||#{ym}||'01  235959.999999')::TIMESTAMP+INTERVAL '1 MONTH'-INTERVAL '1DAY'
+					</when>
+					<when test='"quarter".equals(trm) and "01".equals(ym)'>
+						AND A.COMPT_DTTM BETWEEN (#{year}||'01'||'01')::TIMESTAMP AND (#{year}||'03'||'01  235959.999999')::TIMESTAMP +INTERVAL '1 MONTH'-INTERVAL '1DAY'
+					</when>
+					<when test='"quarter".equals(trm) and "02".equals(ym)'>
+						AND A.COMPT_DTTM BETWEEN (#{year}||'04'||'01')::TIMESTAMP AND (#{year}||'06'||'01  235959.999999')::TIMESTAMP+INTERVAL '1 MONTH'-INTERVAL '1DAY'
+					</when>
+					<when test='"quarter".equals(trm) and "03".equals(ym)'>
+						AND A.COMPT_DTTM BETWEEN (#{year}||'07'||'01')::TIMESTAMP AND (#{year}||'09'||'01  235959.999999')::TIMESTAMP+INTERVAL '1 MONTH'-INTERVAL '1DAY'
+					</when>
+					<when test='"quarter".equals(trm) and "04".equals(ym)'>
+						AND A.COMPT_DTTM BETWEEN (#{year}||'10'||'01')::TIMESTAMP AND (#{year}||'12'||'01  235959.999999')::TIMESTAMP+INTERVAL '1 MONTH'-INTERVAL '1DAY'
+					</when>
+				</choose>
+				<if test="region != null and !region.isEmpty()">
+			    	<foreach collection="region" open="AND B.REGION_ID IN(" close=")" separator="," item="item">
+			      		#{item}
+			    	</foreach>
+			  	</if>
+				GROUP BY   B.RSRC_POOL_ID
+			)A
+			FULL OUTER JOIN
+			(
+				SELECT 	B.RSRC_POOL_ID,
+						SUM(WITHDRAW_QTY) WITHDRAW_QTY
+				FROM ST_SAN_WITHDRAW_STTE  A, RC_RSRC_POOL B
+				WHERE 1=1
+				<if test="region != null and !region.isEmpty()">
+			    	<foreach collection="region" open="AND B.REGION_ID IN(" close=")" separator="," item="item">
+			      		#{item}
+			    	</foreach>
+			  	</if>
+				<choose>
+					<when test='"mm".equals(trm)'>
+						AND WITHDRAW_COMPT_YM =#{year}||#{ym}
+					</when>
+					<when test='"quarter".equals(trm) and "01".equals(ym)'>
+						AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'01' AND  #{year}||'03'
+					</when>
+					<when test='"quarter".equals(trm) and "02".equals(ym)'>
+						AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'04' AND  #{year}||'06'
+					</when>
+					<when test='"quarter".equals(trm) and "03".equals(ym)'>
+						AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'07' AND  #{year}||'09'
+					</when>
+					<when test='"quarter".equals(trm) and "04".equals(ym)'>
+						AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'10' AND  #{year}||'12'
+					</when>
+				</choose>
+
+
+				AND A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				GROUP BY B.RSRC_POOL_ID
+			) B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+		) A, RC_RSRC_POOL B ,RC_REGION C, RC_ZONE D, RC_NET E
+		WHERE A.RSRC_POOL_ID = B.RSRC_POOL_ID
+		AND B.REGION_ID= C.REGION_ID
+		AND B.ZONE_ID = D.ZONE_ID
+		AND B.NET_ID = E.NET_ID
+	</select>
+
+	<select id="selectInsttReqPrcssStteList" resultType="ncis.dsb.stts.reqPrcssStte.vo.ReqPrcssStteVo">
+		/*ncis.sql.dsb.stts.reqPrcssStte.selectInsttReqPrcssStteList*/
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+				COALESCE(A.INSTITUTION_ID,B.INSTITUTION_ID) INSTITUTION_ID,
+				COALESCE(A.INSTITUTION_NM,B.INSTITUTION_NM) INSTITUTION_NM,
+				A.VM_CREATE_QTY,
+				A.VM_REMOVE_QTY,
+				A.SPEC_UPDATE_QTY,
+				A.SAN_ADD_QTY,
+				B.WITHDRAW_QTY,
+				COALESCE(A.VM_CREATE_QTY,0)+
+				COALESCE(A.VM_REMOVE_QTY,0)+
+				COALESCE(A.SPEC_UPDATE_QTY,0)+
+				COALESCE(A.SAN_ADD_QTY,0)+
+				COALESCE(B.WITHDRAW_QTY,0) TOT,
+				COUNT(1) OVER() TOTAL_COUNT
+		FROM
+		(
+
+			SELECT  USE_GV_DPRT_ID INSTITUTION_ID,
+					B.INSTITUTION_NM,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='01' THEN (1) END) VM_CREATE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='02' THEN (1) END) VM_REMOVE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='03' THEN (1) END) SPEC_UPDATE_QTY,
+					SUM(CASE WHEN A.RSRC_REQ_TY_CD='09' THEN (1) END) SAN_ADD_QTY
+			FROM RR_RSRC_REQ_DTL_VM A, CM_INSTITUTION B, RC_RSRC_POOL C, RR_RSRC_REQ D
+			WHERE A.RSRC_REQ_TY_CD IN ('01','02','03','09')
+			AND A.RSRC_REQ_PRCSS_STAT_CD ='03'/*완료건*/
+			AND A.USE_GV_DPRT_ID = B.INSTITUTION_ID
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+				AND A.RSRC_REQ_NO = D.RSRC_REQ_NO
+				AND D.DISPLAY_YN = 'Y' AND D.DEL_YN = 'N'
+			<if test="region != null and !region.isEmpty()">
+	       		<foreach collection="region" open="AND C.REGION_ID IN(" close=")" separator="," item="item">
+	         	#{item}
+	       		</foreach>
+	     	</if>
+			<if test='institutionId!=null and !"".equals(institutionId)'>
+				AND A.USE_GV_DPRT_ID=#{institutionId}
+			</if>
+			AND A.COMPT_DTTM BETWEEN (#{year}||#{searchMmCd}||'01')::TIMESTAMP AND  (#{year}||#{searchMmCd}||'01 235959.999999')::TIMESTAMP+INTERVAL '1 MONTH'-INTERVAL'1 DAY'
+			GROUP BY  A.USE_GV_DPRT_ID, B.INSTITUTION_NM
+		) A
+		FULL OUTER JOIN
+		(
+			SELECT  B.INSTITUTION_ID,
+				B.INSTITUTION_NM,
+				SUM(WITHDRAW_QTY) WITHDRAW_QTY
+			FROM ST_SAN_WITHDRAW_STTE  A, CM_INSTITUTION B, RC_RSRC_POOL C
+			WHERE WITHDRAW_COMPT_YM = #{year}||#{searchMmCd}
+			AND A.INSTITUTION_ID = B.INSTITUTION_ID
+			AND A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			<if test='institutionId!=null and !"".equals(institutionId)'>
+				AND A.INSTITUTION_ID=#{institutionId}
+			</if>
+			<if test="region != null and !region.isEmpty()">
+			    	<foreach collection="region" open="AND C.REGION_ID IN(" close=")" separator="," item="item">
+			      		#{item}
+			    	</foreach>
+			  	</if>
+			GROUP BY B.INSTITUTION_ID,
+				B.INSTITUTION_NM
+		) B
+		ON A.INSTITUTION_ID = B.INSTITUTION_ID
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+	<select id="selectSanWithDrawStteCnt" resultType="int">
+		SELECT COUNT(1)
+		FROM ST_SAN_WITHDRAW_STTE
+		WHERE WITHDRAW_COMPT_YM = #{yy}||#{mm}
+		AND RSRC_POOL_ID = #{rsrcPoolId}
+		AND INSTITUTION_ID = #{institutionId}
+	</select>
+	<select id="selectSanWithdrawStte" resultType="ncis.dsb.stts.reqPrcssStte.vo.ReqPrcssStteVo">
+		/* ncis.sql.dsb.stts.reqPrcssStte.selectSanWithdrawStte */
+		SELECT 	WITHDRAW_COMPT_YM YM,
+				SUBSTR(WITHDRAW_COMPT_YM,0,5) YY,
+				SUBSTR(WITHDRAW_COMPT_YM,5,2) MM,
+				A.RSRC_POOL_ID,
+				B.RSRC_POOL_NM,
+				A.INSTITUTION_ID,
+				C.INSTITUTION_NM,
+				WITHDRAW_QTY
+		FROM 	ST_SAN_WITHDRAW_STTE A
+				LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+				LEFT JOIN CM_INSTITUTION C ON A.INSTITUTION_ID = C.INSTITUTION_ID
+		WHERE 1=1
+		<choose>
+			<when test='"mm".equals(trm)'>
+				AND WITHDRAW_COMPT_YM =#{year}||#{ym}
+			</when>
+			<when test='"quarter".equals(trm) and "01".equals(ym)'>
+				AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'01' AND  #{year}||'03'
+			</when>
+			<when test='"quarter".equals(trm) and "02".equals(ym)'>
+				AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'04' AND  #{year}||'06'
+			</when>
+			<when test='"quarter".equals(trm) and "03".equals(ym)'>
+				AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'07' AND  #{year}||'09'
+			</when>
+			<when test='"quarter".equals(trm) and "04".equals(ym)'>
+				AND A.WITHDRAW_COMPT_YM BETWEEN #{year}||'10' AND  #{year}||'12'
+			</when>
+		</choose>
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+			AND A.RSRC_POOL_ID=#{rsrcPoolId}
+		</if>
+		<if test='institutionId!=null and !"".equals(institutionId)'>
+			AND A.INSTITUTION_ID=#{institutionId}
+		</if>
+	</select>
+</mapper>
+

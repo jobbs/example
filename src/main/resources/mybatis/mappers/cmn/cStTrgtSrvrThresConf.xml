@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stTrgtSrvrThresConf">
+
+
+	<insert id="insertStTrgtSrvrThresConf"  parameterType="ncis.cmn.entity.StTrgtSrvrThresConf">
+		<selectKey order="BEFORE" keyProperty="wordSeq" resultType="Long">
+			SELECT nextval('WORD_SEQ')
+		</selectKey>
+		INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		(
+			    THRES_TRGT_SRVR_ID
+			  , IDX_ITM_ID
+			  , THRES_GRD_ID
+			  , TRGT_SRVR_CL_CD
+			  , THRES_CONF_VL
+			  , CONF_CMPR_STDR
+			  , CONF_CONT_CNT
+			  , CONF_TIME
+		)
+		VALUES
+		(
+			  #{thresTrgtSrvrId}
+			, #{idxItmId}
+			, #{thresGrdId}
+			, #{trgtSrvrClCd}
+			, #{ThresConfVl}
+			, #{confCmprStdr}
+			, #{confContCnt}
+			, #{confTime}
+		)
+	</insert>
+	<insert id="insertStTrgtSrvrThresConfPmProf"  parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.insertStTrgtSrvrThresConfPmProf */
+		 INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		 (THRES_TRGT_SRVR_SEQ, IDX_ITM_ID, THRES_GRD_ID, TRGT_SRVR_CL_CD, THRES_CONF_VL, CONF_CMPR_STDR, CONF_CONT_CNT, CONF_TIME)
+		SELECT  G.PM_SEQ, J.IDX_ITM_ID, J.THRES_GRD_ID, '02', J.DFLT_THRES_VL, J.CMPR_STDR, J.THRES_DFLT_CONT_CNT, NULL
+		 FROM
+		 	<if test='!allRsrcPoolAuth'>
+		 		CM_RSRC_POOL_USER A,
+		 	</if>
+		 	RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I, ST_THRES_DFLT_CONF J
+		 WHERE 1=1
+		 <if test='!allRsrcPoolAuth'>
+		  	AND  A.USER_ID = #{searchUserId}
+		  	AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		  </if>
+		  AND  B.REGION_ID = C.REGION_ID
+		  AND  C.ZONE_ID = D.ZONE_ID
+		  AND  E.ZONE_ID = D.ZONE_ID
+		  AND  E.NET_ID = C.NET_ID
+		  AND  I.NET_ID = C.NET_ID
+		  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+		  AND J.PROF_ID = #{profId}
+		 <if test='regionId !=null and !"".equals(regionId)'>
+ 			AND B.REGION_ID =#{regionId}
+ 		 </if>
+		 <if test='zoneId !=null and !"".equals(zoneId)'>
+		 	AND D.ZONE_ID =#{zoneId}
+		 </if>
+		 <if test='netId !=null and !"".equals( netId )'>
+		 	AND E.NET_ID = #{netId}
+		 </if>
+		 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+		 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+		 </if>
+		 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+		 	AND F.CLSTR_SEQ = #{clstrSeq}
+		 </if>
+		 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+		 	AND G.PM_SEQ=#{pmSeq}
+		 </if>
+	</insert>
+	<insert id="insertStTrgtSrvrThresConfVmProf"  parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.insertStTrgtSrvrThresConfVmProf */
+		 INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		 (THRES_TRGT_SRVR_SEQ, IDX_ITM_ID, THRES_GRD_ID, TRGT_SRVR_CL_CD, THRES_CONF_VL, CONF_CMPR_STDR, CONF_CONT_CNT, CONF_TIME)
+		SELECT DISTINCT   B.VM_SEQ, J.IDX_ITM_ID, J.THRES_GRD_ID, '01', J.DFLT_THRES_VL, J.CMPR_STDR, J.THRES_DFLT_CONT_CNT, NULL
+		 FROM
+		 <if test='!allJobAuth'>
+		 	CM_JOB_USER A,
+		 </if>
+		 	RC_VM B, ST_THRES_DFLT_CONF J, RC_VM_JOB C
+		 WHERE 1=1
+		 <if test='!allJobAuth'>
+		 	AND  A.USER_ID = #{searchUserId}
+		 	AND  A.JOB_ID = C.JOB_ID
+		 </if>
+		 AND  B.VM_SEQ = C.VM_SEQ
+		 AND J.PROF_ID = #{profId}
+		 <if test='institutionId !=null and !"".equals(institutionId)'>
+	  		AND B.INSTITUTION_ID = #{institutionId}
+	  	</if>
+	  	<if test='jobId !=null and !"".equals(jobId)'>
+	  		AND C.JOB_ID = #{jobId}
+	  	</if>
+	  	<if test='vmSeq !=null and !"".equals(vmSeq)'>
+	  		AND B.VM_Seq = #{vmSeq}
+	  	</if>
+	</insert>
+	<insert id="insertStTrgtSrvrThresConfPm"  parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.insertStTrgtSrvrThresConfPm */
+		 INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		 (THRES_TRGT_SRVR_SEQ, IDX_ITM_ID, THRES_GRD_ID, TRGT_SRVR_CL_CD, THRES_CONF_VL, CONF_CMPR_STDR, CONF_CONT_CNT, CONF_TIME)
+		SELECT  G.PM_SEQ, #{idxItmId}, #{thresGrdId}, '02', #{thresConfVl}, #{confCmprStdr}, #{confContCnt}, NULL
+		 FROM
+		 	<if test='!allRsrcPoolAuth'>
+		 		CM_RSRC_POOL_USER A,
+		 	</if>
+		 		RC_REGION B,
+		 		RC_RSRC_POOL C,
+		 		RC_ZONE D,
+		 		RC_ZONE_NET_MATRIX E,
+		 		RC_CLSTR F,
+		 		RC_PM G ,
+		 		RC_NET I
+		 WHERE 1=1
+		 <if test='!allRsrcPoolAuth'>
+		  	AND  A.USER_ID = #{searchUserId}
+		  	AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+		 </if>
+		  AND  B.REGION_ID = C.REGION_ID
+		  AND  C.ZONE_ID = D.ZONE_ID
+		  AND  E.ZONE_ID = D.ZONE_ID
+		  AND  E.NET_ID = C.NET_ID
+		  AND  I.NET_ID = C.NET_ID
+		  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+		  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+		 <if test='regionId !=null and !"".equals(regionId)'>
+ 			AND B.REGION_ID =#{regionId}
+ 		 </if>
+		 <if test='zoneId !=null and !"".equals(zoneId)'>
+		 	AND D.ZONE_ID =#{zoneId}
+		 </if>
+		 <if test='netId !=null and !"".equals( netId )'>
+		 	AND E.NET_ID = #{netId}
+		 </if>
+		 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+		 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+		 </if>
+		 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+		 	AND F.CLSTR_SEQ = #{clstrSeq}
+		 </if>
+		 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+		 	AND G.PM_SEQ=#{pmSeq}
+		 </if>
+	</insert>
+	<insert id="insertStTrgtSrvrThresConfVm"  parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.insertStTrgtSrvrThresConfVm */
+		 INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		 (THRES_TRGT_SRVR_SEQ, IDX_ITM_ID, THRES_GRD_ID, TRGT_SRVR_CL_CD, THRES_CONF_VL, CONF_CMPR_STDR, CONF_CONT_CNT, CONF_TIME)
+		SELECT  DISTINCT B.VM_SEQ, #{idxItmId}, #{thresGrdId}, '01', #{thresConfVl}, #{confCmprStdr}, #{confContCnt}, NULL
+		 FROM
+		 	<if test='!allJobAuth'>
+		 		CM_JOB_USER A,
+		 	</if>
+		 		RC_VM B,
+		 		RC_VM_JOB C
+		 WHERE 1=1
+		 <if test='!allJobAuth'>
+		  	AND A.USER_ID = #{searchUserId}
+		  	AND  A.JOB_ID = C.JOB_ID
+		  </if>
+		  AND B.VM_SEQ = C.VM_SEQ
+		  <if test='institutionId !=null and !"".equals(institutionId)'>
+	  		AND B.INSTITUTION_ID = #{institutionId}
+	  	</if>
+	  	<if test='jobId !=null and !"".equals(jobId)'>
+	  		AND C.JOB_ID = #{jobId}
+	  	</if>
+	  	<if test='vmSeq !=null and !"".equals(vmSeq)'>
+	  		AND B.VM_SEQ = #{vmSeq}
+	  	</if>
+
+	</insert>
+	<insert id="insertStTrgtSrvrThresConfAx"  parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.insertStTrgtSrvrThresConfAx */
+		 INSERT INTO ST_TRGT_SRVR_THRES_CONF
+		 (THRES_TRGT_SRVR_SEQ, IDX_ITM_ID, THRES_GRD_ID, TRGT_SRVR_CL_CD, THRES_CONF_VL, CONF_CMPR_STDR, CONF_CONT_CNT, CONF_TIME)
+		SELECT  DISTINCT C.SERVC_SEQ, #{idxItmId}, #{thresGrdId}, '03', #{thresConfVl}, #{confCmprStdr}, #{confContCnt}, NULL
+		 FROM
+		 	<if test='!allJobAuth'>
+		 		CM_JOB_USER A,
+		 	</if>
+		 		RX_SERVC_AREA B INNER JOIN RX_SERVC C ON B.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+		 WHERE 1=1
+		  <if test='!allJobAuth'>
+		  	AND A.USER_ID = #{searchUserId}
+		  	AND  A.JOB_ID = B.JOB_ID
+		  </if>
+		  <if test='institutionId !=null and !"".equals(institutionId)'>
+	  		AND B.INSTITUTION_ID = #{institutionId}
+	  	 </if>
+	  	 <if test='jobId !=null and !"".equals(jobId)'>
+	  		AND B.JOB_ID = #{jobId}
+	  	</if>
+	  	<if test='servcSeq !=null and !"".equals(servcSeq)'>
+	  		AND C.SERVC_SEQ = #{servcSeq}
+	  	</if>
+
+	</insert>
+	<update id="updateStTrgtSrvrThresConf" parameterType="ncis.cmn.entity.StTrgtSrvrThresConf">
+	/* ncis.sql.cmn.stTrgtSrvrThresConf.updateStTrgtSrvrThresConf */
+		UPDATE ST_TRGT_SRVR_THRES_CONF
+		 SET
+			    TRGT_SRVR_CL_CD = #{trgtSrvrClCd}
+			  , THRES_CONF_VL	= #{ThresConfVl}
+			  , CONF_CMPR_STDR	= #{confCmprStdr}
+			  , CONF_CONT_CNT	= #{confContCnt}
+			  , CONF_TIME		= #{confTime}
+		WHERE THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}
+		AND  	IDX_ITM_ID		 = #{idxItmId}
+		AND 	THRES_GRD_ID	 = #{thresGrdId}
+	</update>
+
+	<update id="deleteStTrgtSrvrThresConf" parameterType="ncis.cmn.entity.StTrgtSrvrThresConf">
+	/* ncis.sql.cmn.stTrgtSrvrThresConf.deleteStTrgtSrvrThresConf */
+		DELETE FROM ST_TRGT_SRVR_THRES_CONF
+		WHERE THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}
+		AND  	IDX_ITM_ID		 = #{idxItmId}
+		AND 	THRES_GRD_ID	 = #{thresGrdId}
+	</update>
+	<update id="deleteStTrgtSrvrThresConfPm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.deleteStTrgtSrvrThresConfPm */
+		DELETE FROM ST_TRGT_SRVR_THRES_CONF X
+		WHERE TRGT_SRVR_CL_CD ='02'
+		AND EXISTS
+			(SELECT 1
+			FROM
+				<if test='!allRsrcPoolAuth'>
+					CM_RSRC_POOL_USER A,
+				</if>
+					RC_REGION B, RC_RSRC_POOL C, RC_ZONE D, RC_ZONE_NET_MATRIX E, RC_CLSTR F, RC_PM G , RC_NET I
+			 WHERE 1=1
+			 <if test='!allRsrcPoolAuth'>
+			  	AND  A.USER_ID = #{searchUserId}
+			  	AND  A.RSRC_POOL_ID = C.RSRC_POOL_ID
+			  </if>
+			  AND  B.REGION_ID = C.REGION_ID
+			  AND  C.ZONE_ID = D.ZONE_ID
+			  AND  E.ZONE_ID = D.ZONE_ID
+			  AND  E.NET_ID = C.NET_ID
+			  AND  I.NET_ID = C.NET_ID
+			  AND  C.RSRC_POOL_ID = F.RSRC_POOL_ID
+			  AND  G.CLSTR_SEQ = F.CLSTR_SEQ
+			  AND  G.PM_SEQ = X.THRES_TRGT_SRVR_SEQ
+			  <if test='regionId !=null and !"".equals(regionId)'>
+	 			AND B.REGION_ID =#{regionId}
+	 		 </if>
+			 <if test='zoneId !=null and !"".equals(zoneId)'>
+			 	AND D.ZONE_ID =#{zoneId}
+			 </if>
+			 <if test='netId !=null and !"".equals( netId )'>
+			 	AND E.NET_ID = #{netId}
+			 </if>
+			 <if test='rsrcPoolId !=null and !"".equals( rsrcPoolId )'>
+			 	AND C.RSRC_POOL_ID=#{rsrcPoolId}
+			 </if>
+			 <if test='clstrSeq !=null and !"".equals( clstrSeq )'>
+			 	AND F.CLSTR_SEQ = #{clstrSeq}
+			 </if>
+			 <if test='pmSeq !=null and !"".equals( pmSeq )'>
+			 	AND G.PM_SEQ=#{pmSeq}
+			 </if>
+			  )
+	</update>
+	<update id="deleteStTrgtSrvrThresConfVm" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.deleteStTrgtSrvrThresConfVm */
+		DELETE FROM ST_TRGT_SRVR_THRES_CONF X
+		WHERE TRGT_SRVR_CL_CD ='01'
+		AND EXISTS
+			(
+				SELECT 1
+				FROM
+					<if test='!allJobAuth'>
+						CM_JOB_USER A,
+					</if>
+					RC_VM B, RC_VM_JOB C
+				WHERE 1=1
+				<if test='!allJobAuth'>
+					AND A.JOB_ID = C.JOB_ID
+					AND A.USER_ID = #{searchUserId}
+				</if>
+				AND B.VM_SEQ = C.VM_SEQ
+				AND X.THRES_TRGT_SRVR_SEQ = B.VM_SEQ
+				<if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND B.INSTITUTION_ID = #{institutionId}
+			  	</if>
+			  	<if test='jobId !=null and !"".equals(jobId)'>
+			  		AND C.JOB_ID = #{jobId}
+			  	</if>
+			  	<if test='vmSeq !=null and !"".equals(vmSeq)'>
+			  		AND B.VM_Seq = #{vmSeq}
+			  	</if>
+			)
+	</update>
+	<update id="deleteStTrgtSrvrThresConfAx" parameterType="ncis.dsb.thrd.thrdConf.vo.PmThrdConfVo">
+		/* ncis.sql.cmn.stTrgtSrvrThresConf.deleteStTrgtSrvrThresConfAx */
+		DELETE FROM ST_TRGT_SRVR_THRES_CONF X
+		WHERE TRGT_SRVR_CL_CD ='03'
+		AND EXISTS
+			(
+				SELECT 1
+				FROM
+					<if test='!allJobAuth'>
+						CM_JOB_USER A,
+					</if>
+					RX_SERVC_AREA B INNER JOIN RX_SERVC C ON B.SERVC_AREA_SEQ = C.SERVC_AREA_SEQ
+				WHERE 1=1
+				<if test='!allJobAuth'>
+					AND A.JOB_ID = B.JOB_ID
+					AND A.USER_ID = #{searchUserId}
+				</if>
+				AND X.THRES_TRGT_SRVR_SEQ = C.SERVC_SEQ
+				<if test='institutionId !=null and !"".equals(institutionId)'>
+			  		AND B.INSTITUTION_ID = #{institutionId}
+			  	</if>
+			  	<if test='jobId !=null and !"".equals(jobId)'>
+			  		AND B.JOB_ID = #{jobId}
+			  	</if>
+			  	<if test='servcSeq !=null and !"".equals(servcSeq)'>
+			  		AND C.SERVC_SEQ = #{servcSeq}
+			  	</if>
+			)
+	</update>
+</mapper>

@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnIp">
+
+	<resultMap id="resultRnIp" type="ncis.cmn.entity.RnIp">
+        <result property="ipAddr"     column="IP_ADDR"/>  <!-- IP주소 -->
+        <result property="bndSeq"     column="BND_SEQ"/>  <!-- 대역SEQ -->
+        <result property="ipStatCd"     column="IP_STAT_CD"/>  <!-- IP상태코드 -->
+        <result property="asgnDt"     column="ASGN_DT"/>  <!-- 할당일자 -->
+        <result property="chngDt"     column="CHNG_DT"/>  <!-- 변경일자 -->
+        <result property="vipYn"     column="VIP_YN"/>  <!-- VIP여부 -->
+        <result property="withdrawDt"     column="WITHDRAW_DT"/>  <!-- 회수일자 -->
+        <result property="natIpAddr"     column="NAT_IP_ADDR"/>  <!-- NAT_IP주소 -->
+        <result property="rmk"     column="RMK"/>  <!-- 비고 -->
+        <result property="netwkIntfcSeq"     column="NETWK_INTFC_SEQ"/>  <!-- 네트워크인터페이스SEQ -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+	</resultMap>
+
+	<!-- IP 등록 -->
+	<insert id="insertRnIp">
+	/* ncis.sql.cmn.rnIp.insertRnIp */
+	INSERT INTO RN_IP (
+	             IP_ADDR  /* IP주소 */
+	           , BND_SEQ  /* 대역SEQ */
+	           , IP_STAT_CD  /* IP상태코드 */
+	           , VIP_YN  /* VIP여부 */
+	           , NAT_IP_ADDR  /* NAT_IP주소 */
+	           , RMK  /* 비고 */
+	           , UPDT_USER_ID  /* 수정자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	) VALUES (
+			   #{ipAddr}::inet /* IP주소 */
+	         , #{bndSeq}  /* 대역SEQ */
+	         , #{ipStatCd}  /* IP상태코드 */
+	         , #{vipYn}  /* VIP여부 */
+	         , #{natIpAddr}  /* NAT_IP주소 */
+	         , #{rmk}  /* 비고 */
+	         , #{updtUserId}  /* 수정자ID */
+	         , NOW()  /* 수정일시 */
+	)
+	</insert>
+
+	<!-- IP 수정 -->
+	<update id="updateRnIp">
+	/* ncis.sql.cmn.rnIp.updateRnIp */
+	UPDATE RN_IP
+	         SET IP_ADDR = #{ipAddr}::inet /* IP주소 */
+	           , BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	           , IP_STAT_CD = #{ipStatCd}  /* IP상태코드 */
+	           , ASGN_DT = CURRENT_DATE  /* 할당일자 */
+	           , CHNG_DT = CURRENT_DATE  /* 변경일자 */
+	           , VIP_YN = #{vipYn}  /* VIP여부 */
+	           , WITHDRAW_DT = CURRENT_DATE  /* 회수일자 */
+	           , NAT_IP_ADDR = #{natIpAddr}  /* NAT_IP주소 */
+	           , RMK = #{rmk}  /* 비고 */
+	           , NETWK_INTFC_SEQ = #{netwkIntfcSeq}  /* 네트워크인터페이스SEQ */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = NOW()  /* 수정일시 */
+         WHERE IP_ADDR = #{ipAddr}::inet  /* IP주소 */
+         AND BND_SEQ = #{bndSeq}
+	</update>
+
+	<!-- IP 삭제 -->
+	<delete id="deleteRnIp">
+	/* ncis.sql.cmn.rnIp.deleteRnIp */
+	DELETE FROM RN_IP
+         WHERE IP_ADDR = #{ipAddr}::inet AND BND_SEQ = #{bndSeq} /* IP주소 */
+	</delete>
+
+	<!-- IP 할당,미할당,블락 정보저장 -->
+	<update id="updateIpList">
+	/* ncis.sql.cmn.rnIp.updateIpList */
+	UPDATE RN_IP
+         SET
+			<if test="ipStatCd != null">
+			IP_STAT_CD = #{ipStatCd},  /* IP상태코드 */
+				<choose>
+					<when test="ipStatCd == '01'">
+						ASGN_DT = CURRENT_DATE,  /* 할당일자 */
+						WITHDRAW_DT = null,  /* 회수일자 */
+					</when>
+					<when test="ipStatCd == '02'">
+						WITHDRAW_DT = CURRENT_DATE,  /* 회수일자 */
+						ASGN_DT = null,  /* 할당일자 */
+					</when>
+					<otherwise>
+						CHNG_DT = CURRENT_DATE,  /* 변경일자 */
+					</otherwise>
+				</choose>
+			</if>
+			<if test="vipYn != null">
+			VIP_YN = #{vipYn},  /* VIP여부 */
+			</if>
+			<if test="natIpAddr != null">
+			NAT_IP_ADDR = #{natIpAddr},  /* NAT_IP주소 */
+			</if>
+			<if test="rmk != null">
+			RMK = #{rmk},  /* 비고 */
+			</if>
+			<if test="netwkIntfcSeq != null">
+			NETWK_INTFC_SEQ = #{netwkIntfcSeq},  /* 비고 */
+			</if>
+			UPDT_USER_ID = #{updtUserId},  /* 수정자ID */
+			UPDT_DTTM = NOW()  /* 수정일시 */
+         WHERE IP_ADDR = #{ipAddr}::inet  /* IP주소 */
+         AND BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	</update>
+
+	<!-- IP 블락해제 정보저장 -->
+	<update id="updateIpListByBlkToUnasgn">
+	/* ncis.sql.cmn.rnIp.updateIpListByBlkToUnasgn */
+	UPDATE RN_IP
+         SET
+			<if test="ipStatCd != null">
+				IP_STAT_CD = #{ipStatCd},  /* IP상태코드 */
+				WITHDRAW_DT = CURRENT_DATE,  /* 회수일자 */
+				ASGN_DT = null,  /* 할당일자 */
+				CHNG_DT = CURRENT_DATE,  /* 변경일자 */
+			</if>
+			<if test="vipYn != null">
+				VIP_YN = #{vipYn},  /* VIP여부 */
+			</if>
+			<if test="natIpAddr != null">
+				NAT_IP_ADDR = #{natIpAddr},  /* NAT_IP주소 */
+			</if>
+			<if test="rmk != null">
+				RMK = #{rmk},  /* 비고 */
+			</if>
+			<if test="netwkIntfcSeq != null">
+				NETWK_INTFC_SEQ = #{netwkIntfcSeq},  /* 비고 */
+			</if>
+				UPDT_USER_ID = #{updtUserId},  /* 수정자ID */
+				UPDT_DTTM = NOW()  /* 수정일시 */
+         WHERE IP_ADDR = #{ipAddr}::inet  /* IP주소 */
+         AND BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	</update>
+
+	<!-- 동기화 -->
+	<update id="updateIpSyncronize">
+	/* ncis.sql.cmn.rnIp.updateIpSyncronize */
+	UPDATE RN_IP A
+   	   SET (IP_STAT_CD, NETWK_INTFC_SEQ, CHNG_DT, ASGN_DT, WITHDRAW_DT) = (
+			SELECT
+			   	   (CASE WHEN E.NETWK_INTFC_NM IS NULL THEN '02'
+			         	 WHEN E.NETWK_INTFC_NM IS NOT NULL THEN '01'
+			         END
+			       ) AS IP_STAT_CD,
+			   	   E.NETWK_INTFC_SEQ,
+		       	   CURRENT_DATE,
+		           (CASE WHEN E.NETWK_INTFC_NM IS NOT NULL AND IP_STAT_CD = '01' THEN ASGN_DT WHEN E.NETWK_INTFC_NM IS NOT NULL THEN CURRENT_DATE END ) AS ASGN_DT,
+		           (CASE WHEN E.NETWK_INTFC_NM IS NULL AND IP_STAT_CD = '02' THEN WITHDRAW_DT WHEN E.NETWK_INTFC_NM IS NULL THEN CURRENT_DATE END ) AS WITHDRAW_DT
+       	      FROM RN_IP C
+    	INNER JOIN RN_IP_BND D
+            	ON C.BND_SEQ = D.BND_SEQ
+   	 	 LEFT JOIN (
+			  		SELECT B.VM_SEQ, E.VM_ID, B.NETWK_INTFC_SEQ, B.UUID, B.IP_ADDR, B.NIC_PRPOS_CD, NULL NETWK_INTFC_ID, B.NETWK_INTFC_NM, E.INSTITUTION_ID
+		    	 	  FROM RC_NETWK_INTFC B
+				         , RC_VM E
+			    	 WHERE B.DEL_YN = 'N'
+			           AND B.VM_SEQ = E.VM_SEQ
+				  	   AND E.DEL_YN = 'N'
+				       AND B.UUID IS NOT NULL
+				       AND B.NIC_PRPOS_CD IS NOT NULL
+		         UNION ALL
+			   		SELECT NULL VM_SEQ, C.VM_ID, NULL NETWK_INTFC_SEQ, NULL UUID, A.IP_ADDR, A.NIC_PRPOS_CD, NETWK_INTFC_ID, NETWK_INTFC_NM, C.USE_GV_DPRT_ID
+			     	  FROM RR_NETWK_INTFC_REQ_LIST A
+				         , RR_RSRC_REQ B
+				         , RR_RSRC_REQ_DTL_VM C
+			    	 WHERE A.RSRC_REQ_NO = B.RSRC_REQ_NO
+			      	   AND A.RSRC_REQ_NO = C.RSRC_REQ_NO
+			           AND A.RSRC_REQ_SEQ = C.RSRC_REQ_SEQ
+			      	   AND B.RSRC_REQ_PRCSS_STAT_CD = '02'
+			      	   AND B.DEL_YN = 'N'
+		          ORDER BY VM_SEQ NULLS LAST, VM_ID, NETWK_INTFC_NM
+             	   ) E
+		  		ON C.IP_ADDR = E.IP_ADDR::inet
+		       AND EXISTS (
+					   	   SELECT 1
+					         FROM RN_IP_BND_PRPOS X
+					        WHERE C.BND_SEQ = X.BND_SEQ
+						      AND E.NIC_PRPOS_CD = TO_CHAR(FLOOR(TO_NUMBER(X.PRPOS_CL_CD,'FM99999')/4)+1,'FM09')
+					      )
+		   	   AND (EXISTS (
+					   	   SELECT 1
+					         FROM RN_IP_BND_INSTITUTION X
+					        WHERE X.INSTITUTION_ID = E.INSTITUTION_ID
+					          AND D.BND_SEQ = X.BND_SEQ
+					      )
+					      OR  C.NETWK_INTFC_SEQ = E.NETWK_INTFC_SEQ
+					      )
+			   WHERE A.BND_SEQ = C.BND_SEQ
+			     AND A.IP_ADDR = C.IP_ADDR
+	     	 LIMIT 1
+           ),
+		   UPDT_USER_ID = #{updtUserId}
+	 WHERE A.IP_STAT_CD != '03'  /* Block인 경우 동기화 제외*/
+	 <if test='checkBndIds != null and !checkBndIds.isEmpty()'>
+					AND A.BND_SEQ IN
+					(
+					<foreach collection="checkBndIds" item="bndSeq" open="" close="" separator=", ">
+					#{bndSeq}
+					</foreach>
+					)
+</if>
+	</update>
+
+	<delete id="deleteIpBndWidth" parameterType="java.util.HashMap">
+	DELETE FROM RN_IP
+	WHERE BND_SEQ = #{bndSeq}
+	</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 동기화 -->
+<!-- 	<update id="updateIpSyncronize"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 		SET -->
+<!-- 			IP_STAT_CD = #{ipStatCd},  /* IP상태코드 */ -->
+<!-- 			ASGN_DT = CURRENT_DATE,  /* 할당일자 */ -->
+<!-- 			CHNG_DT = CURRENT_DATE,  /* 변경일자 */ -->
+<!-- 			WITHDRAW_DT = CURRENT_DATE,  /* 회수일자 */ -->
+<!-- 			UPDT_USER_ID = #{updtUserId},  /* 수정자ID */ -->
+<!-- 			UPDT_DTTM = NOW()  /* 수정일시 */ -->
+
+<!-- 		WHERE IP_ADDR = #{ipAddr}  /* IP주소 */ -->
+<!-- 	</update> -->
+<!--  동기화 Type1 -->
+<!-- 	<update id="updateIpVoType1"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 		SET -->
+<!-- 			IP_STAT_CD = '02'  /* IP상태코드 */ -->
+<!-- 			, CHNG_DT = CURRENT_DATE  /* 변경일자 */ -->
+<!-- 			, WITHDRAW_DT = CURRENT_DATE  /* 회수일자 */ -->
+<!-- 			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */ -->
+<!-- 			, UPDT_DTTM = NOW()  /* 수정일시 */ -->
+<!--          WHERE IP_ADDR = #{ipAddr}  /* IP주소 */ -->
+<!-- 	</update> -->
+
+<!--  동기화 Type2 -->
+<!-- 	<update id="updateIpVoType2"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 		SET -->
+<!-- 			IP_STAT_CD = '01'  /* IP상태코드 */ -->
+<!-- 			, ASGN_DT = CURRENT_DATE  /* 할당일자 */ -->
+<!-- 			, CHNG_DT = CURRENT_DATE  /* 변경일자 */ -->
+<!-- 			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */ -->
+<!-- 			, UPDT_DTTM = NOW()  /* 수정일시 */ -->
+<!-- 		WHERE -->
+<!-- 			IP_ADDR = #{ipAddr}  /* IP주소 */ -->
+<!-- 	</update> -->
+
+
+<!--  할당해제, 블락해제 -->
+<!-- 	<update id="updateUnAsgnIps"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 		SET -->
+<!-- 			IP_STAT_CD = '02' -->
+<!-- 			, CHNG_DT = CURRENT_DATE  /* 변경일자 */ -->
+<!-- 			, WITHDRAW_DT = CURRENT_DATE  /* 회수일자 */ -->
+<!-- 			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */ -->
+<!-- 			, UPDT_DTTM = NOW()  /* 수정일시 */ -->
+<!-- 		WHERE -->
+<!-- 			IP_ADDR = #{ipAddr} -->
+<!-- 	</update> -->
+
+<!--  수동할당 -->
+<!-- 	<update id="updateAsgnIps"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 			SET -->
+<!-- 				IP_STAT_CD = '01' -->
+<!-- 				, CHNG_DT = #{chngDt}  /* 변경일자 */ -->
+<!-- 				, ASGN_DT = #{chngDt}  /* 할당일자 */ -->
+<!-- 				, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */ -->
+<!-- 				, UPDT_DTTM = NOW()  /* 수정일시 */ -->
+<!-- 			WHERE -->
+<!-- 				IP_ADDR = #{ipAddr} -->
+<!-- 	</update> -->
+
+<!--  블락설정 -->
+<!-- 	<update id="updateBlkIps"> -->
+<!-- 	UPDATE RN_IP -->
+<!-- 			SET -->
+<!-- 				IP_STAT_CD = '03' -->
+<!-- 				, CHNG_DT = #{chngDt}  /* 변경일자 */ -->
+<!-- 				, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */ -->
+<!-- 				, UPDT_DTTM = NOW()  /* 수정일시 */ -->
+<!-- 			WHERE -->
+<!-- 				IP_ADDR = #{ipAddr} -->
+<!-- 	</update> -->
+</mapper>

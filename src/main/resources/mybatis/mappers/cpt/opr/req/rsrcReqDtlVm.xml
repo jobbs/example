@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.vm">
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqDtlVmVo" id="resultRsrcReqDtlVmVo">
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rsrcReqSeq" column="RSRC_REQ_SEQ"/>
+		<result property="rsrcReqPrcssStatCd" column="RSRC_REQ_PRCSS_STAT_CD"/>
+		<result property="rsrcReqPrcssStatNm" column="RSRC_REQ_PRCSS_STAT_NM"/>
+		<result property="sbjct" column="SBJCT"/>
+		<result property="ticktNo" column="TICKT_NO"/>
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rsrcReqTyCd" column="RSRC_REQ_TY_CD"/>
+		<result property="rsrcReqTyNm" column="RSRC_REQ_TY_NM"/>
+		<result property="reqInstitutionId" column="REQ_INSTITUTION_ID"/>
+		<result property="reqInstitutionNm" column="REQ_INSTITUTION_NM"/>
+		<result property="rsrcReqUsrId" column="RSRC_REQ_USER_ID"/>
+		<result property="rsrcReqUsrNm" column="RSRC_REQ_USER_NM"/>
+		<result property="rsrcReqDttm" column="RSRC_REQ_DTTM"/>
+		<result property="comptDttm" column="COMPT_DTTM"/>
+		<result property="rsrcReqDtlPrcssStatCd" column="RSRC_REQ_DTL_PRCSS_STAT_CD"/>
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/>
+		<result property="exeUserId" column="EXE_USER_ID"/>
+		<result property="exeDttm" column="EXE_DTTM"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="zoneId" column="ZONE_ID"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netId" column="NET_ID"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="uuid" column="UUID"/>
+		<result property="rsrcReqTyCd" column="RSRC_REQ_TY_CD"/>
+		<result property="vmReqTyCd" column="VM_REQ_TY_CD"/>
+		<result property="vmId" column="VM_ID"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="hstNm" column="HST_NM"/>
+		<result property="prposClCd" column="PRPOS_CL_CD"/>
+		<result property="prposNm" column="PRPOS_NM"/>
+		<result property="useGvDprtId" column="USE_GV_DPRT_ID"/>
+		<result property="useGvDprtNm" column="USE_GV_DPRT_NM"/>
+		<result property="useJobId" column="USE_JOB_ID"/>
+		<result property="useJobNm" column="USE_JOB_NM"/>
+		<result property="vrCnvrSwTyCd" column="VR_CNVR_SW_TY_CD"/>
+		<result property="os" column="OS"/>
+		<result property="clstrSeq" column="CLSTR_SEQ"/>
+		<result property="pmSeq" column="PM_SEQ"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="ipAddr" column="IP_ADDR"/>
+		<result property="osTyCd" column="OS_TY_CD"/>
+		<result property="osNm" column="OS_NM"/>
+		<result property="swId" column="SW_ID"/>
+		<result property="servcStrtDt" column="SERVC_STRT_DT"/>
+		<result property="servcEndDt" column="SERVC_END_DT"/>
+		<result property="servcDtNm" column="SERVC_DT_NM"/>
+		<result property="reqCpuVcoreQty" column="REQ_CPU_VCORE_QTY"/>
+		<result property="reqMemAsgnCapa" column="REQ_MEM_ASGN_CAPA"/>
+		<result property="reqVrDskId" column="REQ_VR_DSK_ID"/>
+		<result property="strgAsgnCapa" column="STRG_ASGN_CAPA"/>
+		<result property="atchFileId" column="ATCH_FILE_ID"/>
+		<result property="rmk" column="RMK"/>
+		<result property="reqSpecSeq" column="REQ_SPEC_SEQ"/>
+		<result property="vmChngClCd" column="V_SRVR_CHNG_CL_CD"/>
+		<result property="chngSpecSeq" column="CHNG_SPEC_SEQ"/>
+		<result property="chngPreCpuVcoreQty" column="CHNG_PRE_CPU_VCORE_QTY"/>
+		<result property="chngPreMemAsgnCapa" column="CHNG_PRE_MEM_ASGN_CAPA"/>
+		<result property="chngPreSpecSeq" column="CHNG_PRE_SPEC_SEQ"/>
+		<result property="strgAsgnReqCapa" column="STRG_ASGN_REQ_CAPA"/>
+		<result property="asgnVrDskId" column="ASGN_VR_DSK_ID"/>
+		<result property="shareYn" column="SHARE_YN"/>
+		<result property="haGrpId" column="HA_GRP_ID"/>
+		<result property="tmplatNm" column="TMPLAT_NM"/>
+		<result property="tmplatSeq" column="TMPLAT_SEQ"/>
+		<result property="chngPreCpuVcoreQty" column="CHNG_PRE_CPU_VCORE_QTY"/>
+		<result property="chngPreMemAsgnCapa" column="CHNG_PRE_MEM_ASGN_CAPA"/>
+		<result property="chngReqCpuVcoreQty" column="CHNG_REQ_CPU_VCORE_QTY"/>
+		<result property="chngReqMemAsgnCapa" column="CHNG_REQ_MEM_ASGN_CAPA"/>
+		<result property="chngReqStrgAsgnCapa" column="CHNG_REQ_STRG_ASGN_CAPA"/>
+		<result property="chngPreStrgAsgnCapa" column="CHNG_PRE_STRG_ASGN_CAPA"/>
+		<result property="vmStatNm" column="VM_STAT_NM"/>
+		<result property="pmNm" column="PM_NM"/>
+		<result property="reqVrStrgId" column="REQ_VR_STRG_ID"/>
+		<result property="testYn" column="TEST_YN"/>
+		<result property="exeUserNm" column="EXE_USER_NM"/>
+		<result property="vrCnvrSwTyNm" column="VR_CNVR_SW_TY_NM"/>
+		<result property="swTyNm" column="SW_TY_NM"/>
+		<result property="osTyNm" column="OS_TY_NM"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="clstrPrposClCd" column="CLSTR_PRPOS_CL_CD"/>
+		<result property="clstrPrposClNm" column="CLSTR_PRPOS_CL_NM"/>
+		<result property="clstrNm" column="CLSTR_NM"/>
+		<result property="reqStrgDmnNm" column="STRG_DMN_NM"/>
+		<result property="reqStrgDmnSeq" column="REQ_STRG_DMN_SEQ"/>
+		<result property="netClCd" column="NET_CL_CD"/>
+		<result property="vmSeq" column="VM_SEQ"/>
+		<result property="exeStatCd" column="EXE_STAT_CD"/>
+		<result property="reqMaxCpuVcoreQty" column="REQ_MAX_CPU_VCORE_QTY"/>
+		<result property="reqMinCpuVcoreQty" column="REQ_MIN_CPU_VCORE_QTY"/>
+		<result property="reqMaxMemAsgnCapa" column="REQ_MAX_MEM_ASGN_CAPA"/>
+		<result property="reqMinMemAsgnCapa" column="REQ_MIN_MEM_ASGN_CAPA"/>
+		<result property="reqEntMaxVl" column="REQ_ENT_MAX_VL"/>
+		<result property="reqEntDfltVl" column="REQ_ENT_DFLT_VL"/>
+		<result property="reqEntMinVl" column="REQ_ENT_MIN_VL"/>
+		<result property="vmStopYn" column="VM_STOP_YN"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+		<result property="reqStrgAsgnPolicyCd" column="REQ_STRG_ASGN_POLICY_CD"/>
+	</resultMap>
+
+
+	<resultMap type="ncis.cpt.opr.ip.vo.IpVo" id="resultAutoIpVo">
+		<result property="bndSeq" column="IP_BND_SEQ"/>
+		<result property="ipAddr" column="IP_ADDR"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqNetwkIntfcVo" id="resultRsrcReqNetwkIntfcVo">
+		<result property="netwkIntfcId" column="NETWK_INTFC_ID"/>
+		<result property="ipBndSeq" column="IP_BND_SEQ"/>
+		<result property="ipAddr" column="IP_ADDR"/>
+		<result property="ipAutoAsgnYn" column="IP_AUTO_ASGN_YN"/>
+		<result property="nicPrposCd" column="NIC_PRPOS_CD"/>
+		<result property="natYn" column="NAT_YN"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqDtlVmVo" id="resultClstrVo">
+		<result property="clstrSeq" column="CLSTR_SEQ"/>
+		<result property="clstrNm" column="CLSTR_NM"/>
+		<result property="uuid" column="UUID"/>
+		<result property="prposClCd" column="PRPOS_CL_CD"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.strg.vo.RsrcPoolVrStrgVo" id="resultStrgDmnListVo">
+		<result property="strgDmnNm" column="STRG_DMN_NM"/>
+		<result property="strgDmnSeq" column="STRG_DMN_SEQ"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqDtlVmVo" id="resultHaCompListVo">
+		<result property="haGrpNm" column="HA_GRP_NM"/>
+		<result property="haGrpCd" column="HA_GRP_CD"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="rsrcReqNo" column="RSRC_REQ_NO"/>
+		<result property="rsrcReqSeq" column="RSRC_REQ_SEQ"/>
+		<result property="exeStatCd" column="EXE_STAT_CD"/>
+		<result property="exeStatNm" column="EXE_STAT_NM"/>
+		<result property="haStatNm" column="HA_STAT_NM"/>
+		<result property="procssStatCd" column="PROCSS_STAT_CD"/>
+		<result property="procssInstSeq" column="PROCSS_INST_SEQ"/>
+		<result property="rsrcReqPrcssStatCd" column="RSRC_REQ_PRCSS_STAT_CD"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+	</resultMap>
+
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					/* 운영자 권한  수정*/
+					AND TBL1.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+				</when>
+				<otherwise>
+					/* 담당자 권한 수정*/
+					AND TBL1.RSRC_REQ_USER_ID = #{searchUserId}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<if test = "rsrcReqNo != null and rsrcReqNo != ''">
+			TBL1.RSRC_REQ_NO =  #{rsrcReqNo}		/* 요청 번호 */
+		</if>
+	</sql>
+
+
+	<!-- 가상서버 생성 상세정보 조회 -->
+	<select id="selectRsrcReqVmCre" resultMap="resultRsrcReqDtlVmVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectRsrcReqVmCre */
+			SELECT
+				TBL1.RSRC_REQ_NO
+				,TBL1.RSRC_REQ_USER_ID
+				,TO_CHAR(TBL1.RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+				,TBL1.RSRC_REQ_PRCSS_STAT_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND GRP_CD='007' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND GRP_CD='008' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+				,TBL1.REQ_INSTITUTION_ID
+				,TBL1.REQ_DEPT_ID
+				,TBL1.SBJCT
+				,TBL1.TICKT_NO
+				,TBL1.REGION_ID
+				,TBL1.TEST_YN
+				,TBL1.LINK_YN
+				,TO_CHAR(TBL1.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+				,TBL1.REG_USER_ID
+				,TBL1.RSRC_REQ_TY_CD
+				,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+				,TBL2.RSRC_REQ_SEQ
+				,TBL2.USE_GV_DPRT_ID
+				,(SELECT MAX(JOB_NM) FROM CM_JOB WHERE JOB_ID = TBL2.USE_JOB_ID) USE_JOB_NM
+				,TBL2.USE_JOB_ID
+				,(SELECT MAX(INSTITUTION_NM) FROM CM_INSTITUTION WHERE INSTITUTION_ID = TBL2.USE_GV_DPRT_ID) USE_GV_DPRT_NM
+				,TBL2.PRPOS_CL_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '118' AND GRP_CD='019' AND CD = TBL2.PRPOS_CL_CD) PRPOS_NM
+				,TBL2.SERVC_STRT_DT
+				,TBL2.SERVC_END_DT
+				,CASE WHEN SERVC_STRT_DT IS NULL THEN '영구'
+		     		  WHEN SERVC_STRT_DT IS NOT NULL THEN TO_CHAR(SERVC_STRT_DT, 'YYYY-MM-DD') ||' ~ '||TO_CHAR(SERVC_END_DT, 'YYYY-MM-DD') END SERVC_DT_NM
+				,TBL2.VM_NM
+				,TBL2.VM_ID
+				,(SELECT REGION_NM FROM RC_REGION WHERE REGION_ID = coalesce( TBL5.REGION_ID, TBL1.REGION_ID) ) REGION_NM
+			  ,(SELECT ZONE_NM FROM RC_ZONE WHERE ZONE_ID = TBL5.ZONE_ID) ZONE_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = 'NETCD' AND CD = TBL2.NET_CL_CD) AS NET_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '100' AND PARENT_GRP_CD = '001' AND CD = TBL2.VR_CNVR_SW_TY_CD) VR_CNVR_SW_TY_NM
+				,(SELECT SW_NM FROM RR_SW WHERE SW_SEQ = TBL2.SW_SEQ) SW_TY_NM
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '102' AND GRP_CD ='003' AND CD = TBL2.OS_TY_CD) AS OS_NM
+				,TBL2.OS_TY_CD
+				,TBL2.VR_CNVR_SW_TY_CD
+				,TBL2.HST_NM
+				,TBL2.REQ_SPEC_SEQ
+				,TBL2.RMK
+				,TBL2.NET_ID
+				,TBL2.CLSTR_SEQ
+				,TBL2.PM_SEQ
+				,TBL2.STRG_ASGN_CAPA
+				,TBL2.ASGN_VR_DSK_ID
+				,TBL2.REQ_CPU_VCORE_QTY
+				,TBL2.REQ_MEM_ASGN_CAPA
+				,TBL2.PRPOS_CL_CD
+				,TBL2.RSRC_REQ_PRCSS_STAT_CD RSRC_REQ_DTL_PRCSS_STAT_CD
+				,TO_CHAR(TBL2.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+				,(SELECT PM_NM FROM RC_PM WHERE PM_SEQ=TBL2.PM_SEQ ) PM_NM
+				,TBL2.PROCSS_INST_SEQ
+				,TBL2.CLSTR_PRPOS_CL_CD
+				,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '101' AND CD = TBL2.CLSTR_PRPOS_CL_CD) AS CLSTR_PRPOS_CL_NM
+				,TBL2.NET_CL_CD
+				,TBL2.VM_COMP_ID
+				,TBL3.USER_NM RSRC_REQ_USER_NM
+				,TBL3.MOBILE
+				,TBL3.INSTITUTION_NM REQ_INSTITUTION_NM
+				,TBL3.ORGNZT_NM REQ_DEPT_NM
+				,TBL3.EMAIL
+				,(SELECT MAX(HA_GRP_ID) FROM RR_HA_COMP WHERE RSRC_REQ_NO=TBL1.RSRC_REQ_NO AND RSRC_REQ_SEQ = TBL2.RSRC_REQ_SEQ) HA_GRP_ID
+				,TBL4.TMPLAT_SEQ
+				,TBL4.TMPLAT_NM
+				,TBL5.RSRC_POOL_ID
+				,TBL5.ZONE_ID
+				,TBL5.NET_ID
+				,TBL5.RSRC_POOL_NM RSRC_POOL_NM
+				,TBL6.CLSTR_NM
+				,TBL7.STRG_DMN_NM
+				,TBL2.VM_SEQ
+				,TBL2.UUID
+				,TBL2.EXE_STAT_CD
+				,TBL2.REQ_MAX_CPU_VCORE_QTY
+				,TBL2.REQ_MIN_CPU_VCORE_QTY
+				,TBL2.REQ_MAX_MEM_ASGN_CAPA
+				,TBL2.REQ_MIN_MEM_ASGN_CAPA
+				,TBL2.REQ_ENT_MAX_VL
+				,TBL2.REQ_ENT_DFLT_VL
+				,TBL2.REQ_ENT_MIN_VL
+				,COALESCE(TBL2.VM_STOP_YN, 'N') AS VM_STOP_YN
+				FROM
+				RR_RSRC_REQ TBL1
+				INNER JOIN
+				RR_RSRC_REQ_DTL_VM TBL2
+				ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+				INNER JOIN
+				CM_USR TBL3
+				ON TBL1.RSRC_REQ_USER_ID = TBL3.USER_ID
+				LEFT OUTER JOIN RR_TMPLAT TBL4
+				ON TBL2.TMPLAT_SEQ = 	TBL4.TMPLAT_SEQ
+				LEFT OUTER JOIN RC_RSRC_POOL TBL5
+				ON TBL4.RSRC_POOL_ID = TBL5.RSRC_POOL_ID
+				LEFT OUTER JOIN RC_CLSTR TBL6
+				ON TBL2.CLSTR_SEQ = TBL6.CLSTR_SEQ
+				LEFT OUTER JOIN RS_VR_STRG TBL7
+				ON TBL2.REQ_STRG_DMN_SEQ = TBL7.STRG_DMN_SEQ
+
+				<trim prefix="WHERE" prefixOverrides="AND | OR">
+					<include refid="search"/>
+					<include refid="validateAuth"/>
+				</trim>
+	</select>
+
+	<!-- 가상서버 생성 네트워크 인터페이스 정보 조회 -->
+	<select id="selectRsrcReqNetwkIntfcList" parameterType="java.util.HashMap" resultMap="resultRsrcReqNetwkIntfcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectRsrcReqNetwkIntfcList */
+		SELECT
+			CD_NM AS NETWK_INTFC_ID
+			,COALESCE(TBL2.IP_ADDR,'') AS IP_ADDR
+			,COALESCE(TBL2.IP_BND_SEQ, 0) AS IP_BND_SEQ
+			,COALESCE(TBL2.IP_AUTO_ASGN_YN, 'N') AS IP_AUTO_ASGN_YN
+			,CD AS NIC_PRPOS_CD
+			,COALESCE(TBL2.NAT_YN,'N') AS NAT_YN
+		FROM CM_CODE TBL1
+		LEFT OUTER JOIN RR_NETWK_INTFC_REQ_LIST TBL2
+		ON TBL1.CD = TBL2.NIC_PRPOS_CD
+		AND TBL2.RSRC_REQ_NO = #{rsrcReqNo}
+		WHERE TBL1.PARENT_CD = '128'
+		<if test="addHB != null and addHB == 'N'.toString()">
+			AND TBL1.CD NOT IN(SELECT CASE WHEN COUNT(RSRC_REQ_NO) = 0 THEN '03'
+			WHEN COUNT(RSRC_REQ_NO) > 0 THEN '' END AS CD FROM RR_HA_COMP WHERE RSRC_REQ_NO = #{rsrcReqNo})
+		</if>
+	</select>
+
+	<!-- 가상서버 생성요청 삭제시 네트워크 인터페이스 정보 조회 -->
+	<select id="selectCancelReqNetwkIntfcList" resultMap="resultRsrcReqNetwkIntfcVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectCancelReqNetwkIntfcList */
+		SELECT NETWK_INTFC_ID ,IP_BND_SEQ, IP_ADDR , IP_AUTO_ASGN_YN , NIC_PRPOS_CD , NAT_YN
+		FROM RR_NETWK_INTFC_REQ_LIST
+		WHERE RSRC_REQ_NO =  #{rsrcReqNo}
+	</select>
+
+	<!-- 가상서버 생성 클러스터정보 조회 -->
+	<select id="selectClstrList" resultMap="resultClstrVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectClstrList */
+		SELECT
+			TBL1.CLSTR_SEQ
+			, TBL1.CLSTR_NM
+			, TBL1.UUID
+			, TBL2.PRPOS_CL_CD
+		FROM RC_CLSTR TBL1
+		INNER JOIN RC_CLSTR_PRPOS TBL2
+		ON TBL1.CLSTR_SEQ = TBL2.CLSTR_SEQ
+		WHERE TBL1.RSRC_POOL_ID = #{rsrcPoolId}
+		AND TBL1.DEL_YN = 'N'
+		AND TBL1.USE_YN = 'Y'
+		ORDER BY UPPER(CLSTR_NM)
+	</select>
+
+	<!-- 가상서버 생성 템플릿 진행여부 조회 -->
+	<select id="selectTmplatVmCreYN" resultType="String">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectTmplatVmCreYN */
+		SELECT COALESCE(VM_CRE_PRCSS_YN,'N') VM_CRE_PRCSS_YN
+		FROM RR_TMPLAT
+		WHERE TMPLAT_SEQ = #{tmplatSeq}
+	</select>
+
+	<!--
+		가상서버 생성 자동IP 조회
+		- 해당 센터, 망, 부처에 해당되는 IP대역정보에서 IP상태가 미할당이고, 해당되는 용도의 IP를 조회 후
+			회수된 정보가 없는 IP를 우선순위로 1건을 조회한다.
+			* 용도는 해당 가상서버의 용도에 대해 NIC유형에 맞는 IP대역용도임 (관계설정을 위해 VAR_VL2, VAR_VL4로 제어)
+			* NAT 여부가 Y일경우 NAT IP 주소 셋팅
+	-->
+	<select id="selectAutoIp" resultMap="resultAutoIpVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectAutoIp */
+	 	SELECT
+	 		CASE WHEN #{natYn} ='N' THEN host(TBL2.IP_ADDR)
+						 ELSE TBL2.NAT_IP_ADDR
+						 END IP_ADDR , TBL2.BND_SEQ
+	 		FROM
+			RN_IP_BND TBL1
+			INNER JOIN RN_IP TBL2
+			ON TBL1.BND_SEQ = TBL2.BND_SEQ
+			AND TBL2.IP_STAT_CD = '02'
+			INNER JOIN RN_IP_BND_PRPOS TBL3
+			ON TBL1.BND_SEQ = TBL3.BND_SEQ
+			AND TBL3.PRPOS_CL_CD IN
+				(SELECT CD FROM CM_CODE WHERE PARENT_CD = '104'
+					AND VAR_VL2 = #{prposClCd}
+					AND VAR_VL4 = #{nicPrposCd})
+			INNER JOIN RN_IP_BND_INSTITUTION TBL4
+			ON TBL1.BND_SEQ = TBL4.BND_SEQ
+			WHERE TBL1.REGION_ID = #{regionId}
+			AND TBL1.NET_CL_CD = #{netClCd}
+			AND TBL4.INSTITUTION_ID = #{useGvDprtId}
+			AND TBL2.VIP_YN = 'N'
+			ORDER BY TBL2.WITHDRAW_DT DESC
+			LIMIT 1
+	</select>
+
+	<!-- 가상 시위치 네트워크 아이디 수량 조회 -->
+	<select id="selectVrSwtchNetwkId" resultType="Integer">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectVrSwtchNetwkId */
+	 	SELECT
+			COUNT(*) CNT
+		FROM
+		(
+			SELECT
+				BND_SEQ
+			FROM RN_IP
+			WHERE 1=1
+			<if test = 'natYn.equals("Y")'>
+			AND NAT_IP_ADDR = #{ipAddr}
+			</if>
+			<if test = 'natYn.equals("N")'>
+			AND IP_ADDR = #{ipAddr}::inet
+			</if>
+		) TBL1
+		INNER JOIN RN_IP_BND TBL2
+		ON TBL1.BND_SEQ = TBL2.BND_SEQ
+		INNER JOIN RN_VR_SWTCH_ASGN TBL3
+		ON TBL2.BND_SEQ = TBL3.BND_SEQ
+		INNER JOIN RC_VR_SWTCH TBL4
+		ON TBL3.VR_SWTCH_SEQ = TBL4.VR_SWTCH_SEQ
+		WHERE TBL4.RSRC_POOL_ID = #{rsrcPoolId}
+		AND TBL4.DEL_YN = 'N'
+		LIMIT 1
+	</select>
+
+
+	<!-- IP 미할당 여부 조회  -->
+	<select id="selectIpStatCheck" resultType="Integer">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectIpStatCheck */
+	 	SELECT COUNT(*)
+	 		FROM RN_IP
+			WHERE IP_STAT_CD = '02'
+			<if test = 'natYn.equals("Y")'>
+			AND NAT_IP_ADDR = #{ipAddr}
+			</if>
+			<if test = 'natYn.equals("N")'>
+			AND IP_ADDR = #{ipAddr}::inet
+			</if>
+			AND BND_SEQ = #{ipBndSeq}
+	</select>
+
+  <!--
+  	가상서버 생성 자동물리서버 조회
+		- CPU, 메모리 사용률이 적은 물리서버 조회.
+		  만약, HA구성일 경우 서로 다른 물리서버를 조회
+   -->
+	<select id="selectAutoPmSeq" resultType="Integer">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectAutoPmSeq */
+		SELECT PM_SEQ
+		FROM RC_PM
+		WHERE CLSTR_SEQ = #{clstrSeq}
+		AND DEL_YN = 'N'
+		AND PM_SEQ NOT IN
+		(
+			SELECT COALESCE(PM_SEQ,0) FROM RR_RSRC_REQ_DTL_VM TBL1
+			INNER JOIN RR_HA_COMP TBL2
+			ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+			AND TBL2.HA_GRP_ID IN((SELECT HA_GRP_ID FROM RR_HA_COMP WHERE RSRC_REQ_NO = #{rsrcReqNo}))
+		)
+		ORDER BY CPU_USE_RT, MEM_USE_RT
+		LIMIT 1
+
+
+		<!--
+		SELECT TBL3.PM_SEQ
+			FROM RC_RSRC_POOL TBL1
+			INNER JOIN RC_CLSTR TBL2
+			ON TBL1.RSRC_POOL_ID = TBL2.RSRC_POOL_ID
+			AND TBL2.CLSTR_SEQ = #{clstrSeq}
+			INNER JOIN RC_PM TBL3
+			ON TBL2.CLSTR_SEQ = TBL3.CLSTR_SEQ
+			INNER JOIN RC_VM TBL4
+			ON TBL3.PM_SEQ = TBL4.PM_SEQ
+			AND COALESCE(TBL4.DEL_USER_ID,'') = ''
+			WHERE TBL1.RSRC_POOL_ID = #{rsrcPoolId}
+			AND TBL1.region_id =  #{regionId}
+			AND zone_id = #{zoneId}
+			AND net_id = #{netId}
+			AND TBL3.PM_SEQ NOT IN
+				(SELECT COALESCE(TBL2.PM_SEQ,0)
+					FROM RR_RSRC_REQ TBL1
+					INNER JOIN RR_RSRC_REQ_DTL_VM TBL2
+					ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+					AND TBL1.RSRC_REQ_NO = #{rsrcReqNo}
+					AND TBL1.TICKT_NO = #{ticktNo}
+					INNER JOIN RR_HA_COMP TBL3
+					ON TBL2.RSRC_REQ_SEQ =  TBL3.RSRC_REQ_SEQ
+					AND TBL3.HA_GRP_ID = #{haGrpId})
+			GROUP BY TBL3.PM_SEQ
+			ORDER BY COUNT(TBL4.VM_SEQ)
+			LIMIT 1
+		-->
+	</select>
+
+
+
+  <!-- 가상서버 스펙변경 상세 정보를 조회 -->
+	<select id="selectRsrcReqVmSpecChng" resultMap="resultRsrcReqDtlVmVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectRsrcReqVmSpecChng */
+		SELECT
+			TBL1.RSRC_REQ_NO
+			,TBL1.RSRC_REQ_USER_ID
+			,TO_CHAR(TBL1.RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+			,TBL1.RSRC_REQ_PRCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND GRP_CD='007' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND GRP_CD='008' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+			,TBL1.REQ_INSTITUTION_ID
+			,TBL1.REQ_DEPT_ID
+			,TBL1.SBJCT
+			,TBL1.TICKT_NO
+			,TBL1.REGION_ID
+			,TBL1.TEST_YN
+			,TBL1.LINK_YN
+			,TO_CHAR(TBL1.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+			,TBL1.REG_USER_ID
+			,TBL1.RSRC_REQ_TY_CD
+		    ,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+			,TBL2.RSRC_REQ_SEQ
+			,TBL2.USE_GV_DPRT_ID
+			,(SELECT MAX(JOB_NM) FROM CM_JOB WHERE JOB_ID = TBL2.USE_JOB_ID) USE_JOB_NM
+			,TBL2.USE_JOB_ID
+			,TBL2.PRPOS_CL_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '110' AND GRP_CD ='011' AND CD = TBL2.PRPOS_CL_CD) PRPOS_NM
+			,TBL2.SERVC_STRT_DT
+			,TBL2.SERVC_END_DT
+			,TBL2.VR_CNVR_SW_TY_CD
+			,TBL2.REQ_SPEC_SEQ
+			,TBL2.NET_ID
+			,TBL2.ASGN_VR_DSK_ID
+			,TBL2.REQ_MEM_ASGN_CAPA
+			,TBL2.PRPOS_CL_CD
+			,TBL2.CHNG_PRE_CPU_VCORE_QTY
+			,TBL2.CHNG_PRE_MEM_ASGN_CAPA
+			,TBL2.CHNG_REQ_CPU_VCORE_QTY
+			,TBL2.CHNG_REQ_MEM_ASGN_CAPA
+			,TBL2.CHNG_REQ_STRG_ASGN_CAPA
+			,TBL2.CHNG_PRE_STRG_ASGN_CAPA
+			,TBL2.VM_CHNG_CL_CD
+			,TBL2.VM_COMP_ID
+			,TBL2.REQ_STRG_DMN_SEQ
+			,(SELECT STRG_DMN_NM FROM RS_VR_STRG WHERE STRG_DMN_SEQ = TBL2.REQ_STRG_DMN_SEQ) STRG_DMN_NM
+			,TO_CHAR(TBL2.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+			,TBL2.RSRC_REQ_PRCSS_STAT_CD RSRC_REQ_DTL_PRCSS_STAT_CD
+			,TBL2.PROCSS_INST_SEQ
+			,TBL2.REQ_STRG_ASGN_POLICY_CD
+			,TBL3.USER_NM RSRC_REQ_USER_NM
+			,TBL3.MOBILE
+			,TBL3.INSTITUTION_NM REQ_INSTITUTION_NM
+			,TBL3.ORGNZT_NM REQ_DEPT_NM
+			,TBL3.EMAIL
+			,TBL2.VM_SEQ
+			,TBL2.UUID
+			,COALESCE(TBL2.VM_STOP_YN, 'N') AS VM_STOP_YN
+			FROM
+			RR_RSRC_REQ TBL1
+			INNER JOIN
+			RR_RSRC_REQ_DTL_VM TBL2
+			ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+			INNER JOIN CM_USR TBL3
+			ON TBL1.RSRC_REQ_USER_ID = TBL3.USER_ID
+			<trim prefix="WHERE" prefixOverrides="AND | OR">
+				<include refid="search"/>
+				<include refid="validateAuth"/>
+			</trim>
+	</select>
+
+ 	 <!-- 자원요첯상세- 가상서버 삭제 정보 조회  -->
+	<select id="selectRsrcReqVmDel" resultMap="resultRsrcReqDtlVmVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectRsrcReqVmDel */
+		SELECT
+			TBL1.RSRC_REQ_NO
+			,TBL1.RSRC_REQ_USER_ID
+			,TO_CHAR(TBL1.RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') RSRC_REQ_DTTM
+			,TBL1.RSRC_REQ_PRCSS_STAT_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '106' AND GRP_CD='007' AND CD = TBL1.RSRC_REQ_PRCSS_STAT_CD) AS RSRC_REQ_PRCSS_STAT_NM
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '107' AND GRP_CD='008' AND CD = TBL1.RSRC_REQ_TY_CD) AS RSRC_REQ_TY_NM
+			,TBL1.REQ_INSTITUTION_ID
+			,TBL1.REQ_DEPT_ID
+			,TBL1.SBJCT
+			,TBL1.TICKT_NO
+			,TBL1.REGION_ID
+			,TBL1.TEST_YN
+			,TBL1.LINK_YN
+			,TO_CHAR(TBL1.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM
+			,TBL1.REG_USER_ID
+			,TBL1.RSRC_REQ_TY_CD
+		    ,(SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.EXE_USER_ID) AS EXE_USER_NM
+			,TBL2.RSRC_REQ_SEQ
+			,TBL2.USE_GV_DPRT_ID
+			,(SELECT MAX(JOB_NM) FROM CM_JOB WHERE JOB_ID = TBL2.USE_JOB_ID) USE_JOB_NM
+			,TBL2.USE_JOB_ID
+			,TBL2.PRPOS_CL_CD
+			,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '110' AND GRP_CD = '011' AND CD = TBL2.PRPOS_CL_CD) PRPOS_NM
+			,TBL2.SERVC_STRT_DT
+			,TBL2.SERVC_END_DT
+			,TBL2.VR_CNVR_SW_TY_CD
+			,TBL2.REQ_SPEC_SEQ
+			,TBL2.NET_ID
+			,TBL2.ASGN_VR_DSK_ID
+			,TBL2.REQ_MEM_ASGN_CAPA
+			,TBL2.PRPOS_CL_CD
+			,TBL2.CHNG_PRE_CPU_VCORE_QTY
+			,TBL2.CHNG_PRE_MEM_ASGN_CAPA
+			,TBL2.CHNG_REQ_CPU_VCORE_QTY
+			,TBL2.CHNG_REQ_MEM_ASGN_CAPA
+			,TBL2.CHNG_REQ_STRG_ASGN_CAPA
+			,TBL2.VM_CHNG_CL_CD
+			,TBL2.VM_COMP_ID
+			,TO_CHAR(TBL2.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM
+			,TBL2.RSRC_REQ_PRCSS_STAT_CD RSRC_REQ_DTL_PRCSS_STAT_CD
+			,TBL2.PROCSS_INST_SEQ
+			,TBL3.USER_NM RSRC_REQ_USER_NM
+			,TBL3.MOBILE
+			,TBL3.INSTITUTION_NM REQ_INSTITUTION_NM
+			,TBL3.ORGNZT_NM REQ_DEPT_NM
+			,TBL3.EMAIL
+			,TBL2.VM_SEQ
+			,TBL2.UUID
+			FROM
+			RR_RSRC_REQ TBL1
+			INNER JOIN
+			RR_RSRC_REQ_DTL_VM TBL2
+			ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+			INNER JOIN CM_USR TBL3
+			ON TBL1.RSRC_REQ_USER_ID = TBL3.USER_ID
+			<trim prefix="WHERE" prefixOverrides="AND | OR">
+				<include refid="search"/>
+				<include refid="validateAuth"/>
+			</trim>
+
+	</select>
+
+	<select id="selectVmIdUseYN" resultType="String">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectVmIdUseYN */
+		SELECT CASE WHEN COUNT(VM_ID)>0 THEN 'Y' ELSE 'N' END
+		FROM RC_VM
+		WHERE VM_ID =#{vmId}
+		AND DEL_YN = 'N'
+	</select>
+
+	<select id="selectStrgDmnList" resultMap="resultStrgDmnListVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectStrgDmnList */
+		SELECT
+			STRG_DMN_NM
+			, STRG_DMN_SEQ
+		FROM RS_VR_STRG
+		WHERE RSRC_POOL_ID = #{rsrcPoolId}
+		AND DEL_YN = 'N'
+		ORDER BY STRG_DMN_NM
+	</select>
+
+	<select id="selectHaCompList" resultMap="resultHaCompListVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectHaCompList */
+		SELECT
+			TBL2.HA_GRP_NM
+			,TBL2.HA_GRP_CD
+			, TBL2.HA_STRG_CAPA
+			, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '148' AND GRP_CD='089' AND CD = TBL2.HA_STAT_CD) AS HA_STAT_NM
+			, TBL1.VM_NM
+			, TBL1.RSRC_REQ_NO
+			, TBL1.RSRC_REQ_SEQ
+			, COALESCE(TBL1.EXE_STAT_CD, '01') AS EXE_STAT_CD
+			, TBL1.PROCSS_INST_SEQ
+			, (SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '149' AND GRP_CD='091' AND CD = COALESCE(TBL1.EXE_STAT_CD, '01')) AS EXE_STAT_NM
+			, (SELECT STAT_CD FROM RR_PROCSS_INST WHERE PROCSS_INST_SEQ = TBL1.PROCSS_INST_SEQ) PROCSS_STAT_CD
+		FROM RR_RSRC_REQ_DTL_VM TBL1
+		INNER JOIN RR_HA_COMP TBL2
+		ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+		WHERE
+		TBL2.HA_GRP_ID = (SELECT MAX(HA_GRP_ID) FROM RR_HA_COMP WHERE RSRC_REQ_NO = #{rsrcReqNo})
+		ORDER BY TBL1.RSRC_REQ_NO
+	</select>
+
+	<select id="selectVmHaCompList" resultMap="resultHaCompListVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectVmHaCompList */
+		SELECT
+			(SELECT MAX(HA_GRP_NM) FROM RR_HA_COMP WHERE HA_GRP_ID =#{haGrpId}) HA_GRP_NM
+			,VM_NM
+			,VM_COMP_ID
+		FROM RC_VM
+		WHERE DEL_YN = 'N'
+		AND HA_YN = 'Y'
+		AND HA_GRP_ID = #{haGrpId}
+	</select>
+
+	<select id="selectRsrcReqVmCreBaseInfo" resultMap="resultRsrcReqDtlVmVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.selectRsrcReqVmCreBaseInfo */
+	SELECT
+		TBL1.RSRC_REQ_NO
+		,TBL2.CLSTR_SEQ
+		,(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD = '101' AND CD = TBL2.CLSTR_PRPOS_CL_CD) AS CLSTR_PRPOS_CL_NM
+		,TBL2.NET_CL_CD
+		,TBL2.EXE_STAT_CD
+		,TBL2.VR_CNVR_SW_TY_CD
+		,TBL2.REQ_MAX_CPU_VCORE_QTY
+		,TBL2.REQ_MIN_CPU_VCORE_QTY
+		,TBL2.REQ_MAX_MEM_ASGN_CAPA
+		,TBL2.REQ_MIN_MEM_ASGN_CAPA
+		,TBL2.REQ_ENT_MAX_VL
+		,TBL2.REQ_ENT_DFLT_VL
+		,TBL2.REQ_ENT_MIN_VL
+		,TBL4.TMPLAT_SEQ
+		,TBL4.TMPLAT_NM
+		,TBL5.RSRC_POOL_ID
+		,TBL5.ZONE_ID
+		,TBL5.NET_ID
+		,TBL5.RSRC_POOL_NM RSRC_POOL_NM
+		,TBL6.CLSTR_NM
+		FROM
+		RR_RSRC_REQ TBL1
+		INNER JOIN
+		RR_RSRC_REQ_DTL_VM TBL2
+		ON TBL1.RSRC_REQ_NO = TBL2.RSRC_REQ_NO
+		INNER JOIN
+		CM_USR TBL3
+		ON TBL1.RSRC_REQ_USER_ID = TBL3.USER_ID
+		LEFT OUTER JOIN RR_TMPLAT TBL4
+		ON TBL2.TMPLAT_SEQ = 	TBL4.TMPLAT_SEQ
+		LEFT OUTER JOIN RC_RSRC_POOL TBL5
+		ON TBL4.RSRC_POOL_ID = TBL5.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_CLSTR TBL6
+		ON TBL2.CLSTR_SEQ = TBL6.CLSTR_SEQ
+		LEFT OUTER JOIN RS_VR_STRG TBL7
+		ON TBL2.REQ_STRG_DMN_SEQ = TBL7.STRG_DMN_SEQ
+		WHERE TBL1.RSRC_REQ_NO = #{rsrcReqNo}
+	</select>
+
+
+
+	<select id="isEqualStrgDmnSeq" resultType="String">
+	/* ncis.sql.cpt.opr.req.rsrcreq.vm.ncis.sql.cpt.opr.req.rsrcreq.vm.isEqualStrgDmnSeq */
+	SELECT CASE WHEN (STRG_DMN_SEQ IS NOT NULL AND STRG_DMN_SEQ = #{reqStrgDmnSeq} ) THEN 'Y' ELSE 'N' END
+	FROM RR_TMPLAT WHERE TMPLAT_SEQ = #{tmplatSeq}
+	</select>
+
+</mapper>

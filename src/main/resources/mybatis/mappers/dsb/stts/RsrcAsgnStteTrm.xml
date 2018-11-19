@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.rsrcAsgnStteTrm">
+
+	<resultMap type="ncis.dsb.stts.asgn.vo.RsrcAsgnStteTrmVo" id="resultRsrcAsgnStteTrmVo">
+
+		<result property="mm" column="mm"/>
+		<result property="rsrcPoolId" column="rsrc_pool_id"/>
+		<result property="clstrSeq" column="clstr_seq"/>
+		<result property="vrlzSwTyCd" column="vrlz_sw_ty_cd"/>
+		<result property="rhev" column="rhev"/>
+		<result property="vmware" column="vmware"/>
+		<result property="ibm" column="ibm"/>
+		<result property="hp" column="hp"/>
+		<result property="openstack" column="openstack"/>
+		<result property="docker" column="docker"/>
+		<result property="ovm" column="ovm"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="lastVSrvrQty" column="last_v_srvr_qty"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="vmLastAsgnStrgCapa" column="vm_last_asgn_strg_capa"/>
+		<result property="vrlzRt" column="vrlz_rt"/>
+		<result property="vcoreRt" column="vcore_rt"/>
+		<result property="memRt" column="mem_rt"/>
+		<result property="sanRt" column="san_rt"/>
+	</resultMap>
+
+	<sql id="search">
+
+	  </sql>
+
+	<select id="selectRsrcAsgnStteTrmList" resultMap="resultRsrcAsgnStteTrmVo">
+	/* ncis.sql.dsb.stts.rsrcAsgnStteTrm.selectRsrcAsgnStteTrmList */
+
+
+             <if test="trm == 'quarter'">
+	          with mm_t as(
+	         </if>
+	            select   t.mm,
+		                 t.mm_q,
+		                 t.rsrc_pool_id,
+		                 t.pm_seq,
+		                 t.clstr_seq,
+		                 t.vrlz_sw_ty_cd,
+		                 t.rhev,
+		                 t.vmware,
+		                 t.ibm,
+		                 t.hp,
+		                 t.openstack,
+		                 t.docker,
+                         t.ovm,
+		                 t.last_cpu_cor_qty,
+		                 t.last_mem_sum_capa,
+		                 t.last_strg_sum_capa,
+		                 t.last_v_srvr_qty,
+		                 qq.last_asgn_vcor_qty,
+		                 qq.last_asgn_mem_capa,
+		                 qq.vm_last_asgn_strg_capa,
+		                 round(t.vrlz_rt,2) vrlz_rt,
+		                 round(case when t.last_cpu_cor_qty = 0 then 0 else qq.last_asgn_vcor_qty/t.last_cpu_cor_qty::numeric*100 end,2) vcore_rt,
+		                 round(case when t.last_mem_sum_capa = 0 then 0 else qq.last_asgn_mem_capa/t.last_mem_sum_capa::numeric*100 end,2) mem_rt,
+		                 round(case when t.last_strg_sum_capa = 0 then 0 else qq.vm_last_asgn_strg_capa/t.last_strg_sum_capa::numeric*100 end,2)  san_rt
+                from
+                      (
+
+			             select
+			                 <choose>
+							    <when test="trm == 'mm'">
+			                  		substr(a.colct_ym,5,2)||'월' mm,
+			                    </when>
+			                    <otherwise>
+									case when substr(a.colct_ym,5,2) between '01' and '03' then '1분기'
+										 when substr(a.colct_ym,5,2) between '04' and '06' then '2분기'
+										 when substr(a.colct_ym,5,2) between '07' and '09' then '3분기'
+										 when substr(a.colct_ym,5,2) between '10' and '12' then '4분기'
+									 end mm,
+							    </otherwise>
+							  </choose>
+			                  substr(a.colct_ym,5,2) mm_q,
+							  count(distinct a.rsrc_pool_id) rsrc_pool_id,
+							  count(a.pm_seq) pm_seq,
+							  count(distinct a.clstr_seq) clstr_seq,
+							  count(qq.vrlz_sw_ty_cd) vrlz_sw_ty_cd,
+							  sum(case when qq.vrlz_sw_ty_cd = '01' then 1 else 0 end) rhev,
+							  sum(case when qq.vrlz_sw_ty_cd = '02' then 1 else 0 end) vmware,
+							  sum(case when qq.vrlz_sw_ty_cd = '03' then 1 else 0 end) ibm,
+							  sum(case when qq.vrlz_sw_ty_cd = '04' then 1 else 0 end) hp,
+							  sum(case when qq.vrlz_sw_ty_cd = '05' then 1 else 0 end) openstack,
+							  sum(case when qq.vrlz_sw_ty_cd = '06' then 1 else 0 end) docker,
+							  sum(case when qq.vrlz_sw_ty_cd = '09' then 1 else 0 end) ovm,
+							  sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+							  sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+							  sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) last_strg_sum_capa,
+							  sum(a.last_v_srvr_qty) last_v_srvr_qty,
+							  round(sum(a.last_v_srvr_qty)/count(a.pm_seq)::numeric*100,2) vrlz_rt
+
+
+    				      from st_pm_colct_sum_1mm a left join rc_rsrc_pool qq on a.rsrc_pool_id = qq.rsrc_pool_id
+				      where
+					       1=1
+					      <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+					     </if>
+
+				         <if test="year != null and !year.isEmpty()">
+				            and a.colct_ym between #{year}||'01' and #{year}||'12'
+				         </if>
+
+
+				    group by substr(a.colct_ym,5,2)
+                    order by substr(a.colct_ym,5,2) asc
+
+                  )t
+				  left join
+	                        (select
+									 substr(a.colct_ym,5,2) mm_q,
+									 sum(a.last_vcore_qty) last_asgn_vcor_qty,
+									 sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa,
+									 sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) vm_last_asgn_strg_capa
+
+						     from st_vm_colct_sum_1mm a
+						  where 1=1
+									       <if test="region != null and !region.isEmpty()">
+
+									       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+									         	#{item}
+									       		</foreach>
+									      </if>
+
+										  <if test="year != null and !year.isEmpty()">
+								             and a.colct_ym between #{year}||'01' and #{year}||'12'
+								          </if>
+									       group by substr(a.colct_ym,5,2)
+
+	                      ) qq
+	                             on t.mm_q = qq.mm_q
+
+                <if test="trm == 'quarter'">
+                  )
+	                select *
+	                   from mm_t aa
+
+                         where aa.mm_q in
+                                          (select max(qq.mm_q)
+                                              from mm_t qq
+                                            group by   case when qq.mm_q between '01' and '03' then '03'
+													    when qq.mm_q between '04' and '06' then '06'
+													    when qq.mm_q between '07' and '09' then '09'
+													    when qq.mm_q between '10' and '12' then '12'
+						                              end
+					                          )
+                 </if>
+
+
+	</select>
+
+    <select id="selectRsrcAsgnStteTrmTotCnt" resultType="Integer">
+				SELECT COUNT(*)
+				  from st_vm_colct_sum a 
+				where
+					  a.colct_cycle = '01'
+					  <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+					   </if>
+
+				       <if test="year != null and !year.isEmpty()">
+				            and substr(a.colct_dt,1,4) = #{year}
+				       </if>
+	</select>
+
+
+
+
+</mapper>

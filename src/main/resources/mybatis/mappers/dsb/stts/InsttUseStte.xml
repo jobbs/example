@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.instt">
+
+	<resultMap type="ncis.dsb.stts.use.serv.vo.InsttUseStteVo" id="resultInsttUseVo">
+		<result property="regionNm" column="region_nm"/>
+		<result property="mm" column="mm"/>
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="jobId" column="job_id"/>
+		<result property="jobPer" column="job_per"/>
+		<result property="vmSeq" column="vm_seq"/>
+		<result property="vmPer" column="vm_per"/>
+		<result property="jobMin" column="job_min"/>
+		<result property="jobMax" column="job_max"/>
+		<result property="lastVcoreQty" column="last_vcore_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.use.serv.vo.InsttUseStteVo" id="resultInsttUseAtmSclVo">
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="mm" column="MM"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="jobId" column="JOB_ID"/>
+		<result property="jobPer" column="JOB_PER"/>
+		<result property="servcAreaSeq" column="SERVC_AREA_SEQ"/>
+		<result property="servcAreaPer" column="SERVC_AREA_PER"/>
+		<result property="jobMin" column="JOB_MIN"/>
+		<result property="jobMax" column="JOB_MAX"/>
+		<result property="cpuAsgnCapa" column="CPU_ASGN_CAPA"/>
+		<result property="memTotCapa" column="MEM_TOT_CAPA"/>
+		<result property="strgTotCapa" column="STRG_TOT_CAPA"/>
+	</resultMap>
+
+	<sql id="search">
+
+	</sql>
+
+	<select id="selectInsttUseStteList" resultMap="resultInsttUseVo">
+
+				/* ncis.sql.dsb.stts.instt.selectInsttUseStteList */
+
+
+
+							 <if test="trm != null and !trm.isEmpty()">
+							   with mm_t as(
+							           select
+							                 d.region_nm,
+							                 <if test="trm == 'mm'">
+								             substr(a.colct_ym,5,2)||'월' mm,
+								             </if>
+								             <if test="trm == 'quarter'">
+										         case when substr(a.colct_ym,5,2) between '01' and '03' then '1분기'
+											        when substr(a.colct_ym,5,2) between '04' and '06' then '2분기'
+											        when substr(a.colct_ym,5,2) between '07' and '09' then '3분기'
+											        when substr(a.colct_ym,5,2) between '10' and '12' then '4분기'
+											     end mm,
+											 </if>
+								            <if test="trm == 'yy'">
+								              substr(a.colct_ym,1,4)||'년' mm,
+                                            </if>
+								             substr(a.colct_ym,5,2) mm_q,
+								             substr(a.colct_ym,1,4) yy,
+								             COALESCE(c.institution_nm, '미할당') as institution_nm,
+									         max(distinct bb.job_id) job_id,
+						                     round(max(distinct bb.job_id)/max(case when qq.totjob = 0 then 1 else qq.totjob end)::numeric*100,2) job_per,
+									         max(qq.totjob) totjob,
+									         max(qq.totvm) totvm,
+									         count(a.vm_seq) vm_seq,
+									         round(count(a.vm_seq)/max(case when qq.totvm = 0 then 1 else qq.totvm end)::numeric*100,2) vm_per,
+
+						                     COALESCE(min(bbb.job_min),0) job_min,
+						                     COALESCE(max(bbb.job_max),0) job_max,
+									         sum(a.last_vcore_qty) last_vcore_qty,
+									         sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+										 	 sum(round(a.last_strg_sum_capa/1024/1024/1024,0)) last_strg_sum_capa
+		                         </if>
+
+                                        from st_vm_colct_sum_1mm a left join
+										     (select aa.colct_ym,
+											         max(distinct qq.job_id) totjob,
+											         count(distinct aa.vm_seq) totvm
+
+												     from st_vm_colct_sum_1mm aa inner join
+												          ( select
+												                  aa.ym colct_ym,
+												                  count(distinct qq.job_id) job_id
+												            from st_vm_job_1dd qq inner join st_last_day aa on qq.colct_dt = aa.last_day
+												                where aa.ym between #{year}||'01' and #{year}||'12'
+												           group by aa.ym
+
+			                                              )qq on aa.colct_ym = qq.colct_ym
+			                                              where 1=1
+			                                               <if test="region != null and !region.isEmpty()">
+												         		<foreach collection="region" open="AND aa.region_id IN(" close=")" separator="," item="item">
+												                	#{item}
+												       	    	</foreach>
+											                </if>
+
+		                                            group by aa.colct_ym
+							                     ) qq on a.colct_ym = qq.colct_ym
+							                       left join (select aa.colct_ym,
+																	 count(distinct qq.job_id) job_id,
+																	 aa.institution_id
+														         from st_vm_colct_sum_1mm aa inner join
+
+																		  (select
+																				  qq.vm_seq,
+																				  aa.ym colct_ym,
+																				  qq.job_id job_id
+																		      from st_vm_job_1dd qq inner join st_last_day aa on qq.colct_dt = aa.last_day
+																			where aa.ym between #{year}||'01' and #{year}||'12'
+
+																		    )qq on aa.vm_seq = qq.vm_seq and aa.colct_ym  = qq.colct_ym
+																		where 1=1
+																		<if test="region != null and !region.isEmpty()">
+															         		<foreach collection="region" open="AND aa.region_id IN(" close=")" separator="," item="item">
+															                	#{item}
+															       	    	</foreach>
+														                </if>
+																	     group by aa.colct_ym, aa.institution_id
+																      )	bb
+
+									                    on a.colct_ym = bb.colct_ym and a.institution_id = bb.institution_id
+                                                      left join
+									                          (select a.colct_ym,
+                                                                      a.institution_id,
+                                                                      min(vm_seq) job_min,
+                                                                      max(vm_seq) job_max
+                                                                     from
+																		(select aa.colct_ym,
+																			 		   qq.job_id,
+																					   aa.institution_id,
+																					   count(qq.vm_seq) vm_seq
+
+																				    from st_vm_colct_sum_1mm aa inner join
+																					     (select
+																							    qq.vm_seq,
+																							    aa.ym colct_ym,
+																							    qq.job_id job_id
+																						      from st_vm_job_1dd qq inner join st_last_day aa on qq.colct_dt = aa.last_day
+																						  where aa.ym between #{year}||'01' and #{year}||'12'
+
+																						   )qq on aa.vm_seq = qq.vm_seq and aa.colct_ym = qq.colct_ym
+																							where 1=1
+																							<if test="region != null and !region.isEmpty()">
+																				         		<foreach collection="region" open="AND aa.region_id IN(" close=")" separator="," item="item">
+																				                	#{item}
+																				       	    	</foreach>
+																			                </if>
+																						     group by aa.colct_ym, aa.institution_id, qq.job_id
+																		      ) a
+																 group by a.colct_ym, a.institution_id
+                                                   ) bbb on a.colct_ym = bbb.colct_ym and a.institution_id = bbb.institution_id
+									          left join cm_institution c on a.institution_id = c.institution_id
+									          left join rc_region d on a.region_id = d.region_id
+
+								          where 1=1
+												  and a.colct_ym between #{year}||'01' and #{year}||'12'
+
+												      <if test="region != null and !region.isEmpty()">
+
+														       		<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+														         	#{item}
+													       		</foreach>
+												     </if>
+
+
+
+
+
+                     <if test="trm != null and !trm.isEmpty()">
+
+
+							    group by
+							            region_nm,
+							             institution_nm,
+							             substr(a.colct_ym,1,4),
+							             substr(a.colct_ym,5,2)
+			                    order by c.institution_nm,
+			                    		 region_nm,
+			                             institution_nm,
+			                             substr(a.colct_ym,5,2) asc
+
+                            )
+
+	                         select *
+	                           from mm_t aa
+			               <if test="trm == 'quarter'">
+			                     where aa.mm_q in
+                                          (select max(qq.mm_q)
+                                              from mm_t qq
+                                            group by   case when qq.mm_q between '01' and '03' then '03'
+													    when qq.mm_q between '04' and '06' then '06'
+													    when qq.mm_q between '07' and '09' then '09'
+													    when qq.mm_q between '10' and '12' then '12'
+						                              end
+					                          )
+			              </if>
+
+			              <if test="trm == 'yy'">
+			                      where aa.mm_q in
+                                          (select max(qq.mm_q)
+                                              from mm_t qq
+                                          )
+			              </if>
+
+			         </if>
+
+
+	</select>
+
+	<select id="selectInsttUseStteTotCnt" resultType="Integer">
+		   select
+
+					        count(*)
+
+					    from st_vm_colct_sum a cross join
+					         (select count(distinct aa.job_id) totjob
+					                 ,count(distinct aa.vm_id) totvm
+					           from st_vm_colct_sum aa
+					         ) qq
+					    where colct_cycle = '01'
+
+					     <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+					     </if>
+
+				         <if test="year != null and !year.isEmpty()">
+				            and substr(a.colct_dt,1,4) = #{year}
+				         </if>
+
+
+	 </select>
+
+
+	 <select id="selectInsttUseStteAtmSclList" resultMap="resultInsttUseAtmSclVo">
+
+		/* ncis.sql.dsb.stts.instt.selectInsttUseStteList */
+
+		WITH MM_T AS
+		(
+			SELECT
+				 TBL7.REGION_NM
+            <if test="trm == 'mm'">
+             	,SUBSTR(TBL1.COLCT_YM,5,2)||'월' MM
+            </if>
+            <if test="trm == 'quarter'">
+		        ,CASE WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '01' AND '03' THEN '1분기'
+			          WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '04' AND '06' THEN '2분기'
+			          WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '07' AND '09' THEN '3분기'
+			          WHEN SUBSTR(TBL1.COLCT_YM,5,2) BETWEEN '10' AND '12' THEN '4분기'
+			     END MM
+			</if>
+            <if test="trm == 'yy'">
+                ,SUBSTR(TBL1.COLCT_YM,1,4)||'년' MM
+            </if>
+                ,SUBSTR(TBL1.COLCT_YM,5,2) MM_Q
+				,SUBSTR(TBL1.COLCT_YM,1,4) YY
+				,COALESCE(TBL6.INSTITUTION_NM, '미할당') AS INSTITUTION_NM
+				,MAX(DISTINCT TBL4.JOB_ID) JOB_ID
+				,ROUND(MAX(DISTINCT TBL4.JOB_ID)/MAX(CASE WHEN TBL3.TOTJOB = 0 THEN 1 ELSE TBL3.TOTJOB END)::NUMERIC*100,2) JOB_PER
+				,MAX(TBL3.TOTJOB) TOTJOB
+				,MAX(TBL3.TOT_SERVC_AREA) TOT_SERVC_AREA
+				,COUNT(DISTINCT TBL1.SERVC_AREA_SEQ) SERVC_AREA_SEQ
+				,ROUND(COUNT(TBL1.SERVC_AREA_SEQ)/MAX(CASE WHEN TBL3.TOT_SERVC_AREA = 0 THEN 1 ELSE TBL3.TOT_SERVC_AREA END)::NUMERIC*100,2) SERVC_AREA_PER
+				,COALESCE(MIN(TBL5.JOB_MIN),0) JOB_MIN
+				,COALESCE(MAX(TBL5.JOB_MAX),0) JOB_MAX
+				,COALESCE(SUM(ROUND(TBL1.CPU_ASGN_CAPA/1000,2)),0) CPU_ASGN_CAPA
+				,COALESCE(SUM(ROUND(TBL1.MEM_TOT_CAPA/1024/1024/1024,3)),0) MEM_TOT_CAPA
+				,COALESCE(SUM(ROUND(TBL1.STRG_TOT_CAPA/1024/1024/1024,3)),0) STRG_TOT_CAPA
+			FROM ST_RX_SERVC_SUM_1MM TBL1
+			INNER JOIN RX_SERVC_AREA TBL2
+			ON TBL1.SERVC_AREA_SEQ = TBL2.SERVC_AREA_SEQ
+			INNER JOIN RC_RSRC_POOL TBL8
+			ON TBL1.RSRC_POOL_ID = TBL8.RSRC_POOL_ID
+			LEFT OUTER JOIN
+			(
+				SELECT
+					TBL_SBU1.COLCT_YM,
+					COUNT(DISTINCT TBL_SBU2.JOB_ID) TOTJOB,
+					COUNT(DISTINCT TBL_SBU1.SERVC_AREA_SEQ) TOT_SERVC_AREA
+				FROM ST_RX_SERVC_SUM_1MM TBL_SBU1
+				INNER JOIN RX_SERVC_AREA TBL_SBU2
+				ON TBL_SBU1.SERVC_AREA_SEQ = TBL_SBU2.SERVC_AREA_SEQ
+				WHERE TBL_SBU1.COLCT_YM BETWEEN #{year}||'01' and #{year}||'12'
+				GROUP BY TBL_SBU1.COLCT_YM
+			) TBL3
+			ON TBL1.COLCT_YM = TBL3.COLCT_YM
+			LEFT OUTER JOIN
+			(
+				SELECT
+					TBL_SBU1.COLCT_YM,
+					COUNT(DISTINCT TBL_SBU2.JOB_ID) JOB_ID,
+					TBL_SBU2.INSTITUTION_ID
+				FROM ST_RX_SERVC_SUM_1MM TBL_SBU1
+				INNER JOIN RX_SERVC_AREA TBL_SBU2
+				ON TBL_SBU1.SERVC_AREA_SEQ = TBL_SBU2.SERVC_AREA_SEQ
+				WHERE TBL_SBU1.COLCT_YM BETWEEN #{year}||'01' and #{year}||'12'
+				GROUP BY TBL_SBU1.COLCT_YM, TBL_SBU2.INSTITUTION_ID
+			) TBL4
+			ON TBL1.COLCT_YM = TBL4.COLCT_YM
+			AND TBL2.INSTITUTION_ID = TBL4.INSTITUTION_ID
+			LEFT OUTER JOIN
+			(
+				SELECT
+					TBL_SUB3.COLCT_YM,
+					TBL_SUB3.INSTITUTION_ID,
+					MIN(TBL_SUB3.SERVC_AREA_SEQ) JOB_MIN,
+					MAX(TBL_SUB3.SERVC_AREA_SEQ) JOB_MAX
+					FROM (
+						SELECT
+							TBL_SBU1.COLCT_YM,
+							TBL_SBU2.JOB_ID,
+							TBL_SBU2.INSTITUTION_ID,
+							COUNT(DISTINCT TBL_SBU1.SERVC_AREA_SEQ) SERVC_AREA_SEQ
+						FROM ST_RX_SERVC_SUM_1MM TBL_SBU1
+						INNER JOIN RX_SERVC_AREA TBL_SBU2
+						ON TBL_SBU1.SERVC_AREA_SEQ = TBL_SBU2.SERVC_AREA_SEQ
+						WHERE TBL_SBU1.COLCT_YM BETWEEN #{year}||'01' and #{year}||'12'
+						GROUP BY TBL_SBU1.COLCT_YM, TBL_SBU2.INSTITUTION_ID, TBL_SBU2.JOB_ID
+					) TBL_SUB3
+					GROUP BY TBL_SUB3.COLCT_YM, TBL_SUB3.INSTITUTION_ID
+			) TBL5
+			ON TBL1.COLCT_YM = TBL5.COLCT_YM
+			AND TBL2.INSTITUTION_ID = TBL5.INSTITUTION_ID
+			LEFT OUTER JOIN CM_INSTITUTION TBL6
+			ON TBL2.INSTITUTION_ID = TBL6.INSTITUTION_ID
+			LEFT OUTER JOIN RC_REGION TBL7
+			ON TBL8.REGION_ID = TBL7.REGION_ID
+			WHERE 1=1
+	      	<if test="region != null and !region.isEmpty()">
+	       		<foreach collection="region" open="AND TBL7.REGION_ID IN(" close=")" separator="," item="item">
+	         		#{item}
+	      		</foreach>
+	     	</if>
+		   	AND TBL1.COLCT_YM BETWEEN #{year}||'01' and #{year}||'12'
+			GROUP BY
+				REGION_NM,
+				INSTITUTION_NM,
+				SUBSTR(TBL1.COLCT_YM,1,4),
+				SUBSTR(TBL1.COLCT_YM,5,2)
+				ORDER BY TBL6.INSTITUTION_NM, REGION_NM, INSTITUTION_NM, SUBSTR(TBL1.COLCT_YM,5,2) ASC
+		)
+		SELECT *
+		FROM MM_T TBL1
+	    <if test="trm == 'quarter'">
+	    WHERE TBL1.MM_Q IN(SELECT MAX(TBL2.MM_Q)
+	                       FROM MM_T TBL2
+	                       GROUP BY CASE WHEN TBL2.MM_Q BETWEEN '01' AND '03' THEN '03'
+										 WHEN TBL2.MM_Q BETWEEN '04' AND '06' THEN '06'
+										 WHEN TBL2.MM_Q BETWEEN '07' AND '09' THEN '09'
+										 WHEN TBL2.MM_Q BETWEEN '10' AND '12' THEN '12'
+	                      			END)
+	   	</if>
+
+	    <if test="trm == 'yy'">
+	    WHERE TBL1.MM_Q IN(SELECT MAX(TBL2.MM_Q) FROM MM_T TBL2)
+	    </if>
+
+	</select>
+
+</mapper>
+
+

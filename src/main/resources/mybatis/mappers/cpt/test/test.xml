@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.test">
+
+	<insert id="insertSequenceTest">
+		/* ncis.sql.cpt.test.insertSequenceTest */
+		<selectKey order="BEFORE" keyProperty="testSeq" resultType="Integer">
+			SELECT nextval('TEST_SEQ')
+		</selectKey>
+
+		INSERT INTO TEST_TABLE (
+			TEST_SEQ
+			,TEST_NM
+		) VALUES (
+			#{testSeq}
+			,#{testNm}
+		)
+	</insert>
+</mapper>

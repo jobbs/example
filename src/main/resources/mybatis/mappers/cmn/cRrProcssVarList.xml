@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrProcssVarList">
+
+
+	<!-- 프로세스변수목록 등록 -->
+	<insert id="insertRrProcssVarList">
+	INSERT INTO RR_PROCSS_VAR_LIST (
+	             VAR_SEQ  /* 변수ID */
+	           , VAR_NM  /* 변수명 */
+	           , VAR_TY_CD  /* 변수유형코드 */
+	           , VAR_VL  /* 변수값 */
+	           , VAL_VL_CL_CD  /* 변수구분코드 */
+	           , PROCSS_INST_SEQ  /* 프로세스업무인스턴스ID */
+	) (
+			SELECT
+				nextval('rr_procss_var_list_sq01')
+				, VAR_NM
+				, VAR_TY_CD
+				, VAR_VL
+				, VAL_VL_CL_CD
+				, PROCSS_INST_SEQ
+			FROM RR_PROCSS_INST TBL1
+			INNER JOIN RR_PROCSS_VAR TBL2
+			ON TBL1.PROCSS_SEQ = TBL2.PROCSS_SEQ
+			WHERE TBL1.PROCSS_INST_SEQ = #{procssInstSeq}
+	)
+	</insert>
+
+	<!-- 프로세스변수목록 수정 -->
+	<update id="updateRrProcssVarList">
+	UPDATE RR_PROCSS_VAR_LIST
+	         SET VAR_SEQ = #{varSeq}  /* 변수ID */
+	           , VAR_NM = #{varNm}  /* 변수명 */
+	           , VAR_TY_CD = #{varTyCd}  /* 변수유형코드 */
+	           , VAR_VL = #{varVl}  /* 변수값 */
+	           , VAL_VL_CL_CD = #{valVlClCd}  /* 변수구분코드 */
+	           , PROCSS_JOB_INST_SEQ = #{procssJobInstSeq}  /* 프로세스업무인스턴스ID */
+         WHERE VAR_SEQ = #{varSeq}  /* 변수ID */
+
+	</update>
+
+	<!-- 프로세스변수정보 수정 -->
+	<update id="updateRrProcssVarVl">
+	UPDATE RR_PROCSS_VAR_LIST
+		SET VAR_VL = #{varVl}  /* 변수값 */
+    WHERE
+    VAR_NM = #{varNm}
+    AND PROCSS_INST_SEQ = #{procssInstSeq}
+	</update>
+
+
+	<!-- 프로세스변수목록 삭제 -->
+	<delete id="deleteRrProcssVarList">
+	DELETE FROM RR_PROCSS_VAR_LIST
+         WHERE VAR_SEQ = #{varSeq}  /* 변수ID */
+	</delete>
+
+		<!-- 프로세스변수목록 삭제 -->
+	<delete id="deleteRrProcssVarListAll">
+	DELETE FROM RR_PROCSS_VAR_LIST
+         WHERE PROCSS_INST_SEQ = #{procssInstSeq}  /* 프로세스인스턴스SEQ */
+	</delete>
+
+</mapper>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmInstitution">
+
+	<resultMap id="resultCmInstitution" type="ncis.cmn.entity.CmInstitution">
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="institutionNm"     column="INSTITUTION_NM"/>  <!-- 기관명 -->
+        <result property="useYn"     		 column="USE_YN"/> 		 	<!-- 사용여부 -->
+	</resultMap>
+
+	<!-- 기관 등록 -->
+	<insert id="insertCmInstitution">
+		/* ncis.sql.cmn.cmInstitution.insertCmInstitution */
+		INSERT INTO CM_INSTITUTION (
+		             INSTITUTION_ID  /* 기관ID */
+		           , INSTITUTION_NM  /* 기관명 */
+		           , USE_YN  		 /* 사용여부 */
+		) VALUES (
+		           #{institutionId}  /* 기관ID */
+		         , #{institutionNm}  /* 기관명 */
+		         , #{useYn}  	 	 /* 사용여부 */
+		)
+	</insert>
+
+	<!-- 기관 수정 -->
+	<update id="updateCmInstitution">
+		/* ncis.sql.cmn.cmInstitution.updateCmInstitution */
+		UPDATE CM_INSTITUTION
+	         SET
+	         	INSTITUTION_NM = #{institutionNm}  /* 기관명 */
+	           	,USE_YN = #{useYn}  				  /* 사용여부 */
+         WHERE INSTITUTION_ID = #{institutionId}  											   /* 기관ID */
+
+	</update>
+
+	<!-- 기관 삭제 -->
+	<delete id="deleteCmInstitution">
+		/* ncis.sql.cmn.cmInstitution.deleteCmInstitution */
+		DELETE FROM CM_INSTITUTION
+	         WHERE INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	</delete>
+
+	<!-- 기관 사용여부 수정 -->
+	<update id="updateCmInstitutionUseYn">
+		/* ncis.sql.cmn.cmInstitution.updateCmInstitutionUseYn */
+		UPDATE CM_INSTITUTION
+	         SET USE_YN = #{useYn}  				  /* 사용여부 */
+         WHERE INSTITUTION_ID = #{institutionId}  	   /* 기관ID */
+	</update>
+
+	<!-- 하위 업무 여부 수정 -->
+	<update id="updateSubJob">
+		/* ncis.sql.cmn.cmInstitution.updateSubJob */
+		UPDATE CM_JOB
+			SET USE_YN = #{useYn}
+		WHERE INSTITUTION_ID = #{institutionId}
+	</update>
+</mapper>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxScrtky">
+	<!-- 보안키 등록 -->
+	<insert id="insertRxScrtky" parameterType="ncis.cmn.entity.RxScrtky">
+		/* ncis.sql.cmn.rxScrtky.insertRxScrtky */
+		INSERT INTO RX_SCRTKY(
+			SERVC_AREA_SEQ  /* 서비스영역SEQ */
+			, SCRTKY_ID  /* 보안키ID */
+			, CRTFC_MTHD_CL_CD  /* 인증방식구분코드 */
+			, ID  /* ID */
+			, PASSWD  /* 비밀번호 */
+			, SSH_KEY  /* SSH키 */
+		)
+        VALUES (
+			#{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{scrtkyId}  /* 보안키ID */
+			, #{crtfcMthdClCd}  /* 인증방식구분코드 */
+			, #{id}  /* ID */
+			, #{passwd}  /* 비밀번호 */
+			, #{sshKey}  /* SSH키 */
+        )
+	</insert>
+</mapper>

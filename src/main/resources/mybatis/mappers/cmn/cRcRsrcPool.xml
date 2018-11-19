@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcRsrcPool">
+
+	<resultMap type="ncis.cmn.entity.RcRsrcPool" id="resultRcRsrcPool">
+		<result property="rsrcPoolId"   column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm"   column="RSRC_POOL_NM"/>
+		<result property="vrlzSwTyCd"   column="VRLZ_SW_TY_CD"/>
+		<result property="uuid"         column="UUID"/>
+		<result property="regDttm"      column="REG_DTTM"/>
+		<result property="regUserId"    column="REG_USER_ID"/>
+		<result property="zoneId"       column="ZONE_ID"/>
+		<result property="netId"        column="NET_ID"/>
+		<result property="regionId"     column="REGION_ID"/>
+		<result property="netId"        column="NET_ID"/>
+		<result property="regionId"     column="REGION_ID"/>
+		<result property="mngConnAddr"  column="MNG_CONN_ADDR"/>
+		<result property="mngProxyPort" column="MNG_PROXY_PORT"/>
+		<result property="ctlTrgtYn" column="CTL_TRGT_YN"/>
+		<result property="strgCompCd" column="STRG_COMP_CD"/>
+		<result property="rsrcPoolVersion" column="RSRC_POOL_VERSION"/>
+	</resultMap>
+
+	<update id="updateMoveRsrcPool">
+		UPDATE RC_RSRC_POOL SET NET_ID = #{netId } WHERE RSRC_POOL_ID = #{poolId}
+	</update>
+
+	<update id="updatePool">
+		UPDATE RC_RSRC_POOL
+		SET
+			CTL_TRGT_YN = #{ctlTrgtYn}
+			, RSRC_POOL_VERSION = #{rsrcPoolVersion}
+			, STRG_COMP_CD = #{strgCompCd }
+		WHERE
+			RSRC_POOL_ID = #{rsrcPoolId}
+	</update>
+</mapper>

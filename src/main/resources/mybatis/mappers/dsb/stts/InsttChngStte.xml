@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.insttChngStte">
+
+	<resultMap type="ncis.dsb.stts.use.serv.vo.InsttChngStteVo" id="resultInsttChngVo">
+		<result property="institutionNm" column="institution_nm"/>
+		<result property="regionNm" column="region_nm"/>
+		<result property="jobId1" column="job_id1"/>
+		<result property="jobId2" column="job_id2"/>
+		<result property="jobId3" column="job_id3"/>
+		<result property="jobId4" column="job_id4"/>
+		<result property="vmSeq1" column="vm_seq1"/>
+		<result property="vmSeq2" column="vm_seq2"/>
+		<result property="vmSeq3" column="vm_seq3"/>
+		<result property="vmSeq4" column="vm_seq4"/>
+		<result property="servcSeq1" column="servc_seq1"/>
+		<result property="servcSeq2" column="servc_seq2"/>
+		<result property="servcSeq3" column="servc_seq3"/>
+		<result property="servcSeq4" column="servc_seq4"/>
+
+	</resultMap>
+
+	<sql id="search">
+
+	  </sql>
+
+	<select id="selectInsttChngStteList" resultMap="resultInsttChngVo">
+
+		/* ncis.sql.dsb.stts.insttChngStte.selectInsttChngStteList */
+
+		select  (case when f.institution_nm is null then '미할당' else f.institution_nm end) institution_nm,
+	            f.region_nm,
+				COALESCE(max(  case when substr(f.colct_ym,5,2) between '01' and '03' then f.job_id end),0) job_id1,
+				COALESCE(max(  case when substr(f.colct_ym,5,2) between '04' and '06' then f.job_id end),0) job_id2,
+				COALESCE(max(  case when substr(f.colct_ym,5,2) between '07' and '09' then f.job_id end),0) job_id3,
+				COALESCE(max(  case when substr(f.colct_ym,5,2) between '10' and '12' then f.job_id end),0) job_id4,
+
+				count(case when substr(f.colct_ym,5,2) between '01' and '03' then f.vm_seq end) vm_seq1,
+				count(case when substr(f.colct_ym,5,2) between '04' and '06' then f.vm_seq end) vm_seq2,
+				count(case when substr(f.colct_ym,5,2) between '07' and '09' then f.vm_seq end) vm_seq3,
+				count(case when substr(f.colct_ym,5,2) between '10' and '12' then f.vm_seq end) vm_seq4,
+
+				count(case when substr(f.colct_ym,5,2) between '01' and '03' then f.servc_seq end) servc_seq1,
+				count(case when substr(f.colct_ym,5,2) between '04' and '06' then f.servc_seq end) servc_seq2,
+				count(case when substr(f.colct_ym,5,2) between '07' and '09' then f.servc_seq end) servc_seq3,
+				count(case when substr(f.colct_ym,5,2) between '10' and '12' then f.servc_seq end) servc_seq4
+		  from
+		  		(SELECT a.colct_ym,
+				        c.institution_nm,
+				        d.region_id,
+				        d.region_nm,
+                        tt.job_id,
+                        a.vm_seq,
+                        NULL servc_seq
+				   from st_vm_colct_sum_1mm a left join
+						(select aa.colct_ym,
+							    count(distinct qq.job_id) job_id,
+								aa.institution_id
+						   from st_vm_colct_sum_1mm aa inner join
+								(select qq.vm_seq,
+										aa.ym colct_ym,
+										qq.job_id job_id
+								   from st_vm_job_1dd qq inner join st_last_day aa on qq.colct_dt = aa.last_day
+								  where aa.ym between #{year}||'01' and #{year}||'12'
+								)qq on aa.vm_seq = qq.vm_seq and aa.colct_ym  = qq.colct_ym
+						  where 1=1
+					      group by aa.colct_ym, aa.institution_id
+						) tt  on a.colct_ym = tt.colct_ym and a.institution_id = tt.institution_id
+				   left join cm_institution c on a.institution_id = c.institution_id
+				   left join rc_region d on a.region_id = d.region_id
+				  where 1=1
+					and a.colct_ym  between #{year}||'01' and #{year}||'12'
+
+                  UNION ALL
+				 select qq.colct_ym,
+				        c.institution_nm,
+				        region.region_id,
+						region.region_nm,
+						0 job_id,
+						NULL vm_seq,
+					    COUNT(DISTINCT case when qq.last_pod_qty > 0 then qq.servc_seq end) as servc_seq
+				   from st_rx_servc_sum_1mm qq
+                   left join rx_servc_area area on qq.servc_area_seq = area.servc_area_seq
+                   left join rc_rsrc_pool pool on qq.rsrc_pool_id = pool.rsrc_pool_id
+                   left join rc_region region on pool.region_id = region.region_id
+                   left join cm_institution c on area.institution_id = c.institution_id
+				  where qq.colct_ym between #{year}||'01' and #{year}||'12'
+				    and qq.last_pod_qty > 0
+				  group by qq.colct_ym,
+				           c.institution_nm,
+				           region.region_id,
+				           region.region_nm,
+				           qq.servc_seq
+                ) as f
+                <if test="region != null and !region.isEmpty()">
+			    	<foreach collection="region" open="WHERE f.region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+				  	</foreach>
+				</if>
+		 group by institution_nm, region_nm
+         order by region_nm, nullif(institution_nm,'미할당') nulls last
+	</select>
+
+
+
+    <select id="selectInsttChngStteTotCnt" resultType="Integer">
+				SELECT COUNT(*)
+				  from st_vm_colct_sum_1mm a
+				where
+					  1=1
+					  <if test="region != null and !region.isEmpty()">
+
+					       		<foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+					         	#{item}
+					       		</foreach>
+					   </if>
+
+				       <if test="year != null and !year.isEmpty()">
+				            and substr(a.colct_ym,1,4) = #{year}
+				       </if>
+	</select>
+
+
+
+
+</mapper>

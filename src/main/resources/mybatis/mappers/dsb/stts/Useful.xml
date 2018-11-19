@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.asgnUseful.useful">
+
+	<resultMap type="ncis.dsb.stts.asgnUseful.vo.UsefulVo" id="resultUsefulVo">
+	    <result property="regionId"          column="region_id"/>
+		<result property="netNm"             column="net_nm"/>
+		<result property="netCnt"            column="net_cnt"/>
+		<result property="rsrcPoolNm"        column="rsrc_pool_nm"/>
+		<result property="rsrcPoolIdCnt"     column="rsrc_pool_id_cnt"/>
+		<result property="rsrcPoolId"        column="rsrc_pool_id"/>
+		<result property="clstrUuid"         column="clstr_uuid"/>
+		<result property="lastCpuCorQty"     column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa"    column="last_mem_sum_capa"/>
+		<result property="maxVcoreAsgnRt"    column="max_vcore_asgn_rt"/>
+		<result property="maxMemAsgnRt"      column="max_mem_asgn_rt"/>
+		<result property="maxVcoreAsgn"      column="max_vcore_asgn"/>
+		<result property="maxMemAsgn"        column="max_mem_asgn"/>
+		<result property="lastAsgnVcorQty"   column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa"   column="last_asgn_mem_capa"/>
+		<result property="marginVcoreCapa"   column="margin_vcore_capa"/>
+		<result property="marginMemCapa"     column="margin_mem_capa"/>
+		<result property="vmVcoreAvgSpec"    column="vm_vcore_avg_spec"/>
+		<result property="vmMemAvgSpec"      column="vm_mem_avg_spec"/>
+		<result property="vmAsgnQty"         column="vm_asgn_qty"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.asgnUseful.vo.UsefulVo" id="resultUsefulNowVo">
+	    <result property="regionId"          column="region_id"/>
+		<result property="netNm"             column="net_nm"/>
+		<result property="netCnt"            column="net_cnt"/>
+		<result property="rsrcPoolNm"        column="rsrc_pool_nm"/>
+		<result property="rsrcPoolIdCnt"     column="rsrc_pool_id_cnt"/>
+		<result property="rsrcPoolId"        column="rsrc_pool_id"/>
+		<result property="clstrUuid"		 column="clstr_uuid"/>
+		<result property="lastCpuCorQty"     column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa"    column="last_mem_sum_capa"/>
+		<result property="lastAsgnVcorQty"   column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa"   column="last_asgn_mem_capa"/>
+		<result property="colctDt"   		 column="colct_dt"/>
+		<result property="colctHour"   		 column="colct_hour"/>
+		<result property="colctMi"   		 column="colct_mi"/>
+	</resultMap>
+
+
+	<select id="selectUsefulList" resultMap="resultUsefulVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgnUseful.useful.selectUsefulList */
+
+	     select
+	             x.region_id,
+	             x.net_nm,
+	             count(x.clstr_uuid) over(partition by x.net_nm) net_cnt,
+				 x.rsrc_pool_nm,
+				 count(x.clstr_uuid) over(partition by x.rsrc_pool_id) rsrc_pool_id_cnt,
+				 x.rsrc_pool_id,
+				 x.clstr_uuid,
+		         x.last_cpu_cor_qty,
+		         x.last_mem_sum_capa,
+		         x.max_vcore_asgn_rt,
+			 	 x.max_mem_asgn_rt,
+		         round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) max_vcore_asgn,
+			 	 round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) max_mem_asgn,
+			 	 x.last_asgn_vcor_qty,
+			 	 x.last_asgn_mem_capa,
+			 	 round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty margin_vcore_capa,
+			 	 round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa margin_mem_capa,
+				 x.vm_vcore_avg_spec,
+				 x.vm_mem_avg_spec,
+			 	 floor(least((round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty)/x.vm_vcore_avg_spec,(round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa)/x.vm_mem_avg_spec)) vm_asgn_qty
+
+	      from
+	         (select c.net_nm,
+					 b.rsrc_pool_nm,
+					 b.rsrc_pool_id,
+					 e.clstr_uuid,
+					 sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+					 sum(a.last_mem_sum_capa) last_mem_sum_capa,
+					 sum(a.last_asgn_vcor_qty) last_asgn_vcor_qty,
+					 sum(a.last_asgn_mem_capa) last_asgn_mem_capa,
+					 e.ym,
+					 e.region_id,
+					 max(e.max_vcore_asgn_rt) max_vcore_asgn_rt,
+					 max(e.max_mem_asgn_rt) max_mem_asgn_rt,
+					 max(e.vm_vcore_avg_spec) vm_vcore_avg_spec,
+					 max(e.vm_mem_avg_spec) vm_mem_avg_spec
+
+
+			     from st_vm_add_cre_useful_capa e left join
+				           (select b.uuid,
+				                   a.colct_ym,
+				                   a.rsrc_pool_id,
+				                   sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+								   sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+								   sum(aa.last_asgn_vcor_qty) last_asgn_vcor_qty,
+								   sum(aa.last_asgn_mem_capa) last_asgn_mem_capa
+				              from st_pm_colct_sum_1mm a left join rc_clstr b on a.clstr_seq = b.clstr_seq
+				                   left join
+					                (select a.pm_seq,
+					                        sum(a.last_vcore_qty) last_asgn_vcor_qty,
+					                        sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa
+
+					                   from st_vm_colct_sum_1mm a
+					                  where 1=1
+					                         <if test="year != null and !year.isEmpty()">
+											     <if test="mm != null and !mm.isEmpty()">
+					                        		and a.colct_ym = #{year}||#{mm}
+					                        	</if>
+											 </if>
+						  	         group by a.pm_seq
+					                ) aa on a.pm_seq = aa.pm_seq
+
+	                         where 1=1
+	                               <if test="year != null and !year.isEmpty()">
+									   <if test="mm != null and !mm.isEmpty()">
+					                   		and a.colct_ym = #{year}||#{mm}
+					                   </if>
+								   </if>
+	                         group by b.uuid,
+	                                  a.colct_ym,
+	                                  a.rsrc_pool_id
+	                         )a on e.clstr_uuid = a.uuid and e.ym = a.colct_ym and e.rsrc_pool_id = a.rsrc_pool_id
+			          left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+			          left join rc_net c on b.net_id = c.net_id
+			    where 1=1
+			          <if test="year != null and !year.isEmpty()">
+					     <if test="mm != null and !mm.isEmpty()">
+					           and e.ym = #{year}||#{mm}
+					     </if>
+					 </if>
+	                 <if test="region != null and !region.isEmpty()">
+					   <foreach collection="region" open="AND e.region_id IN(" close=")" separator="," item="item">
+					     	#{item}
+					   </foreach>
+				     </if>
+
+		          group by c.net_nm,
+		                   b.rsrc_pool_id,
+		                   b.rsrc_pool_nm,
+		                   e.clstr_uuid,
+		                   e.ym,
+		                   e.region_id
+
+		      ) x
+	   order by net_nm, rsrc_pool_id
+
+	</select>
+
+
+  <select id="selectUsefulAdd" resultMap="resultUsefulVo">
+
+	/* sqlid : ncis.sql.dsb.stts.asgnUseful.useful.selectUsefulAdd */
+
+	     select
+	             x.region_id,
+	             x.net_nm,
+	             count(x.uuid) over(partition by x.net_nm) net_cnt,
+				 x.rsrc_pool_nm,
+				 count(x.uuid) over(partition by x.rsrc_pool_id) rsrc_pool_id_cnt,
+				 x.rsrc_pool_id,
+				 x.uuid clstr_uuid,
+		         x.last_cpu_cor_qty,
+		         x.last_mem_sum_capa,
+		         e.max_vcore_asgn_rt,
+			 	 e.max_mem_asgn_rt,
+		         round(x.last_cpu_cor_qty*e.max_vcore_asgn_rt/100,0) max_vcore_asgn,
+				 round(x.last_mem_sum_capa*e.max_mem_asgn_rt/100,0) max_mem_asgn,
+				 x.last_asgn_vcor_qty,
+				 x.last_asgn_mem_capa,
+				 round(x.last_cpu_cor_qty*e.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty margin_vcore_capa,
+				 round(x.last_mem_sum_capa*e.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa margin_mem_capa,
+				 e.vm_vcore_avg_spec,
+				 e.vm_mem_avg_spec,
+				 floor(least((round(x.last_cpu_cor_qty*e.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty)/e.vm_vcore_avg_spec,(round(x.last_mem_sum_capa*e.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa)/e.vm_mem_avg_spec)) vm_asgn_qty
+
+      from
+         (select c.net_nm,
+		         b.rsrc_pool_nm,
+		         b.rsrc_pool_id,
+				 a.uuid,
+				 sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+				 sum(a.last_mem_sum_capa) last_mem_sum_capa,
+				 sum(a.last_asgn_vcor_qty) last_asgn_vcor_qty,
+				 sum(a.last_asgn_mem_capa) last_asgn_mem_capa,
+				 a.colct_ym,
+				 b.region_id
+
+
+		     from
+		          (select b.uuid,
+			              a.colct_ym,
+			              a.rsrc_pool_id,
+			              sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+						  sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+						  sum(aa.last_asgn_vcor_qty) last_asgn_vcor_qty,
+						  sum(aa.last_asgn_mem_capa) last_asgn_mem_capa
+			          from st_pm_colct_sum_1mm a left join rc_clstr b on a.clstr_seq = b.clstr_seq
+			               left join
+				                 (select a.pm_seq,
+				                        sum(a.last_vcore_qty) last_asgn_vcor_qty,
+				                        sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa
+
+				                   from st_vm_colct_sum_1mm a
+				                  where 1=1
+				                        <if test="year != null and !year.isEmpty()">
+										     <if test="mm != null and !mm.isEmpty()">
+										           and a.colct_ym = #{year}||#{mm}
+										     </if>
+										 </if>
+					  	          group by a.pm_seq
+				                 ) aa on a.pm_seq = aa.pm_seq
+                        where 1=1
+                              <if test="year != null and !year.isEmpty()">
+							     <if test="mm != null and !mm.isEmpty()">
+								           and a.colct_ym = #{year}||#{mm}
+							     </if>
+							 </if>
+                       group by b.uuid,
+                                a.colct_ym,
+                                a.rsrc_pool_id
+                   )a
+                  left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+		          left join rc_net c on b.net_id = c.net_id
+
+		    where 1=1
+		          <if test="region != null and !region.isEmpty()">
+					<foreach collection="region" open="AND b.region_id IN(" close=")" separator="," item="item">
+					   	#{item}
+					</foreach>
+				  </if>
+
+	          group by c.net_nm,
+	                   b.rsrc_pool_id,
+	                   b.rsrc_pool_nm,
+	                   a.uuid,
+	                   a.colct_ym,
+	                   b.region_id
+
+	      ) x left join st_vm_add_cre_useful_capa e on x.uuid = e.clstr_uuid and x.rsrc_pool_id = e.rsrc_pool_id and x.colct_ym = e.ym
+	   order by net_nm, rsrc_pool_id
+
+	</select>
+
+	<select id="selectUsefulView" resultMap="resultUsefulVo">
+     /* sqlid : ncis.sql.dsb.stts.asgnUseful.useful.selectUsefulView */
+
+     select
+	             x.region_id,
+	             x.net_nm,
+	             count(x.clstr_uuid) over(partition by x.net_nm) net_cnt,
+				 x.rsrc_pool_nm,
+				 count(x.clstr_uuid) over(partition by x.rsrc_pool_id) rsrc_pool_id_cnt,
+				 x.rsrc_pool_id,
+				 x.clstr_uuid,
+		         x.last_cpu_cor_qty,
+		         x.last_mem_sum_capa,
+		         x.max_vcore_asgn_rt,
+			 	 x.max_mem_asgn_rt,
+		         round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) max_vcore_asgn,
+			 	 round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) max_mem_asgn,
+			 	 x.last_asgn_vcor_qty,
+			 	 x.last_asgn_mem_capa,
+			 	 round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty margin_vcore_capa,
+			 	 round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa margin_mem_capa,
+				 x.vm_vcore_avg_spec,
+				 x.vm_mem_avg_spec,
+			 	 floor(least((round(x.last_cpu_cor_qty*x.max_vcore_asgn_rt/100,0) - x.last_asgn_vcor_qty)/x.vm_vcore_avg_spec,(round(x.last_mem_sum_capa*x.max_mem_asgn_rt/100,0) - x.last_asgn_mem_capa)/x.vm_mem_avg_spec)) vm_asgn_qty
+
+	      from
+	         (select c.net_nm,
+					 b.rsrc_pool_nm,
+					 b.rsrc_pool_id,
+					 e.clstr_uuid,
+					 sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+					 sum(a.last_mem_sum_capa) last_mem_sum_capa,
+					 sum(a.last_asgn_vcor_qty) last_asgn_vcor_qty,
+					 sum(a.last_asgn_mem_capa) last_asgn_mem_capa,
+					 e.ym,
+					 e.region_id,
+					 max(e.max_vcore_asgn_rt) max_vcore_asgn_rt,
+					 max(e.max_mem_asgn_rt) max_mem_asgn_rt,
+					 max(e.vm_vcore_avg_spec) vm_vcore_avg_spec,
+					 max(e.vm_mem_avg_spec) vm_mem_avg_spec
+
+
+			     from st_vm_add_cre_useful_capa e left join
+			               (select b.uuid,
+				                   a.colct_ym,
+				                   a.rsrc_pool_id,
+				                   sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+								   sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+								   sum(aa.last_asgn_vcor_qty) last_asgn_vcor_qty,
+								   sum(aa.last_asgn_mem_capa) last_asgn_mem_capa
+				              from st_pm_colct_sum_1mm a left join rc_clstr b on a.clstr_seq = b.clstr_seq
+				                   left join
+					                (select a.pm_seq,
+					                        sum(a.last_vcore_qty) last_asgn_vcor_qty,
+					                        sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa
+					                    from st_vm_colct_sum_1mm a
+					                  where 1=1
+					                         <if test="year != null and !year.isEmpty()">
+											     <if test="mm != null and !mm.isEmpty()">
+					                        		and a.colct_ym = #{year}||#{mm}
+					                        	</if>
+											 </if>
+						  	         group by a.pm_seq
+					                ) aa on a.pm_seq = aa.pm_seq
+
+	                         where 1=1
+	                               <if test="year != null and !year.isEmpty()">
+									   <if test="mm != null and !mm.isEmpty()">
+					                   		and a.colct_ym = #{year}||#{mm}
+					                   </if>
+								   </if>
+	                         group by b.uuid,
+	                                  a.colct_ym,
+	                                  a.rsrc_pool_id
+	                         )a on e.clstr_uuid = a.uuid and e.ym = a.colct_ym and e.rsrc_pool_id = a.rsrc_pool_id
+			          left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+			          left join rc_net c on b.net_id = c.net_id
+
+			    where 1=1
+			          <if test="year != null and !year.isEmpty()">
+					     <if test="mm != null and !mm.isEmpty()">
+					           and e.ym = #{year}||#{mm}
+					     </if>
+					 </if>
+	                 <if test="region != null and !region.isEmpty()">
+					   <foreach collection="region" open="AND e.region_id IN(" close=")" separator="," item="item">
+					     	#{item}
+					   </foreach>
+				     </if>
+				     <if test="rsrcPoolId != null and !rsrcPoolId.isEmpty()">
+				       and e.rsrc_pool_id = #{rsrcPoolId}
+				     </if>
+				     <if test="clstrUuid != null and !clstrUuid.isEmpty()">
+				       and e.clstr_uuid = #{clstrUuid}
+				     </if>
+
+		          group by c.net_nm,
+		                   b.rsrc_pool_id,
+		                   b.rsrc_pool_nm,
+		                   e.clstr_uuid,
+		                   e.ym,
+		                   e.region_id
+
+		      ) x
+	   order by net_nm, rsrc_pool_id
+
+	</select>
+
+	<select id="selectUsefulNowList" resultMap="resultUsefulNowVo">
+	/* sqlid : ncis.sql.dsb.stts.asgnUseful.useful.selectUsefulNowList */
+
+          select c.net_nm,
+                 count(a.uuid) over(partition by c.net_nm) net_cnt,
+		         b.rsrc_pool_nm,
+		         b.rsrc_pool_id,
+		         count(a.uuid) over(partition by b.rsrc_pool_id) rsrc_pool_id_cnt,
+				 a.uuid clstr_uuid,
+				 a.last_cpu_cor_qty,
+				 a.last_mem_sum_capa,
+				 a.last_asgn_vcor_qty,
+				 a.last_asgn_mem_capa,
+				 a.colct_dt,
+				 a.colct_hour,
+	             a.colct_mi,
+			     a.region_id
+
+
+		     from
+		         ( select b.uuid,
+				          a.colct_dt,
+				          a.colct_hour,
+				          a.colct_mi,
+				          a.region_id,
+				          a.rsrc_pool_id,
+				          sum(a.last_cpu_cor_qty) last_cpu_cor_qty,
+					      sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_mem_sum_capa,
+						  sum(aa.last_asgn_vcor_qty) last_asgn_vcor_qty,
+						  sum(aa.last_asgn_mem_capa) last_asgn_mem_capa
+				     from st_pm_colct_sum_10mi a left join rc_clstr b on a.clstr_seq = b.clstr_seq
+				               left join
+					                  (select a.pm_seq,
+						                      sum(a.last_vcore_qty) last_asgn_vcor_qty,
+						                      sum(round(a.last_mem_sum_capa/1024/1024/1024,0)) last_asgn_mem_capa
+					                   from st_vm_colct_sum_10mi a
+					                  where 1=1
+					                        <if test="now != null and !now.isEmpty()">
+												and a.colct_dt = to_char(now(),'yyyymmdd')
+									  	  		and a.colct_hour||a.colct_mi = (select max(colct_hour||colct_mi)
+																				    from st_vm_colct_sum_10mi
+																			      where colct_dt = a.colct_dt
+																	           )
+											</if>
+						                group by a.pm_seq
+					                 ) aa on a.pm_seq = aa.pm_seq
+				 where 1=1
+				       <if test="region != null and !region.isEmpty()">
+							<foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+						   		#{item}
+							</foreach>
+					  </if>
+				      <if test="now != null and !now.isEmpty()">
+						    and a.colct_dt = to_char(now(),'yyyymmdd')
+						    and a.colct_hour||a.colct_mi = (select max(colct_hour||colct_mi)
+															   from st_pm_colct_sum_10mi
+														    where colct_dt = a.colct_dt
+											               )
+				       </if>
+				       group by b.uuid,
+				                a.colct_dt,
+				                a.colct_hour,
+				                a.colct_mi,
+				                a.region_id,
+				                a.rsrc_pool_id
+			      ) a
+
+		          left join rc_rsrc_pool b on a.rsrc_pool_id = b.rsrc_pool_id
+		          left join rc_net c on b.net_id = c.net_id
+
+	   order by net_nm, rsrc_pool_id
+
+	</select>
+
+
+
+	<delete id="deleteUseful">
+		/* ncis.sql.dsb.stts.asgnUseful.useful.deleteUseful */
+
+		DELETE FROM  st_vm_add_cre_useful_capa
+		WHERE 1=1
+		<if test='ym!=null and !"".equals(ym)'>
+		  	  AND ym = #{ym}
+		</if>
+		<if test='rsrcPoolId!=null and !"".equals(rsrcPoolId)'>
+		  	  AND rsrc_pool_id = #{rsrcPoolId}
+		</if>
+		<if test='clstrUuid!=null and !"".equals(clstrUuid)'>
+		  	  AND clstr_uuid = #{clstrUuid}
+		</if>
+	</delete>
+
+
+
+
+
+	<insert id="insertUseful">
+	/* sqlid : ncis.sql.dsb.stts.asgnUseful.useful.insertUseful */
+
+		WITH UPSERT AS (
+			SELECT
+				#{ym}::text AS ym,
+				#{regionId}::text AS region_id,
+				#{rsrcPoolId}::text AS rsrc_pool_id,
+				#{clstrUuid} AS clstr_uuid,
+				#{maxVcoreAsgnRt} AS max_vcore_asgn_rt,
+				#{maxMemAsgnRt} AS max_mem_asgn_rt,
+				#{vmVcoreAvgSpec} AS vm_vcore_avg_spec,
+				#{vmMemAvgSpec} AS vm_mem_avg_spec
+
+		),
+
+		UPDATE_OPTION AS (
+			UPDATE st_vm_add_cre_useful_capa AS vmUseful
+				SET ym = UPSERT.ym,
+				    region_id = UPSERT.region_id,
+				    rsrc_pool_id = UPSERT.rsrc_pool_id,
+					clstr_uuid = UPSERT.clstr_uuid,
+					max_vcore_asgn_rt = UPSERT.max_vcore_asgn_rt,
+					max_mem_asgn_rt = UPSERT.max_mem_asgn_rt,
+					vm_vcore_avg_spec = UPSERT.vm_vcore_avg_spec,
+					vm_mem_avg_spec = UPSERT.vm_mem_avg_spec
+
+			FROM UPSERT
+			WHERE
+			    vmUseful.ym=UPSERT.ym
+				and vmUseful.rsrc_pool_id=UPSERT.rsrc_pool_id
+				and vmUseful.clstr_uuid=UPSERT.clstr_uuid
+
+		)
+		INSERT INTO st_vm_add_cre_useful_capa (
+			ym, region_id, rsrc_pool_id, clstr_uuid, max_vcore_asgn_rt, max_mem_asgn_rt, vm_vcore_avg_spec, vm_mem_avg_spec
+		)
+		SELECT
+			ym, region_id, rsrc_pool_id, clstr_uuid, max_vcore_asgn_rt, max_mem_asgn_rt, vm_vcore_avg_spec, vm_mem_avg_spec
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM st_vm_add_cre_useful_capa AS vmUseful
+				WHERE  vmUseful.ym = UPSERT.ym
+				       and vmUseful.rsrc_pool_id = UPSERT.rsrc_pool_id
+				       and vmUseful.clstr_uuid = UPSERT.clstr_uuid
+
+			)
+	</insert>
+</mapper>

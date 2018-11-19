@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.job">
+
+	<resultMap type="ncis.cpt.sys.job.vo.JobVo" id="resultJobVo" extends="ncis.sql.cmn.cmJob.resultCmJob">
+		<result property="regionNm"          column="REGION_NM"/>
+		<result property="vmAsgnYn"          column="VM_ASGN_YN"/>
+		<result property="vmCnt"         	 column="VM_CNT"/>
+		<result property="atmsclAsgnYn"      column="ATMSCL_ASGN_YN"/>
+
+		<association property="institution" column="INSTITUTION_ID" resultMap="ncis.sql.cpt.instt.resultInsttVo" />
+	</resultMap>
+
+	<sql id="search">
+
+		AND J.USE_YN = 'Y'
+		AND J.INSTITUTION_ID IS NOT NULL
+
+		<if test="searchVmAsgnYn != null and searchVmAsgnYn eq 'Y'.toString()">
+			AND EXISTS (SELECT 1 FROM RC_VM_JOB X WHERE X.JOB_ID = J.JOB_ID) /* 가상서버 할당여부 */
+		</if>
+
+		<if test="searchJobNm != null and !searchJobNm.isEmpty()">
+			AND J.JOB_NM LIKE '%' || #{searchJobNm} || '%'
+		</if>
+
+		<if test="searchJobId != null and !searchJobId.isEmpty()">
+			AND J.JOB_ID LIKE '%' || #{searchJobId} || '%'
+		</if>
+
+		<if test="searchInttNm != null and !searchInttNm.isEmpty()">
+			AND I.INSTITUTION_NM LIKE '%' || #{searchInttNm} || '%'
+		</if>
+
+		<if test="searchInttId != null and !searchInttId.isEmpty()">
+			AND I.INSTITUTION_ID LIKE '%' || #{searchInttId} || '%'
+		</if>
+
+
+		<if test="searchRegionId != null and !searchRegionId.isEmpty()">
+			AND J.REGION_ID LIKE '%' || #{searchRegionId} || '%'
+		</if>
+
+		<if test="searchCludJob != null and !searchCludJob.isEmpty()">
+			AND CLUD_JOB = #{searchCludJob}
+		</if>
+
+		<if test="searchAtmsclAsgnYn != null and searchAtmsclAsgnYn eq 'Y'.toString()">
+			AND EXISTS (SELECT 1 FROM RX_SERVC_AREA X2 WHERE X2.JOB_ID = J.JOB_ID AND X2.DEL_YN = 'N') /* 자동확장 할당여부 */
+		</if>
+
+	</sql>
+
+	<select id="selectJobTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.job.selectJobTotCnt */
+		SELECT
+			COUNT(*)
+		FROM CM_JOB J LEFT JOIN CM_INSTITUTION I ON J.INSTITUTION_ID=I.INSTITUTION_ID
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="selectJobListQry">
+		SELECT
+			JOB_ID
+           ,JOB_NM
+           ,CLUD_JOB
+           ,JOB_GRD
+           ,JOB_REG_DT
+           ,J.INSTITUTION_ID
+           ,I.INSTITUTION_NM
+           ,REGION_ID
+           ,(SELECT REGION_NM FROM RC_REGION R WHERE R.REGION_ID = J.REGION_ID) REGION_NM
+           ,J.USE_YN
+           ,(CASE WHEN EXISTS(SELECT 1 FROM RC_VM_JOB X WHERE X.JOB_ID = J.JOB_ID) THEN 'Y' ELSE 'N' END) AS VM_ASGN_YN
+           ,(SELECT COUNT(1) FROM RC_VM AS X, RC_VM_JOB Y WHERE Y.JOB_ID = J.JOB_ID AND X.VM_SEQ = Y.VM_SEQ AND X.DEL_YN='N') AS VM_CNT
+           ,(CASE WHEN EXISTS(SELECT 1 FROM RX_SERVC_AREA X2 WHERE X2.JOB_ID = J.JOB_ID AND X2.DEL_YN = 'N') THEN 'Y' ELSE 'N' END) AS ATMSCL_ASGN_YN
+		FROM CM_JOB J LEFT JOIN CM_INSTITUTION I ON J.INSTITUTION_ID=I.INSTITUTION_ID
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY JOB_NM
+	</sql>
+
+	<select id="selectJobList" resultMap="resultJobVo">
+		/* NCIS.SQL.CPT.JOB.SELECTJOBLIST */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectJobListQry" />
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectJobListXlsDwnl" resultMap="resultJobVo">
+		/* NCIS.SQL.CPT.JOB.selectJobListXlsDwnl */
+		<include refid="selectJobListQry" />
+	</select>
+
+	<select id="selectJob" resultMap="resultJobVo">
+		/* NCIS.SQL.CPT.JOB.SELECTJOB */
+		SELECT
+			JOB_ID
+           ,JOB_NM
+           ,CLUD_JOB
+           ,JOB_GRD
+           ,JOB_REG_DT
+           ,J.INSTITUTION_ID
+           ,I.INSTITUTION_NM
+           ,REGION_ID
+           ,(SELECT REGION_NM FROM RC_REGION R WHERE R.REGION_ID = J.REGION_ID) REGION_NM
+           ,J.USE_YN
+           ,(CASE WHEN EXISTS(SELECT 1 FROM RC_VM_JOB X WHERE X.JOB_ID = J.JOB_ID) THEN 'Y' ELSE 'N' END) AS VM_ASGN_YN
+           ,(SELECT COUNT(1) FROM RC_VM AS X, RC_VM_JOB Y WHERE Y.JOB_ID = J.JOB_ID AND X.VM_SEQ = Y.VM_SEQ AND X.DEL_YN='N') AS VM_CNT
+           ,(CASE WHEN EXISTS(SELECT 1 FROM RX_SERVC_AREA X2 WHERE X2.JOB_ID = J.JOB_ID AND X2.DEL_YN = 'N') THEN 'Y' ELSE 'N' END) AS ATMSCL_ASGN_YN
+		FROM CM_JOB J LEFT JOIN CM_INSTITUTION I ON J.INSTITUTION_ID=I.INSTITUTION_ID
+		<where>
+			JOB_ID = #{jobId}
+		</where>
+	</select>
+
+</mapper>

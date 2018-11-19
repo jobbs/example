@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.patch.packgAlrm">
+
+	<resultMap type="ncis.cpt.opr.patch.vo.PackgAlrmVo" id="resultPackgAlrmVo">
+		<result property="patchAlrmSeq" column="PATCH_ALRM_SEQ"/>
+		<result property="packgSeq" column="PACKG_SEQ"/>
+		<result property="vmSeq" column="VM_SEQ"/>
+		<result property="vmId" column="VM_ID"/>
+		<result property="vmNm" column="VM_NM"/>
+		<result property="hstNm" column="HST_NM"/>
+		<result property="rprsntIpAddr" column="RPRSNT_IP_ADDR"/>
+		<result property="vmCompId" column="VM_COMP_ID"/>
+		<result property="institutionId" column="INSTITUTION_ID"/>
+		<result property="institutionNm" column="INSTITUTION_NM"/>
+		<result property="regionId" column="REGION_ID"/>
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="zoneId" column="ZONE_ID"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netId" column="NET_ID"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="vrlzSwTyCd" column="VRLZ_SW_TY_CD"/>
+		<result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM"/>
+		<result property="clstrNm" column="CLSTR_NM"/>
+		<result property="jobsNm" column="JOBS_NM"/>
+		<result property="confrmYn" column="CONFRM_YN"/>
+		<result property="chargerId" column="CHARGER_ID"/>
+		<result property="chargerClCd" column="CHARGER_CL_CD"/>
+		<result property="ver" column="VER"/>
+		<result property="maxVer" column="MAX_VER"/>
+		<result property="packgNm" column="PACKG_NM"/>
+		<result property="patchAlrmNm" column="PATCH_ALRM_NM"/>
+		<result property="patchAlrmDttm" column="PATCH_ALRM_DTTM"/>
+		<result property="confrmYnNm" column="CONFRM_YN_NM"/>
+		<result property="chargerNm" column="CHARGER_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.patch.vo.PackgAlrmInfoVo" id="resultPackgAlrmInfoVo">
+		<result property="patchAlrmSeq" column="PATCH_ALRM_SEQ"/>
+		<result property="patchAlrmNm" column="PATCH_ALRM_NM"/>
+		<result property="patchAlrmCn" column="PATCH_ALRM_CN"/>
+		<result property="patchAlrmDspthId" column="PATCH_ALRM_DSPTH_ID"/>
+		<result property="patchAlrmDspthNm" column="PATCH_ALRM_DSPTH_NM"/>
+		<result property="patchAlrmDttm" column="PATCH_ALRM_DTTM"/>
+		<result property="maxVer" column="MAX_VER"/>
+		<result property="maxRelease" column="MAX_RELEASE"/>
+		<result property="ver" column="VER"/>
+		<result property="release" column="RELEASE"/>
+		<result property="confrmDt" column="CONFRM_DT"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchConfrmYn != null and searchConfrmYn != ""'>
+		AND OA_ALRM_TRGT.CONFRM_YN = #{searchConfrmYn}
+		</if>
+		<if test='searchInstitutionNm != null and searchInstitutionNm != ""'>
+		AND CM_INSTITUTION.INSTITUTION_NM LIKE '%' || #{searchInstitutionNm} || '%'
+		</if>
+		<if test='searchJobNm != null and searchJobNm != ""'>
+		AND RC_VM.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (SELECT CM_JOB.JOB_ID FROM CM_JOB INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_JOB.USE_YN = 'Y' AND CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.JOB_NM LIKE '%' || #{searchJobNm} || '%'))
+		</if>
+		<if test='searchVmNm != null and searchVmNm != ""'>
+		AND RC_VM.VM_NM LIKE '%' || #{searchVmNm} || '%'
+		</if>
+		<if test='searchRegionId != null and searchRegionId != ""'>
+		AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchZoneId != null and searchZoneId != ""'>
+		AND RC_RSRC_POOL.ZONE_ID = #{searchZoneId}
+		</if>
+		<if test='searchNetClCd != null and searchNetClCd != ""'>
+		AND RC_RSRC_POOL.NET_CL_CD = #{searchNetClCd}
+		</if>
+		<if test='searchRsrcPoolId != null and searchRsrcPoolId != ""'>
+		AND RC_RSRC_POOL.RSRC_POOL_ID = #{searchRsrcPoolId}
+		</if>
+		<if test='searchVmCompId != null and searchVmCompId != ""'>
+		AND RC_VM.VM_COMP_ID LIKE '%' || #{searchVmCompId} || '%'
+		</if>
+		<if test='searchHstNm != null and searchHstNm != ""'>
+		AND RC_VM.HST_NM LIKE '%' || #{searchHstNm} || '%'
+		</if>
+		<if test='searchRprsntIpAddr != null and searchRprsntIpAddr != ""'>
+		AND RC_VM.RPRSNT_IP_ADDR LIKE '%' || #{searchRprsntIpAddr} || '%'
+		</if>
+	 	<choose>
+			<when test='searchVrlzSwTyCdList != null'>
+				<choose>
+					<when test="searchVrlzSwTyCdList.length > 0">
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="searchVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+							#{vrlzSwTyCd}
+						</foreach>
+						)
+					</when>
+					<otherwise>
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100')
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="fromClauseVm">
+		LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_VM.VM_CL_CD = RC_PM.PM_CL_CD
+		INNER JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+		INNER JOIN RC_NET ON RC_NET.NET_ID = RC_RSRC_POOL.NET_ID
+		INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+		INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+		LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+		LEFT JOIN CM_CODE VRLZ_SW_TY_CD ON VRLZ_SW_TY_CD.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND VRLZ_SW_TY_CD.PARENT_GRP_CD = '001'
+		LEFT JOIN (
+			SELECT RC_VM_JOB.VM_SEQ, ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM FROM RC_VM_JOB INNER JOIN CM_JOB ON RC_VM_JOB.JOB_ID = CM_JOB.JOB_ID INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID WHERE CM_INSTITUTION.USE_YN = 'Y' AND CM_JOB.USE_YN = 'Y' GROUP BY RC_VM_JOB.VM_SEQ
+		) AS JOBS_NM ON JOBS_NM.VM_SEQ = RC_VM.VM_SEQ
+	</sql>
+
+	<sql id="fromClauseVmUserAuthority">
+		<if test="!sysadm">
+			<choose>
+				<when test="opradm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+							AND CM_INSTITUTION.USE_YN = 'Y'
+							AND CM_JOB.USE_YN = 'Y'
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectPackgAlrmListTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.patch.packgAlrm.selectPackgAlrmListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			OA_PACKG_ALRM
+			INNER JOIN OA_VM_PATCH_ALRM ON OA_PACKG_ALRM.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PATCH_ALRM_RELATE_VER ON OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ AND OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PACKG ON OA_PACKG.PACKG_SEQ = OA_PATCH_ALRM_RELATE_VER.PACKG_SEQ
+			INNER JOIN OA_PACKG_VER ON OA_PACKG_VER.PACKG_SEQ = OA_PACKG.PACKG_SEQ AND OA_PACKG_VER.VER = OA_PATCH_ALRM_RELATE_VER.VER AND OA_PACKG_VER.RELEASE = OA_PATCH_ALRM_RELATE_VER.RELEASE
+            INNER JOIN OA_ALRM_TRGT ON OA_ALRM_TRGT.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ AND OA_ALRM_TRGT.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<if test="searchUserId != null and !searchUserId.isEmpty()">
+				AND OA_ALRM_TRGT.CHARGER_ID = #{searchUserId}
+			</if>
+			INNER JOIN RC_VM ON RC_VM.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectPackgAlrmList" resultMap="resultPackgAlrmVo">
+		/* ncis.sql.cpt.opr.patch.packgAlrm.selectPackgAlrmList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			, RC_VM.VM_SEQ
+			, OA_PACKG_ALRM.PATCH_ALRM_NM
+			, OA_PACKG.PACKG_NM
+			, OA_VM_PATCH_ALRM.VER
+			, OA_PATCH_ALRM_RELATE_VER.VER AS MAX_VER
+			, OA_ALRM_TRGT.CHARGER_ID
+			, OA_ALRM_TRGT.CHARGER_CL_CD
+			, TO_CHAR(OA_PACKG_ALRM.PATCH_ALRM_DTTM,'YYYY-MM-DD') AS PATCH_ALRM_DTTM
+			, RC_VM.VM_ID
+			, RC_VM.VM_NM
+			, RC_VM.HST_NM
+			, RC_VM.RPRSNT_IP_ADDR
+			, RC_VM.VM_COMP_ID
+			, CM_INSTITUTION.INSTITUTION_ID
+			, CM_INSTITUTION.INSTITUTION_NM
+			, JOBS_NM
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_CL_CD
+			, RC_NET.NET_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, RC_CLSTR.CLSTR_NM
+			, OA_ALRM_TRGT.CONFRM_YN
+			, (SELECT USER_NM FROM CM_USR WHERE CM_USR.USER_ID = OA_ALRM_TRGT.CHARGER_ID) AS CHARGER_NM
+		FROM
+			OA_PACKG_ALRM
+			INNER JOIN OA_VM_PATCH_ALRM ON OA_PACKG_ALRM.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PATCH_ALRM_RELATE_VER ON OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ AND OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PACKG ON OA_PACKG.PACKG_SEQ = OA_PATCH_ALRM_RELATE_VER.PACKG_SEQ
+			INNER JOIN OA_PACKG_VER ON OA_PACKG_VER.PACKG_SEQ = OA_PACKG.PACKG_SEQ AND OA_PACKG_VER.VER = OA_PATCH_ALRM_RELATE_VER.VER AND OA_PACKG_VER.RELEASE = OA_PATCH_ALRM_RELATE_VER.RELEASE
+            INNER JOIN OA_ALRM_TRGT ON OA_ALRM_TRGT.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ AND OA_ALRM_TRGT.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<if test="searchUserId != null and !searchUserId.isEmpty()">
+				AND OA_ALRM_TRGT.CHARGER_ID = #{searchUserId}
+			</if>
+			INNER JOIN RC_VM ON RC_VM.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY OA_PACKG_ALRM.PATCH_ALRM_DTTM DESC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectPackgAlrmExcelList" resultMap="resultPackgAlrmVo">
+		/* ncis.sql.cpt.opr.patch.packgAlrm.selectPackgAlrmExcelList */
+		SELECT
+			OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			, RC_VM.VM_SEQ
+			, OA_PACKG_ALRM.PATCH_ALRM_NM
+			, OA_PACKG.PACKG_NM
+			, OA_VM_PATCH_ALRM.VER
+			, OA_PATCH_ALRM_RELATE_VER.VER AS MAX_VER
+			, OA_ALRM_TRGT.CHARGER_ID
+			, OA_ALRM_TRGT.CHARGER_CL_CD
+			, TO_CHAR(OA_PACKG_ALRM.PATCH_ALRM_DTTM,'YYYY-MM-DD') AS PATCH_ALRM_DTTM
+			, RC_VM.VM_ID
+			, RC_VM.VM_NM
+			, RC_VM.HST_NM
+			, RC_VM.RPRSNT_IP_ADDR
+			, RC_VM.VM_COMP_ID
+			, CM_INSTITUTION.INSTITUTION_ID
+			, CM_INSTITUTION.INSTITUTION_NM
+			, JOBS_NM
+			, RC_REGION.REGION_ID
+			, RC_REGION.REGION_NM
+			, RC_ZONE.ZONE_ID
+			, RC_ZONE.ZONE_NM
+			, RC_NET.NET_CL_CD
+			, RC_NET.NET_NM
+			, RC_RSRC_POOL.RSRC_POOL_ID
+			, RC_RSRC_POOL.RSRC_POOL_NM
+			, RC_RSRC_POOL.VRLZ_SW_TY_CD
+			, VRLZ_SW_TY_CD.CD_NM AS VRLZ_SW_TY_CD_NM
+			, RC_CLSTR.CLSTR_NM
+			, OA_ALRM_TRGT.CONFRM_YN
+			, (CASE WHEN OA_ALRM_TRGT.CONFRM_YN = 'N' THEN '미확인' ELSE '확인' END) AS CONFRM_YN_NM
+			, (SELECT USER_NM FROM CM_USR WHERE CM_USR.USER_ID = OA_ALRM_TRGT.CHARGER_ID) AS CHARGER_NM
+		FROM
+			OA_PACKG_ALRM
+			INNER JOIN OA_VM_PATCH_ALRM ON OA_PACKG_ALRM.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PATCH_ALRM_RELATE_VER ON OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ AND OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ
+			INNER JOIN OA_PACKG ON OA_PACKG.PACKG_SEQ = OA_PATCH_ALRM_RELATE_VER.PACKG_SEQ
+			INNER JOIN OA_PACKG_VER ON OA_PACKG_VER.PACKG_SEQ = OA_PACKG.PACKG_SEQ AND OA_PACKG_VER.VER = OA_PATCH_ALRM_RELATE_VER.VER AND OA_PACKG_VER.RELEASE = OA_PATCH_ALRM_RELATE_VER.RELEASE
+            INNER JOIN OA_ALRM_TRGT ON OA_ALRM_TRGT.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ AND OA_ALRM_TRGT.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<if test="searchUserId != null and !searchUserId.isEmpty()">
+				AND OA_ALRM_TRGT.CHARGER_ID = #{searchUserId}
+			</if>
+			INNER JOIN RC_VM ON RC_VM.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+			<include refid="fromClauseVm" />
+			<include refid="fromClauseVmUserAuthority" />
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY OA_PACKG_ALRM.PATCH_ALRM_DTTM DESC
+	</select>
+
+	<select id="selectPackgAlrm" resultMap="resultPackgAlrmInfoVo">
+		/* ncis.sql.cpt.opr.patch.packgAlrm.selectPackgAlrm */
+		SELECT
+			OA_PACKG_ALRM.PATCH_ALRM_SEQ
+			, OA_PACKG.PACKG_NM
+			, OA_PACKG_ALRM.PATCH_ALRM_NM
+			, OA_PACKG_ALRM.PATCH_ALRM_CN
+			, OA_PACKG_ALRM.PATCH_ALRM_DSPTH_ID
+			, (SELECT USER_NM FROM CM_USR WHERE CM_USR.USER_ID = OA_PACKG_ALRM.PATCH_ALRM_DSPTH_ID) AS PATCH_ALRM_DSPTH_NM
+			, TO_CHAR(OA_PACKG_ALRM.PATCH_ALRM_DTTM,'YYYY-MM-DD') AS PATCH_ALRM_DTTM
+			, OA_PATCH_ALRM_RELATE_VER.VER AS MAX_VER
+			, OA_PATCH_ALRM_RELATE_VER.RELEASE AS MAX_RELEASE
+			, OA_VM_PATCH_ALRM.VER
+			, OA_VM_PATCH_ALRM.RELEASE
+			, OA_ALRM_TRGT.CONFRM_DT
+		FROM
+			OA_PACKG_ALRM
+ INNER JOIN OA_PATCH_ALRM_RELATE_VER ON OA_PATCH_ALRM_RELATE_VER.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ
+ INNER JOIN OA_VM_PATCH_ALRM ON OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ = OA_PACKG_ALRM.PATCH_ALRM_SEQ
+ INNER JOIN OA_ALRM_TRGT ON OA_ALRM_TRGT.PATCH_ALRM_SEQ = OA_VM_PATCH_ALRM.PATCH_ALRM_SEQ AND OA_ALRM_TRGT.VM_SEQ = OA_VM_PATCH_ALRM.VM_SEQ
+ INNER JOIN OA_PACKG_VER ON OA_PACKG_VER.PACKG_SEQ = OA_PATCH_ALRM_RELATE_VER.PACKG_SEQ AND OA_PACKG_VER.VER = OA_PATCH_ALRM_RELATE_VER.VER AND OA_PACKG_VER.RELEASE = OA_PATCH_ALRM_RELATE_VER.RELEASE
+ INNER JOIN OA_PACKG ON OA_PACKG.PACKG_SEQ = OA_PACKG_VER.PACKG_SEQ
+ 		WHERE OA_PACKG_ALRM.PATCH_ALRM_SEQ = #{patchAlrmSeq}::numeric
+ 		  AND OA_VM_PATCH_ALRM.VM_SEQ = #{vmSeq}::numeric
+ 		  AND OA_ALRM_TRGT.CHARGER_ID = #{chargerId}
+	</select>
+
+
+
+
+</mapper>

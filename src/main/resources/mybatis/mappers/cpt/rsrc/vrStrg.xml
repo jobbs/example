@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.strg.vrStrg">
+
+	<resultMap type="ncis.cpt.rsrc.strg.vo.VrStrgVo" id="resultVrStrgVo" extends="ncis.sql.cmn.rsVrStrg.resultRsVrStrg">
+		<result property="strgDmnSeq" column="STRG_DMN_SEQ" />
+		<result property="strgDmnNm" column="STRG_DMN_NM" />
+		<result property="strgDmnTyCd" column="STRG_DMN_TY_CD" />
+		<result property="strgDmnTyNm" column="STRG_DMN_TY_NM" />
+		<result property="regionId" column="REGION_ID" />
+		<result property="regionNm" column="REGION_NM" />
+		<result property="zoneId" column="ZONE_ID" />
+		<result property="zoneNm" column="ZONE_NM" />
+		<result property="netId" column="NET_ID" />
+		<result property="netClCd" column="NET_CL_CD" />
+		<result property="netNm" column="NET_NM" />
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM" />
+		<result property="vrlzSwTyCdId" column="VRLZ_SW_TY_CD" />
+		<result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM" />
+		<result property="wholeAsgnCapa" column="WHOLE_ASGN_CAPA" />
+		<result property="strgUseCapa" column="STRG_USE_CAPA" />
+		<result property="vmAsgnCapa" column="VM_ASGN_CAPA" />
+		<result property="strMrgnCapa" column="STR_MRGN_CAPA" />
+		<result property="tmplatAsgnCapa" column="TMPLAT_ASGN_CAPA" />
+		<result property="vmSnapshtAsgnCapa" column="VM_SNAPSHT_ASGN_CAPA"/>
+		<result property="sumVmAsgnCapa" column="SUM_VM_ASGN_CAPA" />
+		<result property="sumVmSnapshtAsgnCapa" column="SUM_VM_SNAPSHT_ASGN_CAPA"/>
+		<result property="uuid" column="UUID" />
+		<result property="rsrcPoolId" column="RSRC_POOL_ID" />
+		<result property="creDt" column="CRE_DT" />
+		<result property="delUserId" column="DEL_USER_ID" />
+		<result property="delDttm" column="DEL_DTTM" />
+		<result property="delYn" column="DEL_YN" />
+		<!-- 가상스토리지 도메인 상세 (가상서버 탭) -->
+		<result property="vmId" column="VM_ID" />
+		<result property="vmCompId" column="VM_COMP_ID" />
+		<result property="vmNm" column="VM_NM" />
+		<result property="institutionId" column="INSTITUTION_ID" />
+		<result property="institutionNm" column="INSTITUTION_NM" />
+		<result property="jobNm" column="JOBS_NM" />
+		<result property="clstrNm" column="CLSTR_NM" />
+		<result property="pmNm" column="PM_NM" />
+		<result property="pmCompId" column="PM_COMP_ID" />
+		<result property="vmSnapshtAsgnCapa_sum" column="VM_SNAPSHT_ASGN_CAPA_SUM" />
+		<result property="strgAsgnCapa_vm" column="STRG_ASGN_CAPA_VM"/>
+		<result property="strgAsgmCapa_vm_sum" column="STRG_ASGN_CAPA_VM_SUM" />
+		<!-- 가상스토리지 도메인 상세 (템플릿 탭) -->
+		<result property="swNm" column="SW_NM" />
+		<result property="prposNm" column="PRPOS_NM" />
+		<result property="osBitNm" column="OS_BIT_NM" />
+		<result property="osTyCdNm" column="OS_TY_CD_NM" />
+		<result property="pltfrm" column="PLTFRM" />
+		<result property="osVer" column="OS_VER" />
+		<result property="osNm" column="OS_NM" />
+		<result property="useYnNm" column="USE_YN" />
+		<result property="tmplatNm" column="TMPLAT_NM" />
+		<result property="strgAsgnCapa_tmplat" column="STRG_ASGN_CAPA_TMPLAT"/>
+		<result property="tmplatClNm"		column="TMPLAT_CL_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchRegionId != null and searchRegionId != ""'>
+			AND RC_RSRC_POOL.REGION_ID = #{searchRegionId}
+		</if>
+		<if test='searchZoneId != null and searchZoneId != ""'>
+			AND RC_RSRC_POOL.ZONE_ID = #{searchZoneId}
+		</if>
+		<if test='searchNetId != null and searchNetId != ""'>
+			AND RC_RSRC_POOL.NET_ID = #{searchNetId}
+		</if>
+		<if test='searchRsrcPoolId != null and searchRsrcPoolId != ""'>
+			AND RS_VR_STRG.RSRC_POOL_ID = #{searchRsrcPoolId}
+		</if>
+		<if test='searchVrlzSwTyCdList != null'>
+		<!-- 포함 -->
+			<choose>
+				<when test="searchVrlzSwTyCdList.length > 0">
+				AND RS_VR_STRG.RSRC_POOL_ID IN (SELECT RSRC_POOL_ID FROM RC_RSRC_POOL WHERE RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+					<foreach collection="searchVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+					</foreach>
+					))
+				</when>
+				<otherwise>
+				AND RS_VR_STRG.RSRC_POOL_ID IN (SELECT RSRC_POOL_ID FROM RC_RSRC_POOL WHERE RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search_vrStrgVm">
+		<if test='containsClstrNm != null and containsClstrNm != ""'>
+			AND RC_CLSTR.CLSTR_NM LIKE '%' || #{containsClstrNm} || '%'
+		</if>
+		<if test='containsPmNm != null and containsPmNm != ""'>
+			AND RC_PM.PM_NM LIKE '%' || #{containsPmNm} || '%'
+		</if>
+		<if test='containsPmCompId != null and containsPmCompId != ""'>
+			AND RC_PM.PM_COMP_ID LIKE '%' || #{containsPmCompId} || '%'
+		</if>
+		<if test='containsVmNm != null and containsVmNm != ""'>
+			AND RC_VM.VM_NM LIKE '%' || #{containsVmNm} || '%'
+		</if>
+		<if test='containsVmId != null and containsVmId != ""'>
+			AND RC_VM.VM_ID LIKE '%' || #{containsVmId} || '%'
+		</if>
+		<if test='containsVmCompId != null and containsVmCompId != ""'>
+			AND RC_VM.VM_COMP_ID LIKE '%' || #{containsVmCompId} || '%'
+		</if>
+		<if test='containsInstitutionNm != null and containsInstitutionNm != ""'>
+			AND CM_INSTITUTION.INSTITUTION_NM LIKE '%' || #{containsInstitutionNm} || '%'
+		</if>
+		<if test='existsContainsJobNm != null and existsContainsJobNm != ""'>
+			AND RC_VM.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (SELECT CM_JOB.JOB_ID FROM CM_JOB WHERE CM_JOB.JOB_NM LIKE '%' || #{existsContainsJobNm} || '%'))
+		</if>
+		<choose>
+			<when test='existsVrlzSwTyCdList != null'>
+			<!-- 포함 -->
+				<choose>
+					<when test="existsVrlzSwTyCdList.length > 0">
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="existsVrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+							#{vrlzSwTyCd}
+						</foreach>
+						)
+					</when>
+					<otherwise>
+					AND RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				RC_RSRC_POOL.VRLZ_SW_TY_CD IN (SELECT CD FROM CM_CODE WHERE GRP_CD = '001' AND PARENT_CD ='100' AND VAR_VL1 = 'COM')
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="search_vrStrgTmplat">
+		<if test="useYn != null and !useYn.isEmpty()">
+			<choose>
+				<when test="useYn == '01'">
+					AND RR_TMPLAT.USE_YN = 'Y'
+				</when>
+				<otherwise>
+					AND RR_TMPLAT.USE_YN = 'N'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="osBit != null and !osBit.isEmpty()">
+			AND RR_TMPLAT.OS_BIT = #{osBit}
+		</if>
+		<if test="tmplatClCd != null and !tmplatClCd.isEmpty()">
+			AND RR_TMPLAT.TMPLAT_CL_CD = #{tmplatClCd}
+		</if>
+		<if test="tmplatNm != null and !tmplatNm.isEmpty()">
+			AND RR_TMPLAT.TMPLAT_NM LIKE '%' || #{tmplatNm} || '%'
+		</if>
+		<if test="osTyCd != null and !osTyCd.isEmpty()">
+			AND RR_TMPLAT.OS_TY_CD = #{osTyCd}
+		</if>
+		<if test="osNm != null and !osNm.isEmpty()">
+			AND RR_TMPLAT.OS_NM LIKE '%' || #{osNm} || '%'
+		</if>
+		<if test="vrlzSwTyCdList != null">
+			<choose>
+				<when test="vrlzSwTyCdList.length > 0">
+				AND RR_TMPLAT.VRLZ_SW_TY_CD IN (
+					<foreach collection="vrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+					</foreach>
+					)
+				</when>
+				<otherwise>
+				AND RR_TMPLAT.VRLZ_SW_TY_CD ISNULL
+				</otherwise>
+			</choose>
+		</if>
+		<if test='searchStrgDmnSeq != null and searchStrgDmnSeq != ""'>
+			AND RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq}
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="userAuthorityOprAdm">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					/*  운영자 권한 */
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+				<when test="oprChr">
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="userAuthorityOprChk">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+				</when>
+				<when test="oprChr">
+					/*  담당자 권한 */
+					INNER JOIN (
+						SELECT RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+							INNER JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+							AND CM_INSTITUTION.USE_YN = 'Y'
+							AND CM_JOB.USE_YN = 'Y'
+						GROUP BY RC_VM_JOB.VM_SEQ
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgRsrcPoolUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN (
+						SELECT
+							CM_RSRC_POOL_USER.USER_ID
+							, CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM
+							CM_RSRC_POOL_USER
+						WHERE
+							CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+					) RSRC_POOL_USER ON RSRC_POOL_USER.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="fromClauseVrStrgVmUserAuthority">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprChr">
+					INNER JOIN (
+						SELECT
+							DISTINCT
+							RC_VM_JOB.VM_SEQ
+						FROM
+							CM_JOB_USER
+							INNER JOIN RC_VM_JOB ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+						WHERE
+							CM_JOB_USER.USER_ID = #{searchUserId}
+					) JOB_USER ON JOB_USER.VM_SEQ = RC_VM.VM_SEQ
+				</when>
+			</choose>
+		</if>
+	</sql>
+
+
+
+	<!--  가상스토리지 조회   (자원요청상세-가상서버 팝업)-->
+	<select id="selectVrStrgList" resultMap ="resultVrStrgVo">
+	/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgList */
+		SELECT	 RS_VR_STRG.STRG_DMN_SEQ  /* 스토리지도메인SEQ */
+	         	, RS_VR_STRG.STRG_DMN_NM  /* 스토리지도메인명 */
+	         	, RS_VR_STRG.STRG_DMN_TY_CD  /* 스토리지도메인유형코드 */
+				, FN_CODE_NAME('066' , RS_VR_STRG.STRG_DMN_TY_CD) STRG_DMN_TY_NM
+		        , RS_VR_STRG.CRE_DT  /* 생성일자 */
+		        , coalesce(RS_VR_STRG.WHOLE_ASGN_CAPA, 0)  	WHOLE_ASGN_CAPA 		/* 전체할당용량(GB) 		*/
+		        , coalesce(RS_VR_STRG.STRG_USE_CAPA, 0)  	STRG_USE_CAPA			/* 스토리지사용용량(GB) 	*/
+				, coalesce(SUM(RS_VR_DSK.DSK_ASGN_CAPA) , 0)  VM_ASGN_CAPA  		/* vm할당량(GB) 	*/
+		        , coalesce(RS_VR_STRG.STR_MRGN_CAPA, 0) 	STR_MRGN_CAPA			/* 스토리지여유량(GB) 	*/
+		        , coalesce(RS_VR_STRG.TMPLAT_ASGN_CAPA, 0) TMPLAT_ASGN_CAPA		 	/* 템플릿할당용량(GB) 	*/
+		        , RS_VR_STRG.UUID  /* UUID */
+		        , RS_VR_STRG.RSRC_POOL_ID  /* 자원풀ID */
+				, RC_RSRC_POOL.RSRC_POOL_NM 	/* 자원풀 명 */
+				, RC_RSRC_POOL.REGION_ID		/* 센터 */
+				, (SELECT REGION_NM FROM RC_REGION WHERE  RC_RSRC_POOL.REGION_ID = REGION_ID) AS REGION_NM	/* 센터 */
+				, RC_RSRC_POOL.ZONE_ID			/* 존 */
+				, (SELECT ZONE_NM  FROM RC_ZONE WHERE  RC_RSRC_POOL.ZONE_ID = ZONE_ID) AS ZONE_NM		/* 존 */
+				, RC_RSRC_POOL.NET_ID			/* net id */
+				, (SELECT  NET_NM FROM RC_NET WHERE  RC_RSRC_POOL.NET_ID = NET_ID) AS NET_NM			/* net id */
+				, RC_RSRC_POOL.VRLZ_SW_TY_CD	/* 가상화 SW유형코드 */
+				, RC_RSRC_POOL.REG_USER_ID		/* 자원풀 등록자 */
+				, RC_RSRC_POOL.REG_DTTM		/* 자원풀 등록시간 */
+				, FN_CODE_NAME('001', RC_RSRC_POOL.VRLZ_SW_TY_CD) AS VRLZ_SW_TY_CD_NM 	/* 가상화 SW유형코드 명 */
+		  FROM	RS_VR_STRG
+	INNER JOIN  RC_RSRC_POOL
+	    	ON  RS_VR_STRG.RSRC_POOL_ID = RC_RSRC_POOL.RSRC_POOL_ID and RC_RSRC_POOL.VRLZ_SW_TY_CD IN  (SELECT CD FROM CM_CODE WHERE GRP_CD ='001')
+	 LEFT JOIN  (SELECT  RS_VR_DSK.STRG_DMN_SEQ, RS_VR_DSK.DSK_ASGN_CAPA
+	 			      FROM RS_VR_DSK
+			    INNER JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+			    INNER JOIN RC_VM ON RC_VM.VM_SEQ = RS_VM_STRG_ASGN.VM_SEQ and RC_VM.DEL_YN = 'N'
+			    <include refid="userAuthorityOprChk"/>
+				) RS_VR_DSK ON RS_VR_DSK.STRG_DMN_SEQ = RS_VR_STRG.STRG_DMN_SEQ
+	 	<include refid="userAuthorityOprAdm"/>
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+		 	<include refid="search"/>
+			AND RS_VR_STRG.DEL_YN ='N' AND RC_RSRC_POOL.DEL_YN ='N'
+		</trim>
+	 GROUP  BY	RS_VR_STRG.STRG_DMN_SEQ
+	         	, RS_VR_STRG.STRG_DMN_NM
+	         	, RS_VR_STRG.STRG_DMN_TY_CD
+		        , RS_VR_STRG.CRE_DT
+		        , RS_VR_STRG.WHOLE_ASGN_CAPA
+		        , RS_VR_STRG.STRG_USE_CAPA
+		        , RS_VR_STRG.STR_MRGN_CAPA
+		        , RS_VR_STRG.TMPLAT_ASGN_CAPA
+		        , RS_VR_STRG.UUID
+		        , RS_VR_STRG.RSRC_POOL_ID
+				, RC_RSRC_POOL.RSRC_POOL_NM
+				, RC_RSRC_POOL.REGION_ID
+				, RC_RSRC_POOL.ZONE_ID
+				, RC_RSRC_POOL.NET_ID
+				, RC_RSRC_POOL.VRLZ_SW_TY_CD
+				, RC_RSRC_POOL.REG_USER_ID
+				, RC_RSRC_POOL.REG_DTTM
+ 	  ORDER BY STRG_DMN_NM ASC
+	</select>
+
+	<select id="selectVrStrg" resultMap="resultVrStrgVo">
+	/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrg */
+	SELECT
+		RS_VR_STRG.STRG_DMN_SEQ /* 스토리지도메인SEQ */
+		, RS_VR_STRG.STRG_DMN_NM /* 스토리지도메인명 */
+		, RS_VR_STRG.STRG_DMN_TY_CD /* 스토리지도메인유형코드 */
+		, RC_RSRC_POOL.REGION_ID /* 센터ID */
+		, RC_REGION.REGION_NM /* 센터명 */
+		, RC_RSRC_POOL.ZONE_ID /* 존ID */
+		, RC_ZONE.ZONE_NM /* 존명 */
+		, RC_RSRC_POOL.NET_CL_CD /* 망구분ID */
+		, C.CD_NM AS NET_NM /* 망명 */
+		, RC_RSRC_POOL.RSRC_POOL_NM /* 자원풀명 */
+		, RC_RSRC_POOL.VRLZ_SW_TY_CD /* 가상화SW 코드 */
+		, RS_VR_STRG.WHOLE_ASGN_CAPA /* 전체할당량 */
+		, RS_VR_STRG.STRG_USE_CAPA /* 사용량 */
+		, RS_VR_STRG.STR_MRGN_CAPA /* 여유량 */
+		, RS_VR_STRG.TMPLAT_ASGN_CAPA /* 템플릿할당용량 */
+		, RS_VR_STRG.UUID /* uuid */
+		, RS_VR_STRG.RSRC_POOL_ID /* 자원풀ID */
+		, RS_VR_STRG.CRE_DT /* 생성일자 */
+		, RS_VR_STRG.DEL_USER_ID /* 삭제자 */
+		, RS_VR_STRG.DEL_DTTM /* 삭제일지 */
+		, RS_VR_STRG.DEL_YN /* 삭제여부 */
+		, B.CD_NM AS VRLZ_SW_TY_CD_NM /* 가상화SW 명 */
+		, A.CD_NM AS STRG_DMN_TY_NM /* 스토리지도메인유형코드명 */
+		, (SELECT COALESCE(SUM(RS_VR_DSK.DSK_ASGN_CAPA), 0)
+			FROM RS_VR_DSK
+			INNER JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+			INNER JOIN RC_VM ON RC_VM.VM_SEQ = RS_VM_STRG_ASGN.VM_SEQ AND RC_VM.DEL_YN = 'N'
+			WHERE RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '02') AS SUM_VM_ASGN_CAPA
+		, (SELECT COALESCE(SUM(RS_VR_DSK.DSK_ASGN_CAPA), 0)
+			FROM RS_VR_DSK
+			INNER JOIN RS_VM_SNAPSHT_STRG_ASGN ON RS_VM_SNAPSHT_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ
+			INNER JOIN RC_VM_SNAPSHT ON RC_VM_SNAPSHT.SNAPSHT_SEQ = RS_VM_SNAPSHT_STRG_ASGN.SNAPSHT_SEQ AND RC_VM_SNAPSHT.DEL_YN = 'N'
+			WHERE RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '03') AS SUM_VM_SNAPSHT_ASGN_CAPA
+	FROM RS_VR_STRG
+	INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RS_VR_STRG.RSRC_POOL_ID
+	INNER JOIN RC_ZONE ON RC_ZONE.ZONE_ID = RC_RSRC_POOL.ZONE_ID
+	INNER JOIN RC_REGION ON RC_REGION.REGION_ID = RC_RSRC_POOL.REGION_ID
+	LEFT JOIN CM_CODE A ON A.CD = RS_VR_STRG.STRG_DMN_TY_CD AND A.GRP_CD = '066' AND A.PARENT_CD = '142'
+	INNER JOIN CM_CODE B ON B.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND B.GRP_CD = '001' AND B.PARENT_CD = '100'
+	INNER JOIN CM_CODE C ON C.CD = RC_RSRC_POOL.NET_CL_CD AND C.GRP_CD = '067' AND C.PARENT_CD = 'NETCD'
+
+	<include refid="fromClauseVrStrgRsrcPoolUserAuthority" />
+	WHERE RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq} AND RS_VR_STRG.DEL_YN = 'N'
+	ORDER BY RS_VR_STRG.STRG_DMN_NM ASC
+	</select>
+
+	<select id="selectVrStrgVmTotCnt" resultType="Integer">
+		/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgVmTotCnt */
+		SELECT
+			COUNT(1)
+		FROM
+			(
+			SELECT
+				RC_VM.VM_ID
+				, RC_VM.VM_NM
+				, RC_VM.VM_COMP_ID
+				, RC_PM.PM_NM
+				, RC_PM.PM_COMP_ID
+				, RC_CLSTR.CLSTR_NM
+				, RS_VR_STRG.STRG_DMN_NM
+				, CM_INSTITUTION.INSTITUTION_ID
+				, CM_INSTITUTION.INSTITUTION_NM
+				, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+				FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID AND RC_VM_JOB.VM_SEQ = RC_VM.VM_SEQ
+				GROUP BY RC_VM_JOB.VM_SEQ ) JOBS_NM /* 업무명 */
+				, CODE.CD_NM AS VRLZ_SW_TY_CD_NM /* 가상화SW 명 */
+				, SUM(RS_VR_DSK.DSK_ASGN_CAPA) AS STRG_ASGN_CAPA_VM_SUM
+			FROM
+				RC_VM
+			INNER JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VM_SEQ = RC_VM.VM_SEQ
+			INNER JOIN RS_VR_DSK ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_STRG_ASGN.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '02'
+			INNER JOIN RS_VR_STRG ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_STRG.DEL_YN = 'N'
+			LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_PM.DEL_YN = 'N'
+			INNER JOIN RC_CLSTR ON RC_VM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+			INNER JOIN CM_CODE CODE ON CODE.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND CODE.GRP_CD = '001' AND CODE.PARENT_CD = '100'
+			<include refid="fromClauseVrStrgUserAuthority" />
+			<where>
+				<include refid="search_vrStrgVm"/>
+				AND RC_VM.DEL_YN = 'N'
+				AND RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq}
+			</where>
+
+			GROUP BY
+				RC_VM.VM_ID
+				, RC_VM.VM_NM
+				, RC_VM.VM_COMP_ID
+				, RC_PM.PM_NM
+				, RC_PM.PM_COMP_ID
+				, RC_CLSTR.CLSTR_NM
+				, RS_VR_STRG.STRG_DMN_NM
+				, CM_INSTITUTION.INSTITUTION_ID
+				, CM_INSTITUTION.INSTITUTION_NM
+				, JOBS_NM
+				, VRLZ_SW_TY_CD_NM
+			) B
+			LEFT JOIN
+			(
+				SELECT
+					RC_VM.VM_ID
+					, RC_VM.VM_NM
+					, SUM(RS_VR_DSK.DSK_ASGN_CAPA) AS VM_SNAPSHT_ASGN_CAPA_SUM
+				FROM
+					RC_VM
+				INNER JOIN RC_VM_SNAPSHT ON RC_VM_SNAPSHT.VM_SEQ = RC_VM.VM_SEQ AND RC_VM_SNAPSHT.DEL_YN = 'N'
+				INNER JOIN RS_VM_SNAPSHT_STRG_ASGN ON RS_VM_SNAPSHT_STRG_ASGN.SNAPSHT_SEQ = RC_VM_SNAPSHT.SNAPSHT_SEQ
+				INNER JOIN RS_VR_DSK ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_SNAPSHT_STRG_ASGN.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '03'
+				INNER JOIN RS_VR_STRG ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_STRG.DEL_YN = 'N'
+
+				WHERE
+					RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq}
+				GROUP BY
+					RC_VM.VM_ID
+					, RC_VM.VM_NM
+			) C ON B.VM_ID = C.VM_ID
+	</select>
+
+	<select id="selectVrStrgVm" resultMap="resultVrStrgVo">
+	/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgVm */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			B.VM_ID
+			, B.VM_NM
+			, B.VM_COMP_ID
+			, B.PM_NM
+			, B.PM_COMP_ID
+			, B.CLSTR_NM
+			, B.STRG_DMN_NM
+			, B.INSTITUTION_ID
+			, B.INSTITUTION_NM
+			, B.JOBS_NM
+			, B.VRLZ_SW_TY_CD_NM
+			, COALESCE(B.STRG_ASGN_CAPA_VM_SUM, 0) AS STRG_ASGN_CAPA_VM_SUM
+			, COALESCE(C.VM_SNAPSHT_ASGN_CAPA_SUM, 0) AS VM_SNAPSHT_ASGN_CAPA_SUM
+		FROM
+			(
+			SELECT
+				RC_VM.VM_ID
+				, RC_VM.VM_NM
+				, RC_VM.VM_COMP_ID
+				, RC_PM.PM_NM
+				, RC_PM.PM_COMP_ID
+				, RC_CLSTR.CLSTR_NM
+				, RS_VR_STRG.STRG_DMN_NM
+				, CM_INSTITUTION.INSTITUTION_ID
+				, CM_INSTITUTION.INSTITUTION_NM
+				, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_JOB.JOB_NM),',') AS JOBS_NM
+				FROM RC_VM_JOB INNER JOIN CM_JOB ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID AND RC_VM_JOB.VM_SEQ = RC_VM.VM_SEQ
+				GROUP BY RC_VM_JOB.VM_SEQ ) JOBS_NM /* 업무명 */
+				, CODE.CD_NM AS VRLZ_SW_TY_CD_NM /* 가상화SW 명 */
+				, SUM(RS_VR_DSK.DSK_ASGN_CAPA) AS STRG_ASGN_CAPA_VM_SUM
+			FROM
+				RC_VM
+			INNER JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VM_SEQ = RC_VM.VM_SEQ
+			INNER JOIN RS_VR_DSK ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_STRG_ASGN.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '02'
+			INNER JOIN RS_VR_STRG ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_STRG.DEL_YN = 'N'
+			LEFT JOIN RC_PM ON RC_PM.PM_SEQ = RC_VM.PM_SEQ AND RC_PM.DEL_YN = 'N'
+			INNER JOIN RC_CLSTR ON RC_VM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+			INNER JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+			LEFT JOIN CM_INSTITUTION ON CM_INSTITUTION.INSTITUTION_ID = RC_VM.INSTITUTION_ID
+			INNER JOIN CM_CODE CODE ON CODE.CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND CODE.GRP_CD = '001' AND CODE.PARENT_CD = '100'
+			<include refid="fromClauseVrStrgUserAuthority" />
+			<where>
+				<include refid="search_vrStrgVm"/>
+				AND RC_VM.DEL_YN = 'N'
+				AND RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq}
+			</where>
+
+			GROUP BY
+				RC_VM.VM_ID
+				, RC_VM.VM_NM
+				, RC_VM.VM_COMP_ID
+				, RC_PM.PM_NM
+				, RC_PM.PM_COMP_ID
+				, RC_CLSTR.CLSTR_NM
+				, RS_VR_STRG.STRG_DMN_NM
+				, CM_INSTITUTION.INSTITUTION_ID
+				, CM_INSTITUTION.INSTITUTION_NM
+				, JOBS_NM
+				, VRLZ_SW_TY_CD_NM
+			) B
+			LEFT JOIN
+			(
+				SELECT
+					RC_VM.VM_ID
+					, RC_VM.VM_NM
+					, SUM(RS_VR_DSK.DSK_ASGN_CAPA) AS VM_SNAPSHT_ASGN_CAPA_SUM
+				FROM
+					RC_VM
+				INNER JOIN RC_VM_SNAPSHT ON RC_VM_SNAPSHT.VM_SEQ = RC_VM.VM_SEQ AND RC_VM_SNAPSHT.DEL_YN = 'N'
+				INNER JOIN RS_VM_SNAPSHT_STRG_ASGN ON RS_VM_SNAPSHT_STRG_ASGN.SNAPSHT_SEQ = RC_VM_SNAPSHT.SNAPSHT_SEQ
+				INNER JOIN RS_VR_DSK ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_SNAPSHT_STRG_ASGN.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N' AND RS_VR_DSK.DSK_CL_CD = '03'
+				INNER JOIN RS_VR_STRG ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_STRG.DEL_YN = 'N'
+
+				WHERE
+					RS_VR_STRG.STRG_DMN_SEQ = #{searchStrgDmnSeq}
+				GROUP BY
+					RC_VM.VM_ID
+					, RC_VM.VM_NM
+			) C ON B.VM_ID = C.VM_ID
+		ORDER BY
+			B.CLSTR_NM, B.PM_NM, B.VM_NM ASC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVrStrgTmplatTotCnt" resultType="Integer">
+		/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgTmplatTotCnt */
+		SELECT
+			COUNT(1)
+		FROM RS_VR_STRG
+		LEFT JOIN RR_TMPLAT ON RS_VR_STRG.STRG_DMN_SEQ = RR_TMPLAT.STRG_DMN_SEQ AND RR_TMPLAT.DEL_YN = 'N'
+		LEFT JOIN CM_CODE A ON A.CD = RR_TMPLAT.VRLZ_SW_TY_CD AND A.GRP_CD = '001'
+		LEFT JOIN CM_CODE B ON B.CD = RR_TMPLAT.OS_TY_CD AND B.GRP_CD = '003'
+		LEFT JOIN CM_CODE C ON C.CD = RR_TMPLAT.OS_BIT AND C.GRP_CD = '004'
+		<where>
+			<include refid="search_vrStrgTmplat"/>
+			AND RS_VR_STRG.DEL_YN = 'N'
+		</where>
+	</select>
+
+	<select id="selectVrStrgTmplat" resultMap="resultVrStrgVo">
+	/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgTmplat */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RS_VR_STRG.STRG_DMN_NM /* 스토리지 도메인명 */
+			, COALESCE(RR_TMPLAT.STRG_ASGN_CAPA, 0) AS STRG_ASGN_CAPA_TMPLAT /* 템플릿 할당량 */
+			, RR_TMPLAT.TMPLAT_NM /* 템플릿 명 */
+			, RR_TMPLAT.USE_YN /* 사용여부 */
+			, RR_TMPLAT.OS_NM /* 운영체제 명 */
+			, RR_TMPLAT.OS_VER /* OS버전 명 */
+			, RR_TMPLAT.PLTFRM /* 플랫폼 */
+			, B.CD_NM AS OS_TY_CD_NM /* 운영체제타입 명 */
+			, C.CD_NM AS OS_BIT_NM /* OS BIT 명 */
+			, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_CODE.CD_NM), ',') AS PRPOS_NM FROM RR_TMPLAT_PRPOS INNER JOIN CM_CODE ON CM_CODE.PARENT_CD = '118' AND CM_CODE.PARENT_GRP_CD = '019' AND CM_CODE.CD = RR_TMPLAT_PRPOS.PRPOS_CD WHERE RR_TMPLAT_PRPOS.TMPLAT_SEQ = RR_TMPLAT.TMPLAT_SEQ) AS PRPOS_NM /* 용도 */
+			, (SELECT ARRAY_TO_STRING(ARRAY_AGG(RR_SW.SW_NM), ',') AS SW_NM FROM RR_TMPLAT_APPLC_SW INNER JOIN RR_SW ON RR_SW.SW_SEQ = RR_TMPLAT_APPLC_SW.SW_SEQ WHERE RR_TMPLAT_APPLC_SW.TMPLAT_SEQ = RR_TMPLAT.TMPLAT_SEQ) AS SW_NM /* 소프트웨어 */
+			, RS_VR_STRG.STRG_DMN_SEQ /* 스토레지 도메인SEQ */
+			, A.CD_NM AS VRLZ_SW_TY_CD_NM /* 가상화SW 명 */
+			, D.CD_NM TMPLAT_CL_NM /* 템플릿 구분코드 명 */
+		FROM RS_VR_STRG
+		INNER JOIN RR_TMPLAT ON RS_VR_STRG.STRG_DMN_SEQ = RR_TMPLAT.STRG_DMN_SEQ AND RR_TMPLAT.DEL_YN = 'N'
+		LEFT JOIN CM_CODE A ON A.CD = RR_TMPLAT.VRLZ_SW_TY_CD AND A.GRP_CD = '001'
+		LEFT JOIN CM_CODE B ON B.CD = RR_TMPLAT.OS_TY_CD AND B.GRP_CD = '003'
+		LEFT JOIN CM_CODE C ON C.CD = RR_TMPLAT.OS_BIT AND C.GRP_CD = '004'
+		LEFT JOIN CM_CODE D ON D.CD = RR_TMPLAT.TMPLAT_CL_CD AND D.PARENT_GRP_CD ='016'
+		<where>
+			<include refid="search_vrStrgTmplat"/>
+			AND RS_VR_STRG.DEL_YN = 'N'
+		</where>
+		ORDER BY RR_TMPLAT.TMPLAT_NM, RS_VR_STRG.STRG_DMN_NM ASC
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectVrStrgAsgnInfoOfVm" resultMap="resultVrStrgVo">
+	/*  ncis.sql.cpt.rsrc.strg.vrStrg.selectVrStrgAsgnInfoOfVm */
+		SELECT
+			 A.STRG_DMN_SEQ
+			,COALESCE(A.WHOLE_ASGN_CAPA, 0) AS WHOLE_ASGN_CAPA
+			,COALESCE(A.TMPLAT_ASGN_CAPA, 0) AS TMPLAT_ASGN_CAPA
+			,COALESCE(A.STRG_ASGN_CAPA_VM_SUM, 0) AS STRG_ASGN_CAPA_VM_SUM
+			,(SELECT
+					COALESCE(SUM(RS_VR_DSK.DSK_ASGN_CAPA), 0)
+			  FROM
+			   		RS_VR_DSK
+					JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VR_DSK_SEQ = RS_VR_DSK.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N'
+					JOIN RC_VM ON RC_VM.VM_SEQ = RS_VM_STRG_ASGN.VM_SEQ AND RC_VM.DEL_YN = 'N'
+			  WHERE A.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ) AS VM_ASGN_CAPA
+			,(SELECT
+					COALESCE(SUM(RC_VM_SNAPSHT.SNAPSHT_ASGN_CAPA), 0)
+			  FROM
+			  		RC_VM_SNAPSHT
+					JOIN RC_VM ON RC_VM.VM_SEQ = RC_VM_SNAPSHT.VM_SEQ AND RC_VM.DEL_YN = 'N' AND RC_VM_SNAPSHT.DEL_YN = 'N'
+					JOIN RS_VM_STRG_ASGN ON RS_VM_STRG_ASGN.VM_SEQ = RC_VM.VM_SEQ
+					JOIN RS_VR_DSK ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_STRG_ASGN.VR_DSK_SEQ AND RS_VR_DSK.DEL_YN = 'N'
+			  WHERE A.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ) AS VM_SNAPSHT_ASGN_CAPA
+
+		FROM (
+			SELECT
+            	 RS_VR_STRG.STRG_DMN_SEQ
+				,RS_VR_STRG.WHOLE_ASGN_CAPA
+				,RS_VR_STRG.TMPLAT_ASGN_CAPA
+				,SUM(RS_VR_DSK.DSK_ASGN_CAPA) OVER(PARTITION BY 1) STRG_ASGN_CAPA_VM_SUM
+			FROM
+				RS_VR_STRG
+            	INNER JOIN RS_VR_DSK ON RS_VR_STRG.STRG_DMN_SEQ = RS_VR_DSK.STRG_DMN_SEQ AND RS_VR_STRG.DEL_YN = 'N' AND RS_VR_DSK.DEL_YN = 'N'
+				INNER JOIN RS_VM_STRG_ASGN ON RS_VR_DSK.VR_DSK_SEQ = RS_VM_STRG_ASGN.VR_DSK_SEQ
+				INNER JOIN RC_VM ON RS_VM_STRG_ASGN.VM_SEQ = RC_VM.VM_SEQ AND RC_VM.DEL_YN = 'N'
+			WHERE
+				RC_VM.VM_SEQ = #{value}
+
+			) A
+
+        GROUP BY STRG_DMN_SEQ , WHOLE_ASGN_CAPA, TMPLAT_ASGN_CAPA , STRG_ASGN_CAPA_VM_SUM, VM_ASGN_CAPA
+	</select>
+
+</mapper>

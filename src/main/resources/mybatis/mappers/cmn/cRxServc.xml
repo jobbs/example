@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServc">
+	<!-- 서비스 등록 -->
+	<insert id="insertRxServc" parameterType="ncis.cmn.entity.RxServc">
+	   <selectKey order="BEFORE" keyProperty="servcSeq" resultType="integer">
+            SELECT nextval('rx_servc_sq01')
+            /* SELECT (MAX(servc_seq)::int)+1 FROM RX_SERVC */
+        </selectKey>
+		/* ncis.sql.cmn.rxServc.insertRxServc */
+		INSERT INTO RX_SERVC(
+	        SERVC_SEQ  /* 서비스SEQ */
+	         , SERVC_AREA_SEQ  /* 서비스영역SEQ */
+	         , SERVC_ID  /* 서비스ID */
+	         , SERVC_NM  /* 서비스명 */
+	         , SERVC_UID  /* 서비스UID */
+	         , RMK  /* 비고 */
+	         , SERVC_TY_CD /* 서비스유형코드 */
+	         , STAT_CD  /* 상태코드 */
+	         , CRE_DTTM  /* 생성일시 */
+	         , CRE_USER_ID  /* 생성자ID */
+	    )
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{servcId}  /* 서비스ID */
+			, #{servcNm}  /* 서비스명 */
+			, #{servcUid}  /* 서비스UID */
+			, #{rmk}  /* 비고 */
+			, #{servcTyCd}  /* 서비스유형코드 */
+			, #{statCd}  /* 상태코드 */
+			, #{creDttm}::timestamp  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+        )
+	</insert>
+
+	<!-- 서비스 수정 -->
+	<update id="updateRxServc">
+		/* ncis.sql.cmn.rxServc.updateRxServc */
+		UPDATE RX_SERVC
+		SET
+         SERVC_NM = #{servcNm}  /* 서비스명 */
+         , RMK = #{rmk}  /* 비고 */
+         <if test="statCd != null and !statCd.isEmpty()">
+         , STAT_CD = #{statCd}  /* 상태코드 */
+         </if>
+         , UPDT_DTTM = now()  /* 수정일시 */
+         , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+	</update>
+
+	<!-- 서비스 상태 수정 -->
+	<update id="updateRxServcStat">
+		/* ncis.sql.cmn.rxServc.updateRxServcStat */
+		UPDATE RX_SERVC
+		SET
+          STAT_CD = #{statCd}  /* 상태코드 */
+         , UPDT_DTTM = now()  /* 수정일시 */
+         , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+	</update>
+
+	<!-- 서비스 삭제 -->
+	<delete id="deleteRxServc">
+		/* ncis.sql.cmn.RxServc.deleteRxServc */
+		UPDATE RX_SERVC
+            SET DEL_DTTM = now()  /* 삭제일시 */
+            , DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+            , DEL_YN = #{delYn}  /* 삭제여부 */
+        WHERE SERVC_SEQ = #{servcSeq}  /* 서비스영역SEQ */
+	</delete>
+
+</mapper>

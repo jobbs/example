@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnSRout">
+
+	<resultMap id="resultRnSRout" type="ncis.cmn.entity.RnSRout">
+        <result property="sRoutSeq"     column="S_ROUT_SEQ"/>  <!-- 스태틱라우터SEQ -->
+        <result property="ipBndAddr"     column="IP_BND_ADDR"/>  <!-- IP대역주소 -->
+        <result property="subnetMask"     column="SUBNET_MASK"/>  <!-- 서브넷마스크 -->
+        <result property="gtwyNm"     column="GTWY_NM"/>  <!-- 게이트웨이명 -->
+        <result property="bndSeq"     column="BND_SEQ"/>  <!-- 대역SEQ -->
+	</resultMap>
+
+	<!-- 스태틱라우터 등록 -->
+	<insert id="insertRnSRout">
+		/* ncis.sql.cpt.rnSRout.insertRnSRout */
+		<selectKey order="BEFORE" keyProperty="sRoutSeq" resultType="java.math.BigDecimal">
+			SELECT nextval('RN_S_ROUT_SQ01')
+		</selectKey>
+
+		INSERT INTO RN_S_ROUT (
+		             S_ROUT_SEQ  /* 스태틱라우터SEQ */
+		           , IP_BND_ADDR  /* IP대역주소 */
+		           , SUBNET_MASK  /* 서브넷마스크 */
+		           , GTWY_NM  /* 게이트웨이명 */
+		           , BND_SEQ  /* 대역SEQ */
+		) VALUES (
+		           #{sRoutSeq}  /* 스태틱라우터SEQ */
+		         , #{ipBndAddr}  /* IP대역주소 */
+		         , #{subnetMask}  /* 서브넷마스크 */
+		         , #{gtwyNm}  /* 게이트웨이명 */
+		         , #{bndSeq}  /* 대역SEQ */
+		)
+	</insert>
+
+	<!-- 스태틱라우터 수정 -->
+	<update id="updateRnSRout">
+	/* ncis.sql.cpt.rnSRout.updateRnSRout */
+	UPDATE RN_S_ROUT
+	         SET S_ROUT_SEQ = #{sRoutSeq}  /* 스태틱라우터SEQ */
+	           , IP_BND_ADDR = #{ipBndAddr}  /* IP대역주소 */
+	           , SUBNET_MASK = #{subnetMask}  /* 서브넷마스크 */
+	           , GTWY_NM = #{gtwyNm}  /* 게이트웨이명 */
+	           , BND_SEQ = #{bndSeq}  /* 대역SEQ */
+         WHERE S_ROUT_SEQ = #{sRoutSeq}  /* 스태틱라우터SEQ */
+
+	</update>
+
+	<!-- 스태틱라우터 삭제 -->
+	<delete id="deleteRnSRout">
+	/* ncis.sql.cpt.rnSRout.deleteRnSRout */
+	DELETE FROM RN_S_ROUT
+	WHERE
+		BND_SEQ = #{bndSeq}
+	</delete>
+
+</mapper>

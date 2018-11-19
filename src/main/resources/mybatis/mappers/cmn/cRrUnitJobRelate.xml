@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrUnitJobRelate">
+
+	<resultMap id="resultRrUnitJobRelate" type="ncis.cmn.entity.RrUnitJobRelate">
+        <result property="uJobRelateSeq"     column="U_JOB_RELATE_SEQ"/>  <!-- 단위업무관계SEQ -->
+        <result property="uJobRelateNm"     column="U_JOB_RELATE_NM"/>  <!-- 단위업무관계명 -->
+        <result property="uJobRelateTyCd"     column="U_JOB_RELATE_TY_CD"/>  <!-- 단위업무관계유형코드 -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="dc"     column="DC"/>  <!-- 설명 -->
+        <result property="strtUJobId"     column="STRT_U_JOB_ID"/>  <!-- 시작단위업무ID -->
+        <result property="endUJobId"     column="END_U_JOB_ID"/>  <!-- 종료단위업무ID -->
+        <result property="endUJobCndVarId"     column="END_U_JOB_CND_VAR_ID"/>  <!-- 종료단위업무조건변수ID -->
+        <result property="endUJobCndVarVl"     column="END_U_JOB_CND_VAR_VL"/>  <!-- 종료단위업무조건변수값 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="uJobId"     column="U_JOB_ID"/>  <!-- 단위업무ID -->
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+	</resultMap>
+
+	<!-- 단위업무관계 등록 -->
+	<insert id="insertRrUnitJobRelate">
+	INSERT INTO RR_UNIT_JOB_RELATE (
+	             U_JOB_RELATE_SEQ  /* 단위업무관계SEQ */
+	           , U_JOB_RELATE_NM  /* 단위업무관계명 */
+	           , U_JOB_RELATE_TY_CD  /* 단위업무관계유형코드 */
+	           , REG_DTTM  /* 등록일시 */
+	           , DC  /* 설명 */
+	           , STRT_U_JOB_ID  /* 시작단위업무ID */
+	           , END_U_JOB_ID  /* 종료단위업무ID */
+	           , END_U_JOB_CND_VAR_ID  /* 종료단위업무조건변수ID */
+	           , END_U_JOB_CND_VAR_VL  /* 종료단위업무조건변수값 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , UPDT_USER_ID  /* 수정자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , U_JOB_ID  /* 단위업무ID */
+	           , PROCSS_SEQ  /* 프로세스ID */
+	) VALUES (
+	           #{uJobRelateSeq}  /* 단위업무관계SEQ */
+	         , #{uJobRelateNm}  /* 단위업무관계명 */
+	         , #{uJobRelateTyCd}  /* 단위업무관계유형코드 */
+	         , now()  /* 등록일시 */
+	         , #{dc}  /* 설명 */
+	         , #{strtUJobId}  /* 시작단위업무ID */
+	         , #{endUJobId}  /* 종료단위업무ID */
+	         , #{endUJobCndVarId}  /* 종료단위업무조건변수ID */
+	         , #{endUJobCndVarVl}  /* 종료단위업무조건변수값 */
+	         , #{regUserId}  /* 등록자ID */
+	         , #{updtUserId}  /* 수정자ID */
+	         , now()  /* 수정일시 */
+	         , #{uJobId}  /* 단위업무ID */
+	         , #{procssSeq}  /* 프로세스ID */
+	)
+	</insert>
+
+	<!-- 단위업무관계 수정 -->
+	<update id="updateRrUnitJobRelate">
+	UPDATE RR_UNIT_JOB_RELATE
+	         SET U_JOB_RELATE_SEQ = #{uJobRelateSeq}  /* 단위업무관계SEQ */
+	           , U_JOB_RELATE_NM = #{uJobRelateNm}  /* 단위업무관계명 */
+	           , U_JOB_RELATE_TY_CD = #{uJobRelateTyCd}  /* 단위업무관계유형코드 */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , DC = #{dc}  /* 설명 */
+	           , STRT_U_JOB_ID = #{strtUJobId}  /* 시작단위업무ID */
+	           , END_U_JOB_ID = #{endUJobId}  /* 종료단위업무ID */
+	           , END_U_JOB_CND_VAR_ID = #{endUJobCndVarId}  /* 종료단위업무조건변수ID */
+	           , END_U_JOB_CND_VAR_VL = #{endUJobCndVarVl}  /* 종료단위업무조건변수값 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , U_JOB_ID = #{uJobId}  /* 단위업무ID */
+	           , PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+         WHERE U_JOB_RELATE_SEQ = #{uJobRelateSeq}  /* 단위업무관계SEQ */
+
+	</update>
+
+	<!-- 단위업무관계 삭제 -->
+	<delete id="deleteRrUnitJobRelate">
+	DELETE FROM RR_UNIT_JOB_RELATE
+         WHERE U_JOB_RELATE_SEQ = #{uJobRelateSeq}  /* 단위업무관계SEQ */
+
+	</delete>
+
+</mapper>

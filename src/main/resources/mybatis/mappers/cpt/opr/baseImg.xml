@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.catalg.baseimg">
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.BaseImgVo" id="resultBaseImgVo">
+		<result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="imgId"     column="IMG_ID"/>  <!-- 이미지ID -->
+		<result property="imgNm"     column="IMG_NM"/>  <!-- 이미지명 -->
+		<result property="imgUid"     column="IMG_UID"/>  <!-- 이미지UID -->
+		<result property="imgRepoAddr"     column="IMG_REPO_ADDR"/>  <!-- 이미지저장소주소 -->
+		<result property="servcAreaSeq"     column="SERVC_AREA_SEQ"/>  <!-- 서비스영역SEQ -->
+		<result property="imgVer"     column="IMG_VER"/>  <!-- 이미지버전 -->
+		<result property="basImgYn"     column="BAS_IMG_YN"/>  <!-- 베이스이미지여부 -->
+		<result property="imgCapa"     column="IMG_CAPA"/>  <!-- 이미지용량 -->
+		<result property="wrkPathNm"     column="WRK_PATH_NM"/>  <!-- 작업경로명 -->
+		<result property="imgTyCd"     column="IMG_TY_CD"/>  <!-- 이미지유형코드 -->
+		<result property="imgTyCdNm"     column="IMG_TY_CD_NM"/>  <!-- 이미지유형코드명 -->
+		<result property="rmk"     column="RMK"/>  <!-- 비고 -->
+		<result property="servcAreaSeq"     column="SERVC_AREA_SEQ"/>  <!-- 서비스영역SEQ -->
+		<result property="useYn"     column="USE_YN"/>  <!-- 사용여부 -->
+		<result property="port"     column="PORT"/>  <!-- 포트 -->
+		<result property="prtcl"     column="PRTCL"/>  <!-- 프로토콜 -->
+		<result property="creDttm"     column="CRE_DTTM"/>  <!-- 생성일시 -->
+		<result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+		<result property="creUserId"     column="CRE_USER_ID"/>  <!-- 생성자ID -->
+		<result property="creUserNm"     column="CRE_USER_NM"/>  <!-- 생성자 -->
+		<result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+		<result property="updtUserNm"     column="UPDT_USER_NM"/>  <!-- 수정자 -->
+		<result property="portInfo"     column="PORT_INFO"/>  <!-- 포트정보 -->
+		<result property="servcAreaId"     column="SERVC_AREA_ID"/>  <!-- 서비스영역ID -->
+	</resultMap>
+
+	<!--  조회 권한 수정 - 시스템관리자 전부 조회(searchUserId : null) , 운영자(OPRADM:센터 별 조회), 담당자(요청사용자 ID로 조회), 일반사용자(요청사용자 ID로 조회)  -->
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN CM_RSRC_POOL_USER CM_RSRC_POOL_USER
+						ON CM_RSRC_POOL_USER.RSRC_POOL_ID = TBL1.RSRC_POOL_ID
+						AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId}
+				</when>
+				<otherwise>
+					INNER JOIN (
+						SELECT NULL
+					) EMPTY ON NULL
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="search">
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND TBL6.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND TBL7.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netClCd != null and !netClCd.isEmpty()">
+			AND TBL8.NET_Cl_CD = #{netClCd}
+		</if>
+		<if test="rsrcPoolId != null and !rsrcPoolId.isEmpty()">
+			AND TBL1.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+		<if test="imgTyCd != null and !imgTyCd.isEmpty()">
+			AND TBL1.IMG_TY_CD = #{imgTyCd}
+		</if>
+		<if test="imgNm != null and !imgNm.isEmpty()">
+			AND TBL1.IMG_NM LIKE '%' || #{imgNm} || '%'
+		</if>
+		<if test="useYn != null and !useYn.isEmpty()">
+			AND TBL1.USE_YN = #{useYn}
+		</if>
+		AND TBL5.DEL_YN = 'N'
+	</sql>
+
+	<select id="selectBaseImgTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.catalg.selectBaseImgTotCnt */
+		SELECT
+			COUNT(*)
+		FROM RX_IMG TBL1
+		INNER JOIN RC_RSRC_POOL TBL5
+		ON TBL1.RSRC_POOL_ID =  TBL5.RSRC_POOL_ID
+		AND TBL1.BAS_IMG_YN = 'Y'
+		INNER JOIN RC_REGION TBL6
+		ON TBL5.REGION_ID = TBL6.REGION_ID
+		INNER JOIN RC_ZONE TBL7
+		ON TBL5.ZONE_ID =TBL7.ZONE_ID
+		INNER JOIN RC_NET TBL8
+		ON TBL5.NET_ID = TBL8.NET_ID
+		<include refid="validateAuth"/>
+		<where>
+			<include refid="search"/>
+			AND TBL5.DEL_YN = 'N'
+		</where>
+	</select>
+
+	<select id="selectBaseImgList" resultMap="resultBaseImgVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.opr.catalg.selectBaseImgList */
+		SELECT
+			TBL6.REGION_NM
+			,TBL7.ZONE_NM
+			,TBL8.NET_NM
+			,TBL5.RSRC_POOL_NM
+			,TBL1.RSRC_POOL_ID
+			,TBL1.IMG_ID
+			,TBL1.IMG_NM
+			,TBL1.IMG_UID
+			,TBL1.IMG_REPO_ADDR
+			,TBL1.IMG_VER
+			,TBL1.BAS_IMG_YN
+			,TBL1.IMG_CAPA
+			,TBL1.IMG_TY_CD
+			,TBL1.SERVC_AREA_SEQ
+			,TBL4.CD_NM AS IMG_TY_CD_NM
+			,TBL1.RMK
+			,TBL1.USE_YN
+			,TO_CHAR(TBL1.CRE_DTTM, 'YYYY-MM-DD HH24:MI:SS') CRE_DTTM
+			,TO_CHAR(TBL1.UPDT_DTTM, 'YYYY-MM-DD HH24:MI:SS') UPDT_DTTM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.CRE_USER_ID), TBL1.CRE_USER_ID) AS CRE_USER_NM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.UPDT_USER_ID), TBL1.UPDT_USER_ID) AS UPDT_USER_NM
+			,TBL9.SERVC_AREA_ID
+		FROM RX_IMG TBL1
+		INNER JOIN RC_RSRC_POOL TBL5
+		ON TBL1.RSRC_POOL_ID =  TBL5.RSRC_POOL_ID
+		AND TBL1.BAS_IMG_YN = 'Y'
+		INNER JOIN RC_REGION TBL6
+		ON TBL5.REGION_ID = TBL6.REGION_ID
+		INNER JOIN RC_ZONE TBL7
+		ON TBL5.ZONE_ID =TBL7.ZONE_ID
+		INNER JOIN RC_NET TBL8
+		ON TBL5.NET_ID = TBL8.NET_ID
+		LEFT OUTER JOIN CM_CODE TBL4
+		ON TBL4.CD = TBL1.IMG_TY_CD
+		AND TBL4.PARENT_GRP_CD ='099'
+		AND TBL4.PARENT_CD ='300'
+		LEFT OUTER JOIN RX_SERVC_AREA TBL9
+		ON TBL1.SERVC_AREA_SEQ = TBL9.SERVC_AREA_SEQ
+		<include refid="validateAuth"/>
+		<where>
+			<include refid="search"/>
+
+		</where>
+		ORDER BY TBL1.USE_YN DESC, IMG_TY_CD_NM, TBL1.IMG_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectBaseImg" resultMap="resultBaseImgVo">
+		/* ncis.sql.cpt.opr.catalg.selectBaseImg */
+		SELECT
+			TBL6.REGION_NM
+			,TBL7.ZONE_NM
+			,TBL8.NET_NM
+			,TBL5.RSRC_POOL_NM
+			,TBL1.RSRC_POOL_ID
+			,TBL1.IMG_ID
+			,TBL1.IMG_NM
+			,TBL1.IMG_UID
+			,TBL1.IMG_REPO_ADDR
+			,TBL1.IMG_VER
+			,TBL1.BAS_IMG_YN
+			,TBL1.IMG_CAPA
+			,TBL1.IMG_TY_CD
+			,TBL1.SERVC_AREA_SEQ
+			,TBL4.CD_NM AS IMG_TY_CD_NM
+			,TBL1.RMK
+			,TBL1.USE_YN
+			,TO_CHAR(TBL1.CRE_DTTM, 'YYYY-MM-DD HH24:MI:SS') CRE_DTTM
+			,TO_CHAR(TBL1.UPDT_DTTM, 'YYYY-MM-DD HH24:MI:SS') UPDT_DTTM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.CRE_USER_ID), TBL1.CRE_USER_ID) AS CRE_USER_NM
+			,COALESCE((SELECT USER_NM FROM CM_USR WHERE USER_ID = TBL1.UPDT_USER_ID), TBL1.UPDT_USER_ID) AS UPDT_USER_NM
+		FROM RX_IMG TBL1
+		INNER JOIN RC_RSRC_POOL TBL5
+		ON TBL1.RSRC_POOL_ID =  TBL5.RSRC_POOL_ID
+		INNER JOIN RC_REGION TBL6
+		ON TBL5.REGION_ID = TBL6.REGION_ID
+		INNER JOIN RC_ZONE TBL7
+		ON TBL5.ZONE_ID =TBL7.ZONE_ID
+		INNER JOIN RC_NET TBL8
+		ON TBL5.NET_ID = TBL8.NET_ID
+		LEFT OUTER JOIN CM_USR TBL2
+		ON TBL2.USER_ID = TBL1.CRE_USER_ID
+		LEFT OUTER JOIN CM_USR TBL3
+		ON TBL3.USER_ID = TBL1.UPDT_USER_ID
+		LEFT OUTER JOIN CM_CODE TBL4
+		ON TBL4.CD = TBL1.IMG_TY_CD
+		AND TBL4.PARENT_GRP_CD ='099'
+		AND TBL4.PARENT_CD ='300'
+		WHERE TBL1.BAS_IMG_YN = 'Y'
+		AND TBL1.RSRC_POOL_ID = #{rsrcPoolId}
+		AND TBL1.IMG_ID = #{imgId}
+		AND TBL1.SERVC_AREA_SEQ = #{servcAreaSeq}
+	</select>
+
+
+	<select id="selectBaseImgPortList" resultMap="resultBaseImgVo">
+		/* ncis.sql.cpt.opr.catalg.selectBaseImgPortList */
+		SELECT
+			RSRC_POOL_ID
+			,IMG_ID
+			,PORT
+			,PRTCL
+			,PORT||'-'||PRTCL AS PORT_INFO
+		FROM RX_IMG_EXTRL_PORT
+		WHERE RSRC_POOL_ID = #{rsrcPoolId}
+		AND IMG_ID = #{imgId}
+		AND SERVC_AREA_SEQ = #{servcAreaSeq}
+		ORDER BY PORT
+	</select>
+</mapper>

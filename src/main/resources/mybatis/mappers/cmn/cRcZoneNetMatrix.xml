@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rcZoneNetMatrix">
+
+	<resultMap id="resultRcZoneNetMatrix" type="ncis.cmn.entity.RcZoneNetMatrix">
+        <result property="zoneId"     column="ZONE_ID"/>  <!-- 존ID -->
+        <result property="netId"     column="NET_ID"/>  <!-- 망ID -->
+	</resultMap>
+
+	<!-- 존망매트릭스(매핑) 등록 -->
+	<insert id="insertRcZoneNetMatrix">
+	INSERT INTO RC_ZONE_NET_MATRIX (
+	             ZONE_ID  /* 존ID */
+	           , NET_ID  /* 망ID */
+	) VALUES (
+	           #{zoneId}  /* 존ID */
+	         , #{netId}  /* 망ID */
+	)
+	</insert>
+
+	<!-- 존망매트릭스(매핑) 수정 -->
+	<update id="updateRcZoneNetMatrix">
+	UPDATE RC_ZONE_NET_MATRIX
+	         SET ZONE_ID = #{zoneId}  /* 존ID */
+	           , NET_ID = #{netId}  /* 망ID */
+         WHERE ZONE_ID = #{zoneId}  /* 존ID */
+           AND NET_ID = #{netId}  /* 망ID */
+
+	</update>
+
+	<!-- 존망매트릭스(매핑) 삭제 -->
+	<delete id="deleteRcZoneNetMatrix">
+	DELETE FROM RC_ZONE_NET_MATRIX
+         WHERE NET_ID = #{value}  /* 망ID */
+	</delete>
+
+</mapper>

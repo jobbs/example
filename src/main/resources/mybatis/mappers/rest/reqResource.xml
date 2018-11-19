@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.rest.reqResource">
+
+	<resultMap id="resultRcVm" type="ncis.cmn.entity.RcVm">
+        <result property="vmSeq"           column="VM_SEQ"/>                   <!-- 가상서버SEQ -->
+        <result property="vmId"            column="VM_ID"/>                    <!-- 가상서버ID -->
+        <result property="vmNm"            column="VM_NM"/>                    <!-- 가상서버명 -->
+        <result property="statCd"          column="STAT_CD"/>                  <!-- 상태코드 -->
+        <result property="servcStrtDt"     column="SERVC_STRT_DT"/>            <!-- 서비스시작일자 -->
+        <result property="servcEndDt"      column="SERVC_END_DT"/>             <!-- 서비스종료일자 -->
+        <result property="hstNm"           column="HST_NM"/>                   <!-- 호스트명 -->
+        <result property="cpuUseRt"        column="CPU_USE_RT"/>               <!-- CPU사용율 -->
+        <result property="cpuEnt"          column="CPU_ENT"/>                  <!-- CPU엔타이틀먼트 -->
+        <result property="cpuVcoreQty"     column="CPU_VCORE_QTY"/>                <!-- CPU(vCore) -->
+        <result property="memAsgnCapa"     column="MEM_ASGN_CAPA"/>            <!-- 할당메모리용량(GB) -->
+        <result property="memUseRt"        column="MEM_USE_RT"/>               <!-- 메모리사용율 -->
+        <result property="strgAsgnCapa"    column="STRG_ASGN_CAPA"/>           <!-- 할당스토리지용량(GB) -->
+        <result property="rprsntIpAddr"    column="RPRSNT_IP_ADDR"/>           <!-- 대표IP주소 -->
+        <result property="osTyCd"          column="OS_TY_CD"/>                 <!-- 운영체제유형코드 -->
+        <result property="pltfrm"          column="PLTFRM"/>                   <!-- 플랫폼 -->
+        <result property="osBit"           column="OS_BIT"/>                   <!-- 운영체제비트 -->
+        <result property="krnlVer"         column="KRNL_VER"/>                 <!-- 커널버전 -->
+        <result property="patchVer"        column="PATCH_VER"/>                <!-- 패치버전 -->
+        <result property="lang"            column="LANG"/>                     <!-- 언어 -->
+        <result property="osNm"            column="OS_NM"/>                    <!-- 운영체계명 -->
+        <result property="osVer"           column="OS_VER"/>                   <!-- 운영체계버전 -->
+        <result property="netwkIn"         column="NETWK_IN"/>                 <!-- 네트워크_IN(KB/Sec) -->
+        <result property="netwkOut"        column="NETWK_OUT"/>                <!-- 네트워크_OUT(KB/Sec) -->
+        <result property="strtupDttm"      column="STRTUP_DTTM"/>              <!-- 기동일시 -->
+        <result property="vmCompId"        column="VM_COMP_ID"/>               <!-- 가상서버구성ID -->
+        <result property="vmClCd"          column="VM_CL_CD"/>                 <!-- 가상서버구분코드 -->
+        <result property="tmplatSeq"       column="TMPLAT_SEQ"/>                <!-- 템플릿ID -->
+        <result property="haYn"            column="HA_YN"/>                    <!-- 이중화(HA)여부 -->
+        <result property="institutionId"   column="INSTITUTION_ID"/>           <!-- 기관ID -->
+        <result property="pmSeq"           column="PM_SEQ"/>                   <!-- 물리서버SEQ -->
+        <result property="uuid"            column="UUID"/>                     <!-- UUID -->
+        <result property="regUserId"       column="REG_USER_ID"/>              <!-- 등록자ID -->
+        <result property="regDttm"         column="REG_DTTM"/>                 <!-- 등록일시 -->
+        <result property="delUserId"       column="DEL_USER_ID"/>              <!-- 삭제자ID -->
+        <result property="delDttm"         column="DEL_DTTM"/>                 <!-- 삭제일시 -->
+        <result property="updtUserId"      column="UPDT_USER_ID"/>             <!-- 수정자ID -->
+        <result property="updtDttm"        column="UPDT_DTTM"/>                <!-- 수정일시 -->
+        <result property="syncDttm"        column="SYNC_DTTM"/>                <!-- 동기화일시 -->
+	</resultMap>
+
+	<!-- 가상서버 정보 조회 -->
+	<select id="selectRcVmByVmCompId" resultType="ncis.cmn.entity.RcVm">
+	SELECT VM_SEQ                   /* 가상서버SEQ */
+	     , VM_ID                    /* 가상서버ID */
+	     , VM_NM                    /* 가상서버명 */
+	     , STAT_CD                  /* 상태코드 */
+	     , SERVC_STRT_DT            /* 서비스시작일자 */
+	     , SERVC_END_DT             /* 서비스종료일자 */
+	     , HST_NM                   /* 호스트명 */
+	     , CPU_USE_RT               /* CPU사용율 */
+	     , CPU_ENT                  /* CPU엔타이틀먼트 */
+	     , CPU_VCORE_QTY                /* CPU(vCore) */
+	     , MEM_ASGN_CAPA            /* 할당메모리용량(GB) */
+	     , MEM_USE_RT               /* 메모리사용율 */
+	     , STRG_ASGN_CAPA           /* 할당스토리지용량(GB) */
+	     , RPRSNT_IP_ADDR           /* 대표IP주소 */
+	     , OS_TY_CD                 /* 운영체제유형코드 */
+	     , PLTFRM                   /* 플랫폼 */
+	     , OS_BIT                   /* 운영체제비트 */
+	     , KRNL_VER                 /* 커널버전 */
+	     , PATCH_VER                /* 패치버전 */
+	     , LANG                     /* 언어 */
+	     , OS_NM                    /* 운영체계명 */
+	     , OS_VER                   /* 운영체계버전 */
+	     , NETWK_IN                 /* 네트워크_IN(KB/Sec) */
+	     , NETWK_OUT                /* 네트워크_OUT(KB/Sec) */
+	     , STRTUP_DTTM              /* 기동일시 */
+	     , VM_COMP_ID               /* 가상서버구성ID */
+	     , VM_CL_CD                 /* 가상서버구분코드 */
+	     , TMPLAT_SEQ                /* 템플릿ID */
+	     , HA_YN                    /* 이중화(HA)여부 */
+	     , INSTITUTION_ID           /* 기관ID */
+	     , PM_SEQ                   /* 물리서버SEQ */
+	     , UUID                     /* UUID */
+	     , REG_USER_ID              /* 등록자ID */
+	     , REG_DTTM                 /* 등록일시 */
+	     , DEL_USER_ID              /* 삭제자ID */
+	     , DEL_DTTM                 /* 삭제일시 */
+	     , UPDT_USER_ID             /* 수정자ID */
+	     , UPDT_DTTM                /* 수정일시 */
+	     , SYNC_DTTM                /* 동기화일시 */
+	     , CLSTR_SEQ
+	  FROM RC_VM
+	 WHERE VM_COMP_ID = #{vmCompId}  /* 가상서버구성ID */
+	</select>
+
+    <!-- 물리서버 구성정보 조회 -->
+    <select id="selectRcPmByPmCompId" resultType="ncis.cmn.entity.RcPm">
+    <![CDATA[
+    SELECT PM_SEQ  /* 물리서버SEQ */
+         , PM_ID  /* 물리서버ID */
+         , PM_NM  /* 물리서버명 */
+         , STAT_CD  /* 상태코드 */
+         , RPRSNT_IP_ADDR  /* 대표IP주소 */
+         , CPU_USE_RT  /* CPU사용율 */
+         , CPU_CORE_QTY  /* 물리CPU(코어) */
+         , MEM_CAPA  /* 총메모리용량(MB) */
+         , MEM_USE_RT  /* 메모리사용율 */
+         , UUID  /* UUID */
+         , PM_COMP_ID  /* 물리서버구성ID */
+         , CLSTR_SEQ  /* 클러스터SEQ */
+         , PM_CL_CD  /* 물리서버구분코드 */
+         , REG_USER_ID  /* 등록자ID */
+         , REG_DTTM  /* 등록일시 */
+         , DEL_USER_ID  /* 삭제자ID */
+         , DEL_DTTM  /* 삭제일시 */
+         , UPDT_USER_ID  /* 수정자ID */
+         , UPDT_DTTM  /* 수정일시 */
+         , NETWK_IN  /* 네트워크_IN(KB/Sec) */
+         , NETWK_OUT  /* 네트워크_OUT(KB/Sec) */
+         , RMK  /* 비고 */
+    FROM   RC_PM
+    WHERE  PM_COMP_ID = #{pmCompId}
+      ]]>
+    </select>
+
+    <!-- 클러스터 구성정보 조회 -->
+    <select id="selectRcClstrByClusterCompId" resultType="ncis.cmn.entity.RcClstr">
+    <![CDATA[
+    SELECT CLSTR_SEQ       /* 클러스터SEQ */
+         , CLSTR_ID      /* 클러스터ID */
+         , CLSTR_NM      /* 클러스터명 */
+         , CLSTR_COMP_ID /* 클러스터구성ID */
+         , USE_YN        /* 사용여부 */
+         , TEST_YN       /* 테스트여부 */
+         , DEL_YN        /* 삭제여부 */
+         , UUID          /* UUID */
+         , REG_USER_ID   /* 등록자ID */
+         , REG_DTTM      /* 등록일시 */
+         , DEL_USER_ID   /* 삭제자ID */
+         , DEL_DTTM      /* 삭제일시 */
+         , UPDT_USER_ID  /* 수정자ID */
+         , UPDT_DTTM     /* 수정일시 */
+         , RSRC_POOL_ID  /* 자원풀ID */
+    FROM   RC_CLSTR
+    WHERE  PM_COMP_ID = #{clusterCompId}
+      ]]>
+    </select>
+
+    <!-- 클러스터 구성정보 조회 -->
+    <select id="selectRsrcPoolByClstrSeq" resultType="ncis.cpt.rsrc.pool.vo.RsrcPoolVo">
+	    <![CDATA[
+		SELECT RSRC_POOL_ID
+		     , ZONE_ID
+		     , NET_ID
+		FROM   RC_RSRC_POOL
+		WHERE  RSRC_POOL_ID =(
+		       SELECT RSRC_POOL_ID
+	           FROM   RC_CLSTR
+	           WHERE  CLSTR_SEQ=#{clstrSeq}
+	           )
+	      ]]>
+    </select>
+
+    <select id="selectRrRsrcReqListByTicketNoAndRegionId" resultType="ncis.cmn.entity.RrRsrcReq">
+		SELECT RSRC_REQ_NO             /* 자원요청번호 */
+             , RSRC_REQ_USER_ID        /* 자원요청자ID */
+             , TO_CHAR(RSRC_REQ_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS RSRC_REQ_DTTM        /* 자원요청일시 */
+             , RSRC_REQ_PRCSS_STAT_CD  /* 자원요청진행상태코드 */
+             , REQ_INSTITUTION_ID      /* 요청기관ID */
+             , SBJCT                   /* 제목 */
+             , TICKT_NO                /* 티켓번호 */
+             , REGION_ID               /* 리전ID */
+             , TEST_YN                 /* 테스트여부 */
+             , LINK_YN                 /* 연계여부 */
+             , TO_CHAR(COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS COMPT_DTTM              /* 완료일시 */
+             , REG_USER_ID             /* 등록자ID */
+             , TO_CHAR(REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS REG_DTTM                /* 등록일자 */
+             , RSRC_REQ_TY_CD          /* 자원요청유형코드 */
+		FROM   RR_RSRC_REQ
+		WHERE  TICKT_NO = #{reqId}
+		AND    REGION_ID = #{centerId}
+    </select>
+
+    <!-- 자원요청 진행상태변경 -->
+    <update id="updateRsrcReqPrcssStatByTicktNo">
+    UPDATE RR_RSRC_REQ
+    SET    RSRC_REQ_PRCSS_STAT_CD = #{rsrcReqPrcssStatCd}  /* 자원요청진행상태코드 */
+    WHERE  TICKT_NO = #{reqId}  /* 티켓번호 */
+    AND    REGION_ID = #{centerId}
+    </update>
+</mapper>

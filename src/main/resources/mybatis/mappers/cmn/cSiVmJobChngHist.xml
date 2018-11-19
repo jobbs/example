@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siVmJobChngHist">
+
+	<resultMap id="resultSiVmJobChngHist" type="ncis.cmn.entity.SiVmJobChngHist">
+        <result property="chngDttm"     column="CHNG_DTTM"/>  <!-- 변경일시 -->
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="regionClCd"     column="REGION_CL_CD"/>  <!-- 리전구분코드 -->
+        <result property="jobId"     column="JOB_ID"/>  <!-- 업무ID -->
+        <result property="jobNm"     column="JOB_NM"/>  <!-- 업무명 -->
+        <result property="jobGrdCd"     column="JOB_GRD_CD"/>  <!-- 업무등급코드 -->
+	</resultMap>
+
+	<!-- 가상서버업무변경이력 등록 -->
+	<insert id="insertSiVmJobChngHist">
+	INSERT INTO SI_VM_JOB_CHNG_HIST (
+	             CHNG_DTTM  /* 변경일시 */
+	           , COMP_ID  /* 구성ID */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , REGION_CL_CD  /* 리전구분코드 */
+	           , JOB_ID  /* 업무ID */
+	           , JOB_NM  /* 업무명 */
+	           , JOB_GRD_CD  /* 업무등급코드 */
+	) VALUES (
+	           now()  /* 변경일시 */
+	         , #{compId}  /* 구성ID */
+	         , #{institutionId}  /* 기관ID */
+	         , #{regionClCd}  /* 리전구분코드 */
+	         , #{jobId}  /* 업무ID */
+	         , #{jobNm}  /* 업무명 */
+	         , #{jobGrdCd}  /* 업무등급코드 */
+	)
+	</insert>
+
+	<!-- 가상서버업무변경이력 수정 -->
+	<update id="updateSiVmJobChngHist">
+	UPDATE SI_VM_JOB_CHNG_HIST
+	         SET CHNG_DTTM = now()  /* 변경일시 */
+	           , COMP_ID = #{compId}  /* 구성ID */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , REGION_CL_CD = #{regionClCd}  /* 리전구분코드 */
+	           , JOB_ID = #{jobId}  /* 업무ID */
+	           , JOB_NM = #{jobNm}  /* 업무명 */
+	           , JOB_GRD_CD = #{jobGrdCd}  /* 업무등급코드 */
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 가상서버업무변경이력 삭제 -->
+	<delete id="deleteSiVmJobChngHist">
+	DELETE FROM SI_VM_JOB_CHNG_HIST
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

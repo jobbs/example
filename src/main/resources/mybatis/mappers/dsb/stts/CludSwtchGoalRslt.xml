@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.cludSwtchGoalRslt">
+
+
+	<select id="selectCludSwtchGoalRslt" resultType="ncis.dsb.stts.cludSwtchGoalRslt.vo.CludSwtchGoalRsltVo">
+		/*ncis.sql.dsb.stts.cludSwtchGoalRslt.selectCludSwtchGoalRslt*/
+		SELECT  A.YYYY::TEXT STDR_YR,  B.GOAL_JOB_QTY, B.SUM_GOAL_JOB_QTY, B.TOT_GOAL_JOB_QTY, B.GOAL_JOB_RT, SUM_RSLT_JOB_QTY, TOT_RSLT_JOB_QTY, RSLT_JOB_RT, RSLT_JOB_QTY
+				FROM (select generate_series(2011,to_char(now()+interval '1 year','yyyy')::integer) yyyy) A
+				LEFT JOIN (
+					SELECT 	STDR_YR,
+							SUM(GOAL_JOB_QTY) OVER(ORDER BY STDR_YR) SUM_GOAL_JOB_QTY,
+							SUM(GOAL_JOB_QTY)OVER() TOT_GOAL_JOB_QTY,
+							CASE WHEN SUM(GOAL_JOB_QTY)OVER()=0 THEN 0 ELSE (SUM(GOAL_JOB_QTY) OVER(ORDER BY STDR_YR) /SUM(GOAL_JOB_QTY)OVER() *100)::INTEGER END GOAL_JOB_RT,
+							GOAL_JOB_QTY,
+							SUM(RSLT_JOB_QTY) OVER(ORDER BY STDR_YR) SUM_RSLT_JOB_QTY,
+							SUM(RSLT_JOB_QTY)OVER() TOT_RSLT_JOB_QTY,
+							CASE WHEN SUM(GOAL_JOB_QTY)OVER() =0 THEN 0 ELSE (SUM(RSLT_JOB_QTY) OVER(ORDER BY STDR_YR)/SUM(GOAL_JOB_QTY)OVER()*100)::INTEGER END RSLT_JOB_RT,
+							RSLT_JOB_QTY
+					FROM
+					(
+						SELECT
+								STDR_YR, SUM(GOAL_JOB_QTY) GOAL_JOB_QTY,
+								SUM(RSLT_JOB_QTY) RSLT_JOB_QTY
+						FROM 	ST_CLUD_SWTCH_GOAL_RSLT
+						GROUP BY STDR_YR
+					) A
+				) B
+				ON A.YYYY::TEXT=B.STDR_YR
+	</select>
+	<select id="selectCludSwtchRsltDtl" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.cludSwtchGoalRslt.selectCludSwtchRsltDtl*/
+		SELECT * FROM  (
+			SELECT 1 SEQ,*
+			FROM CROSSTAB(
+			'
+				SELECT  B.ROWID::TEXT,A.ATTRIBUTE, B.VALUE
+				FROM
+				(
+					SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "attribute"
+				 	UNION ALL SELECT ''0000''
+				) A
+				LEFT JOIN
+				(
+					SELECT 	COALESCE(A.STDR_YR,''0000'') "attribute",
+							COALESCE(B.REGION_NM,''계'') "rowid",
+							A.RSLT_INSTITUTION_QTY "value"
+					FROM
+					(
+						SELECT STDR_YR,
+								A.REGION_ID,
+								SUM(RSLT_INSTITUTION_QTY) RSLT_INSTITUTION_QTY,
+								SUM(RSLT_JOB_QTY ) RSLT_JOB_QTY
+						FROM 	ST_CLUD_SWTCH_GOAL_RSLT A
+						GROUP BY CUBE(STDR_YR, A.REGION_ID)
+					) A LEFT JOIN RC_REGION B
+					ON A.REGION_ID = B.REGION_ID
+				) B
+				ON A.ATTRIBUTE::TEXT= B.ATTRIBUTE
+				ORDER BY CASE
+							WHEN B.ROWID  =''계'' THEN 1
+							WHEN B.ROWID  =''대전'' THEN 2
+							WHEN B.ROWID  =''광주'' THEN 3
+							ELSE 4
+						    END,COALESCE(A.ATTRIBUTE,''0000'')
+
+
+			',
+			'
+				SELECT ''0000''
+				UNION ALL
+				SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "attribute"
+			'
+			)
+			AS XXXX(REGION_NM TEXT, TOT BIGINT
+				<foreach collection="list"  item="item">
+					, "${item}" BIGINT
+				</foreach>
+				)
+			UNION ALL
+			SELECT 2,*
+			FROM CROSSTAB(
+			'
+				SELECT  B.ROWID::TEXT,A.ATTRIBUTE, B.VALUE
+				FROM
+				(
+					SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "attribute"
+				 	UNION ALL SELECT ''0000''
+				) A
+				LEFT JOIN
+				(
+					SELECT 	COALESCE(A.STDR_YR,''0000'') "attribute",
+							COALESCE(B.REGION_NM,''계'') "rowid",
+							A.RSLT_JOB_QTY "value"
+				FROM
+				(
+					SELECT 	STDR_YR, A.REGION_ID,
+							SUM(RSLT_INSTITUTION_QTY) RSLT_INSTITUTION_QTY,
+							SUM(RSLT_JOB_QTY ) RSLT_JOB_QTY
+					FROM 	ST_CLUD_SWTCH_GOAL_RSLT A
+					GROUP BY CUBE(STDR_YR, A.REGION_ID)
+				) A LEFT JOIN RC_REGION B
+				ON A.REGION_ID = B.REGION_ID
+				) B
+				ON A.ATTRIBUTE::TEXT= B.ATTRIBUTE
+				ORDER BY CASE
+							WHEN B.ROWID  =''계'' THEN 1
+							WHEN B.ROWID  =''대전'' THEN 2
+							WHEN B.ROWID  =''광주'' THEN 3
+							ELSE 4
+						    END,COALESCE(A.ATTRIBUTE,''0000'')
+
+
+				',
+				'
+				SELECT ''0000''
+				UNION ALL
+				SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "ATTRIBUTE"
+			'
+			)
+			AS XXXX(REGION_NM TEXT, TOT BIGINT
+				<foreach collection="list"  item="item">
+					, "${item}" BIGINT
+				</foreach>
+			)
+			) A
+		ORDER BY CASE WHEN REGION_NM ='계' THEN 1
+						WHEN REGION_NM ='대전' THEN 2
+						WHEN REGION_NM ='광주' THEN 3
+						ELSE 4
+				END, 1
+	</select>
+
+	<select id="select2011toCurrentYear" resultType="String">
+		/*ncis.sql.dsb.stts.cludSwtchGoalRslt.select2011toCurrentYear*/
+		SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL '1 YEAR','YYYY')::INTEGER)::TEXT
+	</select>
+
+	<select id="selectCludSwtchGoalRsltDtl" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.cludSwtchGoalRslt.selectCludSwtchGoalRsltDtl*/
+		SELECT *
+		FROM (
+			SELECT 1 GUBUN,*
+			FROM CROSSTAB(
+			'
+				SELECT  A.REGION_ID::TEXT "ROWID",
+					A.STDR_YR "ATTRIBUTE",
+					B.GOAL_JOB_QTY "VALUE"
+				FROM (
+					SELECT  GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER )::TEXT STDR_YR,
+					*
+					FROM RC_REGION
+					WHERE REGION_ID NOT IN (''BAKCENT'',''DG'')
+				      ) A
+				      LEFT JOIN ST_CLUD_SWTCH_GOAL_RSLT B ON A.REGION_ID = B.REGION_ID AND A.STDR_YR = B.STDR_YR
+				ORDER BY 1,2
+			'
+			,
+			'
+			SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "ATTRIBUTE"
+			'
+			)AS X(REGION_ID TEXT
+				<foreach collection="list"  item="item">
+					, "${item}" INTEGER
+				</foreach>
+			 )
+			UNION ALL
+			SELECT 2,*
+			FROM CROSSTAB(
+			'
+				SELECT  A.REGION_ID::TEXT ,
+					A.STDR_YR ,
+					B.RSLT_INSTITUTION_QTY
+				FROM (
+					SELECT  GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER )::TEXT STDR_YR,
+					*
+					FROM RC_REGION
+					WHERE REGION_ID NOT IN (''BAKCENT'',''DG'')
+				      ) A
+				      LEFT JOIN ST_CLUD_SWTCH_GOAL_RSLT B ON A.REGION_ID = B.REGION_ID AND A.STDR_YR = B.STDR_YR
+				ORDER BY 1,2
+			'
+			,
+			'
+			SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "ATTRIBUTE"
+			'
+			)AS X( REGION_ID TEXT
+				<foreach collection="list"  item="item">
+					, "${item}" INTEGER
+				</foreach>
+			)
+			UNION ALL
+			SELECT 3,*
+			FROM CROSSTAB(
+			'
+				SELECT  A.REGION_ID::TEXT ,
+					A.STDR_YR ,
+					B.RSLT_JOB_QTY
+				FROM (
+					SELECT  GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER )::TEXT STDR_YR,
+					*
+					FROM RC_REGION
+					WHERE REGION_ID NOT IN (''BAKCENT'',''DG'')
+				      ) A
+				      LEFT JOIN ST_CLUD_SWTCH_GOAL_RSLT B ON A.REGION_ID = B.REGION_ID AND A.STDR_YR = B.STDR_YR
+				ORDER BY 1,2
+			'
+			,
+			'
+			SELECT GENERATE_SERIES(2011,TO_CHAR(NOW()+INTERVAL ''1 YEAR'',''YYYY'')::INTEGER)::TEXT "ATTRIBUTE"
+			'
+			)AS X( REGION_ID TEXT
+				<foreach collection="list"  item="item">
+					, "${item}" INTEGER
+				</foreach>
+			)
+		) A
+		ORDER BY CASE 	WHEN REGION_ID='DJ' THEN 1
+						WHEN REGION_ID='GJ' THEN 2
+						WHEN REGION_ID='DG' THEN 3
+			     		ELSE 4
+			     END
+
+
+	</select>
+</mapper>

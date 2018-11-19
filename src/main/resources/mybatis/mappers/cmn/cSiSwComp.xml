@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siSwComp">
+
+	<resultMap id="resultSiSwComp" type="ncis.cmn.entity.SiSwComp">
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="instlCompId"     column="INSTL_COMP_ID"/>  <!-- 설치구성ID -->
+        <result property="instlCompRsrcNm"     column="INSTL_COMP_RSRC_NM"/>  <!-- 설치구성자원명 -->
+        <result property="frstInstlVer"     column="FRST_INSTL_VER"/>  <!-- 최초설치버전 -->
+        <result property="nowPatchVer"     column="NOW_PATCH_VER"/>  <!-- 현재패치버전 -->
+        <result property="frstInstlKrnlVer"     column="FRST_INSTL_KRNL_VER"/>  <!-- 최초설치커널버전 -->
+        <result property="nowKrnlVer"     column="NOW_KRNL_VER"/>  <!-- 현재커널버전 -->
+        <result property="licnseTy"     column="LICNSE_TY"/>  <!-- 라이선스유형 -->
+        <result property="swCl"     column="SW_CL"/>  <!-- 소프트웨어구분 -->
+        <result property="licnseAsgnQty"     column="LICNSE_ASGN_QTY"/>  <!-- 라이선스할당개수 -->
+        <result property="licnseQty"     column="LICNSE_QTY"/>  <!-- 라이선스개수 -->
+        <result property="swInstlDt"     column="SW_INSTL_DT"/>  <!-- 소프트웨어설치일자 -->
+        <result property="srcInstlFoldr"     column="SRC_INSTL_FOLDR"/>  <!-- 소스설치폴더 -->
+	</resultMap>
+
+	<!-- 소프트웨어구성정보 등록 -->
+	<insert id="insertSiSwComp">
+	INSERT INTO SI_SW_COMP (
+	             COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , INSTL_COMP_ID  /* 설치구성ID */
+	           , INSTL_COMP_RSRC_NM  /* 설치구성자원명 */
+	           , FRST_INSTL_VER  /* 최초설치버전 */
+	           , NOW_PATCH_VER  /* 현재패치버전 */
+	           , FRST_INSTL_KRNL_VER  /* 최초설치커널버전 */
+	           , NOW_KRNL_VER  /* 현재커널버전 */
+	           , LICNSE_TY  /* 라이선스유형 */
+	           , SW_CL  /* 소프트웨어구분 */
+	           , LICNSE_ASGN_QTY  /* 라이선스할당개수 */
+	           , LICNSE_QTY  /* 라이선스개수 */
+	           , SW_INSTL_DT  /* 소프트웨어설치일자 */
+	           , SRC_INSTL_FOLDR  /* 소스설치폴더 */
+	) VALUES (
+	           #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{instlCompId}  /* 설치구성ID */
+	         , #{instlCompRsrcNm}  /* 설치구성자원명 */
+	         , #{frstInstlVer}  /* 최초설치버전 */
+	         , #{nowPatchVer}  /* 현재패치버전 */
+	         , #{frstInstlKrnlVer}  /* 최초설치커널버전 */
+	         , #{nowKrnlVer}  /* 현재커널버전 */
+	         , #{licnseTy}  /* 라이선스유형 */
+	         , #{swCl}  /* 소프트웨어구분 */
+	         , #{licnseAsgnQty}  /* 라이선스할당개수 */
+	         , #{licnseQty}  /* 라이선스개수 */
+	         , #{swInstlDt}  /* 소프트웨어설치일자 */
+	         , #{srcInstlFoldr}  /* 소스설치폴더 */
+	)
+	</insert>
+
+	<!-- 소프트웨어구성정보 수정 -->
+	<update id="updateSiSwComp">
+	UPDATE SI_SW_COMP
+	         SET COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , INSTL_COMP_ID = #{instlCompId}  /* 설치구성ID */
+	           , INSTL_COMP_RSRC_NM = #{instlCompRsrcNm}  /* 설치구성자원명 */
+	           , FRST_INSTL_VER = #{frstInstlVer}  /* 최초설치버전 */
+	           , NOW_PATCH_VER = #{nowPatchVer}  /* 현재패치버전 */
+	           , FRST_INSTL_KRNL_VER = #{frstInstlKrnlVer}  /* 최초설치커널버전 */
+	           , NOW_KRNL_VER = #{nowKrnlVer}  /* 현재커널버전 */
+	           , LICNSE_TY = #{licnseTy}  /* 라이선스유형 */
+	           , SW_CL = #{swCl}  /* 소프트웨어구분 */
+	           , LICNSE_ASGN_QTY = #{licnseAsgnQty}  /* 라이선스할당개수 */
+	           , LICNSE_QTY = #{licnseQty}  /* 라이선스개수 */
+	           , SW_INSTL_DT = #{swInstlDt}  /* 소프트웨어설치일자 */
+	           , SRC_INSTL_FOLDR = #{srcInstlFoldr}  /* 소스설치폴더 */
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 소프트웨어구성정보 삭제 -->
+	<delete id="deleteSiSwComp">
+	DELETE FROM SI_SW_COMP
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.JobResStteByOnnara">
+
+	<select id="selectJobResStteByOnnaraVmList" resultType="java.util.Map">
+    /* ncis.sql.dsb.stts.res.JobResStteByOnnara.selectJobResStteByOnnaraVmList */
+     SELECT CASE WHEN GUBUN='CPU' THEN VM_SEQ||'C' ELSE VM_SEQ||'M' END VM_SEQ,
+	 		CASE WHEN GUBUN='CPU' THEN VM_COMP_ID||'||CPU' ELSE VM_COMP_ID||'||MEM' END VM_COMP_ID
+     FROM
+     	(SELECT DISTINCT A.VM_SEQ::TEXT,
+			       case when D.VM_COMP_ID ='' or D.VM_COMP_ID is null then REPLACE(TRIM(D.VM_NM),' ','')
+                        else REPLACE(TRIM(D.VM_COMP_ID),' ','')
+                   end VM_COMP_ID
+
+		 	FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+
+			</choose>
+            left join RC_VM D on A.vm_seq = D.vm_seq
+
+			WHERE 1=1
+			<foreach collection="vmSeqList" open="AND A.VM_SEQ IN(" close=")" separator="," item="item">
+				#{item}
+			</foreach>
+
+		<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+				</when>
+
+			</choose>
+		) X,
+		(
+		<choose>
+			<when test='"A".equals(searchType)'>
+				SELECT 'CPU'::TEXT gubun
+			    UNION ALL
+			    SELECT 'MEM'::TEXT gubun
+			</when>
+			<when test='"C".equals(searchType)'>
+				SELECT 'CPU'::TEXT gubun
+			</when>
+			<when test='"M".equals(searchType)'>
+				SELECT 'MEM'::TEXT gubun
+			</when>
+		</choose>
+
+
+		) Y
+
+	ORDER BY X.VM_COMP_ID, Y.GUBUN
+	</select>
+
+	<select id="selectJobTimeResByOnnaraUseRtPivot" resultType="java.util.Map">
+    /* ncis.sql.dsb.stts.res.JobResStteByOnnara.selectJobTimeResByOnnaraUseRtPivot */
+    	SELECT
+    		<choose>
+				<when test='"MI".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24:MI'), 'yyyy-mm-dd hh24:MI') dt,
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24'), 'yyyy-mm-dd hh24:00') dt,
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24'), 'yyyy-mm-dd') dt,
+				</when>
+			</choose>
+    	  	y.*
+		   FROM
+		  (
+			  select
+			  <choose>
+				<when test='"MI".equals(colctCd)'>
+					dd||' '||hh||':'||mi DT
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					dd||' '||hh DT
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					dd DT
+				</when>
+
+			</choose>
+			  from (
+				  select
+				  		<choose>
+							<when test='"DD".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${date}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+									from cm_code
+								limit abs(date_part('day', age(REPLACE('${date}','-','')::date, REPLACE('${date}','-','')::date)))+1
+				  			</when>
+				  			<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${strtDt}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age(REPLACE('${strtDt}','-','')::date, REPLACE('${endDt}','-','')::date)))+1
+				  			</when>
+
+				  			<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}01','yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age('${year}${searchMmCd}01', '${year}${searchMmCd}${lastDay}')))+1
+				  			</when>
+				  		</choose>
+
+				) dd_t
+					<if test='"HH".equals(colctCd) or "MI".equals(colctCd)'>
+						,(
+						  select to_char(row_number() over() -1, 'fm00') hh
+						  from cm_code
+						  limit 24
+						) hh_t
+					</if>
+					<if test='"MI".equals(colctCd)'>
+						,(
+		                 select distinct mi
+		                  from
+							  (select to_char((to_char(row_number() over() -11, 'fm00')::integer/10+1)*10 ,'fm00') as  mi
+								from cm_code
+							    limit 51
+							  ) a
+						) mi_t
+			        </if>
+		        order by 1
+		  ) x
+		  left join
+		  (
+		SELECT *
+		FROM CROSSTAB('
+		SELECT X.DT,
+		       CASE WHEN Y.GUBUN=''CPU'' THEN X.VM_SEQ||''C'' ELSE X.VM_SEQ||''M'' END VM_SEQ,
+		       CASE WHEN Y.GUBUN=''CPU'' THEN X.AVG_CPU_USE_RT ELSE X.AVG_MEM_USE_RT END USE_RT
+		FROM
+			(
+			SELECT
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					a.COLCT_DT||'' ''||a.COLCT_HOUR||'':''||a.COLCT_MI DT,
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					a.COLCT_DT||'' ''||a.COLCT_HOUR DT,
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					a.COLCT_DT DT,
+				</when>
+			</choose>
+					bb.VM_SEQ,
+					A.AVG_CPU_USE_RT,
+					A.AVG_MEM_USE_RT
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+			</choose>
+				left join RC_VM bb on a.vm_seq = bb.vm_Seq
+
+			WHERE 1=1
+			<foreach collection="vmSeqList" open="AND A.VM_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+			<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+					</when>
+				</choose>
+				) X,
+				(
+				<choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+		ORDER BY X.DT, X.VM_SEQ, Y.GUBUN
+		',
+		'
+		SELECT  CASE WHEN Y.GUBUN=''CPU'' THEN VM_SEQ||''C'' ELSE VM_SEQ||''M'' END VM_SEQ
+		FROM
+		    (
+			SELECT DISTINCT A.VM_SEQ
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+			</choose>
+
+			  left join RC_VM bb on a.vm_seq = bb.vm_Seq
+		   WHERE 1=1
+		    <foreach collection="vmSeqList" open="AND A.VM_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+			</choose>
+			)X,
+		    (
+				 <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+			ORDER BY X.VM_SEQ, Y.GUBUN
+		'
+		)
+		AS
+		(
+			DT_VAL TEXT
+			<choose>
+				<when test="vmList != null and !vmList.isEmpty()">
+					<foreach collection="vmList"  item="item">
+						, "${item.vm_seq}" NUMERIC
+					</foreach>
+				</when>
+				<otherwise>
+						,"null" NUMERIC
+				</otherwise>
+			</choose>
+		)
+	 ) Y
+  	ON X.DT = Y.DT_VAL
+  	ORDER BY X.DT
+	</select>
+
+	<select id="selectJobTimeResByOnnaraUseRtTop" resultType="java.util.Map">
+    /* ncis.sql.dsb.stts.res.JobResStteByOnnara.selectJobTimeResByOnnaraUseRtTop */
+    	SELECT x.dt, y.*
+		   FROM
+		  (
+			  SELECT 'AMIN' DT
+			  UNION ALL
+			  SELECT 'BAVG' DT
+			  UNION ALL
+			  SELECT 'CMAX' DT
+
+		  ) x
+		  left join
+		  (
+		SELECT *
+		FROM CROSSTAB('
+		SELECT
+		       Z.DT,
+		       CASE WHEN Y.GUBUN=''CPU'' THEN X.VM_SEQ||''C'' ELSE X.VM_SEQ||''M'' END VM_SEQ,
+		       CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''AMIN'' THEN X.MIN_CPU_USE_RT
+			    ELSE CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''BAVG'' THEN AVG_CPU_USE_RT
+				 ELSE CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''CMAX'' THEN MAX_CPU_USE_RT
+				      ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''AMIN'' THEN MIN_MEM_USE_RT
+				           ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''BAVG'' THEN AVG_MEM_USE_RT
+				                ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''CMAX'' THEN MAX_MEM_USE_RT
+				                     END
+				                END
+				           END
+				      END
+				 END
+			END USE_RT_TOP
+		FROM
+			(
+			SELECT
+					BB.VM_SEQ,
+					MIN(A.MIN_CPU_USE_RT) MIN_CPU_USE_RT,
+					ROUND(AVG(A.AVG_CPU_USE_RT),2) AVG_CPU_USE_RT,
+					MAX(A.MAX_CPU_USE_RT) MAX_CPU_USE_RT,
+					MIN(A.MIN_MEM_USE_RT) MIN_MEM_USE_RT,
+					ROUND(AVG(A.AVG_MEM_USE_RT),2) AVG_MEM_USE_RT,
+					MAX(A.MAX_MEM_USE_RT) MAX_MEM_USE_RT
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+			</choose>
+				left join RC_VM bb on a.vm_seq = bb.vm_Seq
+
+			WHERE 1=1
+			<foreach collection="vmSeqList" open="AND A.VM_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+			<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+					</when>
+				</choose>
+				GROUP BY BB.VM_SEQ
+				) X,
+				(
+				 <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y,
+				(
+				   SELECT ''AMIN'' DT
+				   UNION ALL
+				   SELECT ''BAVG'' DT
+				   UNION ALL
+				   SELECT ''CMAX'' DT
+
+				) Z
+		ORDER BY Z.DT, X.VM_SEQ, Y.GUBUN
+		',
+		'
+		SELECT  CASE WHEN Y.GUBUN=''CPU'' THEN VM_SEQ||''C'' ELSE VM_SEQ||''M'' END VM_SEQ
+		FROM
+		    (
+			SELECT DISTINCT A.VM_SEQ
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_VM_COLCT_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_VM_COLCT_SUM_1DD A
+				</when>
+			</choose>
+
+			  left join RC_VM bb on a.vm_seq = bb.vm_Seq
+		   WHERE 1=1
+		    <foreach collection="vmSeqList" open="AND A.VM_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+			</choose>
+			)X,
+		    (
+				<choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+			ORDER BY X.VM_SEQ, Y.GUBUN
+		'
+		)
+		AS
+		(
+			DT_VAL TEXT
+			<choose>
+				<when test="vmList != null and !vmList.isEmpty()">
+					<foreach collection="vmList"  item="item">
+						, "${item.vm_seq}" NUMERIC
+					</foreach>
+				</when>
+				<otherwise>
+						,"null" NUMERIC
+				</otherwise>
+			</choose>
+		)
+	 ) Y
+  	ON X.DT = Y.DT_VAL
+  	ORDER BY X.DT
+	</select>
+
+	<select id="selectJobResStteByOnnaraPodList" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectJobResStteByOnnaraPodList*/
+		SELECT CASE WHEN GUBUN='CPU' THEN POD_ID||'C' ELSE POD_ID||'M' END POD_ID,
+	 		   CASE WHEN GUBUN='CPU' THEN POD_NM||'||CPU' ELSE POD_NM||'||MEM' END POD_NM,
+	 		   X.SERVC_NM,
+	 		   COUNT(X.POD_ID) OVER(PARTITION BY X.SERVC_NM) POD_CNT
+     	FROM
+	     	(SELECT DISTINCT A.POD_ID::TEXT,
+				    REPLACE(TRIM(A.POD_ID::TEXT),' ','') POD_NM,
+				    SERVC.SERVC_NM
+
+			 	FROM
+				<choose>
+					<when test='"MI".equals(colctCd)'>
+						ST_RX_POD_SUM_10MI A
+					</when>
+					<when test='"HH".equals(colctCd)'>
+						ST_RX_POD_SUM_1HH A
+					</when>
+					<when test='"DD".equals(colctCd)'>
+						ST_RX_POD_SUM_1DD A
+					</when>
+				</choose>
+				LEFT JOIN RX_SERVC SERVC ON A.SERVC_SEQ = SERVC.SERVC_SEQ
+				WHERE 1=1
+				<foreach collection="axSeqList" open="AND A.SERVC_SEQ IN(" close=")" separator="," item="item">
+					#{item}
+				</foreach>
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(#{date},'-','')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(#{strtDt},'-','') AND REPLACE(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE #{year}||#{searchMmCd}||'%'
+					</when>
+				</choose>
+			) X,
+			(
+			   <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT 'CPU'::TEXT gubun
+					    UNION ALL
+					    SELECT 'MEM'::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT 'CPU'::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT 'MEM'::TEXT gubun
+					</when>
+				</choose>
+
+			) Y
+
+			ORDER BY X.POD_ID, Y.GUBUN
+	</select>
+
+	<select id="selectAxTimeResByOnnaraUseRtPivot" resultType="java.util.Map">
+		/*ncis.sql.dsb.stts.JobResStte.selectAxTimeResByOnnaraUseRtPivot*/
+		SELECT
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24:MI'), 'yyyy-mm-dd hh24:MI') dt,
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24'), 'yyyy-mm-dd hh24:00') dt,
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					to_char(to_timestamp(x.dt,'YYYYMMDDHH24'), 'yyyy-mm-dd') dt,
+				</when>
+			</choose>
+			y.*
+		   FROM
+		  (
+			  select
+			  <choose>
+				<when test='"MI".equals(colctCd)'>
+					dd||' '||hh||':'||mi DT
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					dd||' '||hh DT
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					dd DT
+				</when>
+			</choose>
+			  from (
+				  select
+				  		<choose>
+							<when test='"DD".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${date}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+									from cm_code
+								limit abs(date_part('day', age(REPLACE('${date}','-','')::date, REPLACE('${date}','-','')::date)))+1
+				  			</when>
+				  			<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+				  				to_char(to_date(REPLACE('${strtDt}','-',''),'yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age(REPLACE('${strtDt}','-','')::date, REPLACE('${endDt}','-','')::date)))+1
+				  			</when>
+				  			<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+				  				to_char(to_date('${year}${searchMmCd}01','yyyymmdd')+ (row_number() over()-1)*interval '1 day','yyyymmdd') dd
+				  					from cm_code
+								limit abs(date_part('day', age('${year}${searchMmCd}01', '${year}${searchMmCd}${lastDay}')))+1
+				  			</when>
+				  		</choose>
+
+				) dd_t
+					<if test='"HH".equals(colctCd) or "MI".equals(colctCd)'>
+						,(
+						  select to_char(row_number() over() -1, 'fm00') hh
+						  from cm_code
+						  limit 24
+						) hh_t
+					</if>
+					<if test='"MI".equals(colctCd)'>
+						,(
+		                 select distinct mi
+		                  from
+							  (select to_char((to_char(row_number() over() -11, 'fm00')::integer/10+1)*10 ,'fm00') as  mi
+								from cm_code
+							    limit 51
+							  ) a
+						) mi_t
+			        </if>
+		        order by 1
+		  ) x
+		  left join
+		  (
+		SELECT *
+		FROM CROSSTAB('
+		SELECT X.DT,
+		       CASE WHEN Y.GUBUN=''CPU'' THEN X.POD_ID||''C'' ELSE X.POD_ID||''M'' END POD_ID,
+		       CASE WHEN Y.GUBUN=''CPU'' THEN X.AVG_CPU_USE_RT ELSE X.AVG_MEM_USE_RT END USE_RT
+		FROM
+			(
+			SELECT
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					a.COLCT_DT||'' ''||a.COLCT_HOUR||'':''||a.COLCT_MI DT,
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					a.COLCT_DT||'' ''||a.COLCT_HOUR DT,
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					a.COLCT_DT DT,
+				</when>
+			</choose>
+					A.POD_ID,
+					A.AVG_CPU_USE_RT,
+					A.AVG_MEM_USE_RT
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_POD_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_POD_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_POD_SUM_1DD A
+				</when>
+			</choose>
+
+				LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID = B.POD_ID
+
+			WHERE 1=1
+				<foreach collection="axSeqList" open="AND A.SERVC_SEQ IN(" close=")" separator="," item="item">
+					''${item}''
+				</foreach>
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+					</when>
+				</choose>
+				) X,
+				(
+				<choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+			ORDER BY X.DT, X.POD_ID, Y.GUBUN
+			',
+			'
+			SELECT  CASE WHEN Y.GUBUN=''CPU'' THEN POD_ID||''C'' ELSE POD_ID||''M'' END POD_ID
+			FROM
+			    (
+				SELECT DISTINCT A.POD_ID
+				FROM
+				<choose>
+					<when test='"MI".equals(colctCd)'>
+						ST_RX_POD_SUM_10MI A
+					</when>
+					<when test='"HH".equals(colctCd)'>
+						ST_RX_POD_SUM_1HH A
+					</when>
+					<when test='"DD".equals(colctCd)'>
+						ST_RX_POD_SUM_1DD A
+					</when>
+				</choose>
+				  LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID=B.POD_ID
+
+			   WHERE 1=1
+			   		<foreach collection="axSeqList" open="AND A.SERVC_SEQ IN(" close=")" separator="," item="item">
+						''${item}''
+					</foreach>
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+					</when>
+				</choose>
+				)X,
+		    	(
+				 <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+				ORDER BY X.POD_ID, Y.GUBUN
+			'
+			)
+			AS
+			(
+				DT_VAL TEXT
+				<choose>
+					<when test="podList != null and !podList.isEmpty()">
+						<foreach collection="podList"  item="item">
+						, "${item.pod_id}" NUMERIC
+						</foreach>
+					</when>
+					<otherwise>
+						,"null" NUMERIC
+					</otherwise>
+				</choose>
+			)
+	 ) Y
+  	ON X.DT = Y.DT_VAL
+  	ORDER BY X.DT
+	</select>
+
+	<select id="selectAxTimeResByOnnaraUseRtTop" resultType="java.util.Map">
+    /* ncis.sql.dsb.stts.res.JobResStteByOnnara.selectAxTimeResByOnnaraUseRtTop */
+    	SELECT x.dt, y.*
+		   FROM
+		  (
+			  SELECT 'AMIN' DT
+			  UNION ALL
+			  SELECT 'BAVG' DT
+			  UNION ALL
+			  SELECT 'CMAX' DT
+
+		  ) x
+		  left join
+		  (
+			SELECT *
+			FROM CROSSTAB('
+			SELECT
+			       Z.DT,
+			       CASE WHEN Y.GUBUN=''CPU'' THEN X.POD_ID||''C'' ELSE X.POD_ID||''M'' END POD_ID,
+			       CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''AMIN'' THEN X.MIN_CPU_USE_RT
+				    ELSE CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''BAVG'' THEN AVG_CPU_USE_RT
+					 ELSE CASE WHEN Y.GUBUN=''CPU'' AND Z.DT=''CMAX'' THEN MAX_CPU_USE_RT
+					      ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''AMIN'' THEN MIN_MEM_USE_RT
+					           ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''BAVG'' THEN AVG_MEM_USE_RT
+					                ELSE CASE WHEN Y.GUBUN=''MEM'' AND Z.DT=''CMAX'' THEN MAX_MEM_USE_RT
+					                     END
+					                END
+					           END
+					      END
+					 END
+				END USE_RT_TOP
+			FROM
+			(
+			SELECT
+					A.POD_ID,
+					MIN(A.MIN_CPU_USE_RT) MIN_CPU_USE_RT,
+					ROUND(AVG(A.AVG_CPU_USE_RT),2) AVG_CPU_USE_RT,
+					MAX(A.MAX_CPU_USE_RT) MAX_CPU_USE_RT,
+					MIN(A.MIN_MEM_USE_RT) MIN_MEM_USE_RT,
+					ROUND(AVG(A.AVG_MEM_USE_RT),2) AVG_MEM_USE_RT,
+					MAX(A.MAX_MEM_USE_RT) MAX_MEM_USE_RT
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_POD_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_POD_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_POD_SUM_1DD A
+				</when>
+			</choose>
+				LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID = B.POD_ID
+
+			WHERE 1=1
+			<foreach collection="axSeqList" open="AND A.SERVC_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+			<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+					</when>
+					<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+						AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+					</when>
+					<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+						AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+					</when>
+				</choose>
+				GROUP BY A.POD_ID
+				) X,
+				(
+				 <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y,
+				(
+				   SELECT ''AMIN'' DT
+				   UNION ALL
+				   SELECT ''BAVG'' DT
+				   UNION ALL
+				   SELECT ''CMAX'' DT
+
+				) Z
+		ORDER BY Z.DT, X.POD_ID, Y.GUBUN
+		',
+		'
+		SELECT  CASE WHEN Y.GUBUN=''CPU'' THEN POD_ID||''C'' ELSE POD_ID||''M'' END POD_ID
+		FROM
+		    (
+			SELECT DISTINCT A.POD_ID
+			FROM
+			<choose>
+				<when test='"MI".equals(colctCd)'>
+					ST_RX_POD_SUM_10MI A
+				</when>
+				<when test='"HH".equals(colctCd)'>
+					ST_RX_POD_SUM_1HH A
+				</when>
+				<when test='"DD".equals(colctCd)'>
+					ST_RX_POD_SUM_1DD A
+				</when>
+			</choose>
+
+		   LEFT JOIN RX_SERVC_POD B ON A.SERVC_SEQ = B.SERVC_SEQ AND A.POD_ID=B.POD_ID
+		   WHERE 1=1
+		   <foreach collection="axSeqList" open="AND A.SERVC_SEQ IN(" close=")" separator="," item="item">
+				''${item}''
+			</foreach>
+
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND A.COLCT_DT = REPLACE(''${date}'',''-'','''')
+				</when>
+				<when test='"DW".equals(searchTrmCd) or "DI".equals(searchTrmCd)'>
+					AND A.COLCT_DT BETWEEN REPLACE(''${strtDt}'',''-'','''') AND REPLACE(''${endDt}'',''-'','''')
+				</when>
+				<when test='"MM".equals(searchTrmCd) and  "DD".equals(colctCd)'>
+					AND A.COLCT_DT LIKE ''${year}${searchMmCd}%''
+				</when>
+			</choose>
+			)X,
+		    (
+			   <choose>
+					<when test='"A".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					    UNION ALL
+					    SELECT ''MEM''::TEXT gubun
+					</when>
+					<when test='"C".equals(searchType)'>
+						SELECT ''CPU''::TEXT gubun
+					</when>
+					<when test='"M".equals(searchType)'>
+						SELECT ''MEM''::TEXT gubun
+					</when>
+				</choose>
+
+				) Y
+
+			ORDER BY X.POD_ID, Y.GUBUN
+		'
+		)
+		AS
+		(
+			DT_VAL TEXT
+			<choose>
+				<when test="podList != null and !podList.isEmpty()">
+					<foreach collection="podList"  item="item">
+						, "${item.pod_id}" NUMERIC
+					</foreach>
+				</when>
+				<otherwise>
+						,"null" NUMERIC
+				</otherwise>
+			</choose>
+		)
+	 ) Y
+  	ON X.DT = Y.DT_VAL
+  	ORDER BY X.DT
+	</select>
+</mapper>

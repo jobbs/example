@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaPackgVer">
+
+	<resultMap id="resultOaPackgVer" type="ncis.cmn.entity.OaPackgVer">
+        <result property="packgSeq"     column="PACKG_SEQ"/>  <!-- 패키지SEQ -->
+        <result property="ver"     column="VER"/>  <!-- 버전 -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDeptId"     column="REG_DEPT_ID"/>  <!-- 등록부서ID -->
+        <result property="packgCn"     column="PACKG_CN"/>  <!-- 패키지내용 -->
+        <result property="release"     column="RELEASE"/>  <!-- 릴리즈 -->
+        <result property="fileSize"     column="FILE_SIZE"/>  <!-- 파일크기 -->
+        <result property="packgFileLoca"     column="PACKG_FILE_LOCA"/>  <!-- 패키지파일위치 -->
+        <result property="cn"     column="CN"/>  <!-- 내용 -->
+	</resultMap>
+
+	<!-- 패키지버전 등록 -->
+	<insert id="insertOaPackgVer">
+	INSERT INTO OA_PACKG_VER (
+	             PACKG_SEQ  /* 패키지SEQ */
+	           , VER  /* 버전 */
+	           , REG_DTTM  /* 등록일시 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , REG_DEPT_ID  /* 등록부서ID */
+	           , PACKG_CN  /* 패키지내용 */
+	           , RELEASE  /* 릴리즈 */
+	           , FILE_SIZE  /* 파일크기 */
+	           , PACKG_FILE_LOCA  /* 패키지파일위치 */
+	           , CN  /* 내용 */
+	) VALUES (
+	           #{packgSeq}  /* 패키지SEQ */
+	         , #{ver}  /* 버전 */
+	         , now()  /* 등록일시 */
+	         , #{regUserId}  /* 등록자ID */
+	         , #{regDeptId}  /* 등록부서ID */
+	         , #{packgCn}  /* 패키지내용 */
+	         , #{release}  /* 릴리즈 */
+	         , #{fileSize}  /* 파일크기 */
+	         , #{packgFileLoca}  /* 패키지파일위치 */
+	         , #{cn}  /* 내용 */
+	)
+	</insert>
+
+	<!-- 패키지버전 수정 -->
+	<update id="updateOaPackgVer">
+	UPDATE OA_PACKG_VER
+	         SET PACKG_SEQ = #{packgSeq}  /* 패키지SEQ */
+	           , VER = #{ver}  /* 버전 */
+	           , REG_DTTM = now()  /* 등록일시 */
+	           , REG_USER_ID = #{regUserId}  /* 등록자ID */
+	           , REG_DEPT_ID = #{regDeptId}  /* 등록부서ID */
+	           , PACKG_CN = #{packgCn}  /* 패키지내용 */
+	           , RELEASE = #{release}  /* 릴리즈 */
+	           , FILE_SIZE = #{fileSize}  /* 파일크기 */
+	           , PACKG_FILE_LOCA = #{packgFileLoca}  /* 패키지파일위치 */
+	           , CN = #{cn}  /* 내용 */
+         WHERE PACKG_SEQ = #{packgSeq}  /* 패키지SEQ */
+           AND VER = #{ver}  /* 버전 */
+
+	</update>
+
+	<!-- 패키지버전 삭제 -->
+	<delete id="deleteOaPackgVer">
+	DELETE FROM OA_PACKG_VER
+         WHERE PACKG_SEQ = #{packgSeq}  /* 패키지SEQ */
+           AND VER = #{ver}  /* 버전 */
+
+	</delete>
+
+</mapper>

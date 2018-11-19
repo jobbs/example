@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.StCludSwtchGoalRslt">
+
+
+	<insert id="insertStCludSwtchGoalRslt">
+		/*ncis.sql.cmn.StCludSwtchGoalRslt.insertStCludSwtchGoalRslt*/
+		INSERT INTO ST_CLUD_SWTCH_GOAL_RSLT
+		(
+			STDR_YR, REGION_ID, GOAL_INSTITUTION_QTY, GOAL_JOB_QTY, RSLT_INSTITUTION_QTY, RSLT_JOB_QTY
+		)
+		VALUES(
+			#{stdrYr}, #{regionId}, COALESCE(#{goalInstitutionQty},0) , #{goalJobQty}, #{rsltInstitutionQty}, #{rsltJobQty}
+		)
+	</insert>
+	<delete id="deleteStCludSwtchGoalRslt">
+		/*ncis.sql.cmn.StCludSwtchGoalRslt.deleteStCludSwtchGoalRslt*/
+		DELETE FROM ST_CLUD_SWTCH_GOAL_RSLT
+
+	</delete>
+
+</mapper>

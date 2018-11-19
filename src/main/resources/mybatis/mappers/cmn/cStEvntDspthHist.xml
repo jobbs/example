@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stEvntDspthHist">
+
+	<resultMap id="resultStEvntDspthHist" type="ncis.cmn.entity.StEvntDspthHist">
+        <result property="evntDspthId"     column="EVNT_DSPTH_ID"/>  <!-- 이벤트통보ID -->
+        <result property="trgtSrvrClCd"     column="TRGT_SRVR_CL_CD"/>  <!-- 대상서버구분코드 -->
+        <result property="thresTrgtSrvrId"     column="THRES_TRGT_SRVR_ID"/>  <!-- 임계치대상서버ID -->
+        <result property="idxItmId"     column="IDX_ITM_ID"/>  <!-- 지표항목ID -->
+        <result property="thresGrdId"     column="THRES_GRD_ID"/>  <!-- 임계등급ID -->
+        <result property="dspthDttm"     column="DSPTH_DTTM"/>  <!-- 통보일시 -->
+        <result property="dspthTrgtId"     column="DSPTH_TRGT_ID"/>  <!-- 통보대상자ID -->
+        <result property="dspthTyCd"     column="DSPTH_TY_CD"/>  <!-- 통보형식코드 -->
+        <result property="trgtSrvrNm"     column="TRGT_SRVR_NM"/>  <!-- 대상서버명 -->
+        <result property="dspthStatCd"     column="DSPTH_STAT_CD"/>  <!-- 통보상태코드 -->
+        <result property="path"     column="PATH"/>  <!-- 경로 -->
+        <result property="cn"     column="CN"/>  <!-- 내용 -->
+	</resultMap>
+
+	<!-- 이벤트통보(이력) 등록 -->
+	<insert id="insertStEvntDspthHist">
+	/* ncis.sql.cmn.stEvntDspthHist.insertStEvntDspthHist */
+	INSERT INTO ST_EVNT_DSPTH_HIST (
+	             EVNT_DSPTH_ID  /* 이벤트통보ID */
+	           , TRGT_SRVR_CL_CD  /* 대상서버구분코드 */
+	           , THRES_TRGT_SRVR_ID  /* 임계치대상서버ID */
+	           , IDX_ITM_ID  /* 지표항목ID */
+	           , THRES_GRD_ID  /* 임계등급ID */
+	           , DSPTH_DTTM  /* 통보일시 */
+	           , DSPTH_TRGT_ID  /* 통보대상자ID */
+	           , DSPTH_TY_CD  /* 통보형식코드 */
+	           , TRGT_SRVR_NM  /* 대상서버명 */
+	           , DSPTH_STAT_CD  /* 통보상태코드 */
+	           , PATH  /* 경로 */
+	           , CN  /* 내용 */
+	) VALUES (
+	           #{evntDspthId}  /* 이벤트통보ID */
+	         , #{trgtSrvrClCd}  /* 대상서버구분코드 */
+	         , #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+	         , #{idxItmId}  /* 지표항목ID */
+	         , #{thresGrdId}  /* 임계등급ID */
+	         , now()  /* 통보일시 */
+	         , #{dspthTrgtId}  /* 통보대상자ID */
+	         , #{dspthTyCd}  /* 통보형식코드 */
+	         , #{trgtSrvrNm}  /* 대상서버명 */
+	         , #{dspthStatCd}  /* 통보상태코드 */
+	         , #{path}  /* 경로 */
+	         , #{cn}  /* 내용 */
+	)
+	</insert>
+
+	<!-- 이벤트통보(이력) 수정 -->
+	<update id="updateStEvntDspthHist">
+	/* ncis.sql.cmn.stEvntDspthHist.updateStEvntDspthHist */
+	UPDATE ST_EVNT_DSPTH_HIST
+	         SET EVNT_DSPTH_ID = #{evntDspthId}  /* 이벤트통보ID */
+	           , TRGT_SRVR_CL_CD = #{trgtSrvrClCd}  /* 대상서버구분코드 */
+	           , THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+	           , IDX_ITM_ID = #{idxItmId}  /* 지표항목ID */
+	           , THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+	           , DSPTH_DTTM = now()  /* 통보일시 */
+	           , DSPTH_TRGT_ID = #{dspthTrgtId}  /* 통보대상자ID */
+	           , DSPTH_TY_CD = #{dspthTyCd}  /* 통보형식코드 */
+	           , TRGT_SRVR_NM = #{trgtSrvrNm}  /* 대상서버명 */
+	           , DSPTH_STAT_CD = #{dspthStatCd}  /* 통보상태코드 */
+	           , PATH = #{path}  /* 경로 */
+	           , CN = #{cn}  /* 내용 */
+         WHERE EVNT_DSPTH_ID = #{evntDspthId}  /* 이벤트통보ID */
+
+	</update>
+
+	<!-- 이벤트통보(이력) 삭제 -->
+	<delete id="deleteStEvntDspthHist">
+	/* ncis.sql.cmn.stEvntDspthHist.deleteStEvntDspthHist */
+	DELETE FROM ST_EVNT_DSPTH_HIST
+         WHERE EVNT_DSPTH_ID = #{evntDspthId}  /* 이벤트통보ID */
+
+	</delete>
+
+</mapper>

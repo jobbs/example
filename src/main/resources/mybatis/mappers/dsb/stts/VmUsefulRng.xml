@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.specusert.vmUsefulRng">
+
+	<resultMap type="ncis.dsb.stts.specusert.vo.VmUsefulMemVo" id="resultMemCntVo">
+		<result property="lastVcoreQty" column="LAST_VCORE_QTY"/>
+		<result property="lastMemSumCapa8" column="LAST_MEM_SUM_CAPA8"/>
+		<result property="lastMemSumCapa16" column="LAST_MEM_SUM_CAPA16"/>
+		<result property="lastMemSumCapa24" column="LAST_MEM_SUM_CAPA24"/>
+		<result property="lastMemSumCapa32" column="LAST_MEM_SUM_CAPA32"/>
+		<result property="lastMemSumCapa48" column="LAST_MEM_SUM_CAPA48"/>
+		<result property="lastMemSumCapa64" column="LAST_MEM_SUM_CAPA64"/>
+		<result property="lastMemSumCapa128" column="LAST_MEM_SUM_CAPA128"/>
+		<result property="lastMemSumCapaetc" column="LAST_MEM_SUM_CAPAETC"/>
+		<result property="total" column="TOTAL"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.specusert.vo.VmUsefulSanVo" id="resultSanCntVo">
+		<result property="total" column="TOTAL"/>
+		<result property="lastStrgSumCapa0" column="LAST_STRG_SUM_CAPA0"/>
+		<result property="lastStrgSumCapa1" column="LAST_STRG_SUM_CAPA1"/>
+		<result property="lastStrgSumCapa2" column="LAST_STRG_SUM_CAPA2"/>
+		<result property="lastStrgSumCapa3" column="LAST_STRG_SUM_CAPA3"/>
+		<result property="lastStrgSumCapa4" column="LAST_STRG_SUM_CAPA4"/>
+		<result property="lastStrgSumCapa" column="LAST_STRG_SUM_CAPA"/>
+	</resultMap>
+
+
+<resultMap type="ncis.dsb.stts.specusert.vo.VmUsefulMemVo" id="resultMemCntRtVo">
+		<result property="lastVcoreQty" column="LAST_VCORE_QTY"/>
+		<result property="lastMemSumCapa8" column="LAST_MEM_SUM_CAPA8"/>
+		<result property="lastMemSumCapa16" column="LAST_MEM_SUM_CAPA16"/>
+		<result property="lastMemSumCapa24" column="LAST_MEM_SUM_CAPA24"/>
+		<result property="lastMemSumCapa32" column="LAST_MEM_SUM_CAPA32"/>
+		<result property="lastMemSumCapa48" column="LAST_MEM_SUM_CAPA48"/>
+		<result property="lastMemSumCapa64" column="LAST_MEM_SUM_CAPA64"/>
+		<result property="lastMemSumCapa128" column="LAST_MEM_SUM_CAPA128"/>
+		<result property="lastMemSumCapaetc" column="LAST_MEM_SUM_CAPAETC"/>
+		<result property="total" column="TOTAL"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.specusert.vo.VmUsefulSanVo" id="resultSanCntRtVo">
+		<result property="total" column="TOTAL"/>
+		<result property="lastStrgSumCapa0" column="LAST_STRG_SUM_CAPA0"/>
+		<result property="lastStrgSumCapa1" column="LAST_STRG_SUM_CAPA1"/>
+		<result property="lastStrgSumCapa2" column="LAST_STRG_SUM_CAPA2"/>
+		<result property="lastStrgSumCapa3" column="LAST_STRG_SUM_CAPA3"/>
+		<result property="lastStrgSumCapa4" column="LAST_STRG_SUM_CAPA4"/>
+		<result property="lastStrgSumCapa" column="LAST_STRG_SUM_CAPA"/>
+	</resultMap>
+
+
+<select id="selectMemCntList" resultMap="resultMemCntVo">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmUsefulRng.selectMemCntList */
+
+	SELECT   CASE
+		WHEN CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)='888' THEN '기타'
+		WHEN CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)='999' THEN '계'
+		ELSE CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)
+	     END LAST_VCORE_QTY,
+	     COALESCE(B.LAST_MEM_SUM_CAPA8,0) LAST_MEM_SUM_CAPA8,
+	     COALESCE(B.LAST_MEM_SUM_CAPA16,0) LAST_MEM_SUM_CAPA16,
+	     COALESCE(B.LAST_MEM_SUM_CAPA24,0) LAST_MEM_SUM_CAPA24,
+	     COALESCE(B.LAST_MEM_SUM_CAPA32,0) LAST_MEM_SUM_CAPA32,
+	     COALESCE(B.LAST_MEM_SUM_CAPA48,0) LAST_MEM_SUM_CAPA48,
+	     COALESCE(B.LAST_MEM_SUM_CAPA64,0) LAST_MEM_SUM_CAPA64,
+	     COALESCE(B.LAST_MEM_SUM_CAPA128,0) LAST_MEM_SUM_CAPA128,
+	     COALESCE(B.LAST_MEM_SUM_CAPAETC,0) LAST_MEM_SUM_CAPAETC,
+             COALESCE(B.LAST_MEM_SUM_CAPA8,0)+COALESCE(B.LAST_MEM_SUM_CAPA16,0)+COALESCE(B.LAST_MEM_SUM_CAPA24,0)+COALESCE(B.LAST_MEM_SUM_CAPA32,0)+
+             COALESCE(B.LAST_MEM_SUM_CAPA48,0)+COALESCE(B.LAST_MEM_SUM_CAPA64,0)+COALESCE(B.LAST_MEM_SUM_CAPA128,0)+COALESCE(B.LAST_MEM_SUM_CAPAETC,0) TOTAL
+
+              FROM
+			(SELECT 2 LAST_VCORE_QTY 		UNION ALL
+			SELECT 4			UNION ALL
+			SELECT 6			UNION ALL
+			SELECT 8			UNION ALL
+			SELECT 10			UNION ALL
+			SELECT 12			UNION ALL
+			SELECT 14			UNION ALL
+			SELECT 16			UNION ALL
+			SELECT 888			UNION ALL
+			SELECT 999) A
+		LEFT JOIN
+                (SELECT COALESCE(LAST_VCORE_QTY,999) LAST_VCORE_QTY,
+                        SUM(LAST_MEM_SUM_CAPA8) LAST_MEM_SUM_CAPA8,
+                        SUM(LAST_MEM_SUM_CAPA16) LAST_MEM_SUM_CAPA16,
+                        SUM(LAST_MEM_SUM_CAPA24) LAST_MEM_SUM_CAPA24,
+                        SUM(LAST_MEM_SUM_CAPA32) LAST_MEM_SUM_CAPA32,
+                        SUM(LAST_MEM_SUM_CAPA48) LAST_MEM_SUM_CAPA48,
+                        SUM(LAST_MEM_SUM_CAPA64) LAST_MEM_SUM_CAPA64,
+                        SUM(LAST_MEM_SUM_CAPA128) LAST_MEM_SUM_CAPA128,
+                        SUM(LAST_MEM_SUM_CAPAETC) LAST_MEM_SUM_CAPAETC
+                  FROM
+                       (SELECT
+				CASE 	WHEN LAST_VCORE_QTY <![CDATA[<=]]> 2 THEN 2
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 4 THEN 4
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 6 THEN 6
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 8 THEN 8
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 10 THEN 10
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 12 THEN 12
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 14 THEN 14
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 16 THEN 16
+						ELSE 888
+				END LAST_VCORE_QTY,
+				CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA8,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 8  AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 16 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA16,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 16 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 24 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA24,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 24 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 32 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA32,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 32 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 48 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA48,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 48 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 64 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA64,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 64 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 128 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA128,
+			        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 128 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPAETC
+
+		       FROM
+                           (     SELECT VM_SEQ,
+								MAX(LAST_VCORE_QTY) LAST_VCORE_QTY,
+								SUM(ROUND(LAST_MEM_SUM_CAPA/1024/1024/1024,0)) LAST_MEM_SUM_CAPA
+							FROM (
+								SELECT 	VM_SEQ,
+										FIRST_VALUE(LAST_VCORE_QTY) OVER (PARTITION BY VM_SEQ  ORDER BY  COLCT_YM DESC) LAST_VCORE_QTY,
+										FIRST_VALUE(LAST_MEM_SUM_CAPA) OVER (PARTITION BY VM_SEQ  ORDER BY  COLCT_YM DESC) LAST_MEM_SUM_CAPA
+
+								FROM ST_VM_COLCT_SUM_1MM
+								WHERE 1=1
+								AND COLCT_YM = #{year}||#{mm}
+								<if test="region != null and !region.isEmpty()">
+
+							      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+									         	#{item}
+								  </foreach>
+					            </if>
+
+						        ) A
+				    GROUP BY VM_SEQ
+		          ) A
+		    ) A
+		    GROUP BY GROUPING SETS((LAST_VCORE_QTY),())
+		    ) B
+			ON A.LAST_VCORE_QTY = B.LAST_VCORE_QTY
+		    ORDER BY A.LAST_VCORE_QTY
+
+	</select>
+
+	<select id="selectSanCntList" resultMap="resultSanCntVo">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmUsefulRng.selectSanCntList */
+               SELECT
+                        COUNT(VM_SEQ) TOTAL,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[<=]]> 0.5 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA0,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[>]]> 0.5 AND LAST_STRG_SUM_CAPA <![CDATA[<=]]> 1 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA1,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[>]]> 1 AND LAST_STRG_SUM_CAPA <![CDATA[<=]]> 2 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA2,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[>]]> 2 AND LAST_STRG_SUM_CAPA <![CDATA[<=]]> 4 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA3,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[>]]> 4 AND LAST_STRG_SUM_CAPA <![CDATA[<=]]> 8 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA4,
+						SUM(CASE WHEN LAST_STRG_SUM_CAPA <![CDATA[>]]> 8 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA
+
+					FROM (
+						SELECT 	VM_SEQ,
+							SUM(ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1)) LAST_STRG_SUM_CAPA
+
+						FROM ST_VM_COLCT_SUM_1MM
+						WHERE 1=1
+								AND COLCT_YM = #{year}||#{mm}
+								<if test="region != null and !region.isEmpty()">
+
+							      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+									         	#{item}
+								  </foreach>
+					            </if>
+
+                            GROUP BY VM_SEQ
+						) A
+
+
+	</select>
+
+	<select id="selectMemCntRtList" resultMap="resultMemCntRtVo">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmUsefulRng.selectMemCntRtList*/
+	   SELECT   CASE
+			WHEN CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)='888' THEN '기타'
+			WHEN CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)='999' THEN '계'
+			ELSE CAST(A.LAST_VCORE_QTY AS CHARACTER VARYING)
+		     END LAST_VCORE_QTY,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA8,0),1) LAST_MEM_SUM_CAPA8,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA16,0),1) LAST_MEM_SUM_CAPA16,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA24,0),1) LAST_MEM_SUM_CAPA24,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA32,0),1) LAST_MEM_SUM_CAPA32,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA48,0),1) LAST_MEM_SUM_CAPA48,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA64,0),1) LAST_MEM_SUM_CAPA64,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPA128,0),1) LAST_MEM_SUM_CAPA128,
+		     ROUND(COALESCE(B.LAST_MEM_SUM_CAPAETC,0),1) LAST_MEM_SUM_CAPAETC,
+	             ROUND(COALESCE(B.LAST_MEM_SUM_CAPA8,0)+COALESCE(B.LAST_MEM_SUM_CAPA16,0)+COALESCE(B.LAST_MEM_SUM_CAPA24,0)+COALESCE(B.LAST_MEM_SUM_CAPA32,0)+
+	             COALESCE(B.LAST_MEM_SUM_CAPA48,0)+COALESCE(B.LAST_MEM_SUM_CAPA64,0)+COALESCE(B.LAST_MEM_SUM_CAPA128,0)+COALESCE(B.LAST_MEM_SUM_CAPAETC,0),1) TOTAL
+
+	              FROM
+				(SELECT 2 LAST_VCORE_QTY 		UNION ALL
+				SELECT 4			UNION ALL
+				SELECT 6			UNION ALL
+				SELECT 8			UNION ALL
+				SELECT 10			UNION ALL
+				SELECT 12			UNION ALL
+				SELECT 14			UNION ALL
+				SELECT 16			UNION ALL
+				SELECT 888			UNION ALL
+				SELECT 999) A
+			LEFT JOIN
+	                (SELECT COALESCE(LAST_VCORE_QTY,999) LAST_VCORE_QTY,
+	                        SUM(LAST_MEM_SUM_CAPA8)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA8,
+	                        SUM(LAST_MEM_SUM_CAPA16)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA16,
+	                        SUM(LAST_MEM_SUM_CAPA24)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA24,
+	                        SUM(LAST_MEM_SUM_CAPA32)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA32,
+	                        SUM(LAST_MEM_SUM_CAPA48)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA48,
+	                        SUM(LAST_MEM_SUM_CAPA64)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA64,
+	                        SUM(LAST_MEM_SUM_CAPA128)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPA128,
+	                        SUM(LAST_MEM_SUM_CAPAETC)/MAX(VM_SEQ_CNT)::numeric*100 LAST_MEM_SUM_CAPAETC
+	                  FROM
+	                       (SELECT
+					CASE 	WHEN LAST_VCORE_QTY <![CDATA[<=]]> 2 THEN 2
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 4 THEN 4
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 6 THEN 6
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 8 THEN 8
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 10 THEN 10
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 12 THEN 12
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 14 THEN 14
+						WHEN LAST_VCORE_QTY <![CDATA[<=]]> 16 THEN 16
+						ELSE 888
+					END LAST_VCORE_QTY,
+					VM_SEQ_CNT,
+					CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA8,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 8  AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 16 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA16,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 16 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 24 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA24,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 24 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 32 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA32,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 32 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 48 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA48,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 48 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 64 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA64,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 64 AND COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[<=]]> 128 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPA128,
+				        CASE WHEN COALESCE(LAST_MEM_SUM_CAPA, 0) <![CDATA[>]]> 128 THEN 1 ELSE 0 END LAST_MEM_SUM_CAPAETC
+
+			       FROM
+	                           (
+	                           SELECT VM_SEQ,
+                                      LAST_VCORE_QTY,
+                                      AVG(ROUND(LAST_MEM_SUM_CAPA/1024/1024/1024,0)) OVER (PARTITION BY VM_SEQ  ORDER BY  COLCT_YM DESC) LAST_MEM_SUM_CAPA,
+                                      COUNT(VM_SEQ) OVER (PARTITION BY COLCT_YM  ORDER BY  COLCT_YM DESC) VM_SEQ_CNT
+
+                                   FROM ST_VM_COLCT_SUM_1MM
+					                   WHERE 1=1
+                                         AND COLCT_YM = #{year}||#{mm}
+                                           <if test="region != null and !region.isEmpty()">
+
+										      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+												         	#{item}
+											  </foreach>
+								            </if>
+
+                               ) A
+
+			    ) A
+			    GROUP BY GROUPING SETS((LAST_VCORE_QTY),())
+			    ) B
+				ON A.LAST_VCORE_QTY = B.LAST_VCORE_QTY
+				ORDER BY A.LAST_VCORE_QTY
+	</select>
+
+	<select id="selectSanCntRtList" resultMap="resultSanCntRtVo">
+	/* sqlid : ncis.sql.dsb.stts.specusert.vmUsefulRng.selectSanCntRtList*/
+     SELECT CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(TOTAL/TOTAL::numeric*100,1) END TOTAL,
+	        CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(LAST_STRG_SUM_CAPA0/TOTAL::numeric*100,1) END LAST_STRG_SUM_CAPA0,
+	        CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(LAST_STRG_SUM_CAPA1/TOTAL::numeric*100,1) END LAST_STRG_SUM_CAPA1,
+	        CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(LAST_STRG_SUM_CAPA2/TOTAL::numeric*100,1) END LAST_STRG_SUM_CAPA2,
+	        CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(LAST_STRG_SUM_CAPA3/TOTAL::numeric*100,1) END LAST_STRG_SUM_CAPA3,
+	        CASE WHEN TOTAL=0 THEN 0 ELSE ROUND(LAST_STRG_SUM_CAPA4/TOTAL::numeric*100,1) END LAST_STRG_SUM_CAPA4
+       FROM
+           (
+			SELECT
+				COUNT(VM_SEQ) TOTAL,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 0.5 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA0,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 0.5 AND ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 1 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA1,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 1 AND ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 2 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA2,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 2 AND ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 4 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA3,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 4 AND ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[<=]]> 8 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA4,
+				SUM(CASE WHEN ROUND(LAST_STRG_SUM_CAPA/1024/1024/1024/1024,1) <![CDATA[>]]> 8 THEN 1 ELSE 0 END) LAST_STRG_SUM_CAPA
+			  FROM ST_VM_COLCT_SUM_1MM
+			WHERE 1=1
+			   AND COLCT_YM = #{year}||#{mm}
+			   <if test="region != null and !region.isEmpty()">
+
+									      <foreach collection="region" open="AND region_id IN(" close=")" separator="," item="item">
+											         	#{item}
+										  </foreach>
+				</if>
+
+           ) A
+	</select>
+
+</mapper>

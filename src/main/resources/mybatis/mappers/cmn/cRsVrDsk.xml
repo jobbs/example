@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsVrDsk">
+
+	<resultMap id="resultRsVrDsk" type="ncis.cmn.entity.RsVrDsk">
+        <result property="vrDskId"           column="VR_DSK_ID"/>           <!-- 가상디스크SEQ -->
+        <result property="vrDskNm"           column="VR_DSK_NM"/>           <!-- 가상디스크명 -->
+        <result property="vrDskUuid"         column="VR_DSK_UUID"/>         <!-- 가상디스크UUID -->
+        <result property="prpos"             column="PRPOS"/>               <!-- 용도코드 -->
+        <result property="creDt"             column="CRE_DT"/>              <!-- 생성일자 -->
+        <result property="dskStatCd"         column="DSK_STAT_CD"/>         <!-- 디스크상태코드 -->
+        <result property="dskTyCd"           column="DSK_TY_CD"/>           <!-- 디스크유형코드 -->
+        <result property="dskAsgnCapa"       column="DSK_ASGN_CAPA"/>       <!-- 디스크할당용량(GB) -->
+        <result property="dskEryyInstlLoca"  column="DSK_ERYY_INSTL_LOCA"/> <!-- 디스크초기설치위치 -->
+        <result property="strgDmnSeq"        column="STRG_DMN_SEQ"/>        <!-- 스토리지도메인SEQ -->
+        <result property="delUserId"         column="DEL_USER_ID"/>         <!-- 삭제 사용자ID -->
+        <result property="delDttm"           column="DEL_DTTM"/>            <!-- 삭제시간 -->
+        <result property="delYn"             column="DEL_YN"/>              <!-- 삭제여부 -->
+        <result property="rmk"               column="RMK"/>                 <!-- 비고 -->
+	</resultMap>
+
+	<!-- 가상디스크 등록 -->
+	<insert id="insertRsVrDsk">
+	INSERT INTO
+	RS_VR_DSK (
+		VR_DSK_ID             /* 가상디스크SEQ */
+		, VR_DSK_NM           /* 가상디스크명 */
+		, VR_DSK_UUID         /* 가상디스크UUID */
+		, PRPOS               /* 용도코드 */
+		, CRE_DT              /* 생성일자 */
+		, DSK_STAT_CD         /* 디스크상태코드 */
+		, DSK_TY_CD           /* 디스크유형코드 */
+		, DSK_ASGN_CAPA       /* 디스크할당용량(GB) */
+		, DSK_ERYY_INSTL_LOCA /* 디스크초기설치위치 */
+		, STRG_DMN_SEQ        /* 스토리지도메인SEQ */
+	) VALUES (
+		#{vrDskId}            /* 가상디스크SEQ */
+		, #{vrDskNm}          /* 가상디스크명 */
+		, #{vrDskUuid}        /* 가상디스크UUID */
+		, #{prpos}            /* 용도코드 */
+		, #{creDt}            /* 생성일자 */
+		, #{dskStatCd}        /* 디스크상태코드 */
+		, #{dskTyCd}          /* 디스크유형코드 */
+		, #{dskAsgnCapa}      /* 디스크할당용량(GB) */
+		, #{dskEryyInstlLoca} /* 디스크초기설치위치 */
+		, #{strgDmnSeq}       /* 스토리지도메인SEQ */
+	)
+	</insert>
+
+	<!-- 가상디스크 수정 -->
+	<update id="updateRsVrDsk">
+	UPDATE
+	RS_VR_DSK
+	SET
+		VR_DSK_ID             = #{vrDskId}          /* 가상디스크SEQ */
+		, VR_DSK_NM           = #{vrDskNm}          /* 가상디스크명 */
+		, VR_DSK_UUID         = #{vrDskUuid}        /* 가상디스크UUID */
+		, PRPOS               = #{prpos}            /* 용도코드 */
+		, CRE_DT              = #{creDt}            /* 생성일자 */
+		, DSK_STAT_CD         = #{dskStatCd}        /* 디스크상태코드 */
+		, DSK_TY_CD           = #{dskTyCd}          /* 디스크유형코드 */
+		, DSK_ASGN_CAPA       = #{dskAsgnCapa}      /* 디스크할당용량(GB) */
+		, DSK_ERYY_INSTL_LOCA = #{dskEryyInstlLoca} /* 디스크초기설치위치 */
+		, STRG_DMN_SEQ        = #{strgDmnSeq}       /* 스토리지도메인SEQ */
+	WHERE
+		VR_DSK_ID = #{vrDskId}  /* 가상디스크SEQ */
+
+	</update>
+
+	<!-- 가상디스크 삭제 -->
+	<delete id="deleteRsVrDsk">
+	DELETE
+	FROM
+		RS_VR_DSK
+	WHERE
+		VR_DSK_ID = #{vrDskId}  /* 가상디스크SEQ */
+	</delete>
+
+</mapper>

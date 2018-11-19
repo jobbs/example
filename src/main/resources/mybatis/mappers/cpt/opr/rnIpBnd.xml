@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rnIpBnd">
+	<resultMap type="ncis.cpt.opr.ip.vo.IpBndVo" id="resultIpBndVo" extends="ncis.sql.cmn.rnIpBnd.resultRnIpBnd">
+		<result property="regionNm" column="REGION_NM" />
+		<result property="netNm" column="NET_NM" />
+		<result property="regUserNm" column="REG_USER_NM" />
+		<result property="updtUserNm" column="UPDT_USER_NM" />
+		<result property="institutionNm" column="INSTITUTION_NM" />
+		<result property="prposNm" column="PRPOS_NM"/>
+		<result property="useYnNm" column="USEYN_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.IpBndVo" id="resultIpBndVoDetail" extends="resultIpBndVo">
+		<collection property="sRoutLists" column="{bndSeq = BND_SEQ}" select="ncis.sql.cpt.rnSRout.selectSRoutListByBndSeq"/>
+		<collection property="vrSwtchList" column="{bndSeq = BND_SEQ}" select="ncis.sql.cpt.rcVrSwtch.selectVrSwtchListByBndSeq"/>
+		<collection property="ipBndPrposVoList" column="{searchBndSeq = BND_SEQ}" select="ncis.sql.cpt.rnIpBndPrpos.selectIpBndPrposList"/>
+		<collection property="ipBndInstVoList" column="{searchBndSeq = BND_SEQ}" select="ncis.sql.cpt.rnIpBndInst.selectIpBndInstList"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.IpBndPrposVo" id="resultIpBndPrposVo" extends="ncis.sql.cmn.rnIpBndPrpos.resultRnIpBndPrpos">
+		<result property="prposClCd" column="PRPOS_CL_CD" />
+		<result property="bndSeq" column="BND_SEQ" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.IpVo" id="resultIpVo">
+		<result property="ipAddr" column="IP_ADDR"/>
+		<result property="bndSeq" column="BND_SEQ"/>
+		<result property="ipStatCd" column="IP_STAT_CD"/>
+		<result property="asgnDt" column="ASGN_DT"/>
+		<result property="chngDt" column="CHNG_DT"/>
+		<result property="vipYn" column="VIP_YN"/>
+		<result property="withdrawDt" column="WITHDRAW_DT"/>
+		<result property="natIpAddr" column="NAT_IP_ADDR"/>
+		<result property="rmk" column="RMK"/>
+		<result property="netwkIntfcSeq" column="NETWK_INTFC_SEQ"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+
+		<result property="vmCompId" column="VM_COMP_ID" />
+		<result property="vmNm" column="VM_NM" />
+		<result property="hstNm" column="HST_NM" />
+		<result property="macAddr" column="MAC_ADDR" />
+		<result property="ipStatNm" column="IP_STAT_NM" />
+		<result property="hypervisor" column="HYPERVISOR" />
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.VrSwtchVo" id="resultVrSwtchVo">
+		<id property="vrSwtchSeq" column="VR_SWTCH_SEQ"/>
+		<result property="netwkNm" column="NETWK_NM"/>
+		<result property="vrSwtchUuid" column="VR_SWTCH_UUID"/>
+		<result property="vlan" column="VLAN"/>
+		<result property="rsrcPoolId" column="RSRC_POOL_ID"/>
+
+		<result property="regionNm" column="REGION_NM"/>
+		<result property="zoneNm" column="ZONE_NM"/>
+		<result property="netNm" column="NET_NM"/>
+		<result property="rsrcPoolNm" column="RSRC_POOL_NM"/>
+		<result property="vrlzSwTyCdNm" column="VRLZ_SW_TY_CD_NM"/>
+		<result property="vrlzSwTyCdId" column="VRLZ_SW_TY_CD"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.SRoutVo" id="resultSRoutVo">
+		<id property="sRoutSeq" column="S_ROUT_SEQ"/>
+		<result property="ipBndAddr" column="IP_BND_ADDR"/>
+		<result property="subnetMask" column="SUBNET_MASK"/>
+		<result property="gtwyNm" column="GTWY_NM"/>
+		<result property="bndSeq" column="BND_SEQ"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchUseYn != null and !searchUseYn.isEmpty()">
+			AND RN_IP_BND.USE_YN = #{searchUseYn}
+		</if>
+		<if test="searchRegion != null and !searchRegion.isEmpty()">
+			AND RN_IP_BND.REGION_ID = #{searchRegion}
+		</if>
+		<if test="searchNet != null and !searchNet.isEmpty()">
+			AND RN_IP_BND.NET_CL_CD = #{searchNet}
+		</if>
+		<if test="searchIpBndName != null and !searchIpBndName.isEmpty()">
+			AND RN_IP_BND.IP_BND_NM LIKE '%' || #{searchIpBndName} || '%'
+		</if>
+		<if test="searchGateway != null and !searchGateway.isEmpty()">
+			AND RN_IP_BND.GTWY_IP_ADDR LIKE '%' || #{searchGateway} || '%'
+		</if>
+		<if test="searchStrtIp != null and !searchStrtIp.isEmpty()">
+			AND RN_IP_BND.BND_STRT_IP LIKE '%' || #{searchStrtIp} || '%'
+		</if>
+		<if test="searchEndIp != null and !searchEndIp.isEmpty()">
+			AND RN_IP_BND.BND_END_IP LIKE '%' || #{searchEndIp} || '%'
+		</if>
+		<if test="searchInstitution != null and !searchInstitution.isEmpty()">
+			AND EXISTS (SELECT 1 FROM RN_IP_BND_INSTITUTION WHERE RN_IP_BND_INSTITUTION.BND_SEQ = RN_IP_BND.BND_SEQ AND RN_IP_BND_INSTITUTION.INSTITUTION_ID
+			IN (SELECT INSTITUTION_ID FROM CM_INSTITUTION WHERE INSTITUTION_NM LIKE '%' || #{searchInstitution} || '%'))
+		</if>
+		<if test="searchVlan != null and !searchVlan.isEmpty()">
+			AND RN_IP_BND.VLAN = #{searchVlan}
+		</if>
+		<if test='searchUserId != null and searchUserId != ""'>
+<!-- 			AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId} -->
+			AND ( EXISTS (SELECT 1 FROM CM_RSRC_POOL_USER WHERE CM_RSRC_POOL_USER.REGION_ID = RN_IP_BND.REGION_ID AND CM_RSRC_POOL_USER.USER_ID = #{searchUserId})
+     		OR EXISTS (SELECT 1 FROM CM_USR WHERE CM_USR.MNG_REGION_ID = RN_IP_BND.REGION_ID AND CM_USR.USER_ID = #{searchUserId}))
+		</if>
+		<if test='searchPrposList != null'>
+		<!-- 포함 -->
+			<choose>
+				<when test="searchPrposList.length > 0">
+<!-- 				AND RN_IP_BND_PRPOS.PRPOS_CL_CD IN ( -->
+				AND EXISTS (SELECT 1 FROM RN_IP_BND_PRPOS WHERE RN_IP_BND_PRPOS.BND_SEQ = RN_IP_BND.BND_SEQ AND PRPOS_CL_CD IN (
+				<foreach collection="searchPrposList" item="prposClCd" open="" close="" separator=", ">
+					#{prposClCd}
+				</foreach>
+				))
+				</when>
+				<otherwise>
+				AND EXISTS (SELECT 1 FROM RN_IP_BND_PRPOS WHERE RN_IP_BND_PRPOS.BND_SEQ = RN_IP_BND.BND_SEQ AND PRPOS_CL_CD IS NULL)
+				</otherwise>
+			</choose>
+		</if>
+		AND A.GRP_CD = '067' AND A.PARENT_CD = 'NETCD'
+	</sql>
+
+	<sql id="selectIpBndQ">
+	SELECT
+			RN_IP_BND.BND_SEQ
+			, RN_IP_BND.IP_BND_NM
+			, RN_IP_BND.USE_YN
+			, RN_IP_BND.BND_STRT_IP
+			, RN_IP_BND.BND_END_IP
+			, RN_IP_BND.SUBNET_MASK
+			, RN_IP_BND.GTWY_IP_ADDR
+			, RN_IP_BND.VLAN
+<!-- 			, RN_IP_BND.INSTITUTION_ID -->
+<!-- 			, CM_INSTITUTION.INSTITUTION_NM -->
+			, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_INSTITUTION.INSTITUTION_NM),',')	FROM CM_INSTITUTION WHERE CM_INSTITUTION.INSTITUTION_ID IN (SELECT RN_IP_BND_INSTITUTION.INSTITUTION_ID FROM RN_IP_BND_INSTITUTION WHERE RN_IP_BND_INSTITUTION.BND_SEQ = RN_IP_BND.BND_SEQ)) AS INSTITUTION_NM
+			, RN_IP_BND.REG_USER_ID
+			, RN_IP_BND.REG_DTTM
+			, RN_IP_BND.UPDT_USER_ID
+			, RN_IP_BND.UPDT_DTTM
+			, RN_IP_BND.NET_CL_CD
+			, RN_IP_BND.REGION_ID
+			, RC_REGION.REGION_NM
+			, (SELECT ARRAY_TO_STRING(ARRAY_AGG(CM_CODE.CD_NM),',') FROM CM_CODE WHERE CM_CODE.PARENT_CD = '104' AND CM_CODE.CD IN (SELECT RN_IP_BND_PRPOS.PRPOS_CL_CD FROM RN_IP_BND_PRPOS WHERE RN_IP_BND_PRPOS.BND_SEQ = RN_IP_BND.BND_SEQ)) AS PRPOS_NM
+			, A.CD_NM AS NET_NM
+			, B.USER_NM AS REG_USER_NM
+			, C.USER_NM AS UPDP_USER_NM
+			, (SELECT COUNT(1) FROM RN_IP WHERE RN_IP.BND_SEQ = RN_IP_BND.BND_SEQ AND RN_IP.IP_STAT_CD = '01') AS ASGN_IP_QTY
+			, (SELECT COUNT(1) FROM RN_IP WHERE RN_IP.BND_SEQ = RN_IP_BND.BND_SEQ AND RN_IP.IP_STAT_CD = '02') AS UNASGN_IP_QTY
+			, (SELECT COUNT(1) FROM RN_IP WHERE RN_IP.BND_SEQ = RN_IP_BND.BND_SEQ AND RN_IP.IP_STAT_CD = '03') AS BLK_IP_QTY
+	</sql>
+
+	<sql id="fromClauseIpBnd">
+		LEFT JOIN RC_REGION ON RC_REGION.REGION_ID = RN_IP_BND.REGION_ID
+		LEFT JOIN CM_CODE A ON A.CD = RN_IP_BND.NET_CL_CD
+		LEFT JOIN CM_USR B ON B.USER_ID = RN_IP_BND.REG_USER_ID
+		LEFT JOIN CM_USR C ON C.USER_ID = RN_IP_BND.UPDT_USER_ID
+	</sql>
+
+	<select id="selectIpBndTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.rnIpBnd.selectIpBndTotCnt */
+		SELECT
+			COUNT(1)
+		FROM RN_IP_BND
+		<include refid="fromClauseIpBnd" />
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectIpBndList" resultMap="resultIpBndVo">
+		/* ncis.sql.cpt.rnIpBnd.selectIpBndList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectIpBndQ" />
+		FROM RN_IP_BND
+		<include refid="fromClauseIpBnd" />
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY REGION_NM, NET_NM, RN_IP_BND.IP_BND_NM, INSTITUTION_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectIpBnd" resultMap="resultIpBndVoDetail">
+		/* ncis.sql.cpt.rnIpBnd.selectIpBnd */
+		<include refid="selectIpBndQ" />
+		FROM RN_IP_BND
+		<include refid="fromClauseIpBnd" />
+		WHERE
+			RN_IP_BND.BND_SEQ = #{bnd_Seq}
+	</select>
+
+	<select id="selectIpList" parameterType="java.util.HashMap" resultMap="resultIpVo">
+	/* ncis.sql.cpt.rnIpBnd.selectIpList */
+	SELECT
+		RN_IP.IP_ADDR
+		, RN_IP.BND_SEQ
+		, RN_IP.IP_STAT_CD
+		, RN_IP.ASGN_DT
+		, RN_IP.CHNG_DT
+		, RN_IP.VIP_YN
+		, RN_IP.WITHDRAW_DT
+		, RN_IP.NAT_IP_ADDR
+		, RN_IP.RMK
+		, RN_IP.NETWK_INTFC_SEQ
+		, RN_IP.UPDT_USER_ID
+		, TO_CHAR(RN_IP.UPDT_DTTM, 'YYYY-MM-DD') UPDT_DTTM
+		,( SELECT CD_NM FROM CM_CODE WHERE CD = RN_IP.IP_STAT_CD AND GRP_CD = '022' AND PARENT_CD = '121' ) AS IP_STAT_NM
+		,( SELECT CD_NM FROM CM_CODE WHERE CD = RC_RSRC_POOL.VRLZ_SW_TY_CD AND GRP_CD = '001' AND PARENT_CD = '100' ) AS HYPERVISOR
+		, RC_VM.HST_NM
+		, RC_NETWK_INTFC.MAC_ADDR
+		, RC_VM.VM_NM
+		, RC_VM.VM_COMP_ID
+	FROM
+		RN_IP
+		LEFT JOIN RC_NETWK_INTFC ON RC_NETWK_INTFC.NETWK_INTFC_SEQ = RN_IP.NETWK_INTFC_SEQ
+		LEFT JOIN RC_VM ON RC_VM.VM_SEQ = RC_NETWK_INTFC.VM_SEQ
+		LEFT JOIN RC_CLSTR ON RC_CLSTR.CLSTR_SEQ = RC_VM.CLSTR_SEQ
+		LEFT JOIN RC_RSRC_POOL ON RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+	WHERE
+		RN_IP.BND_SEQ = #{bnd_Seq} AND RN_IP.IP_STAT_CD = #{ip_stat_cd}
+	ORDER BY IP_ADDR ASC
+	</select>
+
+	<select id="selectCheckIpRange" parameterType="java.util.HashMap" resultMap="resultIpVo">
+	/* ncis.sql.cpt.rnIpBnd.selectCheckIpRange */
+	SELECT
+		IP_ADDR
+	FROM
+		RN_IP
+	LEFT OUTER JOIN RN_IP_BND ON RN_IP_BND.BND_SEQ = RN_IP.BND_SEQ
+	WHERE
+		IP_ADDR BETWEEN #{strtIp}::inet AND #{endIp}::inet
+		AND RN_IP_BND.REGION_ID = #{regionId}
+		AND RN_IP_BND.NET_CL_CD = #{netClCd}
+		AND EXISTS (SELECT 1 FROM RN_IP_BND_PRPOS WHERE RN_IP_BND_PRPOS.BND_SEQ = RN_IP_BND.BND_SEQ AND PRPOS_CL_CD IN (
+		<foreach collection="prposClCdList" item="prposClCd" open="" close="" separator=", ">
+			#{prposClCd}
+		</foreach>
+		))
+	</select>
+
+<!-- 	<select id="selectvirSwitchList" resultMap="resultVrSwtchVo"> -->
+<!-- 	SELECT -->
+<!-- 		VR_SWTCH_SEQ -->
+<!-- 		, NETWK_NM -->
+<!-- 		, VR_SWTCH_UUID -->
+<!-- 		, VLAN -->
+<!-- 		, RSRC_POOL_ID -->
+<!-- 	FROM -->
+<!-- 		RC_VR_SWTCH -->
+<!-- 	WHERE -->
+<!-- 		VR_SWTCH_SEQ = (SELECT VR_SWTCH_SEQ FROM RN_VR_SWTCH_ASGN WHERE BND_SEQ = #{bnd_Seq}) -->
+<!-- 	ORDER BY NETWK_NM ASC -->
+<!-- 	</select> -->
+</mapper>

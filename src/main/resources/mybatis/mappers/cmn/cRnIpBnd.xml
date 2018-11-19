@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnIpBnd">
+
+	<resultMap id="resultRnIpBnd" type="ncis.cmn.entity.RnIpBnd">
+        <result property="bndSeq"     column="BND_SEQ"/>  <!-- 대역SEQ -->
+        <result property="ipBndNm"     column="IP_BND_NM"/>  <!-- IP대역명 -->
+        <result property="useYn"     column="USE_YN"/>  <!-- 사용여부 -->
+        <result property="bndStrtIp"     column="BND_STRT_IP"/>  <!-- 대역시작IP주소 -->
+        <result property="bndEndIp"     column="BND_END_IP"/>  <!-- 대역종료IP주소 -->
+        <result property="subnetMask"     column="SUBNET_MASK"/>  <!-- 서브넷마스크 -->
+        <result property="gtwyIpAddr"     column="GTWY_IP_ADDR"/>  <!-- 게이트웨이IP주소 -->
+        <result property="vlan"     column="VLAN"/>  <!-- VLAN -->
+        <result property="asgnIpQty"     column="ASGN_IP_QTY"/>  <!-- 할당IP수 -->
+        <result property="unasgnIpQty"     column="UNASGN_IP_QTY"/>  <!-- 미할당IP수 -->
+        <result property="blkIpQty"     column="BLK_IP_QTY"/>  <!-- 블럭IP수 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록자ID -->
+        <result property="regDttm"     column="REG_DTTM"/>  <!-- 등록일시 -->
+        <result property="updtUserId"     column="UPDT_USER_ID"/>  <!-- 수정자ID -->
+        <result property="updtDttm"     column="UPDT_DTTM"/>  <!-- 수정일시 -->
+        <result property="netClCd"     column="NET_CL_CD"/>  <!-- 망ID -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 리전ID -->
+	</resultMap>
+
+	<!-- IP대역 등록 -->
+	<insert id="insertRnIpBnd">
+	/* ncis.sql.cmn.rnIpBnd.insertRnIpBnd */
+	<selectKey order="BEFORE" keyProperty="bndSeq" resultType="java.math.BigDecimal">
+		SELECT nextval('RN_IP_BND_SQ01')
+	</selectKey>
+	INSERT INTO RN_IP_BND (
+	             BND_SEQ  /* 대역SEQ */
+	           , IP_BND_NM  /* IP대역명 */
+	           , USE_YN  /* 사용여부 */
+	           , BND_STRT_IP  /* 대역시작IP주소 */
+	           , BND_END_IP  /* 대역종료IP주소 */
+	           , SUBNET_MASK  /* 서브넷마스크 */
+	           , GTWY_IP_ADDR  /* 게이트웨이IP주소 */
+	           , VLAN  /* VLAN */
+	           , ASGN_IP_QTY  /* 할당IP수 */
+	           , UNASGN_IP_QTY  /* 미할당IP수 */
+	           , BLK_IP_QTY  /* 블럭IP수 */
+	           , REG_USER_ID  /* 등록자ID */
+	           , REG_DTTM  /* 등록일시 */
+	           , UPDT_USER_ID  /* 수정자ID */
+	           , UPDT_DTTM  /* 수정일시 */
+	           , NET_CL_CD  /* 망ID */
+	           , REGION_ID  /* 리전ID */
+	) VALUES (
+	           #{bndSeq}  /* 대역SEQ */
+	         , #{ipBndNm}  /* IP대역명 */
+	         , #{useYn}  /* 사용여부 */
+	         , #{bndStrtIp}  /* 대역시작IP주소 */
+	         , #{bndEndIp}  /* 대역종료IP주소 */
+	         , #{subnetMask}  /* 서브넷마스크 */
+	         , #{gtwyIpAddr}  /* 게이트웨이IP주소 */
+	         , #{vlan}  /* VLAN */
+	         , #{asgnIpQty}  /* 할당IP수 */
+	         , #{unasgnIpQty}  /* 미할당IP수 */
+	         , #{blkIpQty}  /* 블럭IP수 */
+	         , #{regUserId}  /* 등록자ID */
+	         , now()  /* 등록일시 */
+	         , #{updtUserId}  /* 수정자ID */
+	         , now()  /* 수정일시 */
+	         , #{netClCd}  /* 망ID */
+	         , #{regionId}  /* 리전ID */
+	)
+	</insert>
+
+	<!-- IP대역 수정 -->
+	<update id="updateRnIpBndInfo">
+	/* ncis.sql.cmn.rnIpBnd.updateRnIpBndInfo */
+	UPDATE RN_IP_BND
+	         SET IP_BND_NM = #{ipBndNm}  /* IP대역명 */
+	           , USE_YN = #{useYn}  /* 사용여부 */
+	           , SUBNET_MASK = #{subnetMask}  /* 서브넷마스크 */
+	           , GTWY_IP_ADDR = #{gtwyIpAddr}  /* 게이트웨이IP주소 */
+	           , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+	           , UPDT_DTTM = now()  /* 수정일시 */
+	           , NET_CL_CD = #{netClCd}  /* 망ID */
+	           , VLAN = #{vlan}  /* VLAN */
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	</update>
+
+	<!-- IP 수량 동기화(할당/미할당/블락) -->
+	<update id="updateRnIpBndIpQty">
+	/* ncis.sql.cmn.rnIpBnd.updateRnIpBndIpQty */
+	UPDATE RN_IP_BND
+		SET
+			ASGN_IP_QTY = (SELECT COUNT(IP_ADDR) FROM RN_IP B WHERE B.BND_SEQ = #{ipBndSeq} AND B.IP_STAT_CD = '01')
+			,UNASGN_IP_QTY = (SELECT COUNT(IP_ADDR) FROM RN_IP B WHERE B.BND_SEQ = #{ipBndSeq} AND B.IP_STAT_CD = '02')
+			,BLK_IP_QTY = (SELECT COUNT(IP_ADDR) FROM RN_IP B WHERE B.BND_SEQ = #{ipBndSeq} AND B.IP_STAT_CD = '03')
+		WHERE
+			BND_SEQ = #{bndSeq}
+	</update>
+
+	<!-- IP대역 삭제 -->
+	<delete id="deleteRnIpBnd">
+	/* ncis.sql.cmn.rnIpBnd.deleteRnIpBnd */
+	DELETE FROM RN_IP_BND
+		WHERE BND_SEQ = #{bndSeq}
+	</delete>
+
+</mapper>

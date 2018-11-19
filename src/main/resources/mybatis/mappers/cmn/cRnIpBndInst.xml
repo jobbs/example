@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnIpBndInst">
+
+	<resultMap id="resultRnIpBndInst" type="ncis.cmn.entity.RnIpBndInst">
+        <result property="bndSeq"     column="BND_SEQ"/>  <!-- 대역SEQ -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 부처ID -->
+	</resultMap>
+
+	<!-- IP대역부처 등록 -->
+	<insert id="insertRnIpBndInst">
+	/* ncis.sql.cmn.rnIpBndInst.insertRnIpBndInst */
+	INSERT INTO RN_IP_BND_INSTITUTION (
+	             BND_SEQ  /* 대역SEQ */
+	           , INSTITUTION_ID  /* 용도구분코드 */
+	) VALUES (
+	           #{bndSeq}  /* 대역SEQ */
+	         , #{institutionId}  /* 용도구분코드 */
+	)
+	</insert>
+
+	<!-- IP대역부처 수정 -->
+	<update id="updateRnIpBndInst">
+	/* ncis.sql.cmn.rnIpBndInst.updateRnIpBndInst */
+	UPDATE RN_IP_BND_INSTITUTION
+	         SET BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	           , INSTITUTION_ID = #{institutionId}  /* 용도구분코드 */
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+           AND INSTITUTION_ID = #{institutionId}  /* 용도일련번호 */
+	</update>
+
+	<!-- IP대역부처 삭제 -->
+	<delete id="deleteRnIpBndInst">
+	/* ncis.sql.cmn.rnIpBndInst.deleteRnIpBndInst */
+	DELETE FROM RN_IP_BND_INSTITUTION
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+           AND INSTITUTION_ID = #{institutionId}  /* 용도일련번호 */
+	</delete>
+
+	<!-- IP대역부처 삭제 By BndSeq -->
+	<delete id="deleteRnIpBndInstByBndSeq">
+	/* ncis.sql.cmn.rnIpBndInst.deleteRnIpBndInstByBndSeq */
+	DELETE FROM RN_IP_BND_INSTITUTION
+         WHERE BND_SEQ = #{bndSeq}  /* 대역SEQ */
+	</delete>
+
+</mapper>

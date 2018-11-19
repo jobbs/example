@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siUserChngHist">
+
+	<resultMap id="resultSiUserChngHist" type="ncis.cmn.entity.SiUserChngHist">
+        <result property="chngDttm"     column="CHNG_DTTM"/>  <!-- 변경일시 -->
+        <result property="userId"     column="USER_ID"/>  <!-- 사용자ID -->
+        <result property="userNm"     column="USER_NM"/>  <!-- 사용자명 -->
+        <result property="userClCd"     column="USER_CL_CD"/>  <!-- 사용자구분코드(1) -->
+        <result property="userClNm"     column="USER_CL_NM"/>  <!-- 사용자구분명 -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="institutionNm"     column="INSTITUTION_NM"/>  <!-- 기관명 -->
+        <result property="orgnztId"     column="ORGNZT_ID"/>  <!-- 조직ID -->
+        <result property="orgnztNm"     column="ORGNZT_NM"/>  <!-- 조직명 -->
+        <result property="mngRegionClCd"     column="MNG_REGION_CL_CD"/>  <!-- 관리리전구분코드 -->
+        <result property="ofcpsName"     column="OFCPS_NAME"/>  <!-- 직위명 -->
+        <result property="sysAuthrTyId"     column="SYS_AUTHR_TY_ID"/>  <!-- 시스템권한유형ID -->
+        <result property="passwd"     column="PASSWD"/>  <!-- 비밀번호 -->
+        <result property="telno"     column="TELNO"/>  <!-- 전화번호 -->
+        <result property="lxtnNo"     column="LXTN_NO"/>  <!-- 내선번호 -->
+        <result property="faxNo"     column="FAX_NO"/>  <!-- 팩스번호 -->
+        <result property="ownhomTelNo"     column="OWNHOM_TEL_NO"/>  <!-- 자택전화번호 -->
+        <result property="mobile"     column="MOBILE"/>  <!-- 휴대폰번호 -->
+        <result property="email"     column="EMAIL"/>  <!-- 이메일주소 -->
+        <result property="absnceYn"     column="ABSNCE_YN"/>  <!-- 부재여부 -->
+        <result property="absnceId"     column="ABSNCE_ID"/>  <!-- 부재사용자ID -->
+        <result property="absnceBeginDt"     column="ABSNCE_BEGIN_DT"/>  <!-- 부재시작일자 -->
+        <result property="absnceEndDt"     column="ABSNCE_END_DT"/>  <!-- 부재종료일자 -->
+        <result property="rcntLoginDt"     column="RCNT_LOGIN_DT"/>  <!-- 최근로그인일시 -->
+        <result property="crtfctKey"     column="CRTFCT_KEY"/>  <!-- 인증서키값 -->
+        <result property="unityConnectTyCd"     column="UNITY_CONNECT_TY_CD"/>  <!-- 통합접속구분코드 -->
+        <result property="regDt"     column="REG_DT"/>  <!-- 등록일자 -->
+        <result property="ofcpsId"     column="OFCPS_ID"/>  <!-- 직위ID -->
+	</resultMap>
+
+	<!-- 사용자정보변경이력 등록 -->
+	<insert id="insertSiUserChngHist">
+	INSERT INTO SI_USER_CHNG_HIST (
+	             CHNG_DTTM  /* 변경일시 */
+	           , USER_ID  /* 사용자ID */
+	           , USER_NM  /* 사용자명 */
+	           , USER_CL_CD  /* 사용자구분코드(1) */
+	           , USER_CL_NM  /* 사용자구분명 */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , INSTITUTION_NM  /* 기관명 */
+	           , ORGNZT_ID  /* 조직ID */
+	           , ORGNZT_NM  /* 조직명 */
+	           , MNG_REGION_CL_CD  /* 관리리전구분코드 */
+	           , OFCPS_NAME  /* 직위명 */
+	           , SYS_AUTHR_TY_ID  /* 시스템권한유형ID */
+	           , PASSWD  /* 비밀번호 */
+	           , TELNO  /* 전화번호 */
+	           , LXTN_NO  /* 내선번호 */
+	           , FAX_NO  /* 팩스번호 */
+	           , OWNHOM_TEL_NO  /* 자택전화번호 */
+	           , MOBILE  /* 휴대폰번호 */
+	           , EMAIL  /* 이메일주소 */
+	           , ABSNCE_YN  /* 부재여부 */
+	           , ABSNCE_ID  /* 부재사용자ID */
+	           , ABSNCE_BEGIN_DT  /* 부재시작일자 */
+	           , ABSNCE_END_DT  /* 부재종료일자 */
+	           , RCNT_LOGIN_DT  /* 최근로그인일시 */
+	           , CRTFCT_KEY  /* 인증서키값 */
+	           , UNITY_CONNECT_TY_CD  /* 통합접속구분코드 */
+	           , REG_DT  /* 등록일자 */
+	           , OFCPS_ID  /* 직위ID */
+	) VALUES (
+	           now()  /* 변경일시 */
+	         , #{userId}  /* 사용자ID */
+	         , #{userNm}  /* 사용자명 */
+	         , #{userClCd}  /* 사용자구분코드(1) */
+	         , #{userClNm}  /* 사용자구분명 */
+	         , #{institutionId}  /* 기관ID */
+	         , #{institutionNm}  /* 기관명 */
+	         , #{orgnztId}  /* 조직ID */
+	         , #{orgnztNm}  /* 조직명 */
+	         , #{mngRegionClCd}  /* 관리리전구분코드 */
+	         , #{ofcpsName}  /* 직위명 */
+	         , #{sysAuthrTyId}  /* 시스템권한유형ID */
+	         , #{passwd}  /* 비밀번호 */
+	         , #{telno}  /* 전화번호 */
+	         , #{lxtnNo}  /* 내선번호 */
+	         , #{faxNo}  /* 팩스번호 */
+	         , #{ownhomTelNo}  /* 자택전화번호 */
+	         , #{mobile}  /* 휴대폰번호 */
+	         , #{email}  /* 이메일주소 */
+	         , #{absnceYn}  /* 부재여부 */
+	         , #{absnceId}  /* 부재사용자ID */
+	         , #{absnceBeginDt}  /* 부재시작일자 */
+	         , #{absnceEndDt}  /* 부재종료일자 */
+	         , #{rcntLoginDt}  /* 최근로그인일시 */
+	         , #{crtfctKey}  /* 인증서키값 */
+	         , #{unityConnectTyCd}  /* 통합접속구분코드 */
+	         , #{regDt}  /* 등록일자 */
+	         , #{ofcpsId}  /* 직위ID */
+	)
+	</insert>
+
+	<!-- 사용자정보변경이력 수정 -->
+	<update id="updateSiUserChngHist">
+	UPDATE SI_USER_CHNG_HIST
+	         SET CHNG_DTTM = now()  /* 변경일시 */
+	           , USER_ID = #{userId}  /* 사용자ID */
+	           , USER_NM = #{userNm}  /* 사용자명 */
+	           , USER_CL_CD = #{userClCd}  /* 사용자구분코드(1) */
+	           , USER_CL_NM = #{userClNm}  /* 사용자구분명 */
+	           , INSTITUTION_ID = #{institutionId}  /* 기관ID */
+	           , INSTITUTION_NM = #{institutionNm}  /* 기관명 */
+	           , ORGNZT_ID = #{orgnztId}  /* 조직ID */
+	           , ORGNZT_NM = #{orgnztNm}  /* 조직명 */
+	           , MNG_REGION_CL_CD = #{mngRegionClCd}  /* 관리리전구분코드 */
+	           , OFCPS_NAME = #{ofcpsName}  /* 직위명 */
+	           , SYS_AUTHR_TY_ID = #{sysAuthrTyId}  /* 시스템권한유형ID */
+	           , PASSWD = #{passwd}  /* 비밀번호 */
+	           , TELNO = #{telno}  /* 전화번호 */
+	           , LXTN_NO = #{lxtnNo}  /* 내선번호 */
+	           , FAX_NO = #{faxNo}  /* 팩스번호 */
+	           , OWNHOM_TEL_NO = #{ownhomTelNo}  /* 자택전화번호 */
+	           , MOBILE = #{mobile}  /* 휴대폰번호 */
+	           , EMAIL = #{email}  /* 이메일주소 */
+	           , ABSNCE_YN = #{absnceYn}  /* 부재여부 */
+	           , ABSNCE_ID = #{absnceId}  /* 부재사용자ID */
+	           , ABSNCE_BEGIN_DT = #{absnceBeginDt}  /* 부재시작일자 */
+	           , ABSNCE_END_DT = #{absnceEndDt}  /* 부재종료일자 */
+	           , RCNT_LOGIN_DT = #{rcntLoginDt}  /* 최근로그인일시 */
+	           , CRTFCT_KEY = #{crtfctKey}  /* 인증서키값 */
+	           , UNITY_CONNECT_TY_CD = #{unityConnectTyCd}  /* 통합접속구분코드 */
+	           , REG_DT = #{regDt}  /* 등록일자 */
+	           , OFCPS_ID = #{ofcpsId}  /* 직위ID */
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND USER_ID = #{userId}  /* 사용자ID */
+
+	</update>
+
+	<!-- 사용자정보변경이력 삭제 -->
+	<delete id="deleteSiUserChngHist">
+	DELETE FROM SI_USER_CHNG_HIST
+         WHERE CHNG_DTTM = #{chngDttm}  /* 변경일시 */
+           AND USER_ID = #{userId}  /* 사용자ID */
+
+	</delete>
+
+</mapper>

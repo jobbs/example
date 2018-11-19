@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stEvnt">
+
+	<resultMap id="resultStEvnt" type="ncis.cmn.entity.StEvnt">
+        <result property="evntSeq"     column="EVNT_SEQ"/>  <!-- 이벤트ID -->
+        <result property="occrDttm"     column="OCCR_DTTM"/>  <!-- 발생일시 -->
+        <result property="trgtSrvrClCd"     column="TRGT_SRVR_CL_CD"/>  <!-- 대상서버구분코드 -->
+        <result property="thresTrgtSrvrId"     column="THRES_TRGT_SRVR_ID"/>  <!-- 임계치대상서버ID -->
+        <result property="idxItmId"     column="IDX_ITM_ID"/>  <!-- 지표항목ID -->
+        <result property="thresGrdId"     column="THRES_GRD_ID"/>  <!-- 임계등급ID -->
+        <result property="nowVl"     column="NOW_VL"/>  <!-- 현재값 -->
+        <result property="evntCn"     column="EVNT_CN"/>  <!-- 이벤트내용 -->
+        <result property="trgtPath"     column="TRGT_PATH"/>  <!-- 대상경로 -->
+        <result property="confrmUserId"     column="CONFRM_USER_ID"/>  <!-- 확인자 -->
+        <result property="confrmDt"     column="CONFRM_DT"/>  <!-- 확인일시 -->
+	</resultMap>
+
+	<!-- 이벤트 등록 -->
+	<insert id="insertStEvnt">
+	/* ncis.sql.cmn.stEvnt.insertStEvnt */
+	INSERT INTO ST_EVNT (
+	             EVNT_SEQ  /* 이벤트ID */
+	           , OCCR_DTTM  /* 발생일시 */
+	           , TRGT_SRVR_CL_CD  /* 대상서버구분코드 */
+	           , THRES_TRGT_SRVR_ID  /* 임계치대상서버ID */
+	           , IDX_ITM_ID  /* 지표항목ID */
+	           , THRES_GRD_ID  /* 임계등급ID */
+	           , NOW_VL  /* 현재값 */
+	           , EVNT_CN  /* 이벤트내용 */
+	           , TRGT_PATH  /* 대상경로 */
+	           , CONFRM_USER_ID  /* 확인자 */
+	           , CONFRM_DTTM  /* 확인일시 */
+	) VALUES (
+	           #{evntSeq}  /* 이벤트ID */
+	         , now()  /* 발생일시 */
+	         , #{trgtSrvrClCd}  /* 대상서버구분코드 */
+	         , #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+	         , #{idxItmId}  /* 지표항목ID */
+	         , #{thresGrdId}  /* 임계등급ID */
+	         , #{nowVl}  /* 현재값 */
+	         , #{evntCn}  /* 이벤트내용 */
+	         , #{trgtPath}  /* 대상경로 */
+	         , #{confrmUserId}  /* 확인자 */
+	         , now()  /* 확인일시 */
+	)
+	</insert>
+
+	<!-- 이벤트 수정 -->
+	<update id="updateStEvnt">
+	/* ncis.sql.cmn.stEvnt.updateStEvnt */
+	UPDATE ST_EVNT
+	         SET EVNT_SEQ = #{evntSeq}  /* 이벤트ID */
+	           , OCCR_DTTM = now()  /* 발생일시 */
+	           , TRGT_SRVR_CL_CD = #{trgtSrvrClCd}  /* 대상서버구분코드 */
+	           , THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+	           , IDX_ITM_ID = #{idxItmId}  /* 지표항목ID */
+	           , THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+	           , NOW_VL = #{nowVl}  /* 현재값 */
+	           , EVNT_CN = #{evntCn}  /* 이벤트내용 */
+	           , TRGT_PATH = #{trgtPath}  /* 대상경로 */
+	           , CONFRM_USER_ID = #{confrmUserId}  /* 확인자 */
+	           , CONFRM_DTTM = now()  /* 확인일시 */
+         WHERE EVNT_SEQ = #{evntSeq}  /* 이벤트ID */
+
+	</update>
+
+	<!-- 이벤트 삭제 -->
+	<delete id="deleteStEvnt">
+	/* ncis.sql.cmn.stEvnt.deleteStEvnt */
+	DELETE FROM ST_EVNT
+         WHERE EVNT_SEQ = #{evntSeq}  /* 이벤트ID */
+
+	</delete>
+	<update id="updateEvntConfrm" parameterType="ncis.cmn.entity.StEvnt">
+	/* ncis.sql.cmn.stEvnt.updateEvntConfrm */
+		UPDATE ST_EVNT
+		SET 	CONFRM_USER_ID=#{confrmUserId}
+			, CONFRM_DTTM= NOW()
+		WHERE EVNT_SEQ = #{evntSeq}  /* 이벤트ID */
+	</update>
+	<update id="updateEvntConfrmCncl" parameterType="ncis.cmn.entity.StEvnt">
+	/* ncis.sql.cmn.stEvnt.updateEvntConfrmCncl */
+		UPDATE ST_EVNT
+		SET 	CONFRM_USER_ID=NULL
+			, CONFRM_DTTM= NULL
+		WHERE EVNT_SEQ = #{evntSeq}  /* 이벤트ID */
+	</update>
+</mapper>

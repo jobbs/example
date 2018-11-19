@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmAlrm">
+
+	<resultMap id="resultCmAlrm" type="ncis.cmn.entity.CmAlrm">
+		<result property="alrmSeq"        column="ALRM_SEQ"/>
+		<result property="alrmSbjct"      column="ALRM_SBJCT"/>
+		<result property="alrmCn"         column="ALRM_CN"/>
+		<result property="chargerId"      column="CHARGER_ID"/>
+		<result property="trgtUrl"        column="TRGT_URL"/>
+		<result property="statCd"         column="STAT_CD"/>
+		<result property="regDttm"        column="REG_DTTM"/>
+		<result property="confrmYn"       column="CONFRM_YN"/>
+		<result property="confrmDttm"     column="CONFRM_DTTM"/>
+	</resultMap>
+
+	<!-- 알림 등록 -->
+	<insert id="insertCmInstitution">
+	/* ncis.sql.cmn.cmAlrm.insertCmInstitution */
+		INSERT INTO CM_ALRM (
+			ALRM_SBJCT
+			,ALRM_CN
+			,CHARGER_ID
+			,TRGT_URL
+			,STAT_CD
+			,REG_DTTM
+	) VALUES (
+		#{alrmSbjct }
+		,#{alrmCn }
+		,#{chargerId }
+		,#{trgtUrl }
+		,#{statCd }
+		,#{regDttm }
+	)
+	</insert>
+
+	<!-- 알림 수정 -->
+	<update id="updateCmAlrm">
+	/* ncis.sql.cmn.cmAlrm.updateCmAlrm */
+		UPDATE CM_ALRM SET
+			CONFRM_YN = #{confrmYn },
+			CONFRM_DTTM = now()
+		WHERE ALRM_SEQ = #{alrmSeq}
+
+	</update>
+
+	<!-- 기관 삭제 -->
+	<delete id="deleteCmAlrm">
+	/* ncis.sql.cmn.cmAlrm.deleteCmAlrm */
+		DELETE FROM CM_ALRM WHERE ALRM_SEQ = #{value}
+	</delete>
+
+</mapper>

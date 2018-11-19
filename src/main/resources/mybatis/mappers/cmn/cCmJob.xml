@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmJob">
+
+	<resultMap id="resultCmJob" type="ncis.cmn.entity.CmJob">
+        <result property="jobId"     column="JOB_ID"/>  <!-- 업무ID -->
+        <result property="jobNm"     column="JOB_NM"/>  <!-- 업무명 -->
+        <result property="cludJob"     column="CLUD_JOB"/>  <!-- 클라우드업무여부 -->
+        <result property="jobGrd"     column="JOB_GRD"/>  <!-- 업무등급 -->
+        <result property="jobRegDt"     column="JOB_REG_DT"/>  <!-- 업무등록일자 -->
+        <result property="institutionId"     column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 기관ID -->
+        <result property="useYn"	column="USE_YN"/> <!-- 사용여부 -->
+	</resultMap>
+
+	<!-- 업무 등록 -->
+	<insert id="insertCmJob">
+	/*ncis.sql.cmn.cmJob.insertCmJob*/
+	INSERT INTO CM_JOB (
+	             JOB_ID  /* 업무ID */
+	           , JOB_NM  /* 업무명 */
+	           , CLUD_JOB  /* 클라우드업무여부 */
+	           , JOB_GRD  /* 업무등급 */
+	           , JOB_REG_DT  /* 업무등록일자 */
+	           , INSTITUTION_ID  /* 기관ID */
+	           , REGION_ID  /* 기관ID */
+	           , USE_YN
+	) VALUES (
+	           #{jobId}  /* 업무ID */
+	         , #{jobNm}  /* 업무명 */
+	         , #{cludJob}  /* 클라우드업무여부 */
+	         , #{jobGrd}  /* 업무등급 */
+	         , #{jobRegDt}  /* 업무등록일자 */
+	         , #{institutionId}  /* 기관ID */
+	         , #{regionId}  /* 기관ID */
+	         , #{useYn}
+	)
+	</insert>
+
+	<!-- 업무 수정 -->
+	<update id="updateCmJob">
+		/*ncis.sql.cmn.cmJob.updateCmJob*/
+		UPDATE CM_JOB SET
+			JOB_NM = #{jobId}  /* 업무ID */
+			,CLUD_JOB = #{cludJob}  /* 클라우드업무여부 */
+			,JOB_GRD = #{jobGrd}  /* 업무등급 */
+			,INSTITUTION_ID = #{institutionId}  /* 기관ID */
+			,REGION_ID = #{regionId}  /* 기관ID */
+	        ,USE_YN = #{useYn}  				  /* 사용여부 */
+        WHERE JOB_ID = #{jobId}  			   /* 업무ID */
+
+	</update>
+
+
+		<!-- 업무 수정 -->
+	<update id="updateUseYNCmJob">
+	/*ncis.sql.cmn.cmJob.updateUseYNCmJob*/
+	UPDATE CM_JOB
+	         SET USE_YN = #{useYn}  /* 사용여부 */
+         WHERE JOB_ID = #{jobId}  /* 업무ID */
+
+	</update>
+
+	<!-- 업무 삭제 -->
+	<delete id="deleteCmJob">
+	/*ncis.sql.cmn.cmJob.deleteCmJob*/
+	DELETE FROM CM_JOB
+         WHERE JOB_ID = #{jobId}  /* 업무ID */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.Cmboard">
+
+	<resultMap type="ncis.cmn.entity.CmBoard" id="resultCmBoard">
+		<result property="boardSeq" column="BOARD_SEQ"/>
+		<result property="parentSeq" column="PARENT_SEQ"/>
+		<result property="boardCd" column="BOARD_CD"/>
+		<result property="regNm" column="REG_NM"/>
+		<result property="sbjct" column="SBJCT"/>
+		<result property="contents" column="CONTENTS"/>
+		<result property="hitCnt" column="HIT_CNT"/>
+		<result property="regDt" column="REG_DT"/>
+		<result property="regId" column="REG_USER_ID"/>
+		<result property="updtDt" column="UPDT_DT"/>
+		<result property="updtId" column="UPDT_USER_ID"/>
+	</resultMap>
+
+	<insert id="insertCmBoard">
+	/* ncis.sql.cmn.Cmboard.insertCmBoard */
+		<selectKey order="BEFORE" keyProperty="boardSeq" resultType="Long">
+			SELECT nextval('BOARD_SEQ')
+		</selectKey>
+
+		INSERT INTO CM_BOARD (
+			BOARD_SEQ
+			,PARENT_SEQ
+			,BOARD_CD
+			,REG_NM
+			,SBJCT
+			,CONTENTS
+			,HIT_CNT
+			,REG_DT
+			,REG_USER_ID
+			,UPDT_DT
+			,UPDT_USER_ID
+		) VALUES (
+			#{boardSeq}
+			,#{parentSeq}
+			,#{boardCd}
+			,#{regNm}
+			,#{sbjct}
+			,#{contents}
+			,0
+			,now()
+			,#{regId}
+			,now()
+			,#{updtId}
+		)
+	</insert>
+
+	<insert id="insertCmBoardFiles">
+	/* ncis.sql.cmn.Cmboard.insertCmBoardFiles */
+		INSERT INTO CM_BOARD_FILE (
+			BOARD_SEQ
+			,FILE_PATH
+			,FILE_ORI_NM
+			,FILE_TMP_NM
+			,FILE_ORDER
+			,FILE_REG_DT
+			,REG_USER_ID
+		) VALUES (
+			#{boardSeq}
+			,#{filePath}
+			,#{originFileName}
+			,#{saveFileName}
+			,#{order}
+			,now()
+			,#{regId}
+		)
+	</insert>
+
+	<update id="updateCmBoard">
+		/* ncis.sql.cmn.Cmboard.updateCmBoard */
+		UPDATE CM_BOARD SET
+			SBJCT = #{sbjct}
+			,CONTENTS = #{contents}
+			,UPDT_DT = now()
+			,UPDT_USER_ID = #{updtId}
+		WHERE BOARD_SEQ = #{boardSeq}
+	</update>
+
+	<update id="updateBoardHitCnt">
+		/* ncis.sql.cmn.Cmboard.updateBoardHitCnt */
+		UPDATE CM_BOARD SET HIT_CNT = HIT_CNT + 1
+		WHERE BOARD_SEQ = #{boardSeq}
+	</update>
+
+	<delete id="deleteCmBoardFiles">
+		/* ncis.sql.cmn.Cmboard.deleteCmBoardFiles */
+		DELETE FROM CM_BOARD_FILE
+		WHERE ( BOARD_SEQ = #{boardSeq} OR BOARD_SEQ IN (SELECT BOARD_SEQ FROM CM_BOARD WHERE PARENT_SEQ = #{boardSeq}) )
+
+		<if test="deleteFile != null and !deleteFile.isEmpty()">
+			<foreach collection="deleteFile" open="AND FILE_SEQ IN(" close=")" separator="," item="item">
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+
+	<delete id="deleteCmBoardFile">
+		/* ncis.sql.cmn.Cmboard.deleteCmBoardFile */
+		DELETE FROM CM_BOARD_FILE
+		WHERE FILE_SEQ = #{value }
+	</delete>
+
+	<update id="deleteCmBoard">
+		/* ncis.sql.cmn.Cmboard.deleteCmBoard */
+		DELETE FROM CM_BOARD WHERE BOARD_SEQ = #{boardSeq}
+	</update>
+
+</mapper>

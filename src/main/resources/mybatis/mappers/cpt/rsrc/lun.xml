@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.strg.lun">
+
+	<resultMap type="ncis.cpt.rsrc.strg.vo.LunVo" id="resultLunVo" extends="ncis.sql.cmn.rsLun.resultRsLun">
+		<result property="clstrCompId" column="CLSTR_COMP_ID" />
+		<result property="clstrNm" column="CLSTR_NM" />
+		<result property="pmCompId" column="PM_COMP_ID" />
+		<result property="pmNm" column="PM_NM" />
+		<result property="phyStrgNm" column="PHY_STRG_NM"/>
+		<result property="phyStrgAsgnCapa" column="PHY_STRG_ASGN_CAPA"/>
+		<result property="strgTyCdNm" column="STRG_TY_CD_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchClstrCompId != null and searchClstrCompId != ""'>
+			AND RC_CLSTR.CLSTR_COMP_ID LIKE '%' || #{searchClstrCompId} || '%'
+		</if>
+		<if test='searchClstrNm != null and searchClstrNm != ""'>
+			AND RC_CLSTR.CLSTR_NM LIKE '%' || #{searchClstrNm} || '%'
+		</if>
+		<if test='searchPmCompId != null and searchPmCompId != ""'>
+			AND RC_PM.PM_COMP_ID LIKE '%' || #{searchPmCompId} || '%'
+		</if>
+		<if test='searchPmNm != null and searchPmNm != ""'>
+			AND RC_PM.PM_NM LIKE '%' || #{searchPmNm} || '%'
+		</if>
+		<if test='selectStrgDmnSeq != null and selectStrgDmnSeq != ""'>
+			AND RS_LUN.STRG_DMN_SEQ = #{selectStrgDmnSeq}
+		</if>
+	</sql>
+
+	<select id="selectLunListTotCnt" resultType="Integer">
+		SELECT COUNT(1)
+		FROM RS_LUN
+		JOIN RS_LUN_USE_PM ON RS_LUN.LUN_ID = RS_LUN_USE_PM.LUN_ID
+	    JOIN RC_PM ON RS_LUN_USE_PM.PM_SEQ = RC_PM.PM_SEQ
+	    JOIN RC_CLSTR ON RC_PM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectLunList" resultMap="resultLunVo">
+	/* ncis.sql.cpt.rsrc.strg.lun.selectLunList */
+	<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			RS_LUN.LUN_ID
+		    , RS_LUN.LUN_NM
+		    , RS_LUN.CAPA
+		    , RS_LUN.STRG_TY_CD
+		    , (SELECT CD_NM FROM CM_CODE WHERE GRP_CD='063' AND PARENT_CD='139' AND CD = RS_LUN.STRG_TY_CD) AS COMP_CL_NM
+		    , RS_LUN.RSRC_POOL_ID
+		    , RC_CLSTR.CLSTR_NM
+		    , RC_CLSTR.CLSTR_COMP_ID
+		    , RS_LUN.STRG_DMN_SEQ
+		    , RC_PM.PM_NM
+		    , RC_PM.PM_COMP_ID
+		FROM
+			RS_LUN
+		    JOIN RS_LUN_USE_PM ON RS_LUN.LUN_ID = RS_LUN_USE_PM.LUN_ID
+		    JOIN RC_PM ON RS_LUN_USE_PM.PM_SEQ = RC_PM.PM_SEQ
+		    JOIN RC_CLSTR ON RC_PM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+		    <where>
+				<include refid="search"/>
+			</where>
+			ORDER BY RS_LUN.LUN_ID
+	<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+</mapper>

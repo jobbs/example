@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.sw">
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.SwVo" id="resultSwVo">
+		<result property="creUserNm" column="CRE_USER_NM"/>
+		<result property="updtUserNm" column="UPDT_USER_NM"/>
+	</resultMap>
+
+	<sql id="searchSw">
+		<if test="searchSwNm != null and !searchSwNm.isEmpty()">
+			AND UPPER(SW_NM) LIKE '%' || UPPER(#{searchSwNm}) || '%'
+		</if>
+		<if test="searchSwVer != null and !searchSwVer.isEmpty()">
+			AND UPPER(SW_VER) LIKE '%' || UPPER(#{searchSwVer}) || '%'
+		</if>
+		<if test="searchSwMnfctCo != null and !searchSwMnfctCo.isEmpty()">
+			AND UPPER(SW_MNFCT_CO) LIKE '%' || UPPER(#{searchSwMnfctCo}) || '%'
+		</if>
+	</sql>
+
+	<select id="selectSwMngListTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.opr.sw.selectSwMngListTotCnt */
+		SELECT	COUNT(*)
+		FROM RR_SW
+		<where>
+			<include refid="searchSw"/>
+		</where>
+	</select>
+
+	<select id="selectSwMngList" resultMap="resultSwVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.opr.sw.selectSwMngList */
+		SELECT	SW_SEQ
+				, SW_NM
+				, COMP_ID
+				, SW_VER
+				, SW_MNFCT_CO
+				, RMK
+				, CRE_USER_ID
+				, (SELECT USER_NM FROM CM_USR E WHERE USER_ID = RR_SW.CRE_USER_ID) AS CRE_USER_NM
+				, CRE_DTTM
+				, UPDT_USER_ID
+		FROM 	RR_SW
+		<where>
+			<include refid="searchSw"/>
+		</where>
+		ORDER BY SW_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectSwExcelList" resultMap="resultSwVo">
+		/* ncis.sql.cpt.opr.sw.selectSwExcelList */
+		SELECT	SW_SEQ
+				, SW_NM
+				, COMP_ID
+				, SW_VER
+				, SW_MNFCT_CO
+				, RMK
+				, CRE_USER_ID
+				, CRE_DTTM
+				, UPDT_DTTM
+				, UPDT_USER_ID
+		FROM 	RR_SW
+		<where>
+			<include refid="searchSw"/>
+		</where>
+		ORDER BY SW_NM
+	</select>
+
+	<select id="selectSwInfoCheck" resultType="Integer">
+		/* ncis.sql.cpt.opr.sw.selectSwInfoCheck */
+		SELECT
+			COUNT(1)
+		FROM RR_SW
+		WHERE
+			SW_NM = #{swNm}
+			AND SW_VER = #{swVer}
+			<if test="swSeq != null">
+			AND SW_SEQ != #{swSeq }
+			</if>
+	</select>
+
+	<select id="selectSwUseYn" resultType="Integer">
+		/* ncis.sql.cpt.opr.sw.selectSwUseYn */
+		SELECT
+			COUNT(*)
+		FROM RR_TMPLAT A1
+		INNER JOIN RR_TMPLAT_APPLC_SW A2 ON A1.TMPLAT_SEQ = A2.TMPLAT_SEQ
+		INNER JOIN RR_SW A3 ON A2.SW_SEQ = A3.SW_SEQ AND A3.SW_SEQ = #{swSeq}
+	</select>
+
+	<select id="selectSw" resultMap="resultSwVo">
+		/* ncis.sql.cpt.opr.sw.selectSw */
+		SELECT
+			SW_SEQ
+			, SW_NM
+			, SW_VER
+			, SW_MNFCT_CO
+			, RMK
+			, CRE_USER_ID
+			, (SELECT USER_NM FROM CM_USR E WHERE USER_ID = RR_SW.CRE_USER_ID) AS CRE_USER_NM
+			, CRE_DTTM
+			, UPDT_USER_ID
+			, (SELECT USER_NM FROM CM_USR E WHERE USER_ID = RR_SW.UPDT_USER_ID) AS UPDT_USER_NM
+			, UPDT_DTTM
+		FROM RR_SW
+			WHERE SW_SEQ = #{value }
+	</select>
+</mapper>

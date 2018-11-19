@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.commonCode">
+
+	<resultMap id="resultCommonCode" type="ncis.cmn.entity.CommonCode">
+	    <result property="code"     column="CODE"/>  <!-- 코드 -->
+        <result property="parentCode"     column="PARENT_CODE"/>  <!-- 부모코드 -->
+        <result property="codeName"     column="CODE_NAME"/>  <!-- 코드명 -->
+        <result property="codeDesc"     column="CODE_DESC"/>  <!-- 코드설명 -->
+        <result property="codeLevel"     column="CODE_LEVEL"/>  <!-- 코드레벨 -->
+        <result property="codeUseYn"     column="CODE_USE_YN"/>  <!-- 사용여부 -->
+        <result property="codeOrder"     column="CODE_ORDER"/>  <!-- 코드순번 -->
+        <result property="regDate"     column="REG_DATE"/>  <!-- 등록일시 -->
+        <result property="regId"     column="REG_ID"/>  <!-- 등록자아이디 -->
+        <result property="modDate"     column="MOD_DATE"/>  <!-- 수정일시 -->
+        <result property="modId"     column="MOD_ID"/>  <!-- 수정자아이디 -->
+	</resultMap>
+
+	<!-- 공통코드 관리 테이블 등록 -->
+	<insert id="insertCommonCode">
+	/* ncis.sql.cmn.commonCode.insertCommonCode */
+	INSERT INTO COMMON_CODE (
+	             CODE  /* 코드 */
+	           , PARENT_CODE  /* 부모코드 */
+	           , CODE_NAME  /* 코드명 */
+	           , CODE_DESC  /* 코드설명 */
+	           , CODE_LEVEL  /* 코드레벨 */
+	           , CODE_USE_YN  /* 사용여부 */
+	           , CODE_ORDER  /* 코드순번 */
+	           , REG_DATE  /* 등록일시 */
+	           , REG_ID  /* 등록자아이디 */
+	           , MOD_DATE  /* 수정일시 */
+	           , MOD_ID  /* 수정자아이디 */
+	) VALUES (
+	           #{code}  /* 코드 */
+	         , #{parentCode}  /* 부모코드 */
+	         , #{codeName}  /* 코드명 */
+	         , #{codeDesc}  /* 코드설명 */
+	         , #{codeLevel}  /* 코드레벨 */
+	         , #{codeUseYn}  /* 사용여부 */
+	         , #{codeOrder}  /* 코드순번 */
+	         , #{regDate}  /* 등록일시 */
+	         , #{regId}  /* 등록자아이디 */
+	         , #{modDate}  /* 수정일시 */
+	         , #{modId}  /* 수정자아이디 */
+	)
+	</insert>
+
+	<!-- 공통코드 관리 테이블 수정 -->
+	<update id="updateCommonCode">
+	/* ncis.sql.cmn.commonCode.updateCommonCode */
+	UPDATE COMMON_CODE
+	         SET CODE = #{code}  /* 코드 */
+	           , PARENT_CODE = #{parentCode}  /* 부모코드 */
+	           , CODE_NAME = #{codeName}  /* 코드명 */
+	           , CODE_DESC = #{codeDesc}  /* 코드설명 */
+	           , CODE_LEVEL = #{codeLevel}  /* 코드레벨 */
+	           , CODE_USE_YN = #{codeUseYn}  /* 사용여부 */
+	           , CODE_ORDER = #{codeOrder}  /* 코드순번 */
+	           , REG_DATE = #{regDate}  /* 등록일시 */
+	           , REG_ID = #{regId}  /* 등록자아이디 */
+	           , MOD_DATE = #{modDate}  /* 수정일시 */
+	           , MOD_ID = #{modId}  /* 수정자아이디 */
+         WHERE CODE = #{code}  /* 코드 */
+
+	</update>
+
+	<!-- 공통코드 관리 테이블 삭제 -->
+	<delete id="deleteCommonCode">
+	/* ncis.sql.cmn.commonCode.deleteCommonCode */
+	DELETE FROM COMMON_CODE
+         WHERE CODE = #{code}  /* 코드 */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.netVm">
+
+	<resultMap type="ncis.cpt.rsrc.net.vo.NetVmVo" id="resultNetVmVo">
+		<result property="vmSeq"			column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="pmSeq"			column="PM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="statCd"			column="STAT_CD"/>  <!-- 상태코드 -->
+		<result property="statCdNm"			column="STAT_CD_NM"/>  <!-- 상태코드명 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 기관명 -->
+		<result property="vmJob"			column="VM_JOB"/>  <!-- 업무명 -->
+		<result property="netwkTyClCdNm"	column="NETWK_TY_CL_CD_NM"/>  <!-- 네트워크유형구분코드명 -->
+		<result property="regionNm"			column="REGION_NM"/>  <!-- 센터명 -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존명 -->
+		<result property="netClCd"			column="NET_CL_CD"/>  <!-- 망명 -->
+		<result property="netClCdNm"			column="NET_CL_CD_NM"/>  <!-- 존명 -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존명 -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀명 -->
+		<result property="clstrNm"			column="CLSTR_NM"/>  <!-- 클러스터명 -->
+		<result property="pmNm"				column="PM_NM"/>  <!-- 물리서버명 -->
+		<result property="pmCompId"			column="PM_COMP_ID"/>  <!-- 물리서버구성ID -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버명 -->
+		<result property="vmId"				column="VM_ID"/>  <!-- 가상서버ID -->
+		<result property="vmCompId"			column="VM_COMP_ID"/>  <!-- 가상서버구성ID -->
+		<result property="hstNm"			column="HST_NM"/>  <!-- 호스트명 -->
+		<result property="rprsntIpAddr"		column="RPRSNT_IP_ADDR"/>  <!-- 대표IP주소 -->
+		<result property="osTyCdNm"			column="OS_TY_CD_NM"/>  <!-- OS유형코드명 -->
+		<result property="vrlzSwTyCdNm"		column="VRLZ_SW_TY_CD_NM"/>  <!-- 가상화SW유형코드명 -->
+		<result property="cpuUseRt"			column="CPU_USE_RT"/>  <!-- CPU사용률 -->
+		<result property="cpuEnt"			column="CPU_ENT"/>  <!-- CPU Entitlemenet -->
+		<result property="cpuVcoreQty"		column="CPU_VCORE_QTY"/>  <!-- CPU vcroe 사용수 -->
+		<result property="memUseRt"			column="MEM_USE_RT"/>  <!-- 메모리사용률 -->
+		<result property="memAsgnCapa"		column="MEM_ASGN_CAPA"/>  <!-- 메모리할당량 -->
+		<result property="strgAsgnCapa"		column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당량 -->
+		<result property="netwkIn"			column="NETWK_IN"/>  <!-- 네트워크 IN -->
+		<result property="netwkOut"			column="NETWK_OUT"/>  <!-- 네트워크 OUT -->
+		<result property="strtupDttm"		column="STRTUP_DTTM"/>  <!-- 기동일시 -->
+		<result property="uptime"			column="UPTIME"/>  <!-- 기동기간 -->
+		<result property="regDttm"			column="REG_DTTM"/>  <!-- 생성일시 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.net.vo.NetVmVo" id="resultNetVmDetailVo">
+		<result property="vmSeq"			column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="statCd"			column="STAT_CD"/>  <!-- 상태코드 -->
+		<result property="statCdNm"			column="STAT_CD_NM"/>  <!-- 상태코드명 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 기관명 -->
+		<result property="vmJob"			column="VM_JOB"/>  <!-- 업무명 -->
+		<result property="netwkTyClCdNm"	column="NETWK_TY_CL_CD_NM"/>  <!-- 네트워크유형구분코드명 -->
+		<result property="regionNm"			column="REGION_NM"/>  <!-- 센터명 -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존명 -->
+		<result property="netNm"			column="NET_NM"/>  <!-- 망명 -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀명 -->
+		<result property="clstrNm"			column="CLSTR_NM"/>  <!-- 클러스터명 -->
+		<result property="pmNm"				column="PM_NM"/>  <!-- 물리서버명 -->
+		<result property="pmCompId"			column="PM_COMP_ID"/>  <!-- 물리서버구성ID -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버명 -->
+		<result property="vmId"				column="VM_ID"/>  <!-- 가상서버ID -->
+		<result property="vmCompId"			column="VM_COMP_ID"/>  <!-- 가상서버구성ID -->
+		<result property="hstNm"			column="HST_NM"/>  <!-- 호스트명 -->
+		<result property="rprsntIpAddr"		column="RPRSNT_IP_ADDR"/>  <!-- 대표IP주소 -->
+		<result property="osTyCdNm"			column="OS_TY_CD_NM"/>  <!-- OS유형코드명 -->
+		<result property="osNm"				column="OS_NM"/>  <!-- 운영체제명 -->
+		<result property="pltfrm"			column="PLTFRM"/>  <!-- 플랫폼 -->
+		<result property="vrlzSwTyCdNm"		column="VRLZ_SW_TY_CD_NM"/>  <!-- 가상화SW유형코드명 -->
+		<result property="cpuUseRt"			column="CPU_USE_RT"/>  <!-- CPU사용률 -->
+		<result property="cpuEnt"			column="CPU_ENT"/>  <!-- CPU Entitlemenet -->
+		<result property="cpuVcoreQty"		column="CPU_VCORE_QTY"/>  <!-- CPU vcroe 사용수 -->
+		<result property="memUseRt"			column="MEM_USE_RT"/>  <!-- 메모리사용률 -->
+		<result property="memAsgnCapa"		column="MEM_ASGN_CAPA"/>  <!-- 메모리할당량 -->
+		<result property="strgAsgnCapa"		column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당량 -->
+		<result property="netwkIn"			column="NETWK_IN"/>  <!-- 네트워크 IN -->
+		<result property="netwkOut"			column="NETWK_OUT"/>  <!-- 네트워크 OUT -->
+		<result property="strtupDttm"		column="STRTUP_DTTM"/>  <!-- 기동일시 -->
+		<result property="uptime"			column="UPTIME"/>  <!-- 기동기간 -->
+		<result property="regDttm"			column="REG_DTTM"/>  <!-- 생성일시 -->
+		<collection property="swtchList"	column="VM_SEQ"	select="selectSwtchList" />  <!-- 스위치List -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.net.vo.NetL4VmVo" id="resultNetL4VmVo">
+		<result property="vmSeq"			column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="statCd"			column="STAT_CD"/>  <!-- 상태코드 -->
+		<result property="statCdNm"			column="STAT_CD_NM"/>  <!-- 상태코드명 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 기관명 -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버명 -->
+		<result property="vmId"				column="VM_ID"/>  <!-- 가상서버ID -->
+		<result property="vmCompId"			column="VM_COMP_ID"/>  <!-- 가상서버구성ID -->
+		<result property="hstNm"			column="HST_NM"/>  <!-- 호스트명 -->
+		<result property="rprsntIpAddr"		column="RPRSNT_IP_ADDR"/>  <!-- 대표IP주소 -->
+		<result property="osTyCdNm"			column="OS_TY_CD_NM"/>  <!-- OS유형코드명 -->
+		<result property="regDttm"			column="REG_DTTM"/>  <!-- 생성일시 -->
+	</resultMap>
+
+	<resultMap type="ncis.cmn.entity.RnSlb" id="resultSlbVo">
+		<result property="vipAddr"				column="vip_addr"/>  <!-- VIP 주소 -->
+		<result property="prtcl"				column="prtcl"/>  <!-- 프로토콜 -->
+		<result property="port"					column="port"/>  <!-- 포트 -->
+		<result property="slbTyCd"				column="slb_ty_cd"/>  <!-- SLB유형코드 -->
+		<result property="sessMntncTyCd"		column="sess_mntnc_ty_cd"/>  <!-- 세션유지유형코드 -->
+		<result property="sessMntncVl"			column="sess_mntnc_vl"/>  <!-- 세션유지값 -->
+		<result property="statConfrm"			column="stat_confrm"/>  <!-- 상태확인 -->
+		<result property="statConfrmCycle"		column="stat_confrm_cycle"/>  <!-- 상태확인주기 -->
+		<result property="statConfrmTOut"		column="stat_confrm_t_out"/>  <!-- 상태확인타임아웃 -->
+		<result property="maxTryCnt"			column="max_try_cnt"/>  <!-- 최대시도횟수 -->
+		<result property="statConfrmHttpUrl"	column="stat_confrm_http_url"/>  <!-- 상태확인HTTP URL -->
+		<result property="institutionId"		column="institution_id"/>  <!-- 부처ID -->
+		<result property="vmSeq"				column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.net.vo.NetVmSlbIpVo" id="resultSlbIpVo">
+		<result property="ipAddr"		column="IP_ADDR"/>  <!-- VIP 주소 -->
+		<result property="port"			column="PORT"/>  <!-- 포트 -->
+		<result property="vipAddr"		column="VIP_ADDR"/>  <!-- IP 주소 -->
+		<result property="wvl"			column="WVL"/>  <!-- 가중치 -->
+		<result property="dc"			column="DC"/>  <!-- 설명 -->
+		<result property="vmSeq"		column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+		<result property="trgtVmSeq"	column="TRGT_VM_SEQ"/>  <!-- 대상가상서버 -->
+		<result property="trgtVmCompId"	column="TRGT_VM_COMP_ID"/>  <!-- 대상가상서버구성ID -->
+		<result property="linkAt"	column="LINK_AT"/>  <!-- 상세화면 링크여부 자원풀 권한이 있는지 확인 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.rsrc.pool.vo.RsrcPoolVo" id="resultRsrcPoolVo">
+	</resultMap>
+
+	<sql id="search">
+		<if test='regionId != null and !regionId.isEmpty()'>
+			AND A4.REGION_ID = #{regionId}
+		</if>
+		<if test='zoneId != null and !zoneId.isEmpty()'>
+			AND A4.ZONE_ID = #{zoneId}
+		</if>
+		<if test='netId and !netId.isEmpty()'>
+			AND A4.NET_ID = #{netId}
+		</if>
+		<if test='netClCd and !netClCd.isEmpty()'>
+			AND A4.NET_CL_CD = #{netClCd}
+		</if>
+		<if test='poolId != null and !poolId.isEmpty()'>
+			AND A4.RSRC_POOL_ID = #{poolId}
+		</if>
+		<if test='netwkTyClCd != null and !netwkTyClCd.isEmpty()'>
+			AND A1.NETWK_TY_CL_CD = #{netwkTyClCd}
+		</if>
+		<if test='statCd != null and !statCd.isEmpty()'>
+			AND A1.STAT_CD = #{statCd}
+		</if>
+		<if test='clstrNm != null and !clstrNm.isEmpty()'>
+			AND UPPER(A3.CLSTR_NM) LIKE '%' || UPPER(#{clstrNm}) || '%'
+		</if>
+		<if test='pmSeq != null'>
+			AND A1.PM_Seq = #{pmSeq}
+		</if>
+		<if test='pmNm != null and !pmNm.isEmpty()'>
+			AND UPPER(A2.PM_NM) LIKE '%' || UPPER(#{pmNm}) || '%'
+		</if>
+		<if test='pmCompId != null and !pmCompId.isEmpty()'>
+			AND UPPER(A2.PM_COMP_ID) LIKE '%' || UPPER(#{pmCompId}) || '%'
+		</if>
+		<if test='vmNm != null and !vmNm.isEmpty()'>
+			AND UPPER(A1.VM_NM) LIKE '%' || UPPER(#{vmNm}) || '%'
+		</if>
+		<if test='vmId != null and !vmId.isEmpty()'>
+			AND UPPER(A1.VM_ID) LIKE '%' || UPPER(#{vmId}) || '%'
+		</if>
+		<if test='vmCompId != null and !vmCompId.isEmpty()'>
+			AND UPPER(A1.VM_COMP_ID) LIKE '%' || UPPER(#{vmCompId}) || '%'
+		</if>
+		<if test='hstNm != null and !hstNm.isEmpty()'>
+			AND UPPER(A1.HST_NM) LIKE '%' || UPPER(#{hstNm}) || '%'
+		</if>
+		<if test='rprsntIpAddr != null and !rprsntIpAddr.isEmpty()'>
+			AND UPPER(A1.RPRSNT_IP_ADDR) LIKE '%' || UPPER(#{rprsntIpAddr}) || '%'
+		</if>
+		<if test='osTyCd != null and !osTyCd.isEmpty()'>
+			AND A1.OS_TY_CD = #{osTyCd}
+		</if>
+		<if test='institutionNm != null and !institutionNm.isEmpty()'>
+			AND UPPER(A6.INSTITUTION_NM) LIKE '%' || UPPER(#{institutionNm}) || '%'
+		</if>
+		 <!--양정순 추가 지우지 마세요-->
+		<if test='jobId != null and !jobId.isEmpty()'>
+			AND A1.VM_SEQ IN (SELECT RC_VM_JOB.VM_SEQ FROM RC_VM_JOB WHERE RC_VM_JOB.JOB_ID IN (#{jobId}))
+		</if>
+		<if test='vrlzSwTyCdList != null and !vrlzSwTyCdList.isEmpty()'>
+			<choose>
+				<when test="vrlzSwTyCdList.size > 0">
+					AND A3.RSRC_POOL_ID IN (SELECT RSRC_POOL_ID FROM RC_RSRC_POOL WHERE RC_RSRC_POOL.VRLZ_SW_TY_CD IN (
+						<foreach collection="vrlzSwTyCdList" item="vrlzSwTyCd" open="" close="" separator=", ">
+						#{vrlzSwTyCd}
+						</foreach>
+					))
+				</when>
+				<otherwise>
+					AND A3.RSRC_POOL_ID IN (SELECT RSRC_POOL_ID FROM RC_RSRC_POOL WHERE RC_RSRC_POOL.VRLZ_SW_TY_CD ISNULL)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="searchPool">
+		<if test='regionId != null and regionId != ""'>
+			AND A1.REGION_ID = #{regionId}
+		</if>
+		<if test='zoneId != null and zoneId != ""'>
+			AND A1.ZONE_ID = #{zoneId}
+		</if>
+		<if test='netId != null and netId != ""'>
+			AND A1.NET_ID = #{netId}
+		</if>
+	</sql>
+
+	<sql id="userAuthority">
+		<if test="!sysadm">
+			<choose>
+				<when test="oprAdm">
+					INNER JOIN	(SELECT	CM_RSRC_POOL_USER.USER_ID
+										,CM_RSRC_POOL_USER.RSRC_POOL_ID
+								 FROM	CM_RSRC_POOL_USER
+								 WHERE	CM_RSRC_POOL_USER.USER_ID = #{userId}
+								) RSRC_POOL_USER
+							ON RSRC_POOL_USER.RSRC_POOL_ID = A4.RSRC_POOL_ID
+				</when>
+				<otherwise>
+					INNER JOIN 	(SELECT	DISTINCT(RC_VM_JOB.VM_SEQ)
+							 	 FROM	CM_JOB_USER
+										INNER JOIN RC_VM_JOB
+											ON CM_JOB_USER.JOB_ID = RC_VM_JOB.JOB_ID
+										INNER JOIN CM_JOB
+											ON CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID
+										INNER JOIN CM_INSTITUTION
+											ON CM_INSTITUTION.INSTITUTION_ID = CM_JOB.INSTITUTION_ID
+							 	 WHERE	CM_JOB_USER.USER_ID = #{userId}
+										AND CM_INSTITUTION.USE_YN = 'Y'
+										AND CM_JOB.USE_YN = 'Y'
+							) JOB_USER
+							ON JOB_USER.VM_SEQ = A1.VM_SEQ
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<select id="selectNetVmRsrcPoolList" resultMap="resultRsrcPoolVo">
+		/* ncis.sql.cpt.netVm.selectNetRsrcPoolList */
+		SELECT	A1.REGION_ID
+				,A2.REGION_NM
+				,A1.ZONE_ID
+				,A3.ZONE_NM
+				,A1.NET_ID
+				,A4.NET_NM
+				,A1.RSRC_POOL_ID
+				,A1.RSRC_POOL_NM
+		FROM	RC_RSRC_POOL A1
+		LEFT OUTER JOIN RC_REGION A2
+				ON A2.REGION_ID = A1.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A3
+				ON A3.ZONE_ID = A1.ZONE_ID
+		LEFT OUTER JOIN RC_NET A4
+				ON A4.NET_ID = A1.NET_ID
+		WHERE	A1.VRLZ_SW_TY_CD = '05'
+				AND A1.RSRC_POOL_CL_CD = '03'
+				AND A1.DEL_YN = 'N'
+				<include refid="searchPool"/>
+	</select>
+
+	<select id="selectNetVmTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.netVm.selectNetVmTotCnt */
+		SELECT	COUNT(*)
+		FROM	RC_VM A1
+		LEFT OUTER JOIN RC_PM A2
+				ON A2.PM_SEQ = A1.PM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A1.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		INNER JOIN RN_NETWK_SWTCH A5
+				ON A5.VM_SEQ = A1.VM_SEQ
+		LEFT OUTER JOIN CM_INSTITUTION A6
+				ON A6.INSTITUTION_ID = A5.INSTITUTION_ID
+		<include refid="userAuthority"/>
+		WHERE	A1.VM_CL_CD = '02'
+				AND A1.DEL_YN = 'N'
+				AND (A2.PM_SEQ ISNULL OR A2.DEL_YN = 'N')
+				AND A3.DEL_YN = 'N'
+				AND A4.DEL_YN = 'N'
+				AND A5.DEL_YN = 'N'
+				<include refid="search"/>
+	</select>
+
+	<select id="selectNetVmList" resultMap="resultNetVmVo">
+		/* ncis.sql.cpt.netVm.selectNetVmList */
+		SELECT	A1.VM_SEQ
+				,A1.PM_SEQ
+				,A1.STAT_CD
+				,A10.CD_NM AS STAT_CD_NM
+				,A6.INSTITUTION_NM
+				,A11.CD_NM AS NETWK_TY_CL_CD_NM
+				,A7.REGION_NM
+				,A8.ZONE_NM
+				,A9.NET_NM
+				,A4.NET_CL_CD
+				,A14.CD_NM AS NET_CL_CD_NM
+				,A4.RSRC_POOL_NM
+				,A3.CLSTR_NM
+				,A2.PM_NM
+				,A2.PM_COMP_ID
+				,A1.VM_NM
+				,A1.VM_ID
+				,A1.VM_COMP_ID
+				,A1.HST_NM
+				,A1.RPRSNT_IP_ADDR
+				,A12.CD_NM AS OS_TY_CD_NM
+				,A13.CD_NM AS VRLZ_SW_TY_CD_NM
+				,COALESCE(ROUND(A1.CPU_USE_RT::numeric, 1), 0) AS CPU_USE_RT
+				,COALESCE(A1.CPU_ENT, 0) AS CPU_ENT
+				,COALESCE(A1.CPU_VCORE_QTY, 0) AS CPU_VCORE_QTY
+				,COALESCE(A1.MEM_ASGN_CAPA, 0) AS MEM_ASGN_CAPA
+				,COALESCE(ROUND(A1.MEM_USE_RT::numeric, 1), 0) AS MEM_USE_RT
+				,COALESCE(A1.STRG_ASGN_CAPA, 0) AS STRG_ASGN_CAPA
+				,COALESCE(ROUND(A1.NETWK_IN::numeric, 1), 0) AS NETWK_IN
+				,COALESCE(ROUND(A1.NETWK_OUT::numeric, 1), 0) AS NETWK_OUT
+				,(CASE WHEN A1.STAT_CD = '02' THEN A1.STRTUP_DTTM ELSE null END) AS STRTUP_DTTM
+				,(CASE WHEN A1.STAT_CD = '01' THEN (CASE WHEN (NOW()-A1.STRTUP_DTTM) > '1 00:00:00' THEN TO_CHAR(NOW()-A1.STRTUP_DTTM, 'DD일 HH24시간MI분SS초') ELSE TO_CHAR(NOW()-A1.STRTUP_DTTM, 'HH24시간MI분SS초') END) ELSE '' END) AS UPTIME
+				,A1.REG_DTTM
+		FROM	RC_VM A1
+		LEFT OUTER JOIN RC_PM A2
+				ON A2.PM_SEQ = A1.PM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A1.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		INNER JOIN RN_NETWK_SWTCH A5
+				ON A5.VM_SEQ = A1.VM_SEQ
+		LEFT OUTER JOIN CM_INSTITUTION A6
+				ON A6.INSTITUTION_ID = A5.INSTITUTION_ID
+		LEFT OUTER JOIN RC_REGION A7
+				ON A7.REGION_ID = A4.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A8
+				ON A8.ZONE_ID = A4.ZONE_ID
+		LEFT OUTER JOIN RC_NET A9
+				ON A9.NET_ID = A4.NET_ID
+		LEFT OUTER JOIN CM_CODE A10
+				ON A10.CD = A1.STAT_CD
+				AND A10.PARENT_GRP_CD ='074'
+		LEFT OUTER JOIN CM_CODE A11
+				ON A11.CD = A1.NETWK_TY_CL_CD
+				AND A11.PARENT_GRP_CD ='061'
+		LEFT OUTER JOIN CM_CODE A12
+				ON A12.CD = A1.OS_TY_CD
+				AND A12.PARENT_GRP_CD ='003'
+		LEFT OUTER JOIN CM_CODE A13
+				ON A13.CD = A4.VRLZ_SW_TY_CD
+				AND A13.PARENT_GRP_CD ='001'
+		LEFT JOIN CM_CODE A14 ON A14.CD = A4.NET_CL_CD AND A14.PARENT_GRP_CD = '067'
+		<include refid="userAuthority"/>
+		WHERE	A1.VM_CL_CD = '02'
+				AND A1.DEL_YN = 'N'
+				AND (A2.PM_SEQ ISNULL OR A2.DEL_YN = 'N')
+				AND A3.DEL_YN = 'N'
+				AND A4.DEL_YN = 'N'
+				AND A5.DEL_YN = 'N'
+				<include refid="search"/>
+		ORDER BY A6.INSTITUTION_NM, A7.REGION_NM, A8.ZONE_NM, A9.NET_NM, A4.RSRC_POOL_NM, NETWK_TY_CL_CD_NM, A1.VM_NM
+	</select>
+
+	<select id="selectNetVmDetail" resultMap="resultNetVmDetailVo">
+		/* ncis.sql.cpt.netVm.selectNetVmDetail */
+		SELECT	A1.VM_SEQ
+				,A1.STAT_CD
+				,A10.CD_NM AS STAT_CD_NM
+				,A6.INSTITUTION_NM
+				,A11.CD_NM AS NETWK_TY_CL_CD_NM
+				,A7.REGION_NM
+				,A8.ZONE_NM
+				,A9.NET_NM
+				,A4.NET_CL_CD
+				,A14.CD_NM AS NET_CL_CD_NM
+				,A4.RSRC_POOL_NM
+				,A3.CLSTR_NM
+				,A2.PM_NM
+				,A2.PM_COMP_ID
+				,A1.VM_NM
+				,A1.VM_ID
+				,A1.VM_COMP_ID
+				,A1.HST_NM
+				,A1.RPRSNT_IP_ADDR
+				,A12.CD_NM AS OS_TY_CD_NM
+				,OS_NM
+				,PLTFRM
+				,A13.CD_NM AS VRLZ_SW_TY_CD_NM
+				,COALESCE(ROUND(A1.CPU_USE_RT::numeric, 1), 0) AS CPU_USE_RT
+				,COALESCE(A1.CPU_ENT, 0) AS CPU_ENT
+				,COALESCE(A1.CPU_VCORE_QTY, 0) AS CPU_VCORE_QTY
+				,COALESCE(A1.MEM_ASGN_CAPA, 0) AS MEM_ASGN_CAPA
+				,COALESCE(ROUND(A1.MEM_USE_RT::numeric, 1), 0) AS MEM_USE_RT
+				,COALESCE(A1.STRG_ASGN_CAPA, 0) AS STRG_ASGN_CAPA
+				,COALESCE(ROUND(A1.NETWK_IN::numeric, 1), 0) AS NETWK_IN
+				,COALESCE(ROUND(A1.NETWK_OUT::numeric, 1), 0) AS NETWK_OUT
+				,(CASE WHEN A1.STAT_CD = '01' THEN A1.STRTUP_DTTM ELSE null END) AS STRTUP_DTTM
+				,(CASE WHEN A1.STAT_CD = '01' THEN (CASE WHEN (NOW()-A1.STRTUP_DTTM) > '1 00:00:00' THEN TO_CHAR(NOW()-A1.STRTUP_DTTM, 'DD일 HH24시간MI분SS초') ELSE TO_CHAR(NOW()-A1.STRTUP_DTTM, 'HH24시간MI분SS초') END) ELSE '' END) AS UPTIME
+				,A1.REG_DTTM
+				,A1.RMK
+		FROM	RC_VM A1
+		LEFT OUTER JOIN RC_PM A2
+				ON A2.PM_SEQ = A1.PM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A1.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		INNER JOIN RN_NETWK_SWTCH A5
+				ON A5.VM_SEQ = A1.VM_SEQ
+		LEFT OUTER JOIN CM_INSTITUTION A6
+				ON A6.INSTITUTION_ID = A5.INSTITUTION_ID
+		LEFT OUTER JOIN RC_REGION A7
+				ON A7.REGION_ID = A4.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A8
+				ON A8.ZONE_ID = A4.ZONE_ID
+		LEFT OUTER JOIN RC_NET A9
+				ON A9.NET_ID = A4.NET_ID
+		LEFT OUTER JOIN CM_CODE A10
+				ON A10.CD = A1.STAT_CD
+				AND A10.PARENT_GRP_CD ='074'
+		LEFT OUTER JOIN CM_CODE A11
+				ON A11.CD = A1.NETWK_TY_CL_CD
+				AND A11.PARENT_GRP_CD ='061'
+		LEFT OUTER JOIN CM_CODE A12
+				ON A12.CD = A1.OS_TY_CD
+				AND A12.PARENT_GRP_CD ='003'
+		LEFT OUTER JOIN CM_CODE A13
+				ON A13.CD = A4.VRLZ_SW_TY_CD
+				AND A13.PARENT_GRP_CD ='001'
+		LEFT JOIN CM_CODE A14 ON A14.CD = A4.NET_CL_CD AND A14.PARENT_GRP_CD = '067'
+		WHERE	A1.VM_CL_CD = '02'
+				AND A1.DEL_YN = 'N'
+				AND (A2.PM_SEQ ISNULL OR A2.DEL_YN = 'N')
+				AND A3.DEL_YN = 'N'
+				AND A4.DEL_YN = 'N'
+				AND A5.DEL_YN = 'N'
+				AND A1.VM_SEQ = #{value}
+	</select>
+
+	<select id="selectSwtchList" resultMap="resultNetL4VmVo">
+		/* ncis.sql.cpt.netVm.selectSwtchList */
+		SELECT	A1.VM_SEQ
+				,A1.STAT_CD
+				,A6.CD_NM AS STAT_CD_NM
+				,A5.INSTITUTION_NM
+				,A1.VM_NM
+				,A1.VM_ID
+				,A1.VM_COMP_ID
+				,A1.HST_NM
+				,A1.RPRSNT_IP_ADDR
+				,A7.CD_NM AS OS_TY_CD_NM
+				,TO_CHAR(A1.REG_DTTM, 'YYYY-MM-DD') AS REG_DTTM
+		FROM	RC_VM A1
+		INNER JOIN RN_NETWK_SWTCH A2
+				ON A2.VM_SEQ = A1.VM_SEQ
+		INNER JOIN RC_CLSTR A3
+				ON A3.CLSTR_SEQ = A1.CLSTR_SEQ
+		INNER JOIN RC_RSRC_POOL A4
+				ON A4.RSRC_POOL_ID = A3.RSRC_POOL_ID
+		LEFT OUTER JOIN CM_INSTITUTION A5
+				ON A5.INSTITUTION_ID = A2.INSTITUTION_ID
+		LEFT OUTER JOIN CM_CODE A6
+				ON A6.CD = A1.STAT_CD
+				AND A6.PARENT_GRP_CD = '074'
+		LEFT OUTER JOIN CM_CODE A7
+				ON A7.CD = A1.OS_TY_CD
+				AND A7.PARENT_GRP_CD = '003'
+		WHERE	A1.DEL_YN = 'N'
+				AND A2.DEL_YN = 'N'
+				AND A3.DEL_YN = 'N'
+				AND A4.DEL_YN = 'N'
+				AND A1.VM_SEQ IN (SELECT VM_SEQ FROM RN_NETWK_SWTCH WHERE UPPER_VM_SEQ = #{value})
+	</select>
+
+	<select id="selectSlbList" resultMap="resultSlbVo">
+		/* ncis.sql.cpt.netVm.selectSlbList */
+		SELECT	A1.VIP_ADDR
+				,A2.CD_NM AS PRTCL
+				,A1.PORT
+				,A3.CD_NM  AS SLB_TY_CD
+				,A4.CD_NM  AS SESS_MNTNC_TY_CD
+				,A1.SESS_MNTNC_VL
+				,A1.STAT_CONFRM
+				,A1.STAT_CONFRM_CYCLE
+				,A1.STAT_CONFRM_T_OUT
+				,A1.MAX_TRY_CNT
+				,A1.STAT_CONFRM_HTTP_URL
+				,A1.VM_SEQ
+		FROM	RN_SLB A1
+		LEFT OUTER JOIN CM_CODE A2
+				ON A2.CD = A1.PRTCL
+				AND A2.PARENT_GRP_CD = '023'
+		LEFT OUTER JOIN CM_CODE A3
+				ON A3.CD = A1.SLB_TY_CD
+				AND A3.PARENT_GRP_CD = '024'
+		LEFT OUTER JOIN CM_CODE A4
+				ON A4.CD = A1.SESS_MNTNC_TY_CD
+				AND A4.PARENT_GRP_CD = '025'
+		WHERE	A1.DEL_YN = 'N'
+				AND A1.VM_SEQ IN
+				<if test="vmList != null and !vmList.isEmpty()">
+					<foreach collection="vmList" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				</if>
+	</select>
+
+	<select id="selectSlbIpList" resultMap="resultSlbIpVo">
+		/* ncis.sql.cpt.netVm.selectSlbIpList */
+		SELECT CASE
+		       WHEN A4.RSRC_POOL_ID IS NOT NULL THEN 'Y'
+		       ELSE 'N'
+		       END LINK_AT,
+		       A1.IP_ADDR,
+		       A1.PORT,
+		       A1.VIP_ADDR,
+		       A1.WVL,
+		       A1.DC,
+		       A1.VM_SEQ,
+		       A2.VM_SEQ AS TRGT_VM_SEQ,
+		       A2.VM_COMP_ID AS TRGT_VM_COMP_ID
+		FROM RN_SLB_IP A1
+		LEFT JOIN RC_VM A2 ON A2.RPRSNT_IP_ADDR = A1.IP_ADDR AND A2.DEL_YN = 'N'
+		LEFT JOIN RC_CLSTR A3 ON A2.CLSTR_SEQ = A3.CLSTR_SEQ AND A3.DEL_YN = 'N'
+		LEFT OUTER JOIN CM_RSRC_POOL_USER A4 ON A4.RSRC_POOL_ID=A3.RSRC_POOL_ID and A4.USER_ID=#{userId}
+		WHERE A1.DEL_YN = 'N'
+		  AND A1.VM_SEQ IN
+		  <if test="vmList != null and !vmList.isEmpty()">
+			<foreach collection="vmList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		  </if>
+		  ORDER BY A1.VIP_ADDR, A1.IP_ADDR, A1.PORT
+	</select>
+
+	<select id="isExistsVmCompId" resultType="Integer">
+		/* ncis.sql.cpt.netVm.isExistsVmCompId */
+		SELECT COUNT(1) FROM RC_VM
+		WHERE DEL_YN = 'N'
+		AND VM_COMP_ID = #{value}
+	</select>
+
+</mapper>

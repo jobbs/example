@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrNetwkIntfcReqList">
+
+	<resultMap id="resultRrNetwkIntfcReqList" type="ncis.cmn.entity.RrNetwkIntfcReqList">
+        <result property="rsrcReqNo"     column="RSRC_REQ_NO"/>  <!-- 자원요청번호 -->
+        <result property="rsrcReqSeq"     column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+        <result property="netwkIntfcSeq"     column="NETWK_INTFC_SEQ"/>  <!-- 네트워크인터페이스SEQ -->
+        <result property="ipBndSeq"     column="IP_BND_SEQ"/>  <!-- IP 밴드 대역 -->
+        <result property="ipAddr"     column="IP_ADDR"/>  <!-- IP주소 -->
+	</resultMap>
+
+	<!-- 네트워크인터페이스요청목록 등록 -->
+	<insert id="insertRrNetwkIntfcReqList">
+	/* ncis.sql.cmn.rrNetwkIntfcReqList.insertRrNetwkIntfcReqList */
+	INSERT INTO RR_NETWK_INTFC_REQ_LIST (
+	             RSRC_REQ_NO  /* 자원요청번호 */
+	           , RSRC_REQ_SEQ  /* 자원요청일련번호 */
+	           , NETWK_INTFC_ID  /* 네트워크인터페이스SEQ */
+	           , IP_BND_SEQ  /* IP대역 SEQ */
+	           , IP_ADDR  /* IP주소 */
+	           , IP_AUTO_ASGN_YN  /* 자동할당여부 */
+	           , NIC_PRPOS_CD  /* NIC용도코드 */
+	           , NAT_YN /* NAT 여부 */
+	           , NETWK_INTFC_NM /* 네트워크인터페이스명 */
+	) VALUES (
+	           #{rsrcReqNo}  /* 자원요청번호 */
+	         , #{rsrcReqSeq}  /* 자원요청일련번호 */
+	         , #{netwkIntfcId}  /* 네트워크인터페이스SEQ */
+	         , #{ipBndSeq}  /* IP대역 SEQ */
+	         , #{ipAddr}  /* IP주소 */
+	         , #{ipAutoAsgnYn}  /* IP주소 */
+	         , #{nicPrposCd}  /* NIC용도구분코드 */
+	         , #{natYn}  /* NAT 여부 */
+	         , #{netwkIntfcNm}  /* 네트워크인터페이스명 */
+	)
+	</insert>
+
+	<!-- 네트워크인터페이스요청목록 수정 -->
+	<update id="updateRrNetwkIntfcReqList">
+	UPDATE RR_NETWK_INTFC_REQ_LIST
+	         SET RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+	           , RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+	           , SEQ = #{seq}  /* 일련번호 */
+	           , NETWK_INTFC_ID = #{netwkIntfcId}  /* 네트워크인터페이스SEQ */
+	           , IP_BND_SEQ = #{ipBndSeq}  /* IP대역 SEQ */
+	           , IP_ADDR = #{ipAddr}  /* IP주소 */
+         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+           AND SEQ = #{seq}  /* 일련번호 */
+
+	</update>
+
+	<!-- 네트워크인터페이스요청목록 삭제 -->
+	<delete id="deleteRrNetwkIntfcReqList">
+	DELETE FROM RR_NETWK_INTFC_REQ_LIST
+         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+         <if test = "rsrcReqSeq != null and rsrcReqSeq != ''">
+           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+         </if>
+	</delete>
+
+
+	<!-- 네트워크인터페이스요청목록 자동할당 IP 수정 -->
+	<update id="updateRrNetwkIntfcReqIp">
+	UPDATE RR_NETWK_INTFC_REQ_LIST
+				IP_BND_SEQ = #{ipBndSeq}  /* IP대역 SEQ */
+	           , IP_ADDR = #{ipAddr}  /* IP주소 */
+         WHERE RSRC_REQ_NO = #{rsrcReqNo}  /* 자원요청번호 */
+           AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+           AND SEQ = #{seq}  /* 일련번호 */
+	</update>
+
+
+
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.userwrkhist">
+
+	<resultMap type="ncis.cpt.sys.hist.vo.UserWrkHistVo" id="resultUserWrkHistVo" extends="ncis.sql.cmn.userwrkhist.resultUserWrkHist">
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchMenuNm != null and !searchMenuNm.isEmpty()">
+			AND MENU_NM LIKE '%' || #{searchMenuNm} || '%'
+		</if>
+		<if test="searchWrkInfo != null and !searchWrkInfo.isEmpty()">
+			AND WRK_INFO LIKE '%' || #{searchWrkInfo} || '%'
+		</if>
+		<if test="searchUserId != null and !searchUserId.isEmpty()">
+			AND USER_ID LIKE '%' || #{searchUserId} || '%'
+		</if>
+		<if test="searchUserNm != null and !searchUserNm.isEmpty()">
+			AND USER_NM LIKE '%' || #{searchUserNm} || '%'
+		</if>
+		<if test="searchStartDate != null and !searchStartDate.isEmpty()">
+			AND WRK_DTTM <![CDATA[ >= ]]> TO_TIMESTAMP(#{searchStartDate},'YYYY-MM-DD')
+		</if>
+
+		<if test="searchEndDate != null and !searchEndDate.isEmpty()">
+			AND WRK_DTTM <![CDATA[ <= ]]> TO_TIMESTAMP(#{searchEndDate}||' 23:59:59','YYYY-MM-DD HH24:MI:SS')
+		</if>
+	</sql>
+
+	<select id="selectUserWrkHistTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.userwrkhist.selectUserWrkHistTotCnt */
+		SELECT COUNT(*) FROM CM_USER_WRK_HIST
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<sql id="selectUserWrkHistListSql">
+		SELECT  WRK_HIST_SEQ
+				,MENU_SEQ
+				,MENU_NM
+				,WRK_INFO
+				,WRK_DC
+				,WRK_PARAM
+				,WRK_TY
+				,USER_ID
+				,USER_NM
+				,WRK_IP
+				,TO_CHAR(WRK_DTTM, 'YYYY-MM-DD HH24:MI') WRK_DTTM
+		FROM CM_USER_WRK_HIST
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY WRK_HIST_SEQ DESC
+	</sql>
+
+	<select id="selectUserWrkHistList" resultMap="resultUserWrkHistVo">
+		/* ncis.sql.cpt.userwrkhist.selectUserWrkHistList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		<include refid="selectUserWrkHistListSql" />
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectDownloadUserWrkHist" resultMap="resultUserWrkHistVo">
+		/* ncis.sql.cpt.userwrkhist.selectDownloadUserWrkHist */
+		<include refid="selectUserWrkHistListSql" />
+	</select>
+
+	<select id="selectUserWrkHist" resultMap="resultUserWrkHistVo">
+	/* ncis.sql.cpt.userwrkhist.selectUserWrkHist */
+		SELECT
+			WRK_HIST_SEQ
+			,MENU_SEQ
+			,MENU_NM
+			,WRK_INFO
+			,WRK_DC
+			,WRK_PARAM
+			,WRK_TY
+			,USER_ID
+			,USER_NM
+			,WRK_IP
+			,TO_CHAR(WRK_DTTM, 'YYYY-MM-DD HH24:MI') WRK_DTTM
+		FROM CM_USER_WRK_HIST
+		WHERE WRK_HIST_SEQ = #{value}
+	</select>
+
+</mapper>

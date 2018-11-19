@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsLun">
+
+	<resultMap id="resultRsLun" type="ncis.cmn.entity.RsLun">
+        <result property="lunId"     column="LUN_ID"/>  <!-- LUN_ID -->
+        <result property="lunNm"     column="LUN_NM"/>  <!-- LUN명 -->
+        <result property="capa"     column="CAPA"/>  <!-- 용량 -->
+        <result property="strgTyCd"     column="STRG_TY_CD"/>  <!-- 스토리지유형코드 -->
+        <result property="dfnYn"     column="DFN_YN"/>  <!-- 정의여부 -->
+        <result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+        <result property="asgnYn"     column="ASGN_YN"/>  <!-- 할당여부 -->
+        <result property="wwid"     column="WWID"/>  <!-- WWID -->
+        <result property="strgDmnId"     column="STRG_DMN_ID"/>  <!-- 스토리지도메인SEQ -->
+        <result property="phyStrgId"     column="PHY_STRG_ID"/>  <!-- 물리스토리지ID -->
+	</resultMap>
+
+	<!-- LUN 등록 -->
+	<insert id="insertRsLun">
+	INSERT INTO RS_LUN (
+	             LUN_ID  /* LUN_ID */
+	           , LUN_NM  /* LUN명 */
+	           , CAPA  /* 용량 */
+	           , STRG_TY_CD  /* 스토리지유형코드 */
+	           , DFN_YN  /* 정의여부 */
+	           , RSRC_POOL_ID  /* 자원풀ID */
+	           , ASGN_YN  /* 할당여부 */
+	           , WWID  /* WWID */
+	           , STRG_DMN_ID  /* 스토리지도메인SEQ */
+	           , PHY_STRG_ID  /* 물리스토리지ID */
+	) VALUES (
+	           #{lunId}  /* LUN_ID */
+	         , #{lunNm}  /* LUN명 */
+	         , #{capa}  /* 용량 */
+	         , #{strgTyCd}  /* 스토리지유형코드 */
+	         , #{dfnYn}  /* 정의여부 */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	         , #{asgnYn}  /* 할당여부 */
+	         , #{wwid}  /* WWID */
+	         , #{strgDmnId}  /* 스토리지도메인SEQ */
+	         , #{phyStrgId}  /* 물리스토리지ID */
+	)
+	</insert>
+
+	<!-- LUN 수정 -->
+	<update id="updateRsLun">
+	UPDATE RS_LUN
+	         SET LUN_ID = #{lunId}  /* LUN_ID */
+	           , LUN_NM = #{lunNm}  /* LUN명 */
+	           , CAPA = #{capa}  /* 용량 */
+	           , STRG_TY_CD = #{strgTyCd}  /* 스토리지유형코드 */
+	           , DFN_YN = #{dfnYn}  /* 정의여부 */
+	           , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+	           , ASGN_YN = #{asgnYn}  /* 할당여부 */
+	           , WWID = #{wwid}  /* WWID */
+	           , STRG_DMN_ID = #{strgDmnId}  /* 스토리지도메인SEQ */
+	           , PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+         WHERE LUN_ID = #{lunId}  /* LUN_ID */
+
+	</update>
+
+	<!-- LUN 삭제 -->
+	<delete id="deleteRsLun">
+	DELETE FROM RS_LUN
+         WHERE LUN_ID = #{lunId}  /* LUN_ID */
+
+	</delete>
+
+</mapper>

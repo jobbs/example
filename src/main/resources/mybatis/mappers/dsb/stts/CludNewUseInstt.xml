@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.cludSwtchGoalRslt.cludNewUseInstt">
+
+
+
+ 	<select id="selectCludNewUseInsttList" resultType="ncis.dsb.stts.cludSwtchGoalRslt.vo.CludNewUseInsttVo">
+	  	/* ncis.sql.dsb.stts.cludSwtchGoalRslt.cludNewUseInstt.selectCludNewUseInsttList */
+	  	<![CDATA[
+		SELECT
+				A.STDR_YR,
+				JOB_QTY,
+				INSTITUTION_QTY	,
+				SUM(JOB_QTY)OVER(ORDER BY STDR_YR) SUM_JOB_QTY,
+				SUM(INSTITUTION_QTY)OVER(ORDER BY STDR_YR) SUM_INSTITUTION_QTY,
+				(SELECT ARRAY_TO_STRING(ARRAY_AGG(Y.INSTITUTION_NM),chr(13)) FROM ST_YR_CLUD_NW_USE_INSTITUTION X, CM_INSTITUTION Y WHERE A.STDR_YR = X.STDR_YR AND X.INSTITUTION_ID = Y.INSTITUTION_ID) INSTITUTION_NM
+		FROM (
+				SELECT 	A.STDR_YR,
+			    	    SUM(A.JOB_QTY) JOB_QTY,
+			        	COUNT(1) INSTITUTION_QTY
+				FROM 	ST_YR_CLUD_NW_USE_INSTITUTION A
+				WHERE 1=1
+				GROUP BY STDR_YR
+			) A
+		]]>
+  	</select>
+  	<select id="selectCludNewUseInsttDtl" resultType="ncis.dsb.stts.cludSwtchGoalRslt.vo.CludNewUseInsttVo">
+  		/* ncis.sql.dsb.stts.cludSwtchGoalRslt.cludNewUseInstt.selectCludNewUseInsttDtl */
+	  	SELECT 	A.INSTITUTION_ID,
+	  			B.INSTITUTION_NM,
+	  			A.JOB_QTY
+		FROM 	ST_YR_CLUD_NW_USE_INSTITUTION A, CM_INSTITUTION B
+		WHERE 1=1
+		AND A.INSTITUTION_ID = B.INSTITUTION_ID
+		AND STDR_YR =#{stdrYr}
+  	</select>
+  	<select id="selectCludNewUseInsttCnt" resultType="int">
+	  	SELECT 	COUNT(1) CNT
+		FROM 	ST_YR_CLUD_NW_USE_INSTITUTION A
+		WHERE 1=1
+		AND A.INSTITUTION_ID = #{institutionId}
+  	</select>
+	<select id="selectRegPosblYear" resultType="String">
+		/* ncis.sql.dsb.stts.cludSwtchGoalRslt.cludNewUseInstt.selectRegPosblYear */
+		SELECT * FROM ( SELECT GENERATE_SERIES(2011,TO_CHAR(NOW(),'YYYY')::INTEGER) YYYY) A
+	        WHERE NOT EXISTS(
+	        	SELECT 1
+	            FROM ST_YR_CLUD_NW_USE_INSTITUTION B
+	        	WHERE A.YYYY = B.STDR_YR::INTEGER
+	        )
+	</select>
+</mapper>
+

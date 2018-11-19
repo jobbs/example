@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.vmJob">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmJobVo" id="resultVmJobVo" extends="ncis.sql.cmn.rcVmJob.resultRcVmJob">
+		<result property="jobNm" column="JOB_NM"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test='searchUserId != null and searchUserId != ""'>
+		</if>
+		<if test='searchVmSeq != null and searchVmSeq != ""'>
+		AND RC_VM_JOB.VM_SEQ = #{searchVmSeq}
+		</if>
+		<if test='searchJobId != null and searchJobId != ""'>
+		AND RC_VM_JOB.JOB_ID = #{searchJobId}
+		</if>
+	</sql>
+
+	<select id="selectVmJobList" resultMap="resultVmJobVo">
+		/* ncis.sql.cpt.rsrc.com.vmJob.selectVmJobList */
+		SELECT
+			VM_SEQ
+			, JOB_ID
+			, (SELECT JOB_NM FROM CM_JOB WHERE CM_JOB.JOB_ID = RC_VM_JOB.JOB_ID) AS JOB_NM
+		FROM
+			RC_VM_JOB
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY
+			RC_VM_JOB.VM_SEQ DESC
+	</select>
+
+</mapper>

@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcAreaLmttConf">
+	<!-- 등록 -->
+	<insert id="insertRxServcAreaLmttConf" parameterType="ncis.cmn.entity.RxServcAreaLmttConf">
+
+		/* ncis.sql.cmn.rxServcArea.insertRxServcAreaLmttConf */
+		INSERT INTO RX_SERVC_AREA_LMTT_CONF
+		(
+			SERVC_AREA_SEQ
+			,LMTT_CONF_ID
+			,LMTT_TY_CD
+			,MAX_CPU_COR_QTY
+			,MAX_MEM_CAPA
+			,MIN_CPU_COR_QTY
+			,MIN_MEM_CAPA
+			,MAX_POD_QTY
+			,REQ_CPU_COR_QTY
+			,REQ_MEM_CAPA
+			,REQ_STRG_CAPA
+			,LMTT_CPU_COR_QTY
+			,LMTT_MEM_CAPA
+			,CRE_DTTM
+			,CRE_USER_ID
+	    )
+        VALUES
+        (
+			#{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{lmttConfId}  /* 제한설정ID */
+			, #{lmttTyCd}  /* 제한유형코드 */
+			, #{maxCpuCorQty}  /* 최대CPU코어수 */
+			, #{maxMemCapa}  /* 최대메모리용량 */
+			, #{minCpuCorQty}  /* 최소CPU코어수 */
+			, #{minMemCapa}  /* 최소메모리용량 */
+			, #{maxPodQty}  /* 최대POD수 */
+			, #{reqCpuCorQty}  /* 요청CPU코어수 */
+			, #{reqMemCapa}  /* 요청메모리용량 */
+			, #{reqStrgCapa}  /* 요청스토리지용량 */
+			, #{lmttCpuCorQty}  /* 제한CPU코어수 */
+			, #{lmttMemCapa}  /* 제한메모리용량 */
+			, now()  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+		)
+	</insert>
+
+	<!-- 수정 -->
+	<update id="updateRxServcAreaLmttConf">
+		/* ncis.sql.cmn.RxServcArea.updateRxServcAreaLmttConf */
+		UPDATE RX_SERVC_AREA_LMTT_CONF
+			SET  MAX_CPU_COR_QTY = #{maxCpuCorQty}  /* 최대CPU코어수 */
+         , MAX_MEM_CAPA = #{maxMemCapa}  /* 최대메모리용량 */
+         , MIN_CPU_COR_QTY = #{minCpuCorQty}  /* 최소CPU코어수 */
+         , MIN_MEM_CAPA = #{minMemCapa}  /* 최소메모리용량 */
+         , MAX_POD_QTY = #{maxPodQty}  /* 최대POD수 */
+         , REQ_CPU_COR_QTY = #{reqCpuCorQty}  /* 요청CPU코어수 */
+         , REQ_MEM_CAPA = #{reqMemCapa}  /* 요청메모리용량 */
+         , REQ_STRG_CAPA = #{reqStrgCapa}  /* 요청스토리지용량 */
+         , LMTT_CPU_COR_QTY = #{lmttCpuCorQty}  /* 제한CPU코어수 */
+         , LMTT_MEM_CAPA = #{lmttMemCapa}  /* 제한메모리용량 */
+         , UPDT_DTTM = now()  /* 수정일시 */
+         , UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+        WHERE SERVC_AREA_SEQ = #{servcAreaSeq}
+        AND LMTT_CONF_ID = #{lmttConfId}
+        AND LMTT_TY_CD = #{lmttTyCd}
+	</update>
+
+	<!-- 삭제 -->
+	<update id="deleteRxServcAreaLmttConf">
+		/* ncis.sql.cmn.RxServcArea.updateRxServcAreaLmttConf */
+		DELETE FROM RX_SERVC_AREA_LMTT_CONF
+        WHERE SERVC_AREA_SEQ = #{servcAreaSeq}
+        <if test="lmttConfId != null and !lmttConfId.isEmpty()">
+        AND LMTT_CONF_ID = #{lmttConfId}
+        </if>
+        <if test="lmttTyCd != null and !lmttTyCd.isEmpty()">
+        AND LMTT_TY_CD = #{lmttTyCd}
+        </if>
+	</update>
+
+</mapper>

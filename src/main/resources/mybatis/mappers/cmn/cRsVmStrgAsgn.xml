@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsVmStrgAsgn">
+	<resultMap id="resultRsVmStrgAsgn" type="ncis.cmn.entity.RsVmStrgAsgn">
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="vrDskSeq"  column="VR_DSK_SEQ"/>  <!-- 가상디스크SEQ -->
+	</resultMap>
+
+	<!-- 가상서버스토리지할당 등록 -->
+	<insert id="insertRsVmStrgAsgn">
+	INSERT INTO RS_VM_STRG_ASGN (
+	             VM_SEQ  /* 가상서버SEQ */
+	           , VR_DSK_SEQ  /* 가상디스크SEQ */
+	) VALUES (
+	           #{vmSeq}  /* 가상서버SEQ */
+	         , #{vrDskSeq}  /* 가상디스크SEQ */
+	)
+	</insert>
+
+	<!-- 가상서버스토리지할당 수정 -->
+	<update id="updateRsVmStrgAsgn">
+	UPDATE RS_VM_STRG_ASGN
+	         SET VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	           , VR_DSK_SEQ = #{vrDskSeq}  /* 가상디스크SEQ */
+         WHERE VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+           AND VR_DSK_SEQ = #{vrDskSeq}  /* 가상디스크SEQ */
+
+	</update>
+
+	<!-- 가상서버스토리지할당 삭제 -->
+	<delete id="deleteRsVmStrgAsgn">
+	DELETE FROM RS_VM_STRG_ASGN
+         WHERE VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+           AND VR_DSK_SEQ = #{vrDskSeq}  /* 가상디스크SEQ */
+
+	</delete>
+
+</mapper>

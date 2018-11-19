@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrHaComp">
+
+	<resultMap id="resultRrHaComp" type="ncis.cmn.entity.RrHaComp">
+        <result property="rsrcReqNo"    column="RSRC_REQ_NO"/>   <!-- 자원요청번호     -->
+        <result property="rsrcReqSeq"   column="RSRC_REQ_SEQ"/>  <!-- 자원요청일련번호 -->
+        <result property="haStatCd"     column="HA_STAT_CD"/>    <!-- HA상태코드       -->
+        <result property="haGrpCd"      column="HA_GRP_CD"/>     <!-- HA그룹코드       -->
+        <result property="haGrpNm"      column="HA_GRP_NM"/>     <!-- HA그룹명         -->
+        <result property="haStrgCapa"   column="HA_STRG_CAPA"/>  <!-- HA스토리지용량   -->
+        <result property="haGrpId"      column="HA_GRP_NM"/>     <!-- HA그룹ID     -->
+	</resultMap>
+
+	<!-- HA구성 등록 -->
+	<insert id="insertRrHaComp">
+	INSERT INTO RR_HA_COMP (
+               RSRC_REQ_NO           /* 자원요청번호     */
+	         , RSRC_REQ_SEQ            /* 자원요청일련번호 */
+	         , HA_STAT_CD              /* HA상태코드       */
+	         , HA_GRP_CD               /* HA그룹코드       */
+	         , HA_GRP_NM               /* HA그룹명         */
+	         , HA_STRG_CAPA            /* HA스토리지용량   */
+	         , HA_GRP_ID               /* HA그룹ID   */
+
+	) VALUES (
+	           #{rsrcReqNo}            /* 자원요청번호     */
+	         , #{rsrcReqSeq}           /* 자원요청일련번호 */
+	         , #{haStatCd}             /* HA상태코드       */
+	         , #{haGrpCd}              /* HA그룹코드       */
+	         , #{haGrpNm}              /* HA그룹명         */
+	         , #{haStrgCapa}           /* HA스토리지용량   */
+	         , #{haGrpId}               /* HA가성서버명     */
+	)
+	</insert>
+
+	<!-- HA구성 수정 -->
+	<update id="updateRrHaComp">
+	UPDATE RR_HA_COMP
+	   SET HA_STAT_CD     = #{haStatCd}           /* HA상태코드       */
+	     , HA_GRP_CD      = #{haGrpCd}            /* HA그룹코드       */
+	     , HA_GRP_NM      = #{haGrpNm}            /* HA그룹명         */
+	     , HA_STRG_CAPA   = #{haStrgCapa}         /* HA스토리지용량   */
+     WHERE RSRC_REQ_NO    = #{rsrcReqNo}          /* 자원요청번호     */
+       AND RSRC_REQ_SEQ   = #{rsrcReqSeq}         /* 자원요청일련번호 */
+	</update>
+
+	<!-- HA구성 삭제 -->
+	<delete id="deleteRrHaComp">
+	DELETE FROM RR_HA_COMP
+          WHERE RSRC_REQ_NO  = #{rsrcReqNo}   /* 자원요청번호     */
+            AND RSRC_REQ_SEQ = #{rsrcReqSeq}  /* 자원요청일련번호 */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siOprRelateCharger">
+
+	<resultMap id="resultSiOprRelateCharger" type="ncis.cmn.entity.SiOprRelateCharger">
+        <result property="userId"     column="USER_ID"/>  <!-- 사용자ID -->
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="relaterClCd"     column="RELATER_CL_CD"/>  <!-- 연관자구분코드 -->
+	</resultMap>
+
+	<!-- 운영연관담당자 등록 -->
+	<insert id="insertSiOprRelateCharger">
+	INSERT INTO SI_OPR_RELATE_CHARGER (
+	             USER_ID  /* 사용자ID */
+	           , COMP_ID  /* 구성ID */
+	           , RELATER_CL_CD  /* 연관자구분코드 */
+	) VALUES (
+	           #{userId}  /* 사용자ID */
+	         , #{compId}  /* 구성ID */
+	         , #{relaterClCd}  /* 연관자구분코드 */
+	)
+	</insert>
+
+	<!-- 운영연관담당자 수정 -->
+	<update id="updateSiOprRelateCharger">
+	UPDATE SI_OPR_RELATE_CHARGER
+	         SET USER_ID = #{userId}  /* 사용자ID */
+	           , COMP_ID = #{compId}  /* 구성ID */
+	           , RELATER_CL_CD = #{relaterClCd}  /* 연관자구분코드 */
+         WHERE USER_ID = #{userId}  /* 사용자ID */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 운영연관담당자 삭제 -->
+	<delete id="deleteSiOprRelateCharger">
+	DELETE FROM SI_OPR_RELATE_CHARGER
+         WHERE USER_ID = #{userId}  /* 사용자ID */
+           AND COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

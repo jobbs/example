@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.req.rsrcreq.netwk">
+
+	<resultMap type="ncis.cpt.rsrc.com.vo.VmVo" id="resultVmVo" extends="ncis.sql.cmn.rcVm.resultRcVm">
+		<result property="regionId"      column="REGION_ID"/>
+	    <result property="regionNm"      column="REGION_NM"/>
+	    <result property="zoneId"        column="ZONE_ID"/>
+	    <result property="zoneNm"        column="ZONE_NM"/>
+	    <result property="netId"         column="NET_ID"/>
+	    <result property="netNm"         column="NET_NM"/>
+	    <result property="netClCd"       column="NET_CL_CD"/>
+	    <result property="netClCdNm"     column="NET_CL_CD_NM"/>
+	    <result property="rsrcPoolId"    column="RSRC_POOL_ID"/>
+	    <result property="rsrcPoolNm"    column="RSRC_POOL_NM"/>
+	    <result property="vrlzSwTyCd"    column="VRLZ_SW_TY_CD"/>
+	    <result property="vrlzSwTyCdNm"  column="VRLZ_SW_TY_CD_NM"/>
+	    <result property="ctlTrgtYn"     column="CTL_TRGT_YN"/>
+	    <result property="clstrSeq"      column="CLSTR_SEQ"/>
+	    <result property="clstrNm"       column="CLSTR_NM"/>
+	    <result property="pmSeq"         column="PM_SEQ"/>
+	    <result property="pmNm"          column="PM_NM"/>
+	    <result property="pmCompId"      column="PM_COMP_ID"/>
+	    <result property="haYnNm"        column="HA_YN_NM"/>
+	    <result property="statCdNm"      column="STAT_CD_NM"/>
+	    <result property="statGrpCdNm"   column="STAT_GRP_CD_NM"/>
+	    <result property="statGrpCd"     column="STAT_GRP_CD"/>
+	    <result property="osTyCdNm"      column="OS_TY_CD_NM"/>
+	    <result property="vmClCdNm"      column="VM_CL_CD_NM"/>
+	    <result property="institutionNm" column="INSTITUTION_NM"/>
+	    <result property="jobsNm"        column="JOBS_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqNetwkVo" id="resultRsrcReqNetwkVo" extends="ncis.sql.cmn.rrRsrcReqDtlNetwk.resultRrRsrcReqDtlNetwk">
+		<result property="slbTyNm" column="SLB_TY_NM" />    <!-- SLB유형코드 명  -->
+		<result property="sessMntncTyNm" column="SESS_MNTNC_TY_NM" />    <!-- 션유지유형명 -->
+		<result property="prtclNm" column="PRTCL_NM" />    <!-- 프로토콜 명 -->
+		<result property="rsrcReqPrcssStatNm" column="RSRC_REQ_PRCSS_STAT_NM" />	<!-- 자원요청진행상태코드 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.req.rsrcreq.vo.RsrcReqNetwkSlbConfIpReqVo" id="resultRsrcReqNetwkSlbConfIpReqVo" extends="ncis.sql.cmn.rrSlbConfIpReqList.resultRrSlbConfIpReqList">
+	</resultMap>
+
+	<sql id="validateAuth">
+		<if test="!sysAdm">
+			<choose>
+				<when test="oprAdm">
+					/* 운영자 권한  수정*/
+					AND RR_RSRC_REQ.REGION_ID IN(SELECT REGION_ID FROM CM_RSRC_POOL_USER WHERE USER_ID= #{searchUserId} GROUP BY REGION_ID  )
+				</when>
+				<otherwise>
+					/* 담당자 권한 수정*/
+					AND RR_RSRC_REQ.RSRC_REQ_USER_ID = #{searchUserId}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<!-- 자원요청상세_네트워크 조회 -->
+	<select id="selectRsrcReqNetwkList" resultMap="resultRsrcReqNetwkVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.netwk.selectRsrcReqNetwkList */
+		SELECT	RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_NO 														/* 자원요청번호 */
+				, RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_SEQ 													/* 자원요청일련번호 */
+				, RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_CN 													/* 자원요청내용 */
+				, RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_PRCSS_STAT_CD 											/* 자원요청진행상태코드 */
+				, RR_RSRC_REQ_DTL_NETWK.PROCSS_INST_SEQ 												/* 프로세스인스턴스ID */
+				, TO_CHAR(RR_RSRC_REQ_DTL_NETWK.EXE_DTTM, 'YYYY-MM-DD HH24:MI:SS') EXE_DTTM  		 	/* 실행일시*/
+				, RR_RSRC_REQ.REGION_ID																	/* 센터 ID */
+				, RR_RSRC_REQ_DTL_NETWK.ZONE_ID 														/* 존ID */
+				, RR_RSRC_REQ_DTL_NETWK.NET_ID 															/* 망ID */
+				, RR_RSRC_REQ_DTL_NETWK.VIP_ADDR 														/* VIP주소 */
+				, RR_RSRC_REQ_DTL_NETWK.PRTCL 															/* 프로토콜 */
+				, RR_RSRC_REQ_DTL_NETWK.PORT	 														/* 포트 */
+				, RR_RSRC_REQ_DTL_NETWK.SLB_TY_CD 														/* SLB유형코드 */
+				, RR_RSRC_REQ_DTL_NETWK.SESS_MNTNC_TY_CD 												/* 세션유지유형코드 */
+				, RR_RSRC_REQ_DTL_NETWK.SESS_MNTNC_VL 													/* 세션유지값 */
+				, RR_RSRC_REQ_DTL_NETWK.STAT_CONFRM 													/* 상태확인 */
+				, RR_RSRC_REQ_DTL_NETWK.STAT_CONFRM_CYCLE 												/* 상태확인주기 */
+				, RR_RSRC_REQ_DTL_NETWK.STAT_CONFRM_T_OUT 												/* 상태확인타임아웃 */
+				, RR_RSRC_REQ_DTL_NETWK.MAX_TRY_CNT 													/* 최대시도횟수 */
+				, RR_RSRC_REQ_DTL_NETWK.STAT_CONFRM_HTTP_URL 											/* 상태확인_HTTP_URL */
+				, RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_TY_CD 													/* 자원요청유형코드 */
+				, RR_RSRC_REQ_DTL_NETWK.RSRC_POOL_ID 													/* 매니저ID */
+				, RR_RSRC_REQ_DTL_NETWK.UUID 															/* UUID */
+				, TO_CHAR(RR_RSRC_REQ_DTL_NETWK.COMPT_DTTM, 'YYYY-MM-DD HH24:MI:SS') COMPT_DTTM			/* 완료일시 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_NETWK.REG_DTTM, 'YYYY-MM-DD HH24:MI:SS') REG_DTTM   			/* 등록일시 */
+				, RR_RSRC_REQ_DTL_NETWK.RJCT_TY_CD 														/* 반려유형코드 */
+				, TO_CHAR(RR_RSRC_REQ_DTL_NETWK.RJCT_DTTM, 'YYYY-MM-DD HH24:MI:SS')   RJCT_DTTM    	 	/* 반려일시 */
+				, RR_RSRC_REQ_DTL_NETWK.RJCT_REASN 														/* 반려사유 */
+				, FN_CODE_NAME('024', RR_RSRC_REQ_DTL_NETWK.SLB_TY_CD)  AS SLB_TY_NM					/*SLB유형코드 명 */
+				, FN_CODE_NAME('025', RR_RSRC_REQ_DTL_NETWK.SESS_MNTNC_TY_CD)  AS SESS_MNTNC_TY_NM		/*세션유지유형명 */
+				, FN_CODE_NAME('023', RR_RSRC_REQ_DTL_NETWK.PRTCL)   AS PRTCL_NM						/*프로토콜 명 */
+				, FN_CODE_NAME('007', RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_PRCSS_STAT_CD)    AS RSRC_REQ_PRCSS_STAT_NM		/* 자원요청진행상태코드명 */
+				, RC_RSRC_POOL.NET_CL_CD																				/* 망구분 코드  */
+		  FROM 	RR_RSRC_REQ_DTL_NETWK
+ 	INNER JOIN  RR_RSRC_REQ
+			ON	RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+	LEFT  JOIN	RC_RSRC_POOL
+			ON	RC_RSRC_POOL.RSRC_POOL_ID = RR_RSRC_REQ_DTL_NETWK.RSRC_POOL_ID
+		 WHERE	RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_NO =  #{rsrcReqNo}  														/* 자원요청번호 */
+				<if test="rsrcReqSeq !=null">
+					AND RR_RSRC_REQ_DTL_NETWK.RSRC_REQ_SEQ =   #{rsrcReqSeq}  											/* 자원요청일련번호 */
+				</if>
+				<include refid="validateAuth" />
+	  ORDER BY VIP_ADDR
+	</select>
+
+
+	<!--자원요청상세_네트워크_SLB설정IP요청목록 조회 -->
+	<select id="selectRsrcReqNetwkSlbConfIpReqList" resultMap="resultRsrcReqNetwkSlbConfIpReqVo">
+		/*  ncis.sql.cpt.opr.req.rsrcreq.netwk.selectRsrcReqNetwkSlbConfIpReqList */
+		SELECT
+				RR_SLB_CONF_IP_REQ_LIST.RSRC_REQ_NO  /* 자원요청번호 */
+		         , RR_SLB_CONF_IP_REQ_LIST.RSRC_REQ_SEQ  /* 자원요청일련번호 */
+		         , RR_SLB_CONF_IP_REQ_LIST.IP_ADDR  /* IP주소 */
+		         , RR_SLB_CONF_IP_REQ_LIST.VIP_ADDR  /* VIP주소 */
+		         , RR_SLB_CONF_IP_REQ_LIST.PORT  /* 포트 */
+		         , RR_SLB_CONF_IP_REQ_LIST.WVL  /* 가중치(로드밸런싱) */
+		         , RR_SLB_CONF_IP_REQ_LIST.DC  /* 설명 */
+		  FROM	RR_SLB_CONF_IP_REQ_LIST
+	INNER JOIN  RR_RSRC_REQ
+			ON	RR_SLB_CONF_IP_REQ_LIST.RSRC_REQ_NO = RR_RSRC_REQ.RSRC_REQ_NO
+		 WHERE	RR_SLB_CONF_IP_REQ_LIST.RSRC_REQ_NO =  #{rsrcReqNo}  /* 자원요청번호 */
+			<if test="rsrcReqSeq !=null">
+		   AND 	RR_SLB_CONF_IP_REQ_LIST.RSRC_REQ_SEQ =   #{rsrcReqSeq}  /* 자원요청일련번호 */
+			</if>
+			<include refid="validateAuth" />
+		ORDER BY RR_SLB_CONF_IP_REQ_LIST.VIP_ADDR ASC
+	</select>
+
+	<!-- NS SID, NF SID 조회 ( netwk유형코드 02:L4) 네트워크 스위치의 기관을 기준으로 검색으로 하여 해당 vm의 sid를 조회한다.-->
+	<select id="selectNetwkSrvcSids" resultMap="resultVmVo">
+	/* ncis.sql.cpt.opr.req.rsrcreq.netwk.selectNetwkSrvcSids */
+		SELECT  RC_RSRC_POOL.RSRC_POOL_ID
+				, RC_RSRC_POOL.REGION_ID
+				, RC_RSRC_POOL.ZONE_ID
+				, RC_RSRC_POOL.NET_ID
+				, RC_RSRC_POOL.NET_CL_CD
+				, RC_VM.NS_SID
+				, RC_VM.NF_SID
+				, T1.VM_SEQ
+  		  FROM 	RC_VM
+	INNER JOIN  RC_CLSTR ON RC_VM.CLSTR_SEQ = RC_CLSTR.CLSTR_SEQ
+	INNER JOIN  RC_RSRC_POOL ON  RC_RSRC_POOL.RSRC_POOL_ID = RC_CLSTR.RSRC_POOL_ID
+	INNER JOIN  (SELECT VM_SEQ FROM RN_NETWK_SWTCH WHERE INSTITUTION_ID =  #{institutionId} AND NETWK_TY_CL_CD= '02' ) T1 ON T1.VM_SEQ = RC_VM.VM_SEQ
+		 WHERE  RC_VM.DEL_YN ='N'
+		   AND RC_RSRC_POOL.RSRC_POOL_ID = #{equalsRsrcPoolId} <!--
+		   AND RC_VM.INSTITUTION_ID =  #{institutionId} -->
+	  GROUP BY  RC_RSRC_POOL.RSRC_POOL_ID,RC_RSRC_POOL.ZONE_ID, RC_RSRC_POOL.NET_ID, RC_VM.NS_SID, RC_VM.NF_SID, T1.VM_SEQ
+	</select>
+</mapper>

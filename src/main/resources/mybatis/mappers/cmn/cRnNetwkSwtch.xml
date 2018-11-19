@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnNetwkSwtch">
+
+	<resultMap id="resultRnNetwkSwtch" type="ncis.cmn.entity.RnNetwkSwtch">
+        <result property="vmSeq"     		column="VM_SEQ"/>  <!-- 가상서버시퀀스 -->
+        <result property="netwkTyClCd"     	column="NETWK_TY_CL_CD"/>  <!-- 네트워크유형구분코드 -->
+        <result property="institutionId"    column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="upperVmSeq"     	column="UPPER_VM_SEQ"/>  <!-- 상위가상서버시퀀스 -->
+        <result property="delUserId"     	column="DEL_USER_ID"/>  <!-- 삭제자ID -->
+        <result property="delDttm"     		column="DEL_DTTM"/>  <!-- 삭제일시 -->
+        <result property="delYn"     		column="DEL_YN"/>  <!-- 삭제여부 -->
+	</resultMap>
+
+	<insert id="insertRnNetwkSwtch">
+		/* ncis.sql.cmn.rnNetwkSwtch.insertRnNetwkSwtch */
+		INSERT INTO RN_NETWK_SWTCH (
+		             VM_SEQ  /* 가상서버시퀀스 */
+		           , NETWK_TY_CL_CD  /* 네트워크유형구분코드 */
+		           , INSTITUTION_ID  /* 기관ID */
+		           , UPPER_VM_SEQ  /* 상위가상서버시퀀스 */
+		           , DEL_YN		/* 삭제여부 */
+		) VALUES (
+		           #{vmSeq}  /* 가상서버시퀀스 */
+		         , #{netwkTyClCd}  /* 네트워크유형구분코드 */
+		         , #{institutionId}  /* 기관ID */
+		         , #{upperVmSeq}  /* 상위가상서버시퀀스 */
+		         , 'N'
+		)
+	</insert>
+
+	<update id="updateRnNetwkSwtch">
+		/* ncis.sql.cmn.rnNetwkSwtch.updateRnNetwkSwtch */
+		UPDATE RN_NETWK_SWTCH
+		SET INSTITUTION_ID = #{institutionId}  /* 기관ID */
+		WHERE VM_SEQ = #{vmSeq}  /* 가상서버시퀀스 */
+<!-- 			   OR UPPER_VM_SEQ = #{vmSeq} */  -->
+	</update>
+
+	<update id="updateNetVmInst">
+		/* ncis.sql.cmn.rnNetwkSwtch.updateNetVmInst */
+<!--
+		UPDATE RC_VM
+		SET INSTITUTION_ID = #{institutionId}  /* 기관ID */
+		WHERE VM_SEQ IN (SELECT VM_SEQ FROM RN_NETWK_SWTCH WHERE VM_SEQ = #{vmSeq} OR UPPER_VM_SEQ = #{vmSeq})  /* 가상서버시퀀스 */
+ -->
+		UPDATE RN_NETWK_SWTCH A
+		   SET UPPER_VM_SEQ = (
+				       SELECT VM_SEQ FROM RN_NETWK_SWTCH B
+					WHERE B.INSTITUTION_ID = A.INSTITUTION_ID AND B.NETWK_TY_CL_CD = '01'
+					AND DEL_YN = 'N'
+					LIMIT 1
+		                      )
+		 WHERE INSTITUTION_ID = #{institutionId}  /* 기관ID */
+		   AND NETWK_TY_CL_CD = '02'
+		   AND VM_SEQ = #{vmSeq}
+	</update>
+
+<!--
+	<update id="deleteRnNetwkSwtch">
+		/* ncis.sql.cmn.rnNetwkSwtch.deleteRnNetwkSwtch */
+		UPDATE RN_NETWK_SWTCH
+		SET DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+			, DEL_DTTM = now()  /* 삭제일시 */
+			, DEL_YN = 'Y'  /* 삭제여부 */
+		WHERE VM_SEQ = #{vmSeq}  /* 가상서버시퀀스 */
+	</update>
+-->
+<!--
+	<delete id="deleteRnNetwkSwtch">
+	DELETE FROM RN_NETWK_SWTCH
+         WHERE NETWK_ID = #{netwkId}  /* 네트워크ID */
+	</delete>
+-->
+</mapper>

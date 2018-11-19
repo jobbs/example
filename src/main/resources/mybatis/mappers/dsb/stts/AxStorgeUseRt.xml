@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.axusert.axStorgeUseRt">
+
+	<resultMap type="ncis.dsb.stts.axusert.vo.AxUseRtVo" id="resultAxCpuUseRtVo">
+	</resultMap>
+
+
+	<select id="selectAxStorgeUseRtList" resultType="ncis.dsb.stts.axusert.vo.AxUseRtVo">
+	/*ncis.sql.dsb.stts.axusert.axStorgeUseRt.selectAxStorageUseRtList*/
+	SELECT	CASE
+				WHEN CAST(A.CAPA AS CHARACTER VARYING) ='0.5' THEN '0.5이하'
+				WHEN CAST(A.CAPA AS CHARACTER VARYING)='888' THEN '기타'
+				WHEN CAST(A.CAPA AS CHARACTER VARYING)='999' THEN '계'
+			ELSE CAST(A.CAPA AS CHARACTER VARYING)
+			END CAPA,
+			COALESCE(B.USE_RT10,0) USE_RT10,
+			COALESCE(B.USE_RT20,0) USE_RT20,
+			COALESCE(B.USE_RT30,0) USE_RT30,
+			COALESCE(B.USE_RT40,0) USE_RT40,
+			COALESCE(B.USE_RT50,0) USE_RT50,
+			COALESCE(B.USE_RT60,0) USE_RT60,
+			COALESCE(B.USE_RT70,0) USE_RT70,
+			COALESCE(B.USE_RT80,0) USE_RT80,
+			COALESCE(B.USE_RT90,0) USE_RT90,
+			COALESCE(B.USE_RT100,0)  USE_RT100,
+			COALESCE(B.USE_RT10,0)+COALESCE(B.USE_RT20,0)+COALESCE(B.USE_RT30,0)+COALESCE(B.USE_RT40,0)+COALESCE(B.USE_RT50,0)+
+			COALESCE(B.USE_RT60,0)+COALESCE(B.USE_RT70,0)+COALESCE(B.USE_RT80,0)+COALESCE(B.USE_RT90,0)+COALESCE(B.USE_RT100,0) TOTAL
+		FROM
+			(
+			SELECT 0.5 CAPA 	UNION ALL
+			SELECT 1			UNION ALL
+			SELECT 2			UNION ALL
+			SELECT 3			UNION ALL
+			SELECT 4			UNION ALL
+			SELECT 8			UNION ALL
+			SELECT 888			UNION ALL
+			SELECT 999
+			) A
+			LEFT JOIN
+			(SELECT	COALESCE(CAPA,999) CAPA,
+					SUM(USE_RT10) USE_RT10,
+					SUM(USE_RT20) USE_RT20,
+					SUM(USE_RT30) USE_RT30,
+					SUM(USE_RT40) USE_RT40,
+					SUM(USE_RT50) USE_RT50,
+					SUM(USE_RT60) USE_RT60,
+					SUM(USE_RT70) USE_RT70,
+					SUM(USE_RT80) USE_RT80,
+					SUM(USE_RT90) USE_RT90,
+					SUM(USE_RT100) USE_RT100
+			FROM (
+				SELECT
+					CASE	WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 0.5 THEN 0.5
+							WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 1 THEN 1
+							WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 2 THEN 2
+							WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 3 THEN 3
+							WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 4 THEN 4
+							WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 8 THEN 8
+					ELSE 888
+					END CAPA,
+					CASE	WHEN AVG_STRG_USE_RT<![CDATA[<=]]>10 THEN 1 END USE_RT10,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>10 AND AVG_STRG_USE_RT<![CDATA[<=]]>20 THEN 1 END USE_RT20,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>20 AND AVG_STRG_USE_RT<![CDATA[<=]]>30 THEN 1 END USE_RT30,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>30 AND AVG_STRG_USE_RT<![CDATA[<=]]>40 THEN 1 END USE_RT40,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>40 AND AVG_STRG_USE_RT<![CDATA[<=]]>50 THEN 1 END USE_RT50,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>50 AND AVG_STRG_USE_RT<![CDATA[<=]]>60 THEN 1 END USE_RT60,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>60 AND AVG_STRG_USE_RT<![CDATA[<=]]>70 THEN 1 END USE_RT70,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>70 AND AVG_STRG_USE_RT<![CDATA[<=]]>80 THEN 1 END USE_RT80,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>80 AND AVG_STRG_USE_RT<![CDATA[<=]]>90 THEN 1 END USE_RT90,
+					CASE    WHEN AVG_STRG_USE_RT<![CDATA[> ]]>90 THEN 1 END USE_RT100,
+					AVG_STRG_USE_RT
+				FROM(
+					SELECT	SERVC_SEQ,
+							MAX(STRG_TOT_CAPA) STRG_TOT_CAPA,
+							AVG(AVG_STRG_USE_RT) AVG_STRG_USE_RT
+					FROM(
+						SELECT	A.COLCT_YM,
+						        SERVC_SEQ,
+							 	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ  ORDER BY A.COLCT_YM DESC) STRG_TOT_CAPA,
+								A.AVG_STRG_USE_RT
+						 FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+						 WHERE 1=1
+							<if test='regionId!=null and !"".equals(regionId)'>
+								AND B.REGION_ID = #{regionId}
+							</if>
+							<choose>
+								<when test='"1Q".equals(month)'>
+									AND A.COLCT_YM BETWEEN  #{year}||'01' AND #{year}||'03'
+								</when>
+								<when test='"2Q".equals(month)'>
+									AND A.COLCT_YM BETWEEN  #{year}||'04' AND #{year}||'06'
+								</when>
+								<when test='"3Q".equals(month)'>
+									AND A.COLCT_YM BETWEEN  #{year}||'07' AND #{year}||'09'
+								</when>
+								<when test='"4Q".equals(month)'>
+									AND A.COLCT_YM BETWEEN  #{year}||'10' AND #{year}||'12'
+								</when>
+								<when test='"".equals(month)'>
+									AND A.COLCT_YM LIKE #{year}||'%'
+								</when>
+								<otherwise>
+									AND A.COLCT_YM = #{year}||#{month}
+								</otherwise>
+							</choose>
+
+					 ) A
+					  WHERE A.STRG_TOT_CAPA IS NOT NULL
+					GROUP BY SERVC_SEQ
+				) A
+		) A
+		GROUP BY GROUPING SETS((CAPA),())) B
+		ON A.CAPA = B.CAPA
+		ORDER BY A.CAPA
+	</select>
+
+	<select id="selectAxTopStorgeUseRtList" resultType="ncis.dsb.stts.axusert.vo.AxUseRtVo">
+		/*ncis.sql.dsb.stts.axusert.axStorgeUseRt.selectAxTopStorgeUseRtList*/
+		SELECT CASE
+					WHEN CAST(A.CAPA AS CHARACTER VARYING) ='0.5' THEN '0.5이하'
+					WHEN CAST(A.CAPA AS CHARACTER VARYING)='888' THEN '기타'
+					WHEN CAST(A.CAPA AS CHARACTER VARYING)='999' THEN '계'
+					ELSE CAST(A.CAPA AS CHARACTER VARYING)
+				END CAPA,
+				COALESCE(B.USE_RT10,0) USE_RT10,
+				COALESCE(B.USE_RT20,0) USE_RT20,
+				COALESCE(B.USE_RT30,0) USE_RT30,
+				COALESCE(B.USE_RT40,0) USE_RT40,
+				COALESCE(B.USE_RT50,0) USE_RT50,
+				COALESCE(B.USE_RT60,0) USE_RT60,
+				COALESCE(B.USE_RT70,0) USE_RT70,
+				COALESCE(B.USE_RT80,0) USE_RT80,
+				COALESCE(B.USE_RT90,0) USE_RT90,
+				COALESCE(B.USE_RT100,0)  USE_RT100,
+				COALESCE(B.USE_RT10,0)+COALESCE(B.USE_RT20,0)+COALESCE(B.USE_RT30,0)+COALESCE(B.USE_RT40,0)+COALESCE(B.USE_RT50,0)+
+				COALESCE(B.USE_RT60,0)+COALESCE(B.USE_RT70,0)+COALESCE(B.USE_RT80,0)+COALESCE(B.USE_RT90,0)+COALESCE(B.USE_RT100,0) TOTAL
+			FROM
+				(
+				SELECT 0.5 CAPA 	UNION ALL
+				SELECT 1			UNION ALL
+				SELECT 2			UNION ALL
+				SELECT 3			UNION ALL
+				SELECT 4			UNION ALL
+				SELECT 8			UNION ALL
+				SELECT 888			UNION ALL
+				SELECT 999
+				) A
+			LEFT JOIN
+				(SELECT COALESCE(CAPA,999) CAPA,
+						SUM(USE_RT10) USE_RT10,
+						SUM(USE_RT20) USE_RT20,
+						SUM(USE_RT30) USE_RT30,
+						SUM(USE_RT40) USE_RT40,
+						SUM(USE_RT50) USE_RT50,
+						SUM(USE_RT60) USE_RT60,
+						SUM(USE_RT70) USE_RT70,
+						SUM(USE_RT80) USE_RT80,
+						SUM(USE_RT90) USE_RT90,
+						SUM(USE_RT100) USE_RT100
+				FROM (
+					SELECT
+						CASE	WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 0.5 THEN 0.5
+								WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 1 THEN 1
+								WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 2 THEN 2
+								WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 3 THEN 3
+								WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 4 THEN 4
+								WHEN ROUND(STRG_TOT_CAPA/1024/1024/1024/1024 ,0) <![CDATA[<=]]> 8 THEN 8
+								ELSE 888
+						END CAPA,
+						CASE 	WHEN MAX_STRG_USE_RT <![CDATA[<=]]>10 THEN 1 END USE_RT10,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>10 AND MAX_STRG_USE_RT <![CDATA[<=]]>20 THEN 1 END USE_RT20,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>20 AND MAX_STRG_USE_RT <![CDATA[<=]]>30 THEN 1 END USE_RT30,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>30 AND MAX_STRG_USE_RT <![CDATA[<=]]>40 THEN 1 END USE_RT40,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>40 AND MAX_STRG_USE_RT <![CDATA[<=]]>50 THEN 1 END USE_RT50,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>50 AND MAX_STRG_USE_RT <![CDATA[<=]]>60 THEN 1 END USE_RT60,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>60 AND MAX_STRG_USE_RT <![CDATA[<=]]>70 THEN 1 END USE_RT70,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>70 AND MAX_STRG_USE_RT <![CDATA[<=]]>80 THEN 1 END USE_RT80,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>80 AND MAX_STRG_USE_RT <![CDATA[<=]]>90 THEN 1 END USE_RT90,
+						CASE    WHEN MAX_STRG_USE_RT <![CDATA[> ]]>90 THEN 1 END USE_RT100,
+						MAX_STRG_USE_RT
+					FROM
+						(
+						SELECT A.SERVC_SEQ,
+								MAX(A.STRG_TOT_CAPA) STRG_TOT_CAPA,
+								MAX(A.MAX_STRG_USE_RT) MAX_STRG_USE_RT
+						FROM
+							(
+							SELECT	A.COLCT_YM,
+									A.SERVC_SEQ,
+								 	FIRST_VALUE(A.STRG_TOT_CAPA) OVER (PARTITION BY A.SERVC_SEQ  ORDER BY A.COLCT_YM DESC) STRG_TOT_CAPA,
+									A.MAX_STRG_USE_RT
+
+							FROM ST_RX_SERVC_SUM_1MM A LEFT JOIN RC_RSRC_POOL B ON A.RSRC_POOL_ID = B.RSRC_POOL_ID
+							WHERE 1=1
+								<if test='regionId!=null and !"".equals(regionId)'>
+									AND B.REGION_ID = #{regionId}
+								</if>
+								<choose>
+									<when test='"1Q".equals(month)'>
+										AND A.COLCT_YM BETWEEN  #{year}||'01' AND #{year}||'03'
+									</when>
+									<when test='"2Q".equals(month)'>
+										AND A.COLCT_YM BETWEEN  #{year}||'04' AND #{year}||'06'
+									</when>
+									<when test='"3Q".equals(month)'>
+										AND A.COLCT_YM BETWEEN  #{year}||'07' AND #{year}||'09'
+									</when>
+									<when test='"4Q".equals(month)'>
+										AND A.COLCT_YM BETWEEN  #{year}||'10' AND #{year}||'12'
+									</when>
+									<when test='"".equals(month)'>
+										AND A.COLCT_YM LIKE #{year}||'%'
+									</when>
+									<otherwise>
+										AND A.COLCT_YM = #{year}||#{month}
+									</otherwise>
+								</choose>
+
+						 ) A
+					WHERE A.STRG_TOT_CAPA IS NOT NULL
+					GROUP BY A.SERVC_SEQ
+					) A
+				) A
+			GROUP BY GROUPING SETS((CAPA),())) B
+			ON A.CAPA = B.CAPA
+			ORDER BY A.CAPA
+	</select>
+</mapper>

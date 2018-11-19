@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!----------------------------------------------------------------------------------------------------------------------
+                              SGA Solutions - TrustPKI Client Toolkit::TrustWeb Install Page v2.1
+----------------------------------------------------------------------------------------------------------------------->
+<html>
+<head>
+<title>SGA Solutions TrustPKI Client Toolkit - TrustWeb 설치</title>
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true">
+
+<!--SGA Solutions TrustPKI Client Toolkit 공용 스크립트 -->
+<script src="./../SettingForClient/NX_TPKIENT.js"></script>
+<script src="./../SettingForClient/NX_TPKIENT_CALLBACK.js"></script>
+<SCRIPT language="javascript"> 
+var console = window.console || {log:function(){}}; 
+
+
+</script>
+</head>
+<body>
+<center>
+<div id="ActiveX" style='display:block'>
+	<img src='./Install.gif' align='top' usemap='#installmap' border='0' WIDTH='650' HEIGHT='350'>
+</div>
+<div id="NPPlugin" style='display:none'>
+	<img src='./InstallPI.png' align='top' usemap='#installmap' border='0' WIDTH='650' HEIGHT='350'>
+</div>
+
+<script language="javascript">
+var console = window.console || {log:function(){}}; 
+
+
+	
+	document.writeln("<map name='installmap'>");
+	document.writeln("<area shape='rect' coords='242, 245, 408, 272' href='"+TPKIENT_EXE+"'>");
+	document.writeln("</map>");
+
+
+	
+
+</script>
+</center>
+</body>
+</html>

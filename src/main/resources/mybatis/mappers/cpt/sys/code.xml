@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.code">
+
+	<resultMap type="ncis.cmn.vo.TreeNode" id="resultTree">
+		<id property="key" column="CD" javaType="String"/>
+		<result property="title" column="CD_NM"/>
+		<result property="parentKey" column="PARENT_CD" javaType="String"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.sys.code.vo.CodeVo" id="resultCodeVo" extends="ncis.sql.cmn.cmcode.resultCmCode">
+	</resultMap>
+
+	<sql id="search">
+
+		<if test="searchCd != null and !searchCd.isEmpty()">
+			AND CD = #{searchCd}
+		</if>
+		<if test="searchGrpCd != null and !searchGrpCd.isEmpty()">
+			AND GRP_CD = #{searchGrpCd}
+		</if>
+		<if test="searchParentCd != null and !searchParentCd.isEmpty()">
+			AND PARENT_CD = #{searchParentCd}
+		</if>
+		<if test="searchParentGrpCd != null and !searchParentGrpCd.isEmpty()">
+			AND PARENT_GRP_CD = #{searchParentGrpCd}
+		</if>
+
+		<choose>
+			<when test="searchUseYn == null or searchUseYn.isEmpty()">
+				AND USE_YN = 'Y'
+			</when>
+			<otherwise>
+				AND USE_YN = #{searchUseYn}
+			</otherwise>
+		</choose>
+
+		<if test="searchExtra1 != null and !searchExtra1.isEmpty()">
+			AND VAR_VL1 = #{searchExtra1}
+		</if>
+		<if test="searchExtra2 != null and !searchExtra2.isEmpty()">
+			AND VAR_VL2 = #{searchExtra2}
+		</if>
+		<if test="searchExtra3 != null and !searchExtra3.isEmpty()">
+			AND VAR_VL3 = #{searchExtra3}
+		</if>
+		<if test="searchExtra4 != null and !searchExtra4.isEmpty()">
+			AND VAR_VL4 = #{searchExtra4}
+		</if>
+		<if test="searchExtra5 != null and !searchExtra5.isEmpty()">
+			AND VAR_VL5 = #{searchExtra5}
+		</if>
+
+
+		<if test="searchCdNm != null and !searchCdNm.isEmpty()">
+			AND UPPER(CD_NM) LIKE UPPER('%' || #{searchCdNm} || '%')
+		</if>
+	</sql>
+
+	<select id="selectCodeChildList" resultMap="resultCodeVo">
+	/* ncis.sql.cpt.code.selectCodeChildList */
+		SELECT
+			CD  /* 코드 */
+			,GRP_CD  /* 그룹코드 */
+			,PARENT_CD  /* 부모코드 */
+			,PARENT_GRP_CD  /* 부모그룹코드 */
+			,CD_NM  /* 코드명 */
+			,CD_DESC  /* 코드설명 */
+			,CD_LEVEL  /* 코드레벨 */
+			,USE_YN  /* 사용여부 */
+			,CD_ORDER  /* 코드순번 */
+			,REG_DTTM  /* 등록일시 */
+			,REG_USER_ID  /* 등록자ID */
+			,UPDT_DTTM  /* 수정일시 */
+			,UPDT_USER_ID  /* 수정자ID */
+			,VAR_VL1  /* 변수값1 */
+			,VAR_VL2  /* 변수값2 */
+			,VAR_VL3  /* 변수값3 */
+			,VAR_VL4  /* 변수값4 */
+			,VAR_VL5  /* 변수값5 */
+		FROM
+			CM_CODE
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY CD_ORDER
+	</select>
+
+	<select id="selectCodeListTree" resultMap="resultTree" parameterType="java.util.HashMap">
+	/* ncis.sql.cpt.code.selectCodeListTree */
+		WITH RECURSIVE CODE AS (
+				SELECT
+					C.CD,
+					C.GRP_CD,
+					C.PARENT_CD,
+					C.PARENT_GRP_CD,
+					C.CD_NM,
+					C.CD_LEVEL,
+					C.CD_ORDER,
+					C.USE_YN
+				FROM CM_CODE C
+				<where>
+					<choose>
+						<when test="parentCd != null">
+						PARENT_CD = #{parentCd}
+						AND PARENT_GRP_CD = #{parentGrpCd}
+						</when>
+						<otherwise>
+						PARENT_CD = '000'
+						AND PARENT_GRP_CD = '000'
+						</otherwise>
+					</choose>
+				</where>
+			UNION ALL
+				SELECT
+					C.CD,
+					C.GRP_CD,
+					C.PARENT_CD,
+					C.PARENT_GRP_CD,
+					C.CD_NM,
+					C.CD_LEVEL,
+					C.CD_ORDER,
+					C.USE_YN
+				FROM CM_CODE C
+			JOIN CODE ON CODE.CD = C.PARENT_CD AND CODE.GRP_CD = C.PARENT_GRP_CD
+			<where>
+				<choose>
+					<when test="state != null">
+					USE_YN= #{state}
+					</when>
+				</choose>
+			</where>
+		)
+		SELECT
+			CD || '^|^' || GRP_CD AS CD,
+			PARENT_CD || '^|^' || PARENT_GRP_CD AS PARENT_CD,
+			CD_NM
+		FROM CODE
+		ORDER BY CD_LEVEL, CD_ORDER
+	</select>
+
+	<select id="selectCode" resultMap="resultCodeVo">
+	/* ncis.sql.cpt.code.selectCode */
+		SELECT
+			CD  /* 코드 */
+			,GRP_CD  /* 그룹코드 */
+			,PARENT_CD  /* 부모코드 */
+			,PARENT_GRP_CD  /* 부모그룹코드 */
+			,CD_NM  /* 코드명 */
+			,CD_DESC  /* 코드설명 */
+			,CD_LEVEL  /* 코드레벨 */
+			,USE_YN  /* 사용여부 */
+			,CD_ORDER  /* 코드순번 */
+			,REG_DTTM  /* 등록일시 */
+			,REG_USER_ID  /* 등록자ID */
+			,UPDT_DTTM  /* 수정일시 */
+			,UPDT_USER_ID  /* 수정자ID */
+			,VAR_VL1  /* 변수값1 */
+			,VAR_VL2  /* 변수값2 */
+			,VAR_VL3  /* 변수값3 */
+			,VAR_VL4  /* 변수값4 */
+			,VAR_VL5  /* 변수값5 */
+		FROM
+			CM_CODE
+		WHERE
+			CD = #{cd} AND GRP_CD = #{grpCd}
+	</select>
+
+	<select id="selectExistsCd" resultType="Integer">
+	/* ncis.sql.cpt.code.selectExistsCd */
+		SELECT COUNT(*) FROM CM_CODE
+		WHERE
+			CD = #{cd }
+			AND GRP_CD = #{grpCd }
+	</select>
+
+	<select id="selectForUpdate" resultType="java.util.HashMap">
+	/* ncis.sql.cpt.code.selectForUpdate */
+		SELECT CD FROM CM_CODE WHERE PARENT_CD = #{parentCd} AND PARENT_GRP_CD = #{parentGrpCd } FOR UPDATE
+	</select>
+
+	<select id="selectCodeTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.code.selectCodeTotCnt */
+		SELECT COUNT(*) FROM CM_CODE
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectCodeList" resultMap="resultCodeVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		SELECT
+			CD  /* 코드 */
+			,GRP_CD  /* 그룹코드 */
+			,PARENT_CD  /* 부모코드 */
+			,PARENT_GRP_CD  /* 부모그룹코드 */
+			,CD_NM  /* 코드명 */
+			,CD_DESC  /* 코드설명 */
+			,CD_LEVEL  /* 코드레벨 */
+			,USE_YN  /* 사용여부 */
+			,CD_ORDER  /* 코드순번 */
+			,REG_DTTM  /* 등록일시 */
+			,REG_USER_ID  /* 등록자ID */
+			,UPDT_DTTM  /* 수정일시 */
+			,UPDT_USER_ID  /* 수정자ID */
+			,VAR_VL1  /* 변수값1 */
+			,VAR_VL2  /* 변수값2 */
+			,VAR_VL3  /* 변수값3 */
+			,VAR_VL4  /* 변수값4 */
+			,VAR_VL5  /* 변수값5 */
+		FROM CM_CODE
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY CD_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectMaxOrder" resultType="Integer">
+		SELECT MAX(CD_ORDER)
+		FROM CM_CODE
+		WHERE PARENT_CD = #{parentCd} AND PARENT_GRP_CD = #{parentGrpCd }
+	</select>
+
+	<select id="selectCodeListXlsDwnl" resultMap="resultCodeVo">
+		/* NCIS.SQL.CPT.CODE.selectCodeListXlsDwnl */
+		SELECT
+			CD  /* 코드 */
+			,GRP_CD  /* 그룹코드 */
+			,PARENT_CD  /* 부모코드 */
+			,PARENT_GRP_CD  /* 부모그룹코드 */
+			,CD_NM  /* 코드명 */
+			,USE_YN  /* 사용여부 */
+			FROM CM_CODE
+		<where>
+			<include refid="search"/>
+		</where>
+		ORDER BY CD_NM
+	</select>
+
+</mapper>

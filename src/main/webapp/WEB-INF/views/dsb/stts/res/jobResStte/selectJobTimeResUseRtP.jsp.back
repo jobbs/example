@@ -1,0 +1,549 @@
+<%--
+ * copyright 2016 NCIS Cloud Portal System
+ * @description
+ * <pre></pre>
+ *
+ * @author 양정순
+ * @lastmodifier 양정순
+ * @created 2016. 10. 18.
+ * @lastmodified 2016. 10. 18.
+ *
+ * @history
+ * -----------------------------------------------------------
+ * Date         author         ver            Description
+ * -----------------------------------------------------------
+ * 2016. 10. 18.     양정순         v1.0             최초생성
+ *
+ --%>
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="cf" uri="/WEB-INF/tags/cf" %>
+<%@ taglib prefix="menu" uri="/WEB-INF/tags/menu" %>
+<script type="text/javascript" src="<c:url value="/resources/js/chart/chart.js" />"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/common/ncms_common.js" />"></script>
+<script>
+  $(function () {
+
+
+    var cpuAreaChartData = {
+      labels: ["00시", "01시", "02시", "03시", "04시", "05시", "06시","07시","08시","09시","10시","11시","12시","13시","14시","15시","16시","17시","18시","19시","20시","21시","22시","23시"],
+      datasets: [
+		<c:forEach var="vo" items="${cpuList }" varStatus="i">
+			<c:if test="${i.count>1}">
+				,
+			</c:if>
+	        {
+	          label: "<c:out value='${vo.hstNm}'/>",
+	          data: [
+					<c:out value='${vo.useRt00}'/>,<c:out value='${vo.useRt01}'/>,<c:out value='${vo.useRt02}'/>,<c:out value='${vo.useRt03}'/>,<c:out value='${vo.useRt04}'/>,
+					<c:out value='${vo.useRt05}'/>,<c:out value='${vo.useRt06}'/>,<c:out value='${vo.useRt07}'/>,<c:out value='${vo.useRt08}'/>,<c:out value='${vo.useRt09}'/>,
+					<c:out value='${vo.useRt10}'/>,<c:out value='${vo.useRt11}'/>,<c:out value='${vo.useRt12}'/>,<c:out value='${vo.useRt13}'/>,<c:out value='${vo.useRt14}'/>,
+					<c:out value='${vo.useRt15}'/>,<c:out value='${vo.useRt16}'/>,<c:out value='${vo.useRt17}'/>,<c:out value='${vo.useRt18}'/>,<c:out value='${vo.useRt19}'/>,
+					<c:out value='${vo.useRt20}'/>,<c:out value='${vo.useRt21}'/>,<c:out value='${vo.useRt22}'/>,<c:out value='${vo.useRt23}'/>
+	                 ]
+	        }
+        </c:forEach>
+      ]
+    };
+    setChartColor(cpuAreaChartData,'line');
+    var memAreaChartData = {
+    	      labels: ["00시", "01시", "02시", "03시", "04시", "05시", "06시","07시","08시","09시","10시","11시","12시","13시","14시","15시","16시","17시","18시","19시","20시","21시","22시","23시"],
+    	      datasets: [
+				<c:forEach var="vo" items="${memList }" varStatus="i">
+				<c:if test="${i.count>1}">
+					,
+				</c:if>
+				{
+				  label: "<c:out value='${vo.hstNm}'/>",
+				  data: [
+						<c:out value='${vo.useRt00}'/>,<c:out value='${vo.useRt01}'/>,<c:out value='${vo.useRt02}'/>,<c:out value='${vo.useRt03}'/>,<c:out value='${vo.useRt04}'/>,
+						<c:out value='${vo.useRt05}'/>,<c:out value='${vo.useRt06}'/>,<c:out value='${vo.useRt07}'/>,<c:out value='${vo.useRt08}'/>,<c:out value='${vo.useRt09}'/>,
+						<c:out value='${vo.useRt10}'/>,<c:out value='${vo.useRt11}'/>,<c:out value='${vo.useRt12}'/>,<c:out value='${vo.useRt13}'/>,<c:out value='${vo.useRt14}'/>,
+						<c:out value='${vo.useRt15}'/>,<c:out value='${vo.useRt16}'/>,<c:out value='${vo.useRt17}'/>,<c:out value='${vo.useRt18}'/>,<c:out value='${vo.useRt19}'/>,
+						<c:out value='${vo.useRt20}'/>,<c:out value='${vo.useRt21}'/>,<c:out value='${vo.useRt22}'/>,<c:out value='${vo.useRt23}'/>
+				         ]
+				}
+				</c:forEach>
+    	      ]
+    	    };
+    setChartColor(memAreaChartData,'line');
+    var sanAreaChartData = {
+  	      labels: ["00시", "01시", "02시", "03시", "04시", "05시", "06시","07시","08시","09시","10시","11시","12시","13시","14시","15시","16시","17시","18시","19시","20시","21시","22시","23시"],
+  	      datasets: [
+				<c:forEach var="vo" items="${sanList }" varStatus="i">
+				<c:if test="${i.count>1}">
+					,
+				</c:if>
+				{
+				  label: "<c:out value='${vo.hstNm}'/>",
+				  data: [
+						<c:out value='${vo.useRt00}'/>,<c:out value='${vo.useRt01}'/>,<c:out value='${vo.useRt02}'/>,<c:out value='${vo.useRt03}'/>,<c:out value='${vo.useRt04}'/>,
+						<c:out value='${vo.useRt05}'/>,<c:out value='${vo.useRt06}'/>,<c:out value='${vo.useRt07}'/>,<c:out value='${vo.useRt08}'/>,<c:out value='${vo.useRt09}'/>,
+						<c:out value='${vo.useRt10}'/>,<c:out value='${vo.useRt11}'/>,<c:out value='${vo.useRt12}'/>,<c:out value='${vo.useRt13}'/>,<c:out value='${vo.useRt14}'/>,
+						<c:out value='${vo.useRt15}'/>,<c:out value='${vo.useRt16}'/>,<c:out value='${vo.useRt17}'/>,<c:out value='${vo.useRt18}'/>,<c:out value='${vo.useRt19}'/>,
+						<c:out value='${vo.useRt20}'/>,<c:out value='${vo.useRt21}'/>,<c:out value='${vo.useRt22}'/>,<c:out value='${vo.useRt23}'/>
+				         ]
+				}
+				</c:forEach>
+  	      ]
+  	    };
+    setChartColor(sanAreaChartData,'line');
+    var areaChartOptions = {
+      //Boolean - If we should show the scale at all
+      showScale: true,
+      //Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines: false,
+      //String - Colour of the grid lines
+      scaleGridLineColor: "rgba(0,0,0,.05)",
+      //Number - Width of the grid lines
+      scaleGridLineWidth: 1,
+      //Boolean - Whether to show horizontal lines (except X axis)
+      scaleShowHorizontalLines: true,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines: true,
+      //Boolean - Whether the line is curved between points
+      bezierCurve: true,
+      //Number - Tension of the bezier curve between points
+      bezierCurveTension: 0.3,
+      //Boolean - Whether to show a dot for each point
+      pointDot: false,
+      //Number - Radius of each point dot in pixels
+      pointDotRadius: 4,
+      //Number - Pixel width of point dot stroke
+      pointDotStrokeWidth: 1,
+      //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+      pointHitDetectionRadius: 20,
+      //Boolean - Whether to show a stroke for datasets
+      datasetStroke: true,
+      //Number - Pixel width of dataset stroke
+      datasetStrokeWidth: 2,
+      //Boolean - Whether to fill the dataset with a color
+      datasetFill: true,
+      //String - A legend template
+      <%-- legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>", --%>
+      //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+      maintainAspectRatio: true,
+      //Boolean - whether to make the chart responsive to window resizing
+      responsive: true
+    };
+
+
+
+    //-------------
+    //- LINE CHART -
+    //--------------
+    var lineChartCanvas = $("#cpulineChart").get(0).getContext("2d");
+    var lineChart = new Chart(lineChartCanvas);
+    var lineChartOptions = areaChartOptions;
+    lineChartOptions.datasetFill = false;
+    lineChart.Line(cpuAreaChartData, lineChartOptions);
+
+    var memLineChartCanvas = $("#memlineChart").get(0).getContext("2d");
+    var memLineChart = new Chart(memLineChartCanvas);
+    memLineChart.Line(memAreaChartData, lineChartOptions);
+
+    var sanLineChartCanvas = $("#sanlineChart").get(0).getContext("2d");
+    var sanLineChart = new Chart(sanLineChartCanvas);
+    sanLineChart.Line(sanAreaChartData, lineChartOptions);
+
+      });
+</script>
+
+
+
+<aside class="popup-box">
+
+  <!-- section.header의 하위 요소는 h1(타이틀)과 .breadcrumb(이동경로)로 나누어집니다. -->
+  <!-- 컨텐츠 타이틀 -->
+  <section class="content-header">
+    <h1><c:out value="${param.jobNm}"/><small> 자원사용율</small></h1>
+
+  </section><!-- /컨텐츠 타이틀 -->
+
+  <!-- section.content의 하위 요소는 .row → .col → .box 순으로 진행됩니다. -->
+  <section class="content">
+
+    <!-- 수평 요소를 감싸주는 row 요소 -->
+    <div class="row">
+
+      <div class="col-box-50">
+        <div class="box box-top-green">
+          <div class="box-header">
+              <h3 class="box-title">CPU 사용율</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-yellow btn-sm" data-toggle="collapse" data-target="#graph-b"><i class="fa fa-minus"></i></button>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body collapse in" id="graph-b">
+            <div class="chart">
+              <canvas id="cpulineChart" style="height:100px;"></canvas>
+            </div>
+          </div><!-- /box-body -->
+        </div><!-- /box(Line Chart) -->
+        <div class="box box-top-blue">
+          <div class="box-header">
+              <h3 class="box-title">MEM 사용율</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-yellow btn-sm" data-toggle="collapse" data-target="#graph-b"><i class="fa fa-minus"></i></button>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body collapse in" id="graph-b">
+            <div class="chart">
+              <canvas id="memlineChart" style="height:100px;"></canvas>
+            </div>
+          </div><!-- /box-body -->
+        </div><!-- /box(Line Chart) -->
+      </div>
+      <div class="col-box-50">
+        <div class="box box-top-yellow  ">
+          <div class="box-header">
+              <h3 class="box-title">SAN 사용율</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-yellow btn-sm" data-toggle="collapse" data-target="#graph-b"><i class="fa fa-minus"></i></button>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body collapse in" id="graph-b">
+            <div class="chart">
+              <canvas id="sanlineChart" style="height:100px;"></canvas>
+            </div>
+          </div><!-- /box-body -->
+        </div><!-- /box(Line Chart) -->
+        <!-- box(Bar Chart) -->
+
+      </div><!-- /col -->
+
+      <div class="col-box-100">
+        <!-- box : 컨텐츠의 내용을 분류해주는 요소입니다. header(타이틀)와 body, footer로 나누어집니다. -->
+        <!-- box(목록조회 테이블) -->
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">CPU 사용율</h3>
+            <div class="box-tools">
+              <div class="input-group pull-right">
+                <div class="input-group-select">
+                </div>
+                <div class="input-group-btn">
+                </div>
+              </div>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body no-padding">
+              <table class="table table-hover table-center table-striped table-bordered">
+              <caption>CPU 사용율</caption>
+                <colgroup>
+                  <col >
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>VM</th>
+                    <th>00시</th>
+                    <th>01시</th>
+                    <th>02시</th>
+                    <th>03시</th>
+                    <th>04시</th>
+                    <th>05시</th>
+                    <th>06시</th>
+                    <th>07시</th>
+                    <th>08시</th>
+                    <th>09시</th>
+                    <th>10시</th>
+                    <th>11시</th>
+                    <th>12시</th>
+                    <th>13시</th>
+                    <th>14시</th>
+                    <th>15시</th>
+                    <th>16시</th>
+                    <th>17시</th>
+                    <th>18시</th>
+                    <th>19시</th>
+                    <th>20시</th>
+                    <th>21시</th>
+                    <th>22시</th>
+                    <th>23시</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="vo" items="${cpuList }" varStatus="i">
+                <tr>
+                  <td class="alignL"><c:out value="${vo.hstNm}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt00}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt01}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt02}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt03}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt04}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt05}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt06}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt07}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt08}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt09}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt10}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt11}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt12}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt13}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt14}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt15}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt16}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt17}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt18}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt19}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt20}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt21}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt22}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt23}"/></td>
+                </tr>
+                </c:forEach>
+              </tbody>
+            </table>
+          </div><!-- /box-body -->
+
+        </div><!-- /box(목록조회 테이블) -->
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">MEM 사용율</h3>
+            <div class="box-tools">
+              <div class="input-group pull-right">
+                <div class="input-group-select">
+                </div>
+                <div class="input-group-btn">
+                </div>
+              </div>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body no-padding">
+              <table class="table table-hover table-center table-striped table-bordered">
+              <caption>MEM 사용율</caption>
+                <colgroup>
+                  <col >
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>VM</th>
+                    <th>00시</th>
+                    <th>01시</th>
+                    <th>02시</th>
+                    <th>03시</th>
+                    <th>04시</th>
+                    <th>05시</th>
+                    <th>06시</th>
+                    <th>07시</th>
+                    <th>08시</th>
+                    <th>09시</th>
+                    <th>10시</th>
+                    <th>11시</th>
+                    <th>12시</th>
+                    <th>13시</th>
+                    <th>14시</th>
+                    <th>15시</th>
+                    <th>16시</th>
+                    <th>17시</th>
+                    <th>18시</th>
+                    <th>19시</th>
+                    <th>20시</th>
+                    <th>21시</th>
+                    <th>22시</th>
+                    <th>23시</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="vo" items="${memList }" varStatus="i">
+                <tr>
+                  <td class="alignL"><c:out value="${vo.hstNm}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt00}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt01}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt02}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt03}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt04}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt05}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt06}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt07}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt08}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt09}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt10}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt11}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt12}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt13}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt14}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt15}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt16}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt17}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt18}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt19}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt20}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt21}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt22}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt23}"/></td>
+                </tr>
+                </c:forEach>
+
+              </tbody>
+            </table>
+          </div><!-- /box-body -->
+
+        </div><!-- /box(목록조회 테이블) -->
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">SAN 사용율</h3>
+            <div class="box-tools">
+              <div class="input-group pull-right">
+                <div class="input-group-select">
+                </div>
+                <div class="input-group-btn">
+                </div>
+              </div>
+            </div>
+          </div><!-- /box-header -->
+          <div class="box-body no-padding">
+              <table class="table table-hover table-center table-striped table-bordered">
+              <caption>SAN 사용율</caption>
+                <colgroup>
+                  <col >
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+                  <col width="4%">
+
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>VM</th>
+                    <th>00시</th>
+                    <th>01시</th>
+                    <th>02시</th>
+                    <th>03시</th>
+                    <th>04시</th>
+                    <th>05시</th>
+                    <th>06시</th>
+                    <th>07시</th>
+                    <th>08시</th>
+                    <th>09시</th>
+                    <th>10시</th>
+                    <th>11시</th>
+                    <th>12시</th>
+                    <th>13시</th>
+                    <th>14시</th>
+                    <th>15시</th>
+                    <th>16시</th>
+                    <th>17시</th>
+                    <th>18시</th>
+                    <th>19시</th>
+                    <th>20시</th>
+                    <th>21시</th>
+                    <th>22시</th>
+                    <th>23시</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="vo" items="${sanList }" varStatus="i">
+                <tr>
+                  <td class="alignL"><c:out value="${vo.hstNm}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt00}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt01}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt02}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt03}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt04}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt05}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt06}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt07}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt08}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt09}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt10}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt11}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt12}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt13}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt14}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt15}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt16}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt17}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt18}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt19}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt20}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt21}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt22}"/></td>
+                  <td class="alignR"><c:out value="${vo.useRt23}"/></td>
+                </tr>
+               </c:forEach>
+              </tbody>
+            </table>
+          </div><!-- /box-body -->
+
+        </div><!-- /box(목록조회 테이블) -->
+      </div><!-- /col -->
+
+    </div><!-- /row -->
+
+  </section><!-- /컨텐츠 -->
+
+</aside><!-- /Contents Area -->

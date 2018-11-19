@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rnSlb">
+
+	<resultMap id="resultRnSlb" type="ncis.cmn.entity.RnSlb">
+        <result property="vipAddr"     			column="VIP_ADDR"/>  <!-- VIP주소 -->
+        <result property="prtcl"     			column="PRTCL"/>  <!-- 프로토콜 -->
+        <result property="port"     			column="PORT"/>  <!-- 포트 -->
+        <result property="slbTyCd"     			column="SLB_TY_CD"/>  <!-- SLB유형코드 -->
+        <result property="sessMntncTyCd"     	column="SESS_MNTNC_TY_CD"/>  <!-- 세션유지유형코드 -->
+        <result property="sessMntncVl"     		column="SESS_MNTNC_VL"/>  <!-- 세션유지값 -->
+        <result property="statConfrm"     		column="STAT_CONFRM"/>  <!-- 상태확인 -->
+        <result property="statConfrmCycle"    	column="STAT_CONFRM_CYCLE"/>  <!-- 상태확인주기 -->
+        <result property="statConfrmTOut"     	column="STAT_CONFRM_T_OUT"/>  <!-- 상태확인타임아웃 -->
+        <result property="maxTryCnt"     		column="MAX_TRY_CNT"/>  <!-- 최대시도횟수 -->
+        <result property="statConfrmHttpUrl"	column="STAT_CONFRM_HTTP_URL"/>  <!-- 상태확인_HTTP_URL -->
+        <result property="institutionId"     	column="INSTITUTION_ID"/>  <!-- 기관ID -->
+        <result property="vmSeq"     			column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+	</resultMap>
+
+	<insert id="insertRnSlb">
+		/* ncis.sql.cmn.rnSlb.insertRnSlb */
+		INSERT INTO RN_SLB (
+							VIP_ADDR  /* VIP주소 */
+							, PRTCL  /* 프로토콜 */
+							, PORT  /* 포트 */
+							, SLB_TY_CD  /* SLB유형코드 */
+							, SESS_MNTNC_TY_CD  /* 세션유지유형코드 */
+							, SESS_MNTNC_VL  /* 세션유지값 */
+							, STAT_CONFRM  /* 상태확인 */
+							, STAT_CONFRM_CYCLE  /* 상태확인주기 */
+							, STAT_CONFRM_T_OUT  /* 상태확인타임아웃 */
+							, MAX_TRY_CNT  /* 최대시도횟수 */
+							, STAT_CONFRM_HTTP_URL  /* 상태확인_HTTP_URL */
+							, INSTITUTION_ID  /* 기관ID */
+							, VM_SEQ  /* 가상서버SEQ */
+		) VALUES (
+					#{vipAddr}  /* VIP주소 */
+					, #{prtcl}  /* 프로토콜 */
+					, #{port}  /* 포트 */
+					, #{slbTyCd}  /* SLB유형코드 */
+					, #{sessMntncTyCd}  /* 세션유지유형코드 */
+					, #{sessMntncVl}  /* 세션유지값 */
+					, #{statConfrm}  /* 상태확인 */
+					, #{statConfrmCycle}  /* 상태확인주기 */
+					, #{statConfrmTOut}  /* 상태확인타임아웃 */
+					, #{maxTryCnt}  /* 최대시도횟수 */
+					, #{statConfrmHttpUrl}  /* 상태확인_HTTP_URL */
+					, #{institutionId}  /* 기관ID */
+					, #{vmSeq}  /* 가상서버SEQ */
+		)
+	</insert>
+
+	<update id="updateRnSlb">
+		/* ncis.sql.cmn.rnSlb.updateRnSlb */
+		UPDATE RN_SLB
+		SET VIP_ADDR = #{vipAddr}  /* VIP주소 */
+			, PRTCL = #{prtcl}  /* 프로토콜 */
+			, PORT = #{port}  /* 포트 */
+			, SLB_TY_CD = #{slbTyCd}  /* SLB유형코드 */
+			, SESS_MNTNC_TY_CD = #{sessMntncTyCd}  /* 세션유지유형코드 */
+			, SESS_MNTNC_VL = #{sessMntncVl}  /* 세션유지값 */
+			, STAT_CONFRM = #{statConfrm}  /* 상태확인 */
+			, STAT_CONFRM_CYCLE = #{statConfrmCycle}  /* 상태확인주기 */
+			, STAT_CONFRM_T_OUT = #{statConfrmTOut}  /* 상태확인타임아웃 */
+			, MAX_TRY_CNT = #{maxTryCnt}  /* 최대시도횟수 */
+			, STAT_CONFRM_HTTP_URL = #{statConfrmHttpUrl}  /* 상태확인_HTTP_URL */
+			, INSTITUTION_ID = #{institutionId}  /* 기관ID */
+			, VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+		WHERE VIP_ADDR = #{vipAddr}  /* VIP주소 */
+			AND VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+
+	</update>
+<!--
+	<update id="deleteRnSlb">
+		/* ncis.sql.cmn.rnSlb.deleteRnSlb */
+		UPDATE RN_SLB
+		SET DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+			, DEL_DTTM = now()  /* 삭제일시 */
+			, DEL_YN = 'Y'  /* 삭제여부 */
+		WHERE VIP_ADDR = #{vipAddr}  /* VIP주소 */
+			AND VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	</update>
+-->
+<!--
+	<delete id="deleteRnSlb">
+		DELETE FROM RN_SLB
+		WHERE VIP_ADDR = #{vipAddr}  /* VIP주소 */
+			AND VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	</delete>
+-->
+	<update id="mergeRnSlb">
+		/* ncis.sql.cmn.rnSlb.mergeSlb */
+			WITH UPSERT AS (
+			SELECT	#{vipAddr}::text AS VIP_ADDR	 /* VIP주소 */
+				, #{prtcl}::text AS PRTCL	/* 프로토콜 */
+				, #{port} AS PORT
+				, #{slbTyCd}::text AS SLB_TY_CD
+				, #{sessMntncTyCd}::text AS SESS_MNTNC_TY_CD
+				, #{sessMntncVl}::text AS SESS_MNTNC_VL
+				, #{statConfrm}::text AS STAT_CONFRM
+				, #{statConfrmCycle} AS STAT_CONFRM_CYCLE
+				, #{statConfrmTOut} AS STAT_CONFRM_T_OUT
+				, #{maxTryCnt} AS MAX_TRY_CNT
+				, #{statConfrmHttpUrl}::text AS STAT_CONFRM_HTTP_URL
+				, #{institutionId}::text AS INSTITUTION_ID
+				, #{vmSeq} AS VM_SEQ
+		),
+		UPDATE_OPTION AS (
+			UPDATE RN_SLB SLB1
+				SET PRTCL = UPSERT.PRTCL
+					, PORT = UPSERT.PORT
+					, SLB_TY_CD = UPSERT.SLB_TY_CD
+					, SESS_MNTNC_TY_CD = UPSERT.SESS_MNTNC_TY_CD
+					, SESS_MNTNC_VL = UPSERT.SESS_MNTNC_VL
+					, STAT_CONFRM = UPSERT.STAT_CONFRM
+					, STAT_CONFRM_CYCLE = UPSERT.STAT_CONFRM_CYCLE
+					, STAT_CONFRM_T_OUT = UPSERT.STAT_CONFRM_T_OUT
+					, MAX_TRY_CNT = UPSERT.MAX_TRY_CNT
+					, STAT_CONFRM_HTTP_URL = UPSERT.STAT_CONFRM_HTTP_URL
+					, INSTITUTION_ID = UPSERT.INSTITUTION_ID
+			FROM UPSERT
+			 WHERE SLB1.VM_SEQ =  UPSERT.VM_SEQ
+			  AND SLB1.VIP_ADDR = UPSERT.VIP_ADDR
+		)
+		INSERT INTO RN_SLB (VIP_ADDR, PRTCL , PORT, SLB_TY_CD
+							, SESS_MNTNC_TY_CD, SESS_MNTNC_VL, STAT_CONFRM, STAT_CONFRM_CYCLE
+							, STAT_CONFRM_T_OUT, MAX_TRY_CNT, STAT_CONFRM_HTTP_URL, INSTITUTION_ID
+							, VM_SEQ, DEL_YN )
+		SELECT 	UPSERT.VIP_ADDR, UPSERT.PRTCL, UPSERT.PORT, UPSERT.SLB_TY_CD
+				, UPSERT.SESS_MNTNC_TY_CD, UPSERT.SESS_MNTNC_VL, UPSERT.STAT_CONFRM, UPSERT.STAT_CONFRM_CYCLE
+				, UPSERT.STAT_CONFRM_T_OUT, UPSERT.MAX_TRY_CNT, UPSERT.STAT_CONFRM_HTTP_URL, UPSERT.INSTITUTION_ID
+				, UPSERT.VM_SEQ, 'N'
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM RN_SLB AS SLB
+				WHERE SLB.VM_SEQ = UPSERT.VM_SEQ
+				AND SLB.VIP_ADDR = UPSERT.VIP_ADDR
+			)
+	</update>
+
+</mapper>

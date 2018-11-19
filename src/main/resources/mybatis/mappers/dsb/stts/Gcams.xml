@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.gcams">
+
+
+
+
+	<select id="selectWasDailyVstrQtyList" resultType="ncis.dsb.stts.etc.vo.WasVstrQtyVo" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWasVstrQtyList*/
+		SELECT CHECK_DATETIME::DATE::CHARACTER VARYING,
+				OBJ_NAME,
+				ROUND(VALUE3_AVG::NUMERIC,2) AVG_CNCRT_USERT_QTY,
+		        ROUND(VALUE3_MAX::NUMERIC,2) MAX_CNCRT_USERT_QTY,
+		        ROUND(VALUE3_MIN::NUMERIC,2) MIN_CNCRT_USERT_QTY,
+				ROUND(VALUE7_AVG::NUMERIC,2) AVG_DAILY_VSTR_QTY,
+		        ROUND(VALUE7_MAX::NUMERIC) MAX_DAILY_VSTR_QTY,
+		        ROUND(VALUE7_MIN::NUMERIC) MIN_DAILY_VSTR_QTY,
+		        COUNT(1)OVER() CNT
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='REQUEST'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY CHECK_DATETIME,OBJ_NAME
+	</select>
+	<select id="selectWasDailyVstrQtyDateList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWasDailyVstrQtyDateList*/
+		SELECT DISTINCT CHECK_DATETIME::DATE::CHARACTER VARYING
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='REQUEST'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY CHECK_DATETIME
+	</select>
+	<select id="selectWasDailyVstrQtyObjList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWasDailyVstrQtyObjList*/
+		SELECT DISTINCT OBJ_NAME
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='REQUEST'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY OBJ_NAME
+	</select>
+	<select id="selectJobWebWasDbmsList" resultType="ncis.dsb.stts.etc.vo.GcamObjVo" parameterType="ncis.dsb.stts.etc.vo.GcamObjSearchVo">
+		SELECT DISTINCT B.OBJ_NAME, B.OBJ_ID
+		FROM OBJ_RSCTYPE A, OBJ B, OBJ_SVC_MAPPING C
+		WHERE A.MANAGETYPE_ID =#{managetypeId}
+		/*AND A.RSCTYPE_ID ='REQUEST'*/
+		AND A.OBJ_ID = B.OBJ_ID
+		AND B.OBJ_ID = C.OBJ_ID
+		AND C.SERVICE_ID = #{jobId}
+		ORDER BY B.OBJ_NAME
+	</select>
+	<select id="selectWebReqPageIncrList" resultType="ncis.dsb.stts.etc.vo.WebReqPageQtyVo" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWebReqPageIncrList*/
+		SELECT 	CHECK_DATETIME::DATE::CHARACTER VARYING,
+				OBJ_NAME,
+				SUM(VALUE1_MAX) REQ_PAGE_MAX,
+				SUM(VALUE1_MIN) REQ_PAGE_MIN,
+				SUM(VALUE1_AVG) REQ_PAGE_AVG,
+				SUM(VALUE2_MAX) HIT_MAX,
+				SUM(VALUE2_MIN) HIT_MIN,
+				SUM(VALUE2_AVG) HIT_AVG,
+		        COUNT(1)OVER() CNT
+		FROM 	RSCTYPE_STAT_DAY A,
+				OBJ_RSCTYPE_KEY B,
+				OBJ C,
+				OBJ_SVC_MAPPING D,
+				SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='STATISTIC'
+		AND B.MANAGETYPE_ID = 'WEB'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		GROUP BY CHECK_DATETIME::DATE::CHARACTER VARYING,	OBJ_NAME
+		ORDER BY CHECK_DATETIME, OBJ_NAME
+	</select>
+	<select id="selectWebReqPageIncrDateList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWebReqPageIncrDateList*/
+		SELECT DISTINCT CHECK_DATETIME::DATE::CHARACTER VARYING
+		FROM RSCTYPE_STAT_DAY A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='STATISTIC'
+		AND B.MANAGETYPE_ID = 'WEB'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY CHECK_DATETIME
+	</select>
+	<select id="selectWebReqPageIncrObjList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectWebReqPageIncrObjList*/
+		SELECT DISTINCT OBJ_NAME
+		FROM RSCTYPE_STAT_DAY A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+		AND E.SERVICE_ID = #{jobId}
+		<if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND B.RSCTYPE_ID ='STATISTIC'
+		AND B.MANAGETYPE_ID = 'WEB'
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY OBJ_NAME
+	</select>
+
+	<select id="selectDbmsSpaceUseRtList" resultType="ncis.dsb.stts.etc.vo.DbmsSpaceUseRtVo" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectDbmsSpaceUseRtList*/
+		SELECT CHECK_DATETIME::DATE::CHARACTER VARYING,
+				OBJ_NAME,
+                MAX(CASE WHEN RSCTYPE_ID ='PERF' THEN VALUE3_AVG END) DB_BUFFER_CACHE_AVG,
+                MAX(CASE WHEN RSCTYPE_ID ='PERF' THEN VALUE3_MAX END) DB_BUFFER_CACHE_MAX,
+                MAX(CASE WHEN RSCTYPE_ID ='PERF' THEN VALUE3_MIN END) DB_BUFFER_CACHE_MIN,
+                MAX(CASE WHEN RSCTYPE_ID ='TABLESPACE' THEN VALUE4_AVG END) DB_SPACE_USE_RT_AVG,
+                MAX(CASE WHEN RSCTYPE_ID ='TABLESPACE' THEN VALUE4_MAX END) DB_SPACE_USE_RT_MAX,
+                MAX(CASE WHEN RSCTYPE_ID ='TABLESPACE' THEN VALUE4_MIN END) DB_SPACE_USE_RT_MIN,
+                COUNT(1)OVER() CNT
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+        AND B.MANAGETYPE_ID = 'DBMS'
+		AND E.SERVICE_ID = #{jobId}
+		AND B.RSCTYPE_ID  IN ('TABLESPACE','PERF')
+        AND B.RSCTYPE_KEY_name ='Total'
+        <if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+        GROUP BY CHECK_DATETIME::DATE::CHARACTER VARYING,
+				OBJ_NAME
+		ORDER BY CHECK_DATETIME,OBJ_NAME
+	</select>
+	<select id="selectDbmsSpaceUseRtDateList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectDbmsSpaceUseRtDateList*/
+		SELECT DISTINCT CHECK_DATETIME::DATE::CHARACTER VARYING
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+        AND B.MANAGETYPE_ID = 'DBMS'
+		AND E.SERVICE_ID = #{jobId}
+		AND B.RSCTYPE_ID  IN ('TABLESPACE','PERF')
+        AND B.RSCTYPE_KEY_name ='Total'
+        <if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY CHECK_DATETIME
+	</select>
+	<select id="selectDbmsSpaceUseRtObjList" resultType="String" parameterType="ncis.dsb.stts.etc.vo.GcamsSearchVo">
+		/*ncis.sql.dsb.stts.gcams.selectDbmsSpaceUseRtObjList*/
+		SELECT DISTINCT OBJ_NAME
+		FROM RSCTYPE_STAT_MONTH A, OBJ_RSCTYPE_KEY B, OBJ C, OBJ_SVC_MAPPING D, SVC E
+		WHERE 1=1
+		AND C.OBJ_ID = B.OBJ_ID
+		AND C.OBJ_ID = D.OBJ_ID
+		AND D.SERVICE_ID = E.SERVICE_ID
+		AND B.HASHKEY_ID = A.HASHKEY_ID
+        AND B.MANAGETYPE_ID = 'DBMS'
+		AND E.SERVICE_ID = #{jobId}
+		AND B.RSCTYPE_ID  IN ('TABLESPACE','PERF')
+        AND B.RSCTYPE_KEY_name ='Total'
+        <if test='objId!=null and !"".equals(objId)'>
+			AND C.OBJ_ID =#{objId}
+		</if>
+		AND CHECK_DATETIME BETWEEN (#{strtDt}||' 00:00:00')::TIMESTAMP AND (#{endDt}||' 23:59:59')::TIMESTAMP
+		ORDER BY OBJ_NAME
+	</select>
+</mapper>

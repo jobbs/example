@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst">
+
+	<resultMap type="ncis.dsb.stts.rsrcoptz.vo.WthdrwStPerInstVo" id="resultWthdrwStPerInstVo">
+		<result property="institutionId"       column="institution_id"/>
+		<result property="institutionNm"       column="institution_nm"/>
+		<result property="regionId"            column="region_id"/>
+		<result property="regionNm"          column="region_nm"/>
+		<result property="returnReqQtyVm"    column="return_req_qty_vm"/>
+		<result property="returnReqQtyVcore" column="return_req_qty_vcore"/>
+		<result property="returnReqQtyMem"   column="return_req_qty_mem"/>
+		<result property="returnReqQtySan"   column="return_req_qty_san"/>
+		<result property="returnQtyVm"        column="return_qty_vm"/>
+		<result property="returnQtyVcore"     column="return_qty_vcore"/>
+		<result property="returnQtyMem"       column="return_qty_mem"/>
+		<result property="returnQtySan"       column="return_qty_san"/>
+		<result property="returnRtVm"         column="return_rt_vm"/>
+		<result property="returnRtVcore"      column="return_rt_vcore"/>
+		<result property="returnRtMem"        column="return_rt_mem"/>
+		<result property="returnRtSan"        column="return_rt_san"/>
+	</resultMap>
+
+	<resultMap type="ncis.dsb.stts.rsrcoptz.vo.WthdrwStPerInstVo" id="resultWthdrwStPerInstViewVo">
+		<result property="institutionId"       column="institution_id"/>
+		<result property="institutionNm"       column="institution_nm"/>
+		<result property="stdrYr"            column="stdr_yr"/>
+		<result property="quarter"            column="quarter"/>
+		<result property="regionId"            column="region_id"/>
+		<result property="returnReqQtyVm"    column="return_req_qty_vm"/>
+		<result property="returnReqQtyVcore" column="return_req_qty_vcore"/>
+		<result property="returnReqQtyMem"   column="return_req_qty_mem"/>
+		<result property="returnReqQtySan"   column="return_req_qty_san"/>
+		<result property="returnQtyVm"        column="return_qty_vm"/>
+		<result property="returnQtyVcore"     column="return_qty_vcore"/>
+		<result property="returnQtyMem"       column="return_qty_mem"/>
+		<result property="returnQtySan"       column="return_qty_san"/>
+		<result property="returnRtVm"         column="return_rt_vm"/>
+		<result property="returnRtVcore"      column="return_rt_vcore"/>
+		<result property="returnRtMem"        column="return_rt_mem"/>
+		<result property="returnRtSan"        column="return_rt_san"/>
+	</resultMap>
+
+	<select id="selectWthdrwStPerInstTotCnt" resultType="Integer">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst.selectWthdrwStPerInstTotCnt */
+		select count(*)
+
+		     from st_instt_rsrc_withdraw a left join cm_institution b on a.institution_id = b.institution_id
+		   where 1=1
+		         and a.stdr_yr = #{year}
+		         <if test='quarter!=null and !"".equals(quarter)'>
+		           and a.quarter= #{quarter}
+		         </if>
+		         <if test="region != null and !region.isEmpty()">
+				       <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+				       	   #{item}
+				        </foreach>
+			      </if>
+			      <if test='institutionId!=null and !"".equals(institutionId)'>
+		            and a.institution_id = #{institutionId}
+		          </if>
+	</select>
+
+	<select id="selectWthdrwStPerInstList" resultMap="resultWthdrwStPerInstVo">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst.selectWthdrwStPerInstList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+
+		  select row_number() over(order by b.institution_nm) rn,
+                 a.institution_id,
+
+		         b.institution_nm,
+
+		         sum(a.return_req_qty_vm) return_req_qty_vm,
+		         sum(a.return_req_qty_vcore) return_req_qty_vcore,
+		         sum(a.return_req_qty_mem) return_req_qty_mem,
+		         sum(a.return_req_qty_san) return_req_qty_san,
+		         sum(a.return_qty_vm) return_qty_vm,
+		         sum(a.return_qty_vcore) return_qty_vcore,
+		         sum(a.return_qty_mem) return_qty_mem,
+		         sum(a.return_qty_san) return_qty_san,
+		         case when sum(a.return_req_qty_vm) = 0 then 0 else round(sum(a.return_qty_vm)/sum(a.return_req_qty_vm)::numeric*100,2) end return_rt_vm,
+		         case when sum(a.return_req_qty_vcore) = 0 then 0 else round(sum(a.return_qty_vcore)/sum(a.return_req_qty_vcore)::numeric*100 ,2) end return_rt_vcore,
+		         case when sum(a.return_req_qty_mem) = 0 then 0 else round(sum(a.return_qty_mem)/sum(a.return_req_qty_mem)::numeric*100 ,2) end return_rt_mem,
+		         case when sum(a.return_req_qty_san) = 0 then 0 else round(sum(a.return_qty_san)/sum(a.return_req_qty_san)::numeric*100 ,2) end return_rt_san
+
+		     from st_instt_rsrc_withdraw a left join cm_institution b on a.institution_id = b.institution_id
+
+		   where 1=1
+		         <if test='year!=null and !"".equals(year)'>
+		           and a.stdr_yr = #{year}
+		         </if>
+		         <if test='quarter!=null and !"".equals(quarter)'>
+		           and a.quarter= #{quarter}
+		         </if>
+		         <if test="region != null and !region.isEmpty()">
+				       <foreach collection="region" open="AND a.region_id IN(" close=")" separator="," item="item">
+				       	   #{item}
+				        </foreach>
+			      </if>
+			      <if test='institutionId!=null and !"".equals(institutionId)'>
+		            and a.institution_id = #{institutionId}
+		          </if>
+		      group by a.institution_id,
+	                   b.institution_nm
+
+
+              order by institution_nm
+
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectWthdrwStPerInstView" resultMap="resultWthdrwStPerInstViewVo">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst.selectWthdrwStPerInstView */
+
+		  select a.institution_id,
+		         b.institution_nm,
+		         a.stdr_yr,
+		         a.quarter,
+		         a.region_id,
+		         a.return_req_qty_vm,
+		         a.return_req_qty_vcore,
+		         a.return_req_qty_mem,
+		         a.return_req_qty_san,
+		         a.return_qty_vm,
+		         a.return_qty_vcore,
+		         a.return_qty_mem,
+		         a.return_qty_san,
+		         case when a.return_req_qty_vm = 0 then 0 else round(a.return_qty_vm/a.return_req_qty_vm::numeric*100,2) end return_rt_vm,
+				 case when a.return_req_qty_vcore = 0 then 0 else round(a.return_qty_vcore/a.return_req_qty_vcore::numeric*100,2) end return_rt_vcore,
+				 case when a.return_req_qty_mem = 0 then 0 else round(a.return_qty_mem/a.return_req_qty_mem::numeric*100,2) end return_rt_mem,
+				 case when a.return_req_qty_san = 0 then 0 else round(a.return_qty_san/a.return_req_qty_san::numeric*100,2) end return_rt_san
+
+		     from st_instt_rsrc_withdraw a left join cm_institution b on a.institution_id = b.institution_id
+		   where 1=1
+		         <if test='year!=null and !"".equals(year)'>
+		           and a.stdr_yr = #{year}
+		         </if>
+		         <if test='quarter!=null and !"".equals(quarter)'>
+		           and a.quarter= #{quarter}
+		         </if>
+		          <if test='regionId!=null and !"".equals(regionId)'>
+		            and a.region_id = #{regionId}
+		          </if>
+
+			      <if test='institutionId!=null and !"".equals(institutionId)'>
+		            and a.institution_id = #{institutionId}
+		          </if>
+
+              order by quarter
+
+
+	</select>
+
+	<delete id="deleteWthdrwStPerInst">
+		/* ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst.deleteWthdrwStPerInst */
+
+		DELETE FROM  st_instt_rsrc_withdraw
+		WHERE 1=1
+		<if test='stdrYr!=null and !"".equals(stdrYr)'>
+		      and stdr_yr =#{stdrYr}
+		</if>
+
+		<if test='quarter!=null and !"".equals(quarter)'>
+		      and quarter = #{quarter}
+		</if>
+
+		<if test='institutionId!=null and !"".equals(institutionId)'>
+		  	  AND INSTITUTION_ID = #{institutionId}
+		</if>
+
+		<if test='regionId!=null and !"".equals(regionId)'>
+		      and region_id = #{regionId}
+	    </if>
+	</delete>
+
+
+
+
+
+	<insert id="insertWthdrwStPerInst">
+	/* sqlid : ncis.sql.dsb.stts.rsrcoptz.wthdrwStPerInst.insertWthdrwStPerInst */
+
+		WITH UPSERT AS (
+			SELECT
+				#{institutionId}::text AS institution_id,
+				#{regionId}::text AS region_id,
+				#{stdrYr}::text AS stdr_yr,
+				#{quarter}::text AS quarter,
+				#{returnReqQtyVm} AS RETURN_REQ_QTY_VM,
+				#{returnReqQtyVcore} AS RETURN_REQ_QTY_VCORE,
+				#{returnReqQtyMem} AS RETURN_REQ_QTY_MEM,
+				#{returnReqQtySan} AS RETURN_REQ_QTY_SAN,
+				#{returnQtyVm} AS RETURN_QTY_VM,
+				#{returnQtyVcore} AS RETURN_QTY_VCORE,
+				#{returnQtyMem} AS RETURN_QTY_MEM,
+				#{returnQtySan} AS RETURN_QTY_SAN
+
+
+		),
+
+		UPDATE_OPTION AS (
+			UPDATE st_instt_rsrc_withdraw AS insttWithdraw
+				SET
+				    region_id = UPSERT.region_id,
+					return_req_qty_vm = UPSERT.return_req_qty_vm,
+					return_req_qty_vcore = UPSERT.return_req_qty_vcore,
+					return_req_qty_mem = UPSERT.return_req_qty_mem,
+					return_req_qty_san = UPSERT.return_req_qty_san,
+					return_qty_vm = UPSERT.return_qty_vm,
+					return_qty_vcore = UPSERT.return_qty_vcore,
+					return_qty_mem = UPSERT.return_qty_mem,
+					return_qty_san = UPSERT.return_qty_san
+
+
+			FROM UPSERT
+			WHERE
+			    insttWithdraw.stdr_yr=UPSERT.stdr_yr
+				and insttWithdraw.quarter=UPSERT.quarter
+				and insttWithdraw.institution_id=UPSERT.institution_id
+				and insttWithdraw.region_id=UPSERT.region_id
+
+		)
+		INSERT INTO st_instt_rsrc_withdraw (
+			institution_id, region_id, stdr_yr, quarter, return_req_qty_vm, return_req_qty_vcore, return_req_qty_mem, return_req_qty_san,
+			return_qty_vm, return_qty_vcore, return_qty_mem, return_qty_san
+		)
+		SELECT
+			institution_id, region_id, stdr_yr, quarter, return_req_qty_vm, return_req_qty_vcore, return_req_qty_mem, return_req_qty_san,
+			return_qty_vm, return_qty_vcore, return_qty_mem, return_qty_san
+		FROM UPSERT
+		WHERE
+			NOT EXISTS (
+				SELECT 1
+				FROM st_instt_rsrc_withdraw AS insttWithdraw
+				WHERE  insttWithdraw.stdr_yr = UPSERT.stdr_yr
+				       and insttWithdraw.quarter = UPSERT.quarter
+				       and insttWithdraw.institution_id=UPSERT.institution_id
+				       and insttWithdraw.region_id=UPSERT.region_id
+
+			)
+	</insert>
+
+</mapper>

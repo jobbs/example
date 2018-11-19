@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rrProcssVar">
+
+	<resultMap id="resultRrProcssVar" type="ncis.cmn.entity.RrProcssVar">
+        <result property="varSeq"     column="VAR_SEQ"/> <!-- 변수SEQ -->
+        <result property="varNm"     column="VAR_NM"/>  <!-- 변수명 -->
+        <result property="varVl"     column="VAR_VL"/>  <!-- 변수값 -->
+        <result property="varTyCd"     column="VAR_TY_CD"/>  <!-- 변수유형코드 -->
+        <result property="valVlClCd"     column="VAL_VL_CL_CD"/>  <!-- 변수구분코드 -->
+        <result property="procssSeq"     column="PROCSS_SEQ"/>  <!-- 프로세스ID -->
+	</resultMap>
+
+	<!-- 프로세스변수 등록 -->
+	<insert id="insertRrProcssVar">
+	INSERT INTO RR_PROCSS_VAR (
+	             VAR_SEQ  /* 변수SEQ */
+	           , VAR_NM  /* 변수명 */
+	           , VAR_VL  /* 변수값 */
+	           , VAR_TY_CD  /* 변수유형코드 */
+	           , VAL_VL_CL_CD  /* 변수구분코드 */
+	           , PROCSS_SEQ  /* 프로세스ID */
+	) VALUES (
+	           #{varSeq}  /* 변수SEQ */
+	         , #{varNm}  /* 변수명 */
+	         , #{varVl}  /* 변수값 */
+	         , #{varTyCd}  /* 변수유형코드 */
+	         , #{valVlClCd}  /* 변수구분코드 */
+	         , #{procssSeq}  /* 프로세스ID */
+	)
+	</insert>
+
+	<!-- 프로세스변수 수정 -->
+	<update id="updateRrProcssVar">
+	UPDATE RR_PROCSS_VAR
+	         SET VAR_NM = #{varNm}  /* 변수명 */
+	           , VAR_VL = #{varVl}  /* 변수값 */
+	           , VAR_TY_CD = #{varTyCd}  /* 변수유형코드 */
+	           , VAL_VL_CL_CD = #{valVlClCd}  /* 변수구분코드 */
+	           , PROCSS_SEQ = #{procssSeq}  /* 프로세스ID */
+         WHERE VAR_SEQ = #{varSeq}  /* 변수SEQ */
+
+	</update>
+
+	<!-- 프로세스변수 삭제 -->
+	<delete id="deleteRrProcssVar">
+	DELETE FROM RR_PROCSS_VAR
+         WHERE VAR_SEQ = #{varSeq}  /* 변수SEQ */
+
+	</delete>
+
+</mapper>

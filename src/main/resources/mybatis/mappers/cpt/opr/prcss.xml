@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.opr.catalg">
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.PrcssVo" id="resultPrcssVo">
+		<result property="procssSeq" column="PROCSS_SEQ"/>
+		<result property="procssNm" column="PROCSS_NM"/>
+		<result property="regDt" column="REG_DT"/>
+		<result property="prcssDc" column="PRCSS_DC"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+		<result property="regUserNm" column="REG_USER_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.UnitJobVo" id="resultUnitJobVo">
+		<result property="procssSeq" column="PROCSS_SEQ"/>
+		<result property="uJobId" column="U_JOB_ID"/>
+		<result property="uJobNm" column="U_JOB_NM"/>
+		<result property="uJobDc" column="U_JOB_DC"/>
+		<result property="uJobTyCd" column="U_JOB_TY_CD"/>
+		<result property="intfcUrl" column="INTFC_URL"/>
+		<result property="intfcParamtr" column="INTFC_PARAMTR"/>
+		<result property="uJobTyNm" column="U_JOB_TY_NM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.UnitJobRelateVo" id="resultUnitJobRelateVo">
+		<result property="uJobRelateSeq" column="U_JOB_RELATE_SEQ"/>
+		<result property="strtUJobId" column="STRT_U_JOB_ID"/>
+		<result property="endUJobId" column="END_U_JOB_ID"/>
+		<result property="endUJobCndVarId" column="END_U_JOB_CND_VAR_ID"/>
+		<result property="endUJobCndVarVl" column="END_U_JOB_CND_VAR_VL"/>
+		<result property="dc" column="DC"/>
+		<result property="regDt" column="REG_DT"/>
+		<result property="procssSeq" column="PROCSS_SEQ"/>
+		<result property="uJobRelateNm" column="U_JOB_RELATE_NM"/>
+		<result property="uJobRelateTyCd" column="U_JOB_RELATE_TY_CD"/>
+		<result property="uJobRelateTyNm" column="U_JOB_RELATE_TY_NM"/>
+		<result property="regDttm" column="REG_DTTM"/>
+		<result property="dc" column="DC"/>
+		<result property="regUserId" 	column="REG_USER_ID"/>
+		<result property="updtUserId" column="UPDT_USER_ID"/>
+		<result property="updtDttm" column="UPDT_DTTM"/>
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.catalg.vo.ProcssVarVo" id="resultProcssVarVo">
+		<result property="varNm" column="VAR_NM"/>
+		<result property="varTyCd" column="VAR_TY_CD"/>
+		<result property="varTyCdNm" column="VAR_TY_CD_NM"/>
+		<result property="varVl" column="VAR_VL"/>
+		<result property="varDc" column="VAR_DC"/>
+	</resultMap>
+
+	<sql id="search">
+		<if test="searchPrpcssNm != null and !searchPrpcssNm.isEmpty()">
+			AND PROCSS_NM LIKE '%' || #{searchPrpcssNm} || '%'
+		</if>
+	</sql>
+
+	<select id="selectPrcssListTotCnt" resultType="Integer">
+	/* ncis.sql.cpt.opr.catalg.selectPrcssListTotCnt */
+		SELECT
+			COUNT(*)
+		FROM RR_PROCSS
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectPrcssList" resultMap="resultPrcssVo">
+	/* ncis.sql.cpt.opr.catalg.selectPrcssList */
+		<include refid="ncis.cmn.queryForPagingHeader" />
+			SELECT
+				PROCSS_SEQ,
+				PROCSS_NM,
+				TO_CHAR(REG_DTTM,'YYYY-MM-DD') AS REG_DT,
+				PRCSS_DC,
+				REG_USER_ID,
+				(SELECT A.USER_NM FROM CM_USR A WHERE A.USER_ID = REG_USER_ID ) AS REG_USER_NM
+			FROM RR_PROCSS
+			<where>
+				<include refid="search"/>
+			</where>
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectPrcss" resultMap="resultPrcssVo">
+	/* ncis.sql.cpt.opr.catalg.selectPrcss */
+			SELECT
+				PROCSS_SEQ,
+				PROCSS_NM,
+				TO_CHAR(REG_DTTM,'YYYY-MM-DD HH24:MI:SS') AS REG_DT,
+				PRCSS_DC,
+				REG_USER_ID,
+				(SELECT A.USER_NM FROM CM_USR A WHERE A.USER_ID = REG_USER_ID ) AS REG_USER_NM
+			FROM RR_PROCSS
+				WHERE PROCSS_SEQ = #{procssSeq}
+	</select>
+
+	<select id="unitJobList" resultMap="resultUnitJobVo">
+	/* ncis.sql.cpt.opr.catalg.unitJobList */
+			SELECT
+				PROCSS_SEQ,
+				U_JOB_ID,
+				U_JOB_NM,
+				U_JOB_DC,
+				U_JOB_TY_CD,
+				(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD='130' AND CD = RR_UNIT_JOB.U_JOB_TY_CD) U_JOB_TY_NM,
+				INTFC_URL,
+				INTFC_PARAMTR
+			FROM RR_UNIT_JOB
+		   WHERE PROCSS_SEQ = #{procssSeq}
+		ORDER BY U_JOB_SEQ ASC
+	</select>
+
+	<select id="unitJobRelateList" resultMap="resultUnitJobRelateVo">
+	/* ncis.sql.cpt.opr.catalg.unitJobRelateList */
+			SELECT
+				U_JOB_RELATE_SEQ,
+				STRT_U_JOB_ID,
+				END_U_JOB_ID,
+				END_U_JOB_CND_VAR_ID,
+				END_U_JOB_CND_VAR_VL,
+				DC,
+				REG_DTTM AS REG_DT,
+				PROCSS_SEQ
+			FROM RR_UNIT_JOB_RELATE
+		   WHERE PROCSS_SEQ = #{procssSeq}
+		ORDER BY STRT_U_JOB_ID ASC
+	</select>
+
+	<select id="procssVarList" resultMap="resultProcssVarVo">
+	/* ncis.sql.cpt.opr.catalg.procssVarList */
+			SELECT
+				VAR_NM,
+				VAR_TY_CD,
+				(SELECT CD_NM FROM CM_CODE WHERE PARENT_CD='145' AND CM_CODE.CD = RR_PROCSS_VAR.VAR_TY_CD) AS VAR_TY_CD_NM,
+				VAR_VL,
+				VAR_DC
+			FROM RR_PROCSS_VAR
+				WHERE PROCSS_SEQ = #{procssSeq}
+	</select>
+
+	<select id="selectPrcssExcelList" resultMap="resultPrcssVo">
+	/* ncis.sql.cpt.opr.catalg.selectPrcssExcelList */
+			SELECT
+				PROCSS_SEQ,
+				PROCSS_NM,
+				TO_CHAR(REG_DTTM,'YYYY-MM-DD') AS REG_DT,
+				PRCSS_DC,
+				REG_USER_ID,
+				(SELECT A.USER_NM FROM CM_USR A WHERE A.USER_ID = REG_USER_ID ) AS REG_USER_NM
+			FROM RR_PROCSS
+			<where>
+				<include refid="search"/>
+			</where>
+	</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.cmBtchWrk">
+
+	<resultMap id="resultCmBtchWrk" type="ncis.cmn.entity.CmBtchWrk">
+        <result property="btchWrkSeq"     column="BTCH_WRK_SEQ"/>  <!-- 배치작업SEQ -->
+        <result property="btchWrkId"     column="BTCH_WRK_ID"/>  <!-- 배치 JOB ID -->
+        <result property="btchWrkNm"     column="BTCH_WRK_NM"/>  <!-- 배치작업명 -->
+        <result property="cycle"     column="CYCLE"/>  <!-- 주기 -->
+        <result property="cycleDirectWrite"     column="CYCLE_DIRECT_WRITE"/>  <!-- 주기 직접입력-->
+        <result property="exeTimeMonth"     column="EXE_TIME_MONTH"/>  <!-- 실행시점월 -->
+        <result property="exeTimeDay"     column="EXE_TIME_DAY"/>  <!-- 실행시점일 -->
+        <result property="exeTimeHour"     column="EXE_TIME_HOUR"/>  <!-- 실행시점시 -->
+        <result property="exeTimeMinute"     column="EXE_TIME_MINUTE"/>  <!-- 실행시점분 -->
+        <result property="timeType"     column="TIME_TYPE"/>  <!-- 주기/시점 구분 -->
+        <result property="stat"     column="STAT"/>  <!-- 상태 -->
+        <result property="btchWrkFileNm"     column="BTCH_WRK_FILE_NM"/>  <!-- 배치 파일 명 -->
+        <result property="exeRsrvDttm"     column="EXE_RSRV_DTTM"/>  <!-- 실행예약일시 -->
+        <result property="stopRsrvDttm"     column="STOP_RSRV_DTTM"/>  <!-- 정지예약일시 -->
+        <result property="exeOptn"     column="EXE_OPTN"/>  <!-- 실행옵션 -->
+        <result property="strtDttm"     column="STRT_DTTM"/>  <!-- 실행일시 -->
+        <result property="endDttm"     column="END_DTTM"/>  <!-- 2017.11.20 adding 종료일시 -->
+        <result property="lastStat"     column="LAST_STAT"/>  <!-- 종료일시 -->
+        <result property="exitCd"     column="EXIT_CD"/>  <!-- 실행옵션 -->
+        <result property="dc"     column="DC"/>  <!-- 설명 -->
+        <result property="regUserId"     column="REG_USER_ID"/>  <!-- 등록사용자ID -->
+        <result property="regDt"     column="REG_DT"/>  <!-- 등록일자 -->
+	</resultMap>
+
+	<!-- 배치작업 등록 -->
+	<insert id="insertCmBtchWrk">
+	/* ncis.sql.cmn.cmBtchWrk.insertCmBtchWrk */
+	<selectKey order="BEFORE" keyProperty="btchWrkSeq" resultType="Long">
+			SELECT nextval('BTCH_WRK_SEQ')
+	</selectKey>
+	INSERT INTO CM_BTCH_WRK (
+	             BTCH_WRK_SEQ  /* 배치작업SEQ */
+	           , BTCH_WRK_ID  /* 배치 JOB ID */
+	           , BTCH_WRK_NM  /* 배치작업명 */
+	           , CYCLE  /* 주기 */
+	           , CYCLE_DIRECT_WRITE  /* 주기직접입력 */
+	           , EXE_TIME_MONTH  /* 실행시점월 */
+	           , EXE_TIME_DAY  /* 실행시점일 */
+	           , EXE_TIME_HOUR  /* 실행시점시 */
+	           , EXE_TIME_MINUTE  /* 실행시점분 */
+	           , TIME_TYPE  /* 주기/시점 구분 */
+	           , STAT  /* 상태 */
+	           , BTCH_WRK_FILE_NM  /* 배치 파일 명 */
+	           , EXE_RSRV_DTTM  /* 실행예약일시 */
+	           , STOP_RSRV_DTTM  /* 정지예약일시 */
+	           , EXE_OPTN  /* 실행옵션 */
+	           , DC  /* 설명 */
+	           , REG_USER_ID  /* 등록사용자ID */
+	           , REG_DT  /* 등록일자 */
+	) VALUES (
+	           #{btchWrkSeq}  /* 배치작업SEQ */
+	         , #{btchWrkId}
+	         , #{btchWrkNm}  /* 배치작업명 */
+	         , #{cycle}  /* 주기 */
+	         , #{cycleDirectWrite}  /* 주기직접입력*/
+	         , #{exeTimeMonth} /* 실행시점월 */
+	         , #{exeTimeDay} /* 실행시점일 */
+	         , #{exeTimeHour} /* 실행시점시 */
+	         , #{exeTimeMinute} /* 실행시점분 */
+	         , #{timeType}  /* 주기/시점 구분 */
+	         , #{stat}  /* 상태 */
+	         , #{btchWrkFileNm}  /* 배치 파일 명 */
+	         , #{exeRsrvDttm}  /* 실행예약일시 */
+	         , #{stopRsrvDttm}  /* 정지예약일시 */
+	         , #{exeOptn}  /* 실행옵션 */
+	         , #{dc}  /* 설명 */
+	         , #{regUserId}  /* 등록사용자ID */
+	         , now()  /* 등록일자 */
+	)
+	</insert>
+
+	<!-- 배치작업 수정 -->
+	<update id="updateCmBtchWrk">
+	/* ncis.sql.cmn.cmBtchWrk.updateCmBtchWrk */
+	UPDATE CM_BTCH_WRK
+	         SET BTCH_WRK_SEQ = #{btchWrkSeq}  /* 배치작업SEQ */
+	           , BTCH_WRK_NM = #{btchWrkNm}  /* 배치작업명 */
+	           , BTCH_WRK_ID = #{btchWrkId}
+	           , CYCLE = #{cycle}  /* 주기 */
+	           , CYCLE_DIRECT_WRITE = #{cycleDirectWrite}  /* 주기 */
+	           , EXE_TIME_MONTH = #{exeTimeMonth}  /* 실행시점월 */
+	           , EXE_TIME_DAY = #{exeTimeDay}  /* 실행시점일 */
+	           , EXE_TIME_HOUR = #{exeTimeHour}  /* 실행시점시 */
+	           , EXE_TIME_MINUTE = #{exeTimeMinute}  /* 실행시점분 */
+	           , TIME_TYPE = #{timeType}  /* 시점/주기 구분 */
+	           , STAT = #{stat}  /* 상태 */
+	           , BTCH_WRK_FILE_NM = #{btchWrkFileNm}  /* 배치 파일 명 */
+	           , EXE_RSRV_DTTM = #{exeRsrvDttm}  /* 실행예약일시 */
+	           , STOP_RSRV_DTTM = #{stopRsrvDttm}  /* 정지예약일시 */
+	           , EXE_OPTN = #{exeOptn}  /* 실행옵션 */
+	           , DC = #{dc}  /* 설명 */
+         WHERE BTCH_WRK_SEQ = #{btchWrkSeq}  /* 배치작업SEQ */
+
+	</update>
+
+	<!-- 배치작업 삭제 -->
+	<delete id="deleteCmBtchWrk">
+	/* ncis.sql.cmn.cmBtchWrk.deleteCmBtchWrk */
+	DELETE FROM CM_BTCH_WRK
+         WHERE BTCH_WRK_SEQ = #{value }  /* 배치작업SEQ */
+	</delete>
+
+</mapper>

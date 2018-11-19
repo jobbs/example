@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.siNetwkComp">
+
+	<resultMap id="resultSiNetwkComp" type="ncis.cmn.entity.SiNetwkComp">
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="netwkClCd"     column="NETWK_CL_CD"/>  <!-- 네트워크구분코드 -->
+        <result property="osVer"     column="OS_VER"/>  <!-- 운영체제버전 -->
+        <result property="useSlotQty"     column="USE_SLOT_QTY"/>  <!-- 사용 슬롯 수 -->
+        <result property="totIntfcKQty"     column="TOT_INTFC_K_QTY"/>  <!-- 총인터페이스(광)개수 -->
+        <result property="useIntfcKQty"     column="USE_INTFC_K_QTY"/>  <!-- 사용인터페이스(광)개수 -->
+        <result property="totIntfcUtpQty"     column="TOT_INTFC_UTP_QTY"/>  <!-- 총인터페이스(UTP)개수 -->
+        <result property="useIntfcUtpQty"     column="USE_INTFC_UTP_QTY"/>  <!-- 사용인터페이스(UTP)개수 -->
+        <result property="totIntfcComboQty"     column="TOT_INTFC_COMBO_QTY"/>  <!-- 총인터페이스(COMBO)개수 -->
+        <result property="useIntfcComboQty"     column="USE_INTFC_COMBO_QTY"/>  <!-- 사용인터페이스(COMBO)개수 -->
+        <result property="totPowerQty"     column="TOT_POWER_QTY"/>  <!-- 총전원개수 -->
+        <result property="usePowerQty"     column="USE_POWER_QTY"/>  <!-- 사용전원개수 -->
+        <result property="consTy"     column="CONS_TY"/>  <!-- 콘솔유형 -->
+        <result property="ipAddr"     column="IP_ADDR"/>  <!-- IP주소 -->
+        <result property="useNetwkPortQty"     column="USE_NETWK_PORT_QTY"/>  <!-- 사용네트워크포트개수 -->
+        <result property="intfcKndCd"     column="INTFC_KND_CD"/>  <!-- 인터페이스 종류 -->
+        <result property="reStrtCycleDtNo"     column="RE_STRT_CYCLE_DT_NO"/>  <!-- 재기동주기일수 -->
+        <result property="rcntReStrtDt"     column="RCNT_RE_STRT_DT"/>  <!-- 최근재기동일자 -->
+        <result property="reStrtLttrRcivYn"     column="RE_STRT_LTTR_RCIV_YN"/>  <!-- 재기동문자메시지수신여부 -->
+	</resultMap>
+
+	<!-- 네트워크구성정보 등록 -->
+	<insert id="insertSiNetwkComp">
+	INSERT INTO SI_NETWK_COMP (
+	             COMP_ID  /* 구성ID */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , NETWK_CL_CD  /* 네트워크구분코드 */
+	           , OS_VER  /* 운영체제버전 */
+	           , USE_SLOT_QTY  /* 사용 슬롯 수 */
+	           , TOT_INTFC_K_QTY  /* 총인터페이스(광)개수 */
+	           , USE_INTFC_K_QTY  /* 사용인터페이스(광)개수 */
+	           , TOT_INTFC_UTP_QTY  /* 총인터페이스(UTP)개수 */
+	           , USE_INTFC_UTP_QTY  /* 사용인터페이스(UTP)개수 */
+	           , TOT_INTFC_COMBO_QTY  /* 총인터페이스(COMBO)개수 */
+	           , USE_INTFC_COMBO_QTY  /* 사용인터페이스(COMBO)개수 */
+	           , TOT_POWER_QTY  /* 총전원개수 */
+	           , USE_POWER_QTY  /* 사용전원개수 */
+	           , CONS_TY  /* 콘솔유형 */
+	           , IP_ADDR  /* IP주소 */
+	           , USE_NETWK_PORT_QTY  /* 사용네트워크포트개수 */
+	           , INTFC_KND_CD  /* 인터페이스 종류 */
+	           , RE_STRT_CYCLE_DT_NO  /* 재기동주기일수 */
+	           , RCNT_RE_STRT_DT  /* 최근재기동일자 */
+	           , RE_STRT_LTTR_RCIV_YN  /* 재기동문자메시지수신여부 */
+	) VALUES (
+	           #{compId}  /* 구성ID */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{netwkClCd}  /* 네트워크구분코드 */
+	         , #{osVer}  /* 운영체제버전 */
+	         , #{useSlotQty}  /* 사용 슬롯 수 */
+	         , #{totIntfcKQty}  /* 총인터페이스(광)개수 */
+	         , #{useIntfcKQty}  /* 사용인터페이스(광)개수 */
+	         , #{totIntfcUtpQty}  /* 총인터페이스(UTP)개수 */
+	         , #{useIntfcUtpQty}  /* 사용인터페이스(UTP)개수 */
+	         , #{totIntfcComboQty}  /* 총인터페이스(COMBO)개수 */
+	         , #{useIntfcComboQty}  /* 사용인터페이스(COMBO)개수 */
+	         , #{totPowerQty}  /* 총전원개수 */
+	         , #{usePowerQty}  /* 사용전원개수 */
+	         , #{consTy}  /* 콘솔유형 */
+	         , #{ipAddr}  /* IP주소 */
+	         , #{useNetwkPortQty}  /* 사용네트워크포트개수 */
+	         , #{intfcKndCd}  /* 인터페이스 종류 */
+	         , #{reStrtCycleDtNo}  /* 재기동주기일수 */
+	         , #{rcntReStrtDt}  /* 최근재기동일자 */
+	         , #{reStrtLttrRcivYn}  /* 재기동문자메시지수신여부 */
+	)
+	</insert>
+
+	<!-- 네트워크구성정보 수정 -->
+	<update id="updateSiNetwkComp">
+	UPDATE SI_NETWK_COMP
+	         SET COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , NETWK_CL_CD = #{netwkClCd}  /* 네트워크구분코드 */
+	           , OS_VER = #{osVer}  /* 운영체제버전 */
+	           , USE_SLOT_QTY = #{useSlotQty}  /* 사용 슬롯 수 */
+	           , TOT_INTFC_K_QTY = #{totIntfcKQty}  /* 총인터페이스(광)개수 */
+	           , USE_INTFC_K_QTY = #{useIntfcKQty}  /* 사용인터페이스(광)개수 */
+	           , TOT_INTFC_UTP_QTY = #{totIntfcUtpQty}  /* 총인터페이스(UTP)개수 */
+	           , USE_INTFC_UTP_QTY = #{useIntfcUtpQty}  /* 사용인터페이스(UTP)개수 */
+	           , TOT_INTFC_COMBO_QTY = #{totIntfcComboQty}  /* 총인터페이스(COMBO)개수 */
+	           , USE_INTFC_COMBO_QTY = #{useIntfcComboQty}  /* 사용인터페이스(COMBO)개수 */
+	           , TOT_POWER_QTY = #{totPowerQty}  /* 총전원개수 */
+	           , USE_POWER_QTY = #{usePowerQty}  /* 사용전원개수 */
+	           , CONS_TY = #{consTy}  /* 콘솔유형 */
+	           , IP_ADDR = #{ipAddr}  /* IP주소 */
+	           , USE_NETWK_PORT_QTY = #{useNetwkPortQty}  /* 사용네트워크포트개수 */
+	           , INTFC_KND_CD = #{intfcKndCd}  /* 인터페이스 종류 */
+	           , RE_STRT_CYCLE_DT_NO = #{reStrtCycleDtNo}  /* 재기동주기일수 */
+	           , RCNT_RE_STRT_DT = #{rcntReStrtDt}  /* 최근재기동일자 */
+	           , RE_STRT_LTTR_RCIV_YN = #{reStrtLttrRcivYn}  /* 재기동문자메시지수신여부 */
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</update>
+
+	<!-- 네트워크구성정보 삭제 -->
+	<delete id="deleteSiNetwkComp">
+	DELETE FROM SI_NETWK_COMP
+         WHERE COMP_ID = #{compId}  /* 구성ID */
+
+	</delete>
+
+</mapper>

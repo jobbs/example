@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.dsb.stts.res.clstResStte">
+
+	<resultMap type="ncis.dsb.stts.res.vo.PmResInfoVo" id="resultPmResInfoVo">
+		<result property="clCnt" column="rsrc_pool_cnt"/>
+		<result property="pmCnt" column="pm_cnt"/>
+		<result property="rhevCnt" column="rhev_cnt"/>
+		<result property="vmwareCnt" column="vmware_cnt"/>
+		<result property="ibmCnt" column="ibm_cnt"/>
+		<result property="hpCnt" column="hp_cnt"/>
+		<result property="openstackCnt" column="openstack_cnt"/>
+		<result property="dockerCnt" column="docker_cnt"/>
+		<result property="ovmCnt" column="ovm_cnt"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+	</resultMap>
+
+	<select id="selectPmResInfo" resultMap="resultPmResInfoVo">
+	/* ncis.sql.dsb.stts.res.clstResStte.selectPmResInfo */
+		select
+			  count(distinct pm.rsrc_pool_id) rsrc_pool_cnt
+			, count(distinct pm.rsrc_pool_id||pm.uuid) pm_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='01' then 1 else 0 end),0),0) rhev_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='02' then 1 else 0 end),0),0) vmware_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='03' then 1 else 0 end),0),0) ibm_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='04' then 1 else 0 end),0),0) hp_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='05' then 1 else 0 end),0),0) openstack_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='06' then 1 else 0 end),0),0) docker_cnt
+			, COALESCE(round(sum(case when pool.vrlz_sw_ty_cd='09' then 1 else 0 end),0),0) ovm_cnt
+			, COALESCE(sum(colct.last_cpu_cor_qty),0) last_cpu_cor_qty
+			, COALESCE(round(sum(colct.last_mem_sum_capa)/1024/1024/1024,0),0) last_mem_sum_capa
+			, COALESCE(round(sum(colct.last_strg_sum_capa)/1024/1024/1024/1024,0),0) last_strg_sum_capa
+		from (
+			select
+				  a.rsrc_pool_id
+				, a.uuid
+				, max(a.pm_seq) pm_seq
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, max(colct_dt) colct_dt
+					</when>
+					<otherwise>
+						, max(colct_ym) colct_ym
+					</otherwise>
+				</choose>
+			from
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						st_pm_colct_sum_1dd a
+					</when>
+					<otherwise>
+						st_pm_colct_sum_1mm a
+					</otherwise>
+				</choose>
+			where 1=1
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd)'>
+					AND a.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'03')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'04' AND #{year}||'06')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'09')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'10' AND #{year}||'12')
+				</when>
+				<when test='"YY".equals(searchTrmCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+										where b.colct_ym like #{year}||'%')
+				</when>
+			</choose>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND a.REGION_ID = #{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND a.ZONE_ID = #{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND a.RSRC_POOL_ID = #{rsrcPoolId}
+			</if>
+			group by a.rsrc_pool_id, a.uuid
+		) pm, rc_rsrc_pool pool
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					, st_pm_colct_sum_1dd colct
+				</when>
+				<otherwise>
+					, st_pm_colct_sum_1mm colct
+				</otherwise>
+			</choose>
+		where 1 = 1
+			and pm.rsrc_pool_id = pool.rsrc_pool_id
+			and pm.rsrc_pool_id = colct.rsrc_pool_id
+			and pm.uuid = colct.uuid
+			and pm.pm_seq = colct.pm_seq
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					and pm.colct_dt = colct.colct_dt
+				</when>
+				<otherwise>
+					and pm.colct_ym = colct.colct_ym
+				</otherwise>
+			</choose>
+	</select>
+
+	<resultMap type="ncis.dsb.stts.res.vo.VmResInfoVo" id="resultVmResInfoVo">
+		<result property="total" column="total"/>
+		<result property="linuxCnt" column="linux_cnt"/>
+		<result property="hpCnt" column="hp_cnt"/>
+		<result property="aixCnt" column="aix_cnt"/>
+		<result property="winCnt" column="win_cnt"/>
+		<result property="solarisCnt" column="solaris_cnt"/>
+		<result property="etcCnt" column="etc_cnt"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="lastAsgnStrgCapa" column="last_asgn_strg_capa"/>
+	</resultMap>
+
+	<select id="selectVmResInfo" resultMap="resultVmResInfoVo">
+	/* ncis.sql.dsb.stts.res.clstResStte.selectVmResInfo */
+		select
+			  count(distinct vm.rsrc_pool_id||vm.uuid) total
+			, COALESCE(round(sum(case when b.os_ty_cd='01' then 1 else 0 end),0),0) linux_cnt
+			, COALESCE(round(sum(case when b.os_ty_cd='02' then 1 else 0 end),0),0) hp_cnt
+			, COALESCE(round(sum(case when b.os_ty_cd='03' then 1 else 0 end),0),0) aix_cnt
+			, COALESCE(round(sum(case when b.os_ty_cd='04' then 1 else 0 end),0),0) win_cnt
+			, COALESCE(round(sum(case when b.os_ty_cd='09' then 1 else 0 end),0),0) solaris_cnt
+			, COALESCE(round(sum(case when b.os_ty_cd not in ('01','02','03','04','09') or b.os_ty_cd is null then 1 else 0 end),0),0) etc_cnt
+			, COALESCE(sum(colct.last_vcore_qty),0) last_asgn_vcor_qty
+			, COALESCE(round(sum(colct.last_mem_sum_capa)/1024/1024/1024,0),0) last_asgn_mem_capa
+			, COALESCE(round(sum(colct.last_strg_sum_capa)/1024/1024/1024/1024,0),0) last_asgn_strg_capa
+		from (
+			select
+				  a.rsrc_pool_id
+				, a.uuid
+				, max(a.vm_seq) vm_seq
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, max(colct_dt) colct_dt
+					</when>
+					<otherwise>
+						, max(colct_ym) colct_ym
+					</otherwise>
+				</choose>
+			from
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						st_vm_colct_sum_1dd a
+					</when>
+					<otherwise>
+						st_vm_colct_sum_1mm a
+					</otherwise>
+				</choose>
+			where 1=1
+			<choose>
+				<when test='"DD".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{date},'-','')
+				</when>
+				<when test='"DI".equals(searchTrmCd)'>
+					AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+				</when>
+				<when test='"MM".equals(searchTrmCd)'>
+					AND a.COLCT_YM = #{year}||#{searchMmCd}
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'01' AND #{year}||'03')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'04' AND #{year}||'06')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'07' AND #{year}||'09')
+				</when>
+				<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym between #{year}||'10' AND #{year}||'12')
+				</when>
+				<when test='"YY".equals(searchTrmCd)'>
+					AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+										where b.colct_ym like #{year}||'%')
+				</when>
+			</choose>
+			<if test='regionId !=null and !"".equals(regionId)'>
+				AND a.REGION_ID = #{regionId}
+			</if>
+			<if test='zoneId !=null and !"".equals(zoneId)'>
+				AND a.ZONE_ID = #{zoneId}
+			</if>
+			<if test='netId !=null and !"".equals(netId)'>
+				AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+			</if>
+			<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+				AND a.RSRC_POOL_ID = #{rsrcPoolId}
+			</if>
+			group by a.rsrc_pool_id, a.uuid
+		) vm, rc_vm b
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					, st_vm_colct_sum_1dd colct
+				</when>
+				<otherwise>
+					, st_vm_colct_sum_1mm colct
+				</otherwise>
+			</choose>
+		where 1 = 1
+			and vm.vm_seq = b.vm_seq
+			and vm.rsrc_pool_id = colct.rsrc_pool_id
+			and vm.uuid = colct.uuid
+			and vm.vm_seq = colct.vm_seq
+			<choose>
+				<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+					and vm.colct_dt = colct.colct_dt
+				</when>
+				<otherwise>
+					and vm.colct_ym = colct.colct_ym
+				</otherwise>
+			</choose>
+	</select>
+
+	<resultMap type="ncis.dsb.stts.res.vo.AxCntVo" id="resultAxCntVo">
+		<result property="servcCnt" column="servc_cnt"/>
+		<result property="podQty" column="pod_qty"/>
+		<result property="cpuCorQty" column="cpu_asgn_capa"/>
+		<result property="memTotCapa" column="mem_tot_capa"/>
+		<result property="strgTotCapa" column="strg_tot_capa"/>
+	</resultMap>
+
+	<select id="selectAxCnt" resultMap="resultAxCntVo">
+	/* ncis.sql.dsb.stts.res.clstResStte.selectAxCnt */
+		select
+			  count(servc_seq) servc_cnt
+			, sum(last_pod_qty) pod_qty
+			, coalesce(round(sum(cpu_asgn_capa)/1000,2),0) cpu_asgn_capa
+			, coalesce(round(sum(mem_tot_capa)/1024/1024/1024,2),0) mem_tot_capa
+			, coalesce(round(sum(strg_tot_capa)/1024/1024/1024,2),0) strg_tot_capa
+		from
+		<choose>
+			<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+				st_rx_servc_sum_1dd a
+			</when>
+			<otherwise>
+				st_rx_servc_sum_1mm a
+			</otherwise>
+		</choose>
+		where 1=1
+		<choose>
+			<when test='"DD".equals(searchTrmCd)'>
+				AND a.COLCT_DT = REPLACE(#{date},'-','')
+			</when>
+			<when test='"DI".equals(searchTrmCd)'>
+				AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+			</when>
+			<when test='"MM".equals(searchTrmCd)'>
+				AND a.COLCT_YM = #{year}||#{searchMmCd}
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'01' AND #{year}||'03')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'04' AND #{year}||'06')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'07' AND #{year}||'09')
+			</when>
+			<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym between #{year}||'10' AND #{year}||'12')
+			</when>
+			<when test='"YY".equals(searchTrmCd)'>
+				AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+									where b.colct_ym like #{year}||'%')
+			</when>
+		</choose>
+		<if test='regionId !=null and !"".equals(regionId)'>
+			AND a.REGION_ID = #{regionId}
+		</if>
+		<if test='zoneId !=null and !"".equals(zoneId)'>
+			AND a.ZONE_ID = #{zoneId}
+		</if>
+		<if test='netId !=null and !"".equals(netId)'>
+			AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+		</if>
+		<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+			AND a.RSRC_POOL_ID = #{rsrcPoolId}
+		</if>
+	</select>
+
+	<resultMap type="ncis.dsb.stts.res.vo.ClstResInfoVo" id="resultClstResInfoVo">
+		<result property="regionNm" column="region_nm"/>
+		<result property="zoneNm" column="zone_nm"/>
+		<result property="netNm" column="net_nm"/>
+		<result property="rsrcPoolNm" column="rsrc_pool_nm"/>
+		<result property="clstrNm" column="clstr_nm"/>
+		<result property="prposNm" column="prpos_nm"/>
+		<result property="pmCnt" column="pm_cnt"/>
+		<result property="lastCpuCorQty" column="last_cpu_cor_qty"/>
+		<result property="lastMemSumCapa" column="last_mem_sum_capa"/>
+		<result property="lastStrgSumCapa" column="last_strg_sum_capa"/>
+		<result property="hipervisor" column="hipervisor"/>
+		<result property="vmCnt" column="vm_cnt"/>
+		<result property="linuxCnt" column="linux_cnt"/>
+		<result property="hpCnt" column="hp_cnt"/>
+		<result property="aixCnt" column="aix_cnt"/>
+		<result property="winCnt" column="win_cnt"/>
+		<result property="solarisCnt" column="solaris_cnt"/>
+		<result property="etcCnt" column="etc_cnt"/>
+		<result property="lastAsgnVcorQty" column="last_asgn_vcor_qty"/>
+		<result property="lastAsgnMemCapa" column="last_asgn_mem_capa"/>
+		<result property="lastAsgnStrgCapa" column="last_asgn_strg_capa"/>
+		<result property="cpuVirtRt" column="cpu_virt_rt"/>
+		<result property="memVirtRt" column="mem_virt_rt"/>
+		<result property="servcCnt" column="servc_cnt"/>
+		<result property="podQty" column="pod_qty"/>
+		<result property="cpuCorQty" column="cpu_asgn_capa"/>
+		<result property="memTotCapa" column="mem_tot_capa"/>
+		<result property="strgTotCapa" column="strg_tot_capa"/>
+	</resultMap>
+
+	<select id="selectClstResList" resultMap="resultClstResInfoVo">
+	/* ncis.sql.dsb.stts.res.clstResStte.selectClstResList */
+		select
+			  fn_region_name(max(pool.region_id)) region_nm
+			, fn_zone_name(max(pool.zone_id)) zone_nm
+			, fn_net_name(max(pool.net_id)) net_nm
+			, max(pool.rsrc_pool_nm) rsrc_pool_nm
+			, fn_clstr_name(list.clstr_seq) clstr_nm
+			, fn_prpos_name(list.clstr_seq) prpos_nm
+			, coalesce(sum(list.pm_cnt),0) pm_cnt
+			, coalesce(sum(list.last_cpu_cor_qty),0) last_cpu_cor_qty
+			, coalesce(sum(list.last_mem_sum_capa),0) last_mem_sum_capa
+			, coalesce(sum(list.last_strg_sum_capa),0) last_strg_sum_capa
+			, fn_code_name('001',max(pool.vrlz_sw_ty_cd)) hipervisor
+			, coalesce(sum(list.vm_cnt),0) vm_cnt
+			, coalesce(sum(list.linux_cnt),0) linux_cnt
+			, coalesce(sum(list.hp_cnt),0) hp_cnt
+			, coalesce(sum(list.aix_cnt),0) aix_cnt
+			, coalesce(sum(list.win_cnt),0) win_cnt
+			, coalesce(sum(list.solaris_cnt),0) solaris_cnt
+			, coalesce(sum(list.etc_cnt),0) etc_cnt
+			, coalesce(sum(list.last_asgn_vcor_qty),0) last_asgn_vcor_qty
+			, coalesce(sum(list.last_asgn_mem_capa),0) last_asgn_mem_capa
+			, coalesce(sum(list.last_asgn_strg_capa),0) last_asgn_strg_capa
+			, coalesce(round((case when sum(list.last_cpu_cor_qty) = 0 then 0 else sum(list.last_asgn_vcor_qty)/sum(list.last_cpu_cor_qty) end)::NUMERIC*100,2),0) cpu_virt_rt
+			, coalesce(round((case when sum(list.last_mem_sum_capa) = 0 then 0 else sum(list.last_asgn_mem_capa)/sum(list.last_mem_sum_capa) end)::NUMERIC*100,2),0) mem_virt_rt
+			, 0 servc_cnt
+			, 0 pod_qty
+			, 0 cpu_asgn_capa
+			, 0 mem_tot_capa
+			, 0 strg_tot_capa
+		from rc_rsrc_pool pool,
+			( select
+				  colct.rsrc_pool_id
+				, colct.clstr_seq
+				, count(pm.uuid) pm_cnt
+				, coalesce(sum(colct.last_cpu_cor_qty),0) last_cpu_cor_qty
+				, coalesce(round(sum(colct.last_mem_sum_capa)/1024/1024/1024,0),0) last_mem_sum_capa
+				, coalesce(round(sum(colct.last_strg_sum_capa)/1024/1024/1024/1024,2),0) last_strg_sum_capa
+				, 0 vm_cnt
+				, 0 linux_cnt
+				, 0 hp_cnt
+				, 0 aix_cnt
+				, 0 win_cnt
+				, 0 solaris_cnt
+				, 0 etc_cnt
+				, 0 last_asgn_vcor_qty
+				, 0 last_asgn_mem_capa
+				, 0 last_asgn_strg_capa
+			from (
+				select
+					  a.rsrc_pool_id
+					, a.uuid
+					, max(a.pm_seq) pm_seq
+					<choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							, max(colct_dt) colct_dt
+						</when>
+						<otherwise>
+							, max(colct_ym) colct_ym
+						</otherwise>
+					</choose>
+				from
+					<choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							st_pm_colct_sum_1dd a
+						</when>
+						<otherwise>
+							st_pm_colct_sum_1mm a
+						</otherwise>
+					</choose>
+				where 1=1
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+						AND a.COLCT_YM = #{year}||#{searchMmCd}
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'01' AND #{year}||'03')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'04' AND #{year}||'06')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'07' AND #{year}||'09')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'10' AND #{year}||'12')
+					</when>
+					<when test='"YY".equals(searchTrmCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_pm_colct_sum_1mm b
+											where b.colct_ym like #{year}||'%')
+					</when>
+				</choose>
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND a.REGION_ID = #{regionId}
+				</if>
+				<if test='zoneId !=null and !"".equals(zoneId)'>
+					AND a.ZONE_ID = #{zoneId}
+				</if>
+				<if test='netId !=null and !"".equals(netId)'>
+					AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+				</if>
+				<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+					AND a.RSRC_POOL_ID = #{rsrcPoolId}
+				</if>
+				group by a.rsrc_pool_id, a.uuid
+			) pm
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, st_pm_colct_sum_1dd colct
+					</when>
+					<otherwise>
+						, st_pm_colct_sum_1mm colct
+					</otherwise>
+				</choose>
+			where 1 = 1
+				and pm.rsrc_pool_id = colct.rsrc_pool_id
+				and pm.uuid = colct.uuid
+				and pm.pm_seq = colct.pm_seq
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						and pm.colct_dt = colct.colct_dt
+					</when>
+					<otherwise>
+						and pm.colct_ym = colct.colct_ym
+					</otherwise>
+				</choose>
+			group by colct.rsrc_pool_id, colct.clstr_seq
+			union all
+			select
+				  colct.rsrc_pool_id
+				, colct.clstr_seq
+				, 0 pm_cnt
+				, 0 last_cpu_cor_qty
+				, 0 last_mem_sum_capa
+				, 0 last_strg_sum_capa
+				, count(vm.uuid) vm_cnt
+				, coalesce(round(sum(case when b.os_ty_cd='01' then 1 else 0 end),0),0) linux_cnt
+				, coalesce(round(sum(case when b.os_ty_cd='02' then 1 else 0 end),0),0) hp_cnt
+				, coalesce(round(sum(case when b.os_ty_cd='03' then 1 else 0 end),0),0) aix_cnt
+				, coalesce(round(sum(case when b.os_ty_cd='04' then 1 else 0 end),0),0) win_cnt
+				, coalesce(round(sum(case when b.os_ty_cd='09' then 1 else 0 end),0),0) solaris_cnt
+				, coalesce(round(sum(case when b.os_ty_cd not in ('01','02','03','04','09') or b.os_ty_cd is null then 1 else 0 end),0),0) etc_cnt
+				, coalesce(sum(colct.last_vcore_qty),0) last_asgn_vcor_qty
+				, coalesce(round(sum(colct.last_mem_sum_capa)/1024/1024/1024,0),0) last_asgn_mem_capa
+				, coalesce(round(sum(colct.last_strg_sum_capa)/1024/1024/1024/1024,2),0) last_asgn_strg_capa
+			from (
+				select
+					  a.rsrc_pool_id
+					, a.uuid
+					, max(a.vm_seq) vm_seq
+					<choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							, max(colct_dt) colct_dt
+						</when>
+						<otherwise>
+							, max(colct_ym) colct_ym
+						</otherwise>
+					</choose>
+				from
+					<choose>
+						<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+							st_vm_colct_sum_1dd a
+						</when>
+						<otherwise>
+							st_vm_colct_sum_1mm a
+						</otherwise>
+					</choose>
+				where 1=1
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+						AND a.COLCT_YM = #{year}||#{searchMmCd}
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'01' AND #{year}||'03')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'04' AND #{year}||'06')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'07' AND #{year}||'09')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+											where b.colct_ym between #{year}||'10' AND #{year}||'12')
+					</when>
+					<when test='"YY".equals(searchTrmCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_vm_colct_sum_1mm b
+											where b.colct_ym like #{year}||'%')
+					</when>
+				</choose>
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND a.REGION_ID = #{regionId}
+				</if>
+				<if test='zoneId !=null and !"".equals(zoneId)'>
+					AND a.ZONE_ID = #{zoneId}
+				</if>
+				<if test='netId !=null and !"".equals(netId)'>
+					AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+				</if>
+				<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+					AND a.RSRC_POOL_ID = #{rsrcPoolId}
+				</if>
+				group by a.rsrc_pool_id, a.uuid
+			) vm, rc_vm b
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						, st_vm_colct_sum_1dd colct
+					</when>
+					<otherwise>
+						, st_vm_colct_sum_1mm colct
+					</otherwise>
+				</choose>
+			where 1 = 1
+				and vm.vm_seq = b.vm_seq
+				and vm.rsrc_pool_id = colct.rsrc_pool_id
+				and vm.uuid = colct.uuid
+				and vm.vm_seq = colct.vm_seq
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						and vm.colct_dt = colct.colct_dt
+					</when>
+					<otherwise>
+						and vm.colct_ym = colct.colct_ym
+					</otherwise>
+				</choose>
+			group by colct.rsrc_pool_id, colct.clstr_seq
+			) list
+			where pool.rsrc_pool_id = list.rsrc_pool_id
+			group by list.rsrc_pool_id, list.clstr_seq
+			union all
+			select
+				  fn_region_name(pool.region_id) region_nm
+				, fn_zone_name(pool.zone_id) zone_nm
+				, fn_net_name(pool.net_id) net_nm
+				, pool.rsrc_pool_nm
+				, '' clstr_nm
+				, '' prpos_nm
+				, 0 pm_cnt
+				, 0 last_cpu_cor_qty
+				, 0 last_mem_sum_capa
+				, 0 last_strg_sum_capa
+				, fn_code_name('001',pool.vrlz_sw_ty_cd) hipervisor
+				, 0 vm_cnt
+				, 0 linux_cnt
+				, 0 hp_cnt
+				, 0 aix_cnt
+				, 0 win_cnt
+				, 0 solaris_cnt
+				, 0 etc_cnt
+				, 0 last_asgn_vcor_qty
+				, 0 last_asgn_mem_capa
+				, 0 last_asgn_strg_capa
+				, 0 cpu_virt_rt
+				, 0 mem_virt_rt
+				, ocp.servc_cnt
+				, ocp.pod_qty
+				, ocp.cpu_asgn_capa
+				, ocp.mem_tot_capa
+				, ocp.strg_tot_capa
+			from rc_rsrc_pool pool,
+				( select
+					  a.rsrc_pool_id
+					, count(servc_seq) servc_cnt
+					, sum(last_pod_qty) pod_qty
+					, coalesce(round(sum(cpu_asgn_capa)/1000,2),0) cpu_asgn_capa
+					, coalesce(round(sum(mem_tot_capa)/1024/1024/1024,2),0) mem_tot_capa
+					, coalesce(round(sum(strg_tot_capa)/1024/1024/1024,2),0) strg_tot_capa
+				from
+				<choose>
+					<when test='"DD".equals(searchTrmCd) or "DI".equals(searchTrmCd) '>
+						st_rx_servc_sum_1dd a
+					</when>
+					<otherwise>
+						st_rx_servc_sum_1mm a
+					</otherwise>
+				</choose>
+				where 1=1
+				<choose>
+					<when test='"DD".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{date},'-','')
+					</when>
+					<when test='"DI".equals(searchTrmCd)'>
+						AND a.COLCT_DT = REPLACE(#{endDt},'-','')
+					</when>
+					<when test='"MM".equals(searchTrmCd)'>
+						AND a.COLCT_YM = #{year}||#{searchMmCd}
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "01".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+											where b.colct_ym between #{year}||'01' AND #{year}||'03')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "02".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+											where b.colct_ym between #{year}||'04' AND #{year}||'06')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "03".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+											where b.colct_ym between #{year}||'07' AND #{year}||'09')
+					</when>
+					<when test='"QQ".equals(searchTrmCd) and "04".equals(searchQqCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+											where b.colct_ym between #{year}||'10' AND #{year}||'12')
+					</when>
+					<when test='"YY".equals(searchTrmCd)'>
+						AND a.COLCT_YM = (select max(b.colct_ym) from st_rx_servc_sum_1mm b
+											where b.colct_ym like #{year}||'%')
+					</when>
+				</choose>
+				<if test='regionId !=null and !"".equals(regionId)'>
+					AND a.REGION_ID = #{regionId}
+				</if>
+				<if test='zoneId !=null and !"".equals(zoneId)'>
+					AND a.ZONE_ID = #{zoneId}
+				</if>
+				<if test='netId !=null and !"".equals(netId)'>
+					AND a.NET_ID IN (SELECT NET_ID FROM RC_NET WHERE NET_CL_CD = #{netId})
+				</if>
+				<if test='rsrcPoolId !=null and !"".equals(rsrcPoolId)'>
+					AND a.RSRC_POOL_ID = #{rsrcPoolId}
+				</if>
+				group by a.rsrc_pool_id
+				) ocp
+			where pool.rsrc_pool_id = ocp.rsrc_pool_id
+	 </select>
+</mapper>

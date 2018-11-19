@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stThresGrd">
+
+	<resultMap id="resultStThresGrd" type="ncis.cmn.entity.StThresGrd">
+        <result property="thresGrdId"     column="THRES_GRD_ID"/>  <!-- 임계등급ID -->
+        <result property="grdNm"     column="GRD_NM"/>  <!-- 등급명 -->
+        <result property="grdClCd"     column="GRD_CL_CD"/>  <!-- 등급구분코드 -->
+	</resultMap>
+
+	<!-- 임계등급 등록 -->
+	<insert id="insertStThresGrd">
+	INSERT INTO ST_THRES_GRD (
+	             THRES_GRD_ID  /* 임계등급ID */
+	           , GRD_NM  /* 등급명 */
+	           , GRD_CL_CD  /* 등급구분코드 */
+	) VALUES (
+	           #{thresGrdId}  /* 임계등급ID */
+	         , #{grdNm}  /* 등급명 */
+	         , #{grdClCd}  /* 등급구분코드 */
+	)
+	</insert>
+
+	<!-- 임계등급 수정 -->
+	<update id="updateStThresGrd">
+	UPDATE ST_THRES_GRD
+	         SET THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+	           , GRD_NM = #{grdNm}  /* 등급명 */
+	           , GRD_CL_CD = #{grdClCd}  /* 등급구분코드 */
+         WHERE THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+
+	</update>
+
+	<!-- 임계등급 삭제 -->
+	<delete id="deleteStThresGrd">
+	DELETE FROM ST_THRES_GRD
+         WHERE THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+
+	</delete>
+
+</mapper>

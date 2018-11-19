@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxDistrbEnvConf">
+	<!-- 환경변수 등록 -->
+	<insert id="insertRxDistrbEnvConf" parameterType="ncis.cmn.entity.RxDistrbEnvConf">
+		/* ncis.sql.cmn.rxDistrbEnvConf.insertRxDistrbEnvConf */
+		INSERT INTO RX_DISTRB_ENV_CONF(
+			SERVC_SEQ  /* 서비스SEQ */
+			, DISTRB_CONF_ID  /* 배포설정ID */
+			, ENV_VAR_NM  /* 환경변수명 */
+			, ENV_VAR_VL  /* 환경변수값 */
+			, VAR_VL_TY_CD  /* 변수값유형코드 */
+			, CRE_DTTM  /* 생성일시 */
+		)
+        VALUES (
+			#{servcSeq}  /* 서비스SEQ */
+			, #{distrbConfId}  /* 배포설정ID */
+			, #{envVarNm}  /* 환경변수명 */
+			, #{envVarVl}  /* 환경변수값 */
+			, #{varVlTyCd}  /* 변수값유형코드 */
+			, now()  /* 생성일시 */
+        )
+	</insert>
+
+	<!-- 환경병수 수정 -->
+	<update id="updateRxDistrbEnvConf">
+		/* ncis.sql.cmn.rxDistrbEnvConf.updateRxDistrbEnvConf */
+		UPDATE RX_DISTRB_ENV_CONF
+			SET
+			ENV_VAR_NM = #{envVarNm}  /* 환경변수명 */
+			, ENV_VAR_VL = #{envVarVl}  /* 환경변수값 */
+			, VAR_VL_TY_CD = #{varVlTyCd}  /* 변수값유형코드 */
+			, UPDT_DTTM = now()  /* 수정일시 */
+	   WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+       AND DISTRB_CONF_ID = #{distrbConfId}  /* 배포설정ID */
+       AND ENV_VAR_NM = #{envVarNm}  /* 환경변수명 */
+
+	</update>
+
+
+	<!-- 환경병수 삭제 -->
+	<delete id="deleteRxDistrbEnvConf">
+		/* ncis.sql.cmn.rxDistrbEnvConf.deleteRxDistrbEnvConf */
+		DELETE FROM RX_DISTRB_ENV_CONF
+		WHERE SERVC_SEQ = #{servcSeq}  /* 서비스SEQ */
+		<if test="distrbConfId != null and !distrbConfId.isEmpty()">
+       	AND DISTRB_CONF_ID = #{distrbConfId}  /* 배포설정ID */
+       	</if>
+       	<if test="envVarNm != null and !envVarNm.isEmpty()">
+       	AND ENV_VAR_NM = #{envVarNm}  /* 환경변수명 */
+       	</if>
+	</delete>
+
+</mapper>

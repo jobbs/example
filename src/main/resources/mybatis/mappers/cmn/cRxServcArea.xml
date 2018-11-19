@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rxServcArea">
+	<!-- 서비스영역 등록 -->
+	<insert id="insertRxServcArea" parameterType="ncis.cmn.entity.RxServcArea">
+	   <selectKey order="BEFORE" keyProperty="servcAreaSeq" resultType="integer">
+            SELECT nextval('rx_servc_area_sq01')
+            /* SELECT (MAX(servc_area_seq)::int)+1 FROM RX_SERVC_AREA */
+        </selectKey>
+		/* ncis.sql.cmn.rxServcArea.insertRxServcArea */
+		INSERT INTO RX_SERVC_AREA(
+            SERVC_AREA_SEQ
+			,RSRC_POOL_ID
+			,SERVC_AREA_ID
+			,SERVC_AREA_NM
+			,SERVC_AREA_UID
+			,INSTITUTION_ID
+			,JOB_ID
+			,RMK
+			,SERVC_AREA_CL_CD
+			,SERVC_AREA_COMP_ID
+			,CRE_DTTM
+			,CRE_USER_ID)
+        VALUES (
+			#{servcAreaSeq}  /* 서비스영역SEQ */
+			, #{rsrcPoolId}  /* 자원풀ID */
+			, #{servcAreaId}  /* 서비스영역ID */
+			, #{servcAreaNm}  /* 서비스영역명 */
+			, #{servcAreaUid}  /* 서비스영역UID */
+			, #{institutionId}  /* 기관ID */
+			, #{jobId}  /* 업무ID */
+			, #{rmk}  /* 비고 */
+			, #{servcAreaClCd}  /* 서비스영역구분코드 */
+			, #{servcAreaCompId}  /* 서비스영역구성ID */
+			, #{creDttm}::timestamp  /* 생성일시 */
+			, #{creUserId}  /* 생성자ID */
+        )
+	</insert>
+
+	<!-- 서비스영역 수정 -->
+	<update id="updateRxServcArea">
+		/* ncis.sql.cmn.RxServcArea.updateRxServcArea */
+		UPDATE RX_SERVC_AREA
+			SET SERVC_AREA_NM = #{servcAreaNm}  /* 서비스영역명 */
+			, RMK = #{rmk}  /* 비고 */
+			, SERVC_AREA_COMP_ID = #{servcAreaCompId}  /* 서비스영역구성ID */
+			<if test="institutionId != null and !institutionId.isEmpty()">
+			, INSTITUTION_ID = #{institutionId}  /* 부서ID */
+			</if>
+			<if test="jobId != null and !jobId.isEmpty()">
+			, JOB_ID = #{jobId}  /* 업무ID */
+			</if>
+			, UPDT_DTTM = now()  /* 수정일시 */
+			, UPDT_USER_ID = #{updtUserId}  /* 수정자ID */
+		WHERE SERVC_AREA_SEQ = #{servcAreaSeq}  /* 서비스영역SEQ */
+	</update>
+
+	<!-- 서비스영역 삭제 -->
+	<delete id="deleteRxServcArea">
+		/* ncis.sql.cmn.RxServcArea.deleteRxServcArea */
+		UPDATE RX_SERVC_AREA
+            SET DEL_DTTM = now()  /* 삭제일시 */
+            , DEL_USER_ID = #{delUserId}  /* 삭제자ID */
+            , DEL_YN = #{delYn}  /* 삭제여부 */
+        WHERE SERVC_AREA_SEQ = #{servcAreaSeq}  /* 서비스영역SEQ */
+	</delete>
+
+</mapper>

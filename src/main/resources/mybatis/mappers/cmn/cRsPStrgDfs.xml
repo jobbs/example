@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsPStrgDfs">
+
+	<resultMap id="resultRsPStrgDfs" type="ncis.cmn.entity.RsPStrgDfs">
+        <result property="phyStrgId"     column="PHY_STRG_ID"/>  <!-- 물리스토리지ID -->
+	</resultMap>
+
+	<!-- 물리스토리지_DFS 등록 -->
+	<insert id="insertRsPStrgDfs">
+	INSERT INTO RS_P_STRG_DFS (
+	             PHY_STRG_ID  /* 물리스토리지ID */
+	) VALUES (
+	           #{phyStrgId}  /* 물리스토리지ID */
+	)
+	</insert>
+
+	<!-- 물리스토리지_DFS 수정 -->
+	<update id="updateRsPStrgDfs">
+	UPDATE RS_P_STRG_DFS
+	         SET PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+         WHERE PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+
+	</update>
+
+	<!-- 물리스토리지_DFS 삭제 -->
+	<delete id="deleteRsPStrgDfs">
+	DELETE FROM RS_P_STRG_DFS
+         WHERE PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+
+	</delete>
+
+</mapper>

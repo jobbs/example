@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stSrvrEvntOccr">
+
+	<resultMap id="resultStSrvrEvntOccr" type="ncis.cmn.entity.StSrvrEvntOccr">
+        <result property="idxItmId"     column="IDX_ITM_ID"/>  <!-- 지표항목ID -->
+        <result property="thresTrgtSrvrId"     column="THRES_TRGT_SRVR_ID"/>  <!-- 임계치대상서버ID -->
+        <result property="thresGrdId"     column="THRES_GRD_ID"/>  <!-- 임계등급ID -->
+        <result property="rcntOccrDttm"     column="RCNT_OCCR_DTTM"/>  <!-- 최근발생일시 -->
+        <result property="contOccrCnt"     column="CONT_OCCR_CNT"/>  <!-- 연속발생횟수 -->
+	</resultMap>
+
+	<!-- 서버별이벤트발생 등록 -->
+	<insert id="insertStSrvrEvntOccr">
+		INSERT INTO ST_SRVR_EVNT_OCCR (
+		             IDX_ITM_ID  /* 지표항목ID */
+		           , THRES_TRGT_SRVR_ID  /* 임계치대상서버ID */
+		           , THRES_GRD_ID  /* 임계등급ID */
+		           , RCNT_OCCR_DTTM  /* 최근발생일시 */
+		           , CONT_OCCR_CNT  /* 연속발생횟수 */
+		) VALUES (
+		           #{idxItmId}  /* 지표항목ID */
+		         , #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+		         , #{thresGrdId}  /* 임계등급ID */
+		         , now()  /* 최근발생일시 */
+		         , #{contOccrCnt}  /* 연속발생횟수 */
+		)
+	</insert>
+
+	<!-- 서버별이벤트발생 수정 -->
+	<update id="updateStSrvrEvntOccr">
+	UPDATE ST_SRVR_EVNT_OCCR
+	         SET IDX_ITM_ID = #{idxItmId}  /* 지표항목ID */
+	           , THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+	           , THRES_GRD_ID = #{thresGrdId}  /* 임계등급ID */
+	           , RCNT_OCCR_DTTM = now()  /* 최근발생일시 */
+	           , CONT_OCCR_CNT = #{contOccrCnt}  /* 연속발생횟수 */
+         WHERE IDX_ITM_ID = #{idxItmId}  /* 지표항목ID */
+           AND THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+
+	</update>
+
+	<!-- 서버별이벤트발생 삭제 -->
+	<delete id="deleteStSrvrEvntOccr">
+	DELETE FROM ST_SRVR_EVNT_OCCR
+         WHERE IDX_ITM_ID = #{idxItmId}  /* 지표항목ID */
+           AND THRES_TRGT_SRVR_ID = #{thresTrgtSrvrId}  /* 임계치대상서버ID */
+
+	</delete>
+
+</mapper>

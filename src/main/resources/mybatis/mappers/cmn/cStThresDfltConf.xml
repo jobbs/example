@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.stThresDfltConf">
+
+
+	<insert id="insertStThresDfltConf" parameterType="ncis.cmn.entity.StThresDfltConf">
+		/* ncis.sql.cmn.stThresDfltConf.insertStThresDfltConf */
+		INSERT INTO ST_THRES_DFLT_CONF
+		(
+			  PROF_ID
+			, IDX_ITM_ID
+			, THRES_GRD_ID
+			, CMPR_STDR
+			, DFLT_THRES_VL
+			, THRES_DFLT_CONT_CNT
+		)
+		VALUES
+		(
+			  #{profId}
+			, #{idxItmId}
+			, #{thresGrdId}
+			, #{cmprStdr}
+			, #{dfltThresVl}
+			, #{thresDfltContCnt}
+		)
+	</insert>
+
+	<update id="updateStThresDfltConf"  parameterType="ncis.cmn.entity.StThresDfltConf">
+	/* ncis.sql.cmn.stThresDfltConf.updateStThresDfltConf */
+		UPDATE ST_THRES_DFLT_CONF SET
+			  IDX_ITM_ID			= #{idxItmId}
+			, THRES_GRD_ID			= #{thresGrdId}
+			, CMPR_STDR				= #{cmprStdr}
+			, DFLT_THRES_VL			= #{dfltThresVl}
+			, THRES_DFLT_CONT_CNT	= #{thres_dfltContCnt}
+		WHERE PROF_ID = #{profId}
+	</update>
+
+	<delete id="deleteStThresDfltConf" parameterType="Long" >
+		/* ncis.sql.cmn.stThresDfltConf.deleteStThresDfltConf */
+		DELETE FROM ST_THRES_DFLT_CONF WHERE PROF_ID = #{value}
+	</delete>
+
+</mapper>

@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.rsPStrgComm">
+
+	<resultMap id="resultRsPStrgComm" type="ncis.cmn.entity.RsPStrgComm">
+        <result property="phyStrgId"     column="PHY_STRG_ID"/>  <!-- 물리스토리지ID -->
+        <result property="phyStrgNm"     column="PHY_STRG_NM"/>  <!-- 물리스토리지명 -->
+        <result property="compClCd"     column="COMP_CL_CD"/>  <!-- 구성구분코드 -->
+        <result property="regionId"     column="REGION_ID"/>  <!-- 리전ID -->
+        <result property="assetsId"     column="ASSETS_ID"/>  <!-- 자산ID -->
+        <result property="compId"     column="COMP_ID"/>  <!-- 구성ID -->
+        <result property="compRsrcNm"     column="COMP_RSRC_NM"/>  <!-- 구성자원명 -->
+        <result property="upperCompId"     column="UPPER_COMP_ID"/>  <!-- 상위구성ID -->
+        <result property="modlCd"     column="MODL_CD"/>  <!-- 모델코드 -->
+        <result property="mnfctCoCd"     column="MNFCT_CO_CD"/>  <!-- 제조사코드 -->
+        <result property="serialNo"     column="SERIAL_NO"/>  <!-- 시리얼번호 -->
+        <result property="eqpUniqIdNo"     column="EQP_UNIQ_ID_NO"/>  <!-- 장비고유식별번호 -->
+        <result property="useDeptId"     column="USE_DEPT_ID"/>  <!-- 사용부서ID -->
+        <result property="oprStatCd"     column="OPR_STAT_CD"/>  <!-- 운영상태코드 -->
+        <result property="oprChargerId"     column="OPR_CHARGER_ID"/>  <!-- 운영담당자ID -->
+        <result property="cnsgnOprUserId"     column="CNSGN_OPR_USER_ID"/>  <!-- 위탁운영사용자ID -->
+        <result property="strgAsgnCapa"     column="STRG_ASGN_CAPA"/>  <!-- 스토리지할당용량(GB) -->
+        <result property="strgUsefulCapa"     column="STRG_USEFUL_CAPA"/>  <!-- 스토리지가용용량(GB) -->
+        <result property="strgUseCapa"     column="STRG_USE_CAPA"/>  <!-- 스토리지사용용량(GB) -->
+        <result property="rsrcPoolId"     column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+	</resultMap>
+
+	<!-- 물리스토리지_공통 등록 -->
+	<insert id="insertRsPStrgComm">
+	INSERT INTO RS_P_STRG_COMM (
+	             PHY_STRG_ID  /* 물리스토리지ID */
+	           , PHY_STRG_NM  /* 물리스토리지명 */
+	           , COMP_CL_CD  /* 구성구분코드 */
+	           , REGION_ID  /* 리전ID */
+	           , ASSETS_ID  /* 자산ID */
+	           , COMP_ID  /* 구성ID */
+	           , COMP_RSRC_NM  /* 구성자원명 */
+	           , UPPER_COMP_ID  /* 상위구성ID */
+	           , MODL_CD  /* 모델코드 */
+	           , MNFCT_CO_CD  /* 제조사코드 */
+	           , SERIAL_NO  /* 시리얼번호 */
+	           , EQP_UNIQ_ID_NO  /* 장비고유식별번호 */
+	           , USE_DEPT_ID  /* 사용부서ID */
+	           , OPR_STAT_CD  /* 운영상태코드 */
+	           , OPR_CHARGER_ID  /* 운영담당자ID */
+	           , CNSGN_OPR_USER_ID  /* 위탁운영사용자ID */
+	           , STRG_ASGN_CAPA  /* 스토리지할당용량(GB) */
+	           , STRG_USEFUL_CAPA  /* 스토리지가용용량(GB) */
+	           , STRG_USE_CAPA  /* 스토리지사용용량(GB) */
+	           , RSRC_POOL_ID  /* 자원풀ID */
+	) VALUES (
+	           #{phyStrgId}  /* 물리스토리지ID */
+	         , #{phyStrgNm}  /* 물리스토리지명 */
+	         , #{compClCd}  /* 구성구분코드 */
+	         , #{regionId}  /* 리전ID */
+	         , #{assetsId}  /* 자산ID */
+	         , #{compId}  /* 구성ID */
+	         , #{compRsrcNm}  /* 구성자원명 */
+	         , #{upperCompId}  /* 상위구성ID */
+	         , #{modlCd}  /* 모델코드 */
+	         , #{mnfctCoCd}  /* 제조사코드 */
+	         , #{serialNo}  /* 시리얼번호 */
+	         , #{eqpUniqIdNo}  /* 장비고유식별번호 */
+	         , #{useDeptId}  /* 사용부서ID */
+	         , #{oprStatCd}  /* 운영상태코드 */
+	         , #{oprChargerId}  /* 운영담당자ID */
+	         , #{cnsgnOprUserId}  /* 위탁운영사용자ID */
+	         , #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+	         , #{strgUsefulCapa}  /* 스토리지가용용량(GB) */
+	         , #{strgUseCapa}  /* 스토리지사용용량(GB) */
+	         , #{rsrcPoolId}  /* 자원풀ID */
+	)
+	</insert>
+
+	<!-- 물리스토리지_공통 수정 -->
+	<update id="updateRsPStrgComm">
+	UPDATE RS_P_STRG_COMM
+	         SET PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+	           , PHY_STRG_NM = #{phyStrgNm}  /* 물리스토리지명 */
+	           , COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+	           , REGION_ID = #{regionId}  /* 리전ID */
+	           , ASSETS_ID = #{assetsId}  /* 자산ID */
+	           , COMP_ID = #{compId}  /* 구성ID */
+	           , COMP_RSRC_NM = #{compRsrcNm}  /* 구성자원명 */
+	           , UPPER_COMP_ID = #{upperCompId}  /* 상위구성ID */
+	           , MODL_CD = #{modlCd}  /* 모델코드 */
+	           , MNFCT_CO_CD = #{mnfctCoCd}  /* 제조사코드 */
+	           , SERIAL_NO = #{serialNo}  /* 시리얼번호 */
+	           , EQP_UNIQ_ID_NO = #{eqpUniqIdNo}  /* 장비고유식별번호 */
+	           , USE_DEPT_ID = #{useDeptId}  /* 사용부서ID */
+	           , OPR_STAT_CD = #{oprStatCd}  /* 운영상태코드 */
+	           , OPR_CHARGER_ID = #{oprChargerId}  /* 운영담당자ID */
+	           , CNSGN_OPR_USER_ID = #{cnsgnOprUserId}  /* 위탁운영사용자ID */
+	           , STRG_ASGN_CAPA = #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+	           , STRG_USEFUL_CAPA = #{strgUsefulCapa}  /* 스토리지가용용량(GB) */
+	           , STRG_USE_CAPA = #{strgUseCapa}  /* 스토리지사용용량(GB) */
+	           , RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+         WHERE PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+	</update>
+
+	<!-- 물리스토리지_공통 삭제 -->
+	<delete id="deleteRsPStrgComm">
+	DELETE FROM RS_P_STRG_COMM
+         WHERE PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+
+	</delete>
+
+	<!-- 물리스토리지_공통 수정(조건) -->
+	<update id="updateRsPStrgCommSelected">
+	/* ncis.sql.cmn.rsPStrgComm.updateRsPStrgCommSelected */
+	UPDATE RS_P_STRG_COMM
+	<trim prefix="SET"   prefixOverrides=",">
+		<if test="phyStrgNm != null and phyStrgNm != '' ">
+			, PHY_STRG_NM = #{phyStrgNm}  /* 물리스토리지명 */
+		</if>
+		<if test="compClCd != null and compClCd != '' ">
+			, COMP_CL_CD = #{compClCd}  /* 구성구분코드 */
+		</if>
+		<if test="regionId != null and regionId != '' ">
+			, REGION_ID = #{regionId}  /* 리전ID */
+		</if>
+		<if test="assetsId != null and assetsId != '' ">
+			, ASSETS_ID = #{assetsId}  /* 자산ID */
+		</if>
+		<if test="compId != null and compId != '' ">
+			, COMP_ID = #{compId}  /* 구성ID */
+		</if>
+		<if test="compRsrcNm != null and compRsrcNm != '' ">
+			, COMP_RSRC_NM = #{compRsrcNm}  /* 구성자원명 */
+		</if>
+		<if test="upperCompId != null and upperCompId != '' ">
+			, UPPER_COMP_ID = #{upperCompId}  /* 상위구성ID */
+		</if>
+		<if test="modlCd != null and modlCd != '' ">
+			, MODL_CD = #{modlCd}  /* 모델코드 */
+		</if>
+		<if test="mnfctCoCd != null and mnfctCoCd != '' ">
+			, MNFCT_CO_CD = #{mnfctCoCd}  /* 제조사코드 */
+		</if>
+		<if test="serialNo != null and serialNo != '' ">
+			, SERIAL_NO = #{serialNo}  /* 시리얼번호 */
+		</if>
+		<if test="eqpUniqIdNo != null and eqpUniqIdNo != '' ">
+			, EQP_UNIQ_ID_NO = #{eqpUniqIdNo}  /* 장비고유식별번호 */
+		</if>
+		<if test="useDeptId != null and useDeptId != '' ">
+			, USE_DEPT_ID = #{useDeptId}  /* 사용부서ID */
+		</if>
+		<if test="oprStatCd != null and oprStatCd != '' ">
+			, OPR_STAT_CD = #{oprStatCd}  /* 운영상태코드 */
+		</if>
+		<if test="oprChargerId != null and oprChargerId != '' ">
+			, OPR_CHARGER_ID = #{oprChargerId}  /* 운영담당자ID */
+		</if>
+		<if test="cnsgnOprUserId != null and cnsgnOprUserId != '' ">
+			, CNSGN_OPR_USER_ID = #{cnsgnOprUserId}  /* 위탁운영사용자ID */
+		</if>
+		<if test="strgAsgnCapa != null and strgAsgnCapa != '' ">
+			, STRG_ASGN_CAPA = #{strgAsgnCapa}  /* 스토리지할당용량(GB) */
+		</if>
+		<if test="strgUsefulCapa != null and strgUsefulCapa != '' ">
+			, STRG_USEFUL_CAPA = #{strgUsefulCapa}  /* 스토리지가용용량(GB) */
+		</if>
+		<if test="strgUseCapa != null and strgUseCapa != '' ">
+			, STRG_USE_CAPA = #{strgUseCapa}  /* 스토리지사용용량(GB) */
+		</if>
+		<if test="rsrcPoolId != null and rsrcPoolId != '' ">
+			, RSRC_POOL_ID = #{rsrcPoolId}  /* 자원풀ID */
+		</if>
+	</trim>
+	   WHERE PHY_STRG_ID = #{phyStrgId}  /* 물리스토리지ID */
+	</update>
+
+</mapper>

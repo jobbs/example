@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.macBnd">
+
+	<resultMap type="ncis.cpt.opr.ip.vo.MacBndVo" id="resultMacBndListVo">
+		<result property="regionNm"		column="REGION_NM"/>  <!-- 센터ID -->
+		<result property="zoneNm"		column="ZONE_NM"/>  <!-- 존ID -->
+		<result property="netNm"		column="NET_NM"/>  <!-- 망ID -->
+		<result property="macBndSeq"	column="MAC_BND_SEQ"/>  <!-- MAC대역SEQ -->
+		<result property="macBndNm"		column="MAC_BND_NM"/>  <!-- MAC대역명 -->
+		<result property="dc"			column="DC"/>  <!-- 비고 -->
+		<result property="macStrtAddr"	column="MAC_STRT_ADDR"/>  <!-- MAC시작주소 -->
+		<result property="macEndAddr"	column="MAC_END_ADDR"/>  <!-- MAC종료주소 -->
+		<result property="poolId"		column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="rsrcPoolNm"	column="RSRC_POOL_NM"/>  <!-- 자원풀명 -->
+		<result property="asgnCnt"		column="ASGN_CNT"/>  <!-- 할당MAC주소수 -->
+		<result property="netClCdNm"		column="NET_CL_CD_NM"/>  <!-- 망구분코드명 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.MacBndVo" id="resultMacBndDetailVo">
+		<result property="regionNm"			column="REGION_NM"/>  <!-- 센터ID -->
+		<result property="zoneNm"			column="ZONE_NM"/>  <!-- 존ID -->
+		<result property="netNm"			column="NET_NM"/>  <!-- 망ID -->
+		<result property="macBndSeq"		column="MAC_BND_SEQ"/>  <!-- MAC대역SEQ -->
+		<result property="macBndNm"			column="MAC_BND_NM"/>  <!-- MAC대역명 -->
+		<result property="dc"				column="DC"/>  <!-- 비고 -->
+		<result property="macStrtAddr"		column="MAC_STRT_ADDR"/>  <!-- MAC시작주소 -->
+		<result property="macEndAddr"		column="MAC_END_ADDR"/>  <!-- MAC종료주소 -->
+		<result property="poolId"			column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀명 -->
+		<result property="netClCd"			column="NET_CL_CD"/>  <!-- 망구분코드 -->
+		<result property="netClCdNm"		column="NET_CL_CD_NM"/>  <!-- 망구분코드명 -->
+		<result property="asgnCnt"			column="ASGN_CNT"/>  <!-- 할당MAC주소수 -->
+		<result property="macAddr"			column="MAC_ADDR"/>  <!-- MAC주소 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 부처명 -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버명 -->
+		<result property="netwkIntfcNm"		column="NETWK_INTFC_NM"/>  <!-- 네트워크인터페이스명 -->
+		<result property="asgnDt"			column="ASGN_DT"/>  <!-- 할당일자 -->
+		<result property="vmJob"			column="VM_JOB"/>  <!-- 가상서버업무 -->
+	</resultMap>
+
+	<resultMap type="ncis.cpt.opr.ip.vo.MacBndIntfcAsgnVo" id="resultMacBndIntfcAsgnVo">
+		<result property="asgnYn"			column="ASGN_YN"/>  <!-- 할당여부 -->
+		<result property="institutionNm"	column="INSTITUTION_NM"/>  <!-- 업무명 -->
+		<result property="poolId"			column="RSRC_POOL_ID"/>  <!-- 자원풀ID -->
+		<result property="rsrcPoolNm"		column="RSRC_POOL_NM"/>  <!-- 자원풀명 -->
+		<result property="vmNm"				column="VM_NM"/>  <!-- 가상서버구성ID -->
+		<result property="vmCompId"			column="VM_COMP_ID"/>  <!-- 가상서버구성ID -->
+		<result property="netwkIntfcNm"		column="NETWK_INTFC_NM"/>  <!-- 네트워크인터페이스명 -->
+		<result property="asgnDt"			column="ASGN_DT"/>  <!-- 할당일시 -->
+		<result property="vmJob"			column="VM_JOB"/>  <!-- 가상서버업무 -->
+	</resultMap>
+
+	<sql id="search">
+			A1.DEL_YN = 'N'
+		<if test="regionId != null and !regionId.isEmpty()">
+			AND A2.REGION_ID = #{regionId}
+		</if>
+		<if test="zoneId != null and !zoneId.isEmpty()">
+			AND A2.ZONE_ID = #{zoneId}
+		</if>
+		<if test="netId != null and !netId.isEmpty()">
+			AND A2.NET_ID = #{netId}
+		</if>
+		<if test="poolId != null and !poolId.isEmpty()">
+			AND A2.RSRC_POOL_ID = #{poolId}
+		</if>
+		<if test="macBndNm != null and !macBndNm.isEmpty()">
+			AND UPPER(A1.MAC_BND_NM) LIKE '%' || UPPER(#{macBndNm}) || '%'
+		</if>
+		<if test="macAddr != null and !macAddr.isEmpty()">
+			<choose>
+				<when test="macAddr.length() == 17">
+					AND UPPER(#{macAddr}) >= UPPER(A1.MAC_STRT_ADDR)
+					AND UPPER(A1.MAC_END_ADDR) >= UPPER(#{macAddr})
+				</when>
+				<otherwise>
+					AND (UPPER(A1.MAC_STRT_ADDR) LIKE UPPER(#{macAddr}) || '%' OR UPPER(A1.MAC_END_ADDR) LIKE UPPER(#{macAddr}) || '%')
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<sql id="searchAsgn">
+		<if test="asgnYn != null and !asgnYn.isEmpty()">
+			AND A3.ASGN_YN = #{asgnYn}
+		</if>
+		<if test="vmNm != null and !vmNm.isEmpty()">
+			AND A5.VM_NM LIKE '%' || #{vmNm} || '%'
+		</if>
+	</sql>
+
+	<sql id="userAuthority">
+		<if test="!sysadm">
+			INNER JOIN (
+						SELECT	CM_RSRC_POOL_USER.USER_ID
+								,CM_RSRC_POOL_USER.RSRC_POOL_ID
+						FROM	CM_RSRC_POOL_USER
+						WHERE	CM_RSRC_POOL_USER.USER_ID = #{userId}
+						) RSRC_POOL_USER
+					ON RSRC_POOL_USER.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		</if>
+	</sql>
+
+	<select id="selectMacBndTotCnt" resultType="Integer">
+		/* ncis.sql.cpt.macBnd.selectMacBndTotCnt */
+		SELECT	COUNT(DISTINCT(A1.MAC_BND_SEQ))
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_MAC_BND_INTFC_ASGN A3
+				ON A1.MAC_BND_SEQ = A3.MAC_BND_SEQ
+				AND A3.ASGN_YN = 'Y'
+		LEFT OUTER JOIN RC_NETWK_INTFC A4
+				ON A4.NETWK_INTFC_SEQ = A3.NETWK_INTFC_SEQ
+		LEFT OUTER JOIN RC_VM A5
+				ON A5.VM_SEQ = A4.VM_SEQ
+		<include refid="userAuthority"/>
+		<where>
+			<include refid="search"/>
+		</where>
+	</select>
+
+	<select id="selectMacBndList" resultMap="resultMacBndListVo">
+		<include refid="ncis.cmn.queryForPagingHeader" />
+		/* ncis.sql.cpt.macBnd.selectMacBndList */
+		SELECT	A6.REGION_NM
+				,A7.ZONE_NM
+				,A14.CD_NM AS NET_CL_CD_NM
+				,A1.MAC_BND_SEQ
+				,A1.MAC_BND_NM
+				,A1.DC
+				,A1.MAC_STRT_ADDR
+				,A1.MAC_END_ADDR
+				,A1.RSRC_POOL_ID
+				,A2.RSRC_POOL_NM
+				,COUNT(A3.MAC_SEQ) AS ASGN_CNT
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT JOIN CM_CODE A14
+				ON A14.CD = A2.NET_CL_CD AND A14.PARENT_GRP_CD = '067'
+		LEFT OUTER JOIN RC_MAC_BND_INTFC_ASGN A3
+				ON A1.MAC_BND_SEQ = A3.MAC_BND_SEQ
+				AND A3.ASGN_YN = 'Y'
+		LEFT OUTER JOIN RC_NETWK_INTFC A4
+				ON A4.NETWK_INTFC_SEQ = A3.NETWK_INTFC_SEQ
+		LEFT OUTER JOIN RC_VM A5
+				ON A5.VM_SEQ = A4.VM_SEQ
+		LEFT OUTER JOIN RC_REGION A6
+				ON A6.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A7
+				ON A7.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A8
+				ON A8.NET_ID = A2.NET_ID
+		<include refid="userAuthority"/>
+		<where>
+			<include refid="search"/>
+		</where>
+		GROUP BY A6.REGION_NM, A7.ZONE_NM, A14.CD_NM, A2.RSRC_POOL_NM, A1.MAC_BND_SEQ
+		ORDER BY A6.REGION_NM, A7.ZONE_NM, A14.CD_NM, A2.RSRC_POOL_NM
+		<include refid="ncis.cmn.queryForPagingFooter" />
+	</select>
+
+	<select id="selectMacBnd" resultMap="resultMacBndDetailVo">
+		/* ncis.sql.cpt.macBnd.selectMacBndDetail */
+		select
+			A1.MAC_BND_SEQ,
+			A1.MAC_BND_NM,
+			A1.MAC_STRT_ADDR,
+			A1.MAC_END_ADDR,
+			A1.RSRC_POOL_ID,
+			A1.DC,
+			A2.RSRC_POOL_NM,
+			(SELECT REGION_NM FROM RC_REGION WHERE RC_REGION.REGION_ID = A2.REGION_ID) REGION_NM,
+			(SELECT ZONE_NM FROM RC_ZONE WHERE RC_ZONE.ZONE_ID = A2.ZONE_ID) ZONE_NM,
+			(SELECT CD_NM FROM CM_CODE WHERE CM_CODE.CD = A2.NET_CL_CD AND PARENT_GRP_CD='067') NET_CL_CD_NM,
+			(SELECT NET_NM FROM RC_NET WHERE RC_NET.NET_ID = A2.NET_ID) NET_NM,
+			(SELECT COUNT(*) FROM RC_MAC_BND_INTFC_ASGN WHERE MAC_BND_SEQ = A1.MAC_BND_SEQ AND ASGN_YN = 'Y') AS ASGN_CNT
+		from
+			RC_MAC_BND A1
+			LEFT JOIN RC_RSRC_POOL A2 ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		WHERE
+			A1.DEL_YN = 'N'
+			AND A1.MAC_BND_SEQ = #{macBndSeq}
+	</select>
+
+	<select id="selectMacBndDetailCnt" resultType="Integer">
+		/* ncis.sql.cpt.macBnd.selectMacBndDetail */
+		SELECT	COUNT(*)
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_MAC_BND_INTFC_ASGN A3
+				ON A1.MAC_BND_SEQ = A3.MAC_BND_SEQ
+		LEFT OUTER JOIN RC_NETWK_INTFC A4
+				ON A4.NETWK_INTFC_SEQ = A3.NETWK_INTFC_SEQ
+		LEFT OUTER JOIN RC_VM A5
+				ON A5.VM_SEQ = A4.VM_SEQ
+		LEFT OUTER JOIN RC_REGION A6
+				ON A6.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A7
+				ON A7.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A8
+				ON A8.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION A9
+				ON A9.INSTITUTION_ID = A5.INSTITUTION_ID
+		LEFT OUTER JOIN (
+						SELECT	ARRAY_TO_STRING(ARRAY_AGG(B2.JOB_NM), ',') AS VM_JOB
+								,B1.VM_SEQ
+						FROM	RC_VM_JOB B1
+						INNER JOIN CM_JOB B2
+								ON B2.JOB_ID = B1.JOB_ID GROUP BY B1.VM_SEQ
+						) A10
+				ON A10.VM_SEQ = A5.VM_SEQ
+		WHERE	A1.MAC_BND_SEQ = #{macBndSeq}
+				AND A1.DEL_YN = 'N'
+				<include refid="searchAsgn"/>
+	</select>
+
+	<select id="selectMacBndDetail" resultMap="resultMacBndDetailVo">
+		/* ncis.sql.cpt.macBnd.selectMacBndDetail */
+		SELECT	A6.REGION_NM
+				,A7.ZONE_NM
+				,A8.NET_NM
+				,A1.MAC_BND_SEQ
+				,A1.MAC_BND_NM
+				,A1.DC
+				,A1.MAC_STRT_ADDR
+				,A1.MAC_END_ADDR
+				,A1.RSRC_POOL_ID
+				,A2.RSRC_POOL_NM
+				,(SELECT COUNT(*) FROM RC_MAC_BND_INTFC_ASGN WHERE MAC_BND_SEQ = A3.MAC_BND_SEQ AND ASGN_YN = 'Y') AS ASGN_CNT
+				,A3.ASGN_YN
+				,A3.MAC_ADDR
+				,A9.INSTITUTION_NM
+				,A2.RSRC_POOL_NM
+				,A2.NET_CL_CD
+				,A14.CD_NM AS NET_CL_CD_NM
+				,A5.VM_NM
+				,A5.VM_COMP_ID
+				,A4.NETWK_INTFC_NM
+				,A3.ASGN_DT
+				,A10.VM_JOB
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_RSRC_POOL A2
+				ON A1.RSRC_POOL_ID = A2.RSRC_POOL_ID
+		LEFT OUTER JOIN RC_MAC_BND_INTFC_ASGN A3
+				ON A1.MAC_BND_SEQ = A3.MAC_BND_SEQ
+		LEFT OUTER JOIN RC_NETWK_INTFC A4
+				ON A4.NETWK_INTFC_SEQ = A3.NETWK_INTFC_SEQ
+		LEFT OUTER JOIN RC_VM A5
+				ON A5.VM_SEQ = A4.VM_SEQ
+		LEFT OUTER JOIN RC_REGION A6
+				ON A6.REGION_ID = A2.REGION_ID
+		LEFT OUTER JOIN RC_ZONE A7
+				ON A7.ZONE_ID = A2.ZONE_ID
+		LEFT OUTER JOIN RC_NET A8
+				ON A8.NET_ID = A2.NET_ID
+		LEFT OUTER JOIN CM_INSTITUTION A9
+				ON A9.INSTITUTION_ID = A5.INSTITUTION_ID
+		LEFT JOIN CM_CODE A14 ON A14.CD = A2.NET_CL_CD AND A14.PARENT_GRP_CD = '067'
+		LEFT OUTER JOIN (
+						SELECT	ARRAY_TO_STRING(ARRAY_AGG(B2.JOB_NM), ',') AS VM_JOB
+								,B1.VM_SEQ
+						FROM	RC_VM_JOB B1
+						INNER JOIN CM_JOB B2
+								ON B2.JOB_ID = B1.JOB_ID GROUP BY B1.VM_SEQ
+						) A10
+				ON A10.VM_SEQ = A5.VM_SEQ
+		WHERE	A1.MAC_BND_SEQ = #{macBndSeq}
+				AND A1.DEL_YN = 'N'
+				<include refid="searchAsgn"/>
+		ORDER BY A3.MAC_ADDR
+	</select>
+
+	<select id="selectMacBndDetailList" resultMap="resultMacBndIntfcAsgnVo">
+		/* ncis.sql.cpt.macBnd.selectMacBndDetailList */
+		SELECT	A3.ASGN_YN
+				,A3.MAC_ADDR
+				,A6.INSTITUTION_NM
+				,A2.RSRC_POOL_NM
+				,A5.VM_NM
+				,A5.VM_COMP_ID
+				,A4.NETWK_INTFC_NM
+				,A3.ASGN_DT
+				,A7.VM_JOB
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_RSRC_POOL A2
+				ON A2.RSRC_POOL_ID = A1.RSRC_POOL_ID
+		INNER JOIN RC_MAC_BND_INTFC_ASGN A3
+				ON A3.MAC_BND_SEQ = A1.MAC_BND_SEQ
+		LEFT OUTER JOIN RC_NETWK_INTFC A4
+				ON A4.NETWK_INTFC_SEQ = A3.NETWK_INTFC_SEQ
+		LEFT OUTER JOIN RC_VM A5
+				ON A5.VM_SEQ = A4.VM_SEQ
+		LEFT OUTER JOIN CM_INSTITUTION A6
+				ON A6.INSTITUTION_ID = A5.INSTITUTION_ID
+		LEFT OUTER JOIN (
+						SELECT	ARRAY_TO_STRING(ARRAY_AGG(B2.JOB_NM), ',') AS VM_JOB
+								,B1.VM_SEQ
+						FROM	RC_VM_JOB B1
+						INNER JOIN CM_JOB B2
+								ON B2.JOB_ID = B1.JOB_ID GROUP BY B1.VM_SEQ
+						) A7
+				ON A7.VM_SEQ = A5.VM_SEQ
+		WHERE	A1.MAC_BND_SEQ = #{macBndSeq}
+				AND A1.DEL_YN = 'N'
+				<include refid="searchAsgn"/>
+		ORDER BY A3.MAC_ADDR
+	</select>
+
+	<select id="selectMacBndIpList" resultMap="resultMacBndIntfcAsgnVo">
+		/* ncis.sql.cpt.macBnd.selectMacBndIpList */
+		SELECT	A1.MAC_BND_SEQ
+				,A2.MAC_SEQ
+				,A2.MAC_ADDR
+				,A2.ASGN_DT
+				,A2.ASGN_YN
+				,A1.RSRC_POOL_ID
+		FROM	RC_MAC_BND A1
+		INNER JOIN RC_MAC_BND_INTFC_ASGN A2
+				ON A2.MAC_BND_SEQ = A1.MAC_BND_SEQ
+		WHERE	A1.DEL_YN = 'N'
+				AND A1.MAC_BND_SEQ IN
+				<if test="updtCheck != null and !updtCheck.isEmpty()">
+					<foreach collection="updtCheck" item="item" open="(" close=")" separator=",">
+						#{item}
+					</foreach>
+				</if>
+	</select>
+
+	<select id="selectNetIntfcIpList" resultMap="resultMacBndIntfcAsgnVo">
+		/* ncis.sql.cpt.macBnd.selectNetIntfcIpList */
+		SELECT A.NETWK_INTFC_SEQ
+		     , A.MAC_ADDR
+		     , C.RSRC_POOL_ID
+		FROM   RC_NETWK_INTFC A
+		INNER JOIN RC_VM B ON A.VM_SEQ = B.VM_SEQ AND B.DEL_YN = 'N'
+		INNER JOIN RC_CLSTR C ON B.CLSTR_SEQ = C.CLSTR_SEQ AND C.DEL_YN = 'N'
+		WHERE A.DEL_YN = 'N'
+		AND   (C.RSRC_POOL_ID, A.MAC_ADDR) IN (
+                                        SELECT	B1.RSRC_POOL_ID, B2.MAC_ADDR
+                                        FROM	RC_MAC_BND B1
+                                        INNER JOIN RC_MAC_BND_INTFC_ASGN B2
+                                                ON B2.MAC_BND_SEQ = B1.MAC_BND_SEQ
+                                        WHERE	B1.MAC_BND_SEQ IN
+										<if test="updtCheck != null and !updtCheck.isEmpty()">
+										 <foreach collection="updtCheck" item="item" open="(" close=")" separator=",">
+											#{item}
+										 </foreach>
+										</if>
+								)
+	</select>
+
+</mapper>

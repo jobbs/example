@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cmn.oaVmPatchAlrm">
+
+	<resultMap id="resultOaVmPatchAlrm" type="ncis.cmn.entity.OaVmPatchAlrm">
+        <result property="patchAlrmSeq"     column="PATCH_ALRM_SEQ"/>  <!-- 패치알림SEQ -->
+        <result property="vmSeq"     column="VM_SEQ"/>  <!-- 가상서버SEQ -->
+        <result property="applcYn"     column="APPLC_YN"/>  <!-- 적용여부 -->
+        <result property="packgSeq"     column="PACKG_SEQ"/>  <!-- 패키지SEQ -->
+        <result property="ver"     column="VER"/>  <!-- 버전 -->
+        <result property="release"     column="RELEASE"/>  <!-- 릴리즈 -->
+	</resultMap>
+
+	<!-- 가상서버별패치알림 등록 -->
+	<insert id="insertOaVmPatchAlrm">
+	INSERT INTO OA_VM_PATCH_ALRM (
+	             PATCH_ALRM_SEQ  /* 패치알림SSEQeq */
+	           , VM_SEQ  /* 가상서버SEQ */
+	           , APPLC_YN  /* 적용여부 */
+	           , PACKG_SEQ /* 패키지SEQ */
+	           , VER /* 버전 */
+	           , RELEASE /* 릴리즈 */
+	) VALUES (
+	           #{patchAlrmSeq}  /* 패치알림SEQ */
+	         , #{vmSeq}  /* 가상서버SEQ */
+	         , #{applcYn}  /* 적용여부 */
+	         , #{packgSeq}  /* 패키지SEQ */
+	         , #{ver}  /* 버전 */
+	         , #{release}  /* 릴리즈 */
+	)
+	</insert>
+
+	<!-- 가상서버별패치알림 수정 -->
+	<update id="updateOaVmPatchAlrm">
+	UPDATE OA_VM_PATCH_ALRM
+	         SET PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림SEQ */
+	           , VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+	           , APPLC_YN = #{applcYn}  /* 적용여부 */
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림SEQ */
+           AND VM_ID = #{vmSeq}  /* 가상서버SEQ */
+
+	</update>
+
+	<!-- 가상서버별패치알림 삭제 -->
+	<delete id="deleteOaVmPatchAlrm">
+	DELETE FROM OA_VM_PATCH_ALRM
+         WHERE PATCH_ALRM_SEQ = #{patchAlrmSeq}  /* 패치알림SEQ */
+           AND VM_SEQ = #{vmSeq}  /* 가상서버SEQ */
+
+	</delete>
+
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ncis.sql.cpt.rsrc.com.zone">
+
+	<resultMap type="ncis.cpt.rsrc.zone.vo.ZoneVo" id="resultZoneVo" extends="ncis.sql.cmn.rcZone.resultRcZone">
+		<result property="regionNm" column="REGION_NM"/>
+	</resultMap>
+
+	<select id="selectZoneAllList" resultMap="resultZoneVo">
+		/* ncis.sql.cpt.rsrc.com.zone.selectZoneAllList */
+		SELECT
+			ZONE_ID
+	        , ZONE_NM
+	        , REGION_ID
+	        , (SELECT REGION_NM FROM RC_REGION WHERE RC_REGION.REGION_ID = RC_ZONE.REGION_ID) AS REGION_NM
+		FROM
+			RC_ZONE
+		ORDER BY ZONE_NM
+	</select>
+
+	<select id="selectZone" resultMap="resultZoneVo">
+		/* ncis.sql.cpt.rsrc.com.zone.selectZone */
+		SELECT
+			ZONE_ID
+	        , ZONE_NM
+	        , REGION_ID
+		FROM
+			RC_ZONE
+		WHERE
+			ZONE_ID = #{value}
+	</select>
+
+	<select id="selectZoneListByRegion" resultMap="resultZoneVo">
+		/* ncis.sql.cpt.rsrc.com.zone.selectZoneListByRegion */
+		SELECT
+			ZONE_ID
+	        , ZONE_NM
+	        , REGION_ID
+		FROM
+			RC_ZONE
+		WHERE
+			REGION_ID = #{searchRegionId}
+
+			<if test="byRole and !sysAdm">
+			AND ZONE_ID IN (
+				SELECT ZONE_ID
+				FROM CM_RSRC_POOL_USER U
+					INNER JOIN RC_RSRC_POOL P ON U.RSRC_POOL_ID = P.RSRC_POOL_ID
+				WHERE
+					U.USER_ID =  #{searchUserId}
+					AND P.REGION_ID = #{searchRegionId}
+					AND DEL_YN = 'N'
+			)
+			</if>
+		ORDER BY ZONE_NM
+	</select>
+
+</mapper>
